@@ -116,6 +116,11 @@ in
     recommendedServices.enable = true;
   };
 
+  programs.helium = {
+    enable = true;
+    flags = [ "--password-store=gnome-libsecret" ];
+  };
+
   environment.localBinInPath = true;
   environment.systemPackages = with pkgs; [
     oo7

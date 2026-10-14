@@ -5,6 +5,16 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Install Helium Browser — 2026-10-14T23:55:00Z
+
+Added the pinned Helium Browser flake and enabled its NixOS module. Helium is
+installed declaratively and configured to use Oo7 through the
+`gnome-libsecret` password store. `nix flake check` and
+`nixos-rebuild dry-build --flake /etc/nixos#moria` passed. Activated generation
+`al09v2hn29xvjbfsv1fkf6kzgwkzzmr5-nixos-system-moria-26.05.20261013.a033e66`.
+Verified `/run/current-system/sw/bin/helium`, Helium 0.19.2.1, its desktop
+entry, and zero failed system units.
+
 ## [COMPLETED] Configure Chromium to use Oo7 Secret Service — 2026-10-14T23:49:00Z
 
 Added a declarative wrapper around ungoogled Chromium that passes
