@@ -25,6 +25,8 @@ installed configuration revision is
 the NixOS kernel/initrd, and `loader/entries/nixos-generation-1.conf`; its
 loader entry uses `root=fstab`, and the installed fstab selects
 `subvol=nixos-root` and `subvol=nixos-home` on the target filesystem UUID.
+The `janzon` account password was set interactively after installation; no
+password material is recorded here.
 
 Created and verified separate UEFI entry `Boot0005* NixOS` pointing to
 `\\EFI\\systemd\\systemd-bootx64.efi`. Fedora and Windows UEFI entries and

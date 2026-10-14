@@ -25,6 +25,8 @@ secrets, routine read-only inspections, or one-off command failures.
   `13c832ca532efd9ac4421284733a1247ba29efcf`.
 - `nixos-install --flake /mnt/etc/nixos#moria` completed successfully and set
   the root password interactively.
+- The `janzon` account password was set interactively after installation; no
+  password material is recorded here.
 - ESP verification passed: `/boot/EFI/systemd/systemd-bootx64.efi`,
   `/boot/EFI/nixos/l94h0skn99v3fqhvzjcr7cvcz202nabd-linux-6.18.56-bzImage.efi`,
   `/boot/EFI/nixos/8da1amvb7rln1mxzhcgsz64xjhvvimf1-initrd-linux-6.18.56-initrd.efi`,
