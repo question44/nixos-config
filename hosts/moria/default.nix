@@ -1,5 +1,20 @@
 { config, lib, pkgs, ... }:
 
+let
+  chromiumWithSecretService = pkgs.symlinkJoin {
+    name = "ungoogled-chromium-with-secret-service";
+    paths = [ pkgs.ungoogled-chromium ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      rm "$out/bin/chromium" "$out/bin/chromium-browser"
+      makeWrapper ${pkgs.ungoogled-chromium}/bin/chromium "$out/bin/chromium" \
+        --add-flags "--password-store=gnome-libsecret"
+      makeWrapper ${pkgs.ungoogled-chromium}/bin/chromium-browser "$out/bin/chromium-browser" \
+        --add-flags "--password-store=gnome-libsecret"
+    '';
+  };
+in
+
 {
   imports = [
     ./hardware-configuration.nix
@@ -107,7 +122,7 @@
     gh
     kdePackages.dolphin
     ghostty
-    ungoogled-chromium
+    chromiumWithSecretService
     xwayland-satellite
     wl-clipboard
     pavucontrol

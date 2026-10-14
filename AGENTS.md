@@ -84,3 +84,7 @@ working Fedora and Windows installations, and verify every material change.
 - Keep the flake lock file committed and review `git diff` before committing.
 - Do not commit generated secrets, machine-specific credentials, or unrelated
   user changes.
+- After a verified important system change, commit the relevant configuration
+  and changelog changes in Git before declaring the work complete.
+- Keep commits focused and descriptive; check `git status` after committing
+  and leave unrelated user changes untouched.

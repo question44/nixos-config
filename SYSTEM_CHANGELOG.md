@@ -5,6 +5,16 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Configure Chromium to use Oo7 Secret Service — 2026-10-14T23:49:00Z
+
+Added a declarative wrapper around ungoogled Chromium that passes
+`--password-store=gnome-libsecret`, routing Chromium's password storage through
+the active Oo7 Secret Service provider. `nix flake check` and
+`nixos-rebuild dry-build --flake /etc/nixos#moria` passed. Activated generation
+`zkjqbrxl7nb5fv94gm3nl7lkib13hbrd-nixos-system-moria-26.05.20261013.a033e66`.
+Verified the installed Chromium wrapper contains the flag and Oo7 owns
+`org.freedesktop.secrets`. Restart Chromium before testing saved credentials.
+
 ## [COMPLETED] Set Fish as the default shell — 2026-10-14T23:23:22Z
 
 Enabled `programs.fish` and set `janzon`'s declarative login shell to
