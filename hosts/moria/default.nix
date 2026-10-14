@@ -58,7 +58,7 @@
     enable = true;
     extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
     configPackages = [ pkgs.niri ];
-    config.niri."org.freedesktop.impl.portal.Secret" = "gnome";
+    config.niri."org.freedesktop.impl.portal.Secret" = lib.mkForce "gnome";
   };
 
   programs.niri = {
