@@ -5,6 +5,15 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Set timezone to Europe/Warsaw — 2026-10-14T23:55:31Z
+
+Change `time.timeZone` from `Etc/UTC` to `Europe/Warsaw` in the declarative
+host configuration. `nix flake check` and
+`nixos-rebuild dry-build --flake /etc/nixos#moria` passed. Activated generation
+`7gjcan9k3x5acbcg6g4gq46yfjjg8l15-nixos-system-moria-26.05.20261013.a033e66`.
+Verified `Europe/Warsaw` (CEST, UTC+02:00), synchronized NTP, and zero failed
+system units.
+
 ## [COMPLETED] Install Helium Browser — 2026-10-14T23:55:00Z
 
 Added the pinned Helium Browser flake and enabled its NixOS module. Helium is
