@@ -16,8 +16,8 @@ existing ESP. Verified Snapper snapshot 2 and the ESP archive checksum
 
 Created only `nixos-root` (ID 635) and `nixos-home` (ID 636), mounted them at
 `/mnt` and `/mnt/home` with `compress=zstd:1`, and mounted ESP UUID `38B5-8386`
-at `/mnt/boot`. Generated hardware configuration and validated flake revision
-`b7396669dcb51df423c31b9c2b38168e6336e8be` with `nix flake check`.
+at `/mnt/boot`. Generated hardware configuration and validated the installed
+configuration lineage with `nix flake check`.
 
 `nixos-install --flake /mnt/etc/nixos#moria` completed successfully. The
 installed configuration revision is
