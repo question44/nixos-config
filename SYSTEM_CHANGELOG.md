@@ -5,6 +5,93 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Set Fish as the default shell — 2026-10-14T23:23:22Z
+
+Enabled `programs.fish` and set `janzon`'s declarative login shell to
+`/run/current-system/sw/bin/fish`. `nix flake check` and
+`nixos-rebuild dry-build --flake /etc/nixos#moria` passed. Activated the
+configuration as generation
+`zkv5b1g1v7min65agn348qkjnjqig5n7q-nixos-system-moria-26.05.20261013.a033e66`.
+Verified the account entry, Fish 4.7.1, and zero failed system units.
+
+## [COMPLETED] Set Fish as the system-wide default shell — 2026-10-14T23:24:20Z
+
+Set `users.defaultUserShell = pkgs.fish` so new NixOS user accounts receive
+Fish by default, while retaining the explicit `janzon` shell declaration.
+Validated with `nix flake check`, `nixos-rebuild dry-build`, and
+`nixos-option users.defaultUserShell`; activated generation
+`45nbjx7rf8zsnhgpgh5kw8h8m3cxvzkm-nixos-system-moria-26.05.20261013.a033e66`.
+No system units are failed.
+
+## [COMPLETED] Install Dolphin file manager — 2026-10-14T23:25:16Z
+
+Added `kdePackages.dolphin` to the system packages. `nix flake check` and
+`nixos-rebuild dry-build --flake /etc/nixos#moria` passed. Activated generation
+`1xykvpi97mwn8k0gya7w46xrz61j25z0-nixos-system-moria-26.05.20261013.a033e66`.
+Verified `/run/current-system/sw/bin/dolphin`, Dolphin 26.04.3, and zero
+failed system units.
+
+## [COMPLETED] Set Polish keyboard layout — 2026-10-14T23:27:29Z
+
+Set the system virtual console keymap to `pl` and the Niri graphical XKB
+layout to `pl`. `nix flake check` and `nixos-rebuild dry-build --flake
+/etc/nixos#moria` passed; the configuration was activated successfully.
+Verified `KEYMAP=pl` in `/etc/vconsole.conf`, successful vconsole setup, and
+zero failed system units.
+
+## [COMPLETED] Expose user-local binaries to Fish — 2026-10-14T23:32:05Z
+
+Enabled `environment.localBinInPath` so Fish login sessions include
+`/home/janzon/.local/bin`, where the Codex executable is installed. The
+configuration passed `nix flake check` and `nixos-rebuild dry-build`, then was
+activated successfully. A clean Fish login now resolves Codex and reports
+`codex-cli 0.162.1`; zero system units are failed.
+
+## [COMPLETED] Apply Polish Niri keyboard layout — 2026-10-14T23:33:26Z
+
+The active user Niri configuration at `/home/janzon/.config/niri/config.kdl`
+was overriding the NixOS fallback configuration. Added `layout "pl"` and
+`options "lv3:ralt_switch"` to both the active configuration and the tracked
+Niri configuration. Niri validation passed, the compositor was restarted, and
+`niri msg keyboard-layouts` now reports `Polish`.
+
+## [COMPLETED] Manage Niri user configuration with Home Manager — 2026-10-14T23:37:33Z
+
+Made the full existing Niri configuration the tracked source at
+`home/niri/config.kdl`. Added the pinned Home Manager 26.05 input and deployed
+the file declaratively to `~/.config/niri/config.kdl`. The previous unmanaged
+file was preserved as `config.kdl.backup`. `nix flake check`, Niri validation,
+and `nixos-rebuild dry-build` passed; activation started
+`home-manager-janzon.service` successfully.
+
+## [COMPLETED] Complete first-boot Secret Service configuration — 2026-10-14T23:12:14Z
+
+The first boot passed the core desktop, NVIDIA, Wayland, browser, networking,
+display, and PipeWire checks. The installed generation did not yet configure
+Oo7 as the Secret Service provider: the portal selected the GNOME backend while
+GNOME Keyring was disabled, and Oo7 was only installed as a client package.
+The repository now adds the pinned Oo7 daemon and portal, D-Bus registration,
+the daemon capability wrapper, and the `oo7` portal selection. Activated
+generation `dqc84r5k9jijlk2z8y4c1s2wi5wclnpi`. Verified the Oo7 daemon is
+running as `janzon`, owns `org.freedesktop.secrets`, and has `cap_ipc_lock`;
+verified the generated Niri portal configuration selects `oo7` for the Secret
+portal; GNOME Keyring is disabled. Core first-boot checks also pass for Niri,
+Noctalia, Ghostty, Wayland Chromium, NVIDIA, display, PipeWire, networking,
+and failed system units. A reboot and Fedora firmware-entry check remain.
+
+## [COMPLETED] Final first-boot reboot acceptance — 2026-10-14T23:21:18Z
+
+Checkpoint before reboot: active NixOS generation is
+`dqc84r5k9jijlk2z8y4c1s2wi5wclnpi`; Oo7 Secret Service is running; target
+filesystem remains UUID `5be9be17-20c9-4a47-ba2d-6adf1ceb4c55` with
+`nixos-root` and `nixos-home`; ESP remains UUID `38B5-8386` at `/boot`.
+Verified Niri on the native 3440x1440 display, NVIDIA RTX 4090, PipeWire,
+network connectivity, ungoogled Chromium under Wayland, and no failed system
+units. Reboot completed at 23:16 UTC and the system returned to the working
+NixOS generation with the expected `nixos-root` and `nixos-home` mounts.
+Completed: Fedora was selected from firmware and reported by the user as
+booting normally and remaining intact.
+
 ## [COMPLETED] Initial parallel installation and pre-reboot bootability gate — 2026-10-14T22:53:30Z
 
 - Important Snapper snapshot verified: `2`, description

@@ -5,6 +5,30 @@ Record material installation actions before every reboot: timestamp, action,
 result, validation, status (`[PENDING]` or `[COMPLETED]`), and the required
 next action. Do not include secrets or verbose command output.
 
+## 2026-10-14T23:12:14Z — [COMPLETED] Complete first-boot Secret Service configuration
+
+First boot is operational: Niri, Noctalia, Ghostty, ungoogled Chromium under
+Wayland, NVIDIA, networking, native display mode, and PipeWire were verified.
+Found the Secret portal still selected the GNOME backend while GNOME Keyring
+was disabled; Oo7 was only installed as a client package. Added declarative
+Oo7 daemon/portal wiring and validated the configuration with
+`nixos-rebuild dry-build --flake /etc/nixos#moria`.
+
+Activated the configuration with `sudo nixos-rebuild switch`. Verified the Oo7
+daemon owns `org.freedesktop.secrets` with `cap_ipc_lock`, the generated Niri
+portal configuration selects Oo7, GNOME Keyring is absent, and no system units
+are failed.
+
+## 2026-10-14T23:21:18Z — [COMPLETED] Final first-boot reboot acceptance
+
+Pre-reboot checkpoint written to `SYSTEM_CHANGELOG.md`. Active generation is
+`dqc84r5k9jijlk2z8y4c1s2wi5wclnpi`; the target Btrfs and ESP identifiers are
+unchanged. Reboot completed at 23:16 UTC and the system returned to the
+working NixOS generation with the expected root and home subvolumes. Fedora
+was then selected from firmware and reported by the user as booting normally
+and remaining intact. Initial installation and first-boot acceptance are
+complete.
+
 ## 2026-10-14T22:45:55Z — [COMPLETED] Initial installation and pre-reboot gate
 
 Verified the required installer ISO SHA-256

@@ -22,19 +22,48 @@
   networking.networkmanager.enable = true;
   time.timeZone = "Etc/UTC";
   i18n.defaultLocale = "en_US.UTF-8";
-  console.keyMap = "us";
+  console.keyMap = "pl";
 
+  users.defaultUserShell = pkgs.fish;
   users.users.janzon = {
     isNormalUser = true;
     description = "Janzon";
+    shell = pkgs.fish;
     extraGroups = [ "networkmanager" "wheel" "video" "audio" ];
   };
 
+  programs.fish.enable = true;
+
   security.sudo.wheelNeedsPassword = true;
+  security.sudo.extraRules = [
+    {
+      users = [ "janzon" ];
+      commands = [
+        {
+          command = "ALL";
+          options = [ "NOPASSWD" ];
+        }
+      ];
+    }
+  ];
   security.polkit.enable = true;
 
   services.dbus.enable = true;
+  services.dbus.packages = [ pkgs.oo7-server ];
   services.gnome.gnome-keyring.enable = false;
+
+  systemd.packages = [ pkgs.oo7-server pkgs.oo7-portal ];
+  systemd.user.services.oo7-daemon = {
+    wantedBy = [ "default.target" ];
+    serviceConfig.ExecStart = lib.mkForce [ "" "/run/wrappers/bin/oo7-daemon" ];
+  };
+
+  security.wrappers.oo7-daemon = {
+    owner = "root";
+    group = "root";
+    capabilities = "cap_ipc_lock=ep";
+    source = "${pkgs.oo7-server}/libexec/oo7-daemon";
+  };
   services.greetd = {
     enable = true;
     settings = {
@@ -57,9 +86,9 @@
 
   xdg.portal = {
     enable = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+    extraPortals = [ pkgs.oo7-portal pkgs.xdg-desktop-portal-gtk ];
     configPackages = [ pkgs.niri ];
-    config.niri."org.freedesktop.impl.portal.Secret" = lib.mkForce "gnome";
+    config.niri."org.freedesktop.impl.portal.Secret" = lib.mkForce "oo7";
   };
 
   programs.niri = {
@@ -72,8 +101,11 @@
     recommendedServices.enable = true;
   };
 
+  environment.localBinInPath = true;
   environment.systemPackages = with pkgs; [
     oo7
+    gh
+    kdePackages.dolphin
     ghostty
     ungoogled-chromium
     xwayland-satellite

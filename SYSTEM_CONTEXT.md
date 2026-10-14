@@ -1,6 +1,8 @@
 # System context for NixOS `moria`
 
-Last inspected: not yet installed.
+Last inspected: 2026-10-14. NixOS 26.05 is installed and currently booted
+from the `nixos-root` subvolume. Initial NixOS boot and desktop checks passed,
+and Fedora was subsequently verified intact from its firmware entry.
 
 This document becomes the NixOS-side operational memory after the parallel
 installation. Verify live state before acting and do not record passwords,
@@ -24,4 +26,4 @@ changes belong in `SYSTEM_CHANGELOG.md`, not here.
   modules. The repository is authoritative for those.
 - Secrets or one-off command history.
 
-No NixOS-only operational exceptions have been recorded yet.
+No NixOS-only operational exceptions have been recorded.
