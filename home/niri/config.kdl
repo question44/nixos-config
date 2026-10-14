@@ -1,0 +1,21 @@
+spawn-at-startup "noctalia"
+
+input {
+    keyboard {
+        xkb {
+            layout "us"
+        }
+    }
+}
+
+prefer-no-csd
+
+hotkey-overlay {
+    skip-at-startup
+}
+
+binds {
+    Mod+Return { spawn "ghostty"; }
+    Mod+D { spawn "noctalia" "--launcher"; }
+    Mod+Shift+E { quit; }
+}
