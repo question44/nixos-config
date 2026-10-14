@@ -5,7 +5,7 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
-## [PENDING] Initial parallel installation — 2026-10-14T22:45:55Z
+## [COMPLETED] Initial parallel installation and pre-reboot bootability gate — 2026-10-14T22:53:30Z
 
 - Important Snapper snapshot verified: `2`, description
   `pre-nixos-parallel-install-20261014`, userdata `important=yes`.
@@ -21,8 +21,21 @@ secrets, routine read-only inspections, or one-off command failures.
   `bc10532b864f1611b95daf46aacfe870c3f66518c6e894b3d3b800515c9f6b2a`.
 - Installer ISO verified through `/dev/mapper/ventoy`: SHA-256
   `81ec93d823a7ad40f58b14dfcf43de5d794a3aa956564301fa5fcdbe68459f88`.
-- Configuration revision staged for installation:
-  `b7396669dcb51df423c31b9c2b38168e6336e8be`.
-- Pending next action: run `nixos-install --flake /mnt/etc/nixos#moria`,
-  verify the separate NixOS UEFI entry and preserved Fedora/Windows entries,
-  then record the complete bootability gate before rebooting.
+- Configuration revision installed:
+  `13c832ca532efd9ac4421284733a1247ba29efcf`.
+- `nixos-install --flake /mnt/etc/nixos#moria` completed successfully and set
+  the root password interactively.
+- ESP verification passed: `/boot/EFI/systemd/systemd-bootx64.efi`,
+  `/boot/EFI/nixos/l94h0skn99v3fqhvzjcr7cvcz202nabd-linux-6.18.56-bzImage.efi`,
+  `/boot/EFI/nixos/8da1amvb7rln1mxzhcgsz64xjhvvimf1-initrd-linux-6.18.56-initrd.efi`,
+  and `loader/entries/nixos-generation-1.conf` are present.
+- UEFI verification passed: separate `Boot0005* NixOS` points to
+  `\\EFI\\systemd\\systemd-bootx64.efi`; BootOrder leaves Fedora first and
+  NixOS last. Existing Fedora (`EFI/fedora`, `EFI/moria`) and Windows
+  (`EFI/Microsoft`) files and UEFI entries remain present.
+- The loader entry selects `root=fstab`; installed fstab resolves that to
+  filesystem UUID `5be9be17-20c9-4a47-ba2d-6adf1ceb4c55` with
+  `subvol=nixos-root` and includes `subvol=nixos-home`.
+- Bootability gate passed. Mandatory next action: reboot and select the
+  explicit `NixOS` UEFI entry for first-boot acceptance; do not change the
+  firmware default until acceptance checks pass.

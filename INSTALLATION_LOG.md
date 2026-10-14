@@ -5,7 +5,7 @@ Record material installation actions before every reboot: timestamp, action,
 result, validation, status (`[PENDING]` or `[COMPLETED]`), and the required
 next action. Do not include secrets or verbose command output.
 
-## 2026-10-14T22:45:55Z — [PENDING] Initial installation
+## 2026-10-14T22:45:55Z — [COMPLETED] Initial installation and pre-reboot gate
 
 Verified the required installer ISO SHA-256
 `81ec93d823a7ad40f58b14dfcf43de5d794a3aa956564301fa5fcdbe68459f88` through
@@ -19,6 +19,18 @@ Created only `nixos-root` (ID 635) and `nixos-home` (ID 636), mounted them at
 at `/mnt/boot`. Generated hardware configuration and validated flake revision
 `b7396669dcb51df423c31b9c2b38168e6336e8be` with `nix flake check`.
 
-Required next action: run the root installation, verify bootloader files and a
-separate NixOS UEFI entry while preserving Fedora and Windows, then update this
-entry to `[COMPLETED]` only after the bootability gate passes. No reboot yet.
+`nixos-install --flake /mnt/etc/nixos#moria` completed successfully. The
+installed configuration revision is
+`13c832ca532efd9ac4421284733a1247ba29efcf`. The ESP contains systemd-boot,
+the NixOS kernel/initrd, and `loader/entries/nixos-generation-1.conf`; its
+loader entry uses `root=fstab`, and the installed fstab selects
+`subvol=nixos-root` and `subvol=nixos-home` on the target filesystem UUID.
+
+Created and verified separate UEFI entry `Boot0005* NixOS` pointing to
+`\\EFI\\systemd\\systemd-bootx64.efi`. Fedora and Windows UEFI entries and
+their `EFI/fedora`, `EFI/moria`, and `EFI/Microsoft` paths remain present.
+BootOrder leaves Fedora first and NixOS last. The bootability gate passed.
+
+Required next action: reboot and explicitly select `NixOS` from firmware for
+first-boot acceptance. Do not change the firmware default until acceptance
+checks pass.
