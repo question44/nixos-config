@@ -29,6 +29,17 @@
             home-manager.backupFileExtension = "backup";
             home-manager.users.janzon = {
               home.stateVersion = "26.05";
+              xdg.mimeApps = {
+                enable = true;
+                defaultApplications = {
+                  "application/xhtml+xml" = [ "helium.desktop" ];
+                  "text/html" = [ "helium.desktop" ];
+                  "text/xml" = [ "helium.desktop" ];
+                  "x-scheme-handler/about" = [ "helium.desktop" ];
+                  "x-scheme-handler/http" = [ "helium.desktop" ];
+                  "x-scheme-handler/https" = [ "helium.desktop" ];
+                };
+              };
               xdg.configFile."niri/config.kdl".source = ./home/niri/config.kdl;
             };
           }

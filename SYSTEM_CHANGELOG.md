@@ -5,6 +5,16 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Set Helium as the default browser — 2026-10-15T00:00:00Z
+
+Configure Home Manager MIME associations so Helium handles HTTP, HTTPS, HTML,
+XHTML, and XML links/documents. Validation, activation, and live verification
+are handled by `helium.desktop`. `nix flake check` and
+`nixos-rebuild dry-build --flake /etc/nixos#moria` passed. Activated generation
+`jpy6m61da6b2l70nal37xmd4yq5zadkw-nixos-system-moria-26.05.20261013.a033e66`.
+Verified the generated `~/.config/mimeapps.list`, Helium desktop entry, and
+zero failed system units.
+
 ## [COMPLETED] Set timezone to Europe/Warsaw — 2026-10-14T23:55:31Z
 
 Change `time.timeZone` from `Etc/UTC` to `Europe/Warsaw` in the declarative
