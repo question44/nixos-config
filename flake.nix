@@ -47,6 +47,11 @@
                 };
               };
               xdg.configFile."qt6ct/colors/Darkly.conf".source = ./home/qt6ct/Darkly.conf;
+              xdg.userDirs = {
+                enable = true;
+                createDirectories = true;
+                projects = "/home/janzon/Projects";
+              };
               xdg.mimeApps = {
                 enable = true;
                 defaultApplications = {

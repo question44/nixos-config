@@ -5,6 +5,17 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Create XDG user directories — 2026-10-15T09:45:00Z
+
+Enabled Home Manager's XDG user-directory management for `janzon`, creating
+the standard user directories and the `Projects` directory declaratively.
+`nix flake check` and `nixos-rebuild dry-build --flake /etc/nixos#moria`
+passed. Activated generation
+`3kd4x7rg1dab252b7hxj87ajgapcyvb5-nixos-system-moria-26.05.20261013.a033e66`.
+Verified all nine directories, the managed `~/.config/user-dirs.dirs` mappings
+(including `XDG_PROJECTS_DIR`), an active `home-manager-janzon.service`, and
+no failed system units.
+
 ## [PENDING] Add encrypted Tailscale state backup workflow — 2026-10-15T09:35:00Z
 
 At the user's explicit request, make a password-encrypted archive of
