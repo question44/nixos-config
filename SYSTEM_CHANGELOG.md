@@ -13,7 +13,7 @@ terminal, and Dolphin shortcuts to the installed Noctalia/NixOS applications;
 Fedora-only DMS, Vicinae, and custom-helper bindings remain deferred. Niri
 validation, `nix flake check`, and the NixOS dry-build evaluation passed.
 Activated generation
-`vxfwk6qi5cm3js3v1ccxdia0ync1nqqz-nixos-system-moria-26.05.20261013.a033e66`;
+`xyzh7nz3xvam1qzqjqw90lg7yj1v3m1k-nixos-system-moria-26.05.20261013.a033e66`;
 Home Manager deployed the config and its Niri validation passed. Reloaded the
 running compositor with `niri msg action load-config-file`; Noctalia's user
 service remains active.
