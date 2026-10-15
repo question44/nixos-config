@@ -44,6 +44,7 @@ in
       "nvidia-x11"
       "nvidia-kernel-modules"
       "nvidia-settings"
+      "spotify"
     ];
 
   boot.loader.systemd-boot.enable = true;
@@ -189,6 +190,7 @@ in
     oo7
     gh
     kdePackages.dolphin
+    spotify
     ghostty
     chromiumWithSecretService
     xwayland-satellite

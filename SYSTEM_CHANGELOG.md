@@ -5,6 +5,15 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Install Spotify desktop client — 2026-10-15T00:38:00Z
+
+Add the Nixpkgs Spotify package and allow only the `spotify` unfree package
+through this host's existing predicate. `nix flake check` and dry-build
+evaluation passed. Activated generation
+`q1dwyndjp10w5pmnyfx7wxlnw1pnx12k-nixos-system-moria-26.05.20261013.a033e66`;
+verified `/run/current-system/sw/bin/spotify` reports version
+`1.2.90.451.gb094aab0`.
+
 ## [COMPLETED] Import Fedora Niri shortcuts — 2026-10-15T00:37:00Z
 
 Port the Fedora xremap Caps-layer navigation and window-management shortcuts
