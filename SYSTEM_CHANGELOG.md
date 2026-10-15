@@ -5,6 +5,13 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Rename Tailscale node to erebor — 2026-10-15T09:28:00Z
+
+Changed the connected Tailscale device hostname from `moria-1` to `erebor`
+using its local persistent preference. Verified the control plane reports
+`erebor` at `100.108.216.80` and `tailscaled` remains active. The NixOS host
+name remains `moria`.
+
 ## [COMPLETED] Install and configure Tailscale — 2026-10-15T02:35:00Z
 
 Enabled the NixOS Tailscale service declaratively, without an auth key or
