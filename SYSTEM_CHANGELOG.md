@@ -5,6 +5,16 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Restore Dolphin Open With applications — 2026-10-15T18:10:29Z
+
+Added a small freedesktop applications menu for the Niri session so KDE's
+service cache can discover installed desktop entries. The flake check, dry
+build, test activation, and persistent switch passed; generation 74 is active.
+Rebuilt the KDE service cache and verified it lists 20 applications, including
+Zed, mpv, Helium, and Chromium. The menu is deployed, mounts are unchanged,
+and no system or user units are failed. The Dolphin GUI was not opened during
+verification.
+
 ## [COMPLETED] Use wheel for UDisks system data mounts — 2026-10-15T18:08:04Z
 
 Replaced the dedicated `storage` group with `wheel` for the UDisks system data
