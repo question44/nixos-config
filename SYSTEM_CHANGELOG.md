@@ -5,6 +5,25 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Align Dolphin, Noctalia, and apps with shared desktop themes — 2026-10-15T18:45:00Z
+
+Keep the Darkly Qt widget style, but make Qt6ct use Noctalia's existing
+generated `noctalia.conf` palette. Keep Noctalia's `qt` and `kcolorscheme`
+templates enabled: the former supplies the Qt palette and the latter supplies
+the KDE color scheme used by Dolphin. Ensure applications spawned by Niri
+receive `QT_QPA_PLATFORMTHEME=qt6ct`, and reset Dolphin's per-application
+scheme override to follow the active KDE palette.
+
+Install the Candy icon theme system-wide and select it through GTK and KDE's
+standard preferences, making it available to Noctalia, Dolphin, and other
+toolkit-native applications. `niri validate`, `nix flake check`, and
+`nixos-rebuild dry-build --flake /etc/nixos#moria` passed before activation;
+the configuration was activated successfully. Verified Qt6ct now selects
+Noctalia's generated palette while retaining the Darkly widget style,
+Dolphin follows the shared KDE color scheme, GTK and KDE select
+`candy-icons`, and Noctalia's Niri-spawned process environment contains
+`QT_QPA_PLATFORMTHEME=qt6ct`. No failed system units remain.
+
 ## [COMPLETED] Permit regular-user mounting of data disks — 2026-10-15T10:30:00Z
 
 Allow members of the dedicated `storage` group to mount UDisks-classified

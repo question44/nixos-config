@@ -32,7 +32,7 @@
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.backupFileExtension = "backup";
-            home-manager.users.janzon = { pkgs, ... }:
+            home-manager.users.janzon = { lib, pkgs, ... }:
               let
                 sessionEditor = pkgs.writeShellScriptBin "session-editor" ''
                   if [ -n "''${WAYLAND_DISPLAY:-}" ] \
@@ -81,12 +81,30 @@
                   Appearance = {
                     style = "Darkly";
                     custom_palette = true;
-                    color_scheme_path = "/home/janzon/.config/qt6ct/colors/Darkly.conf";
+                    color_scheme_path = "/home/janzon/.config/qt6ct/colors/noctalia.conf";
                     standard_dialogs = "default";
                   };
                 };
               };
-              xdg.configFile."qt6ct/colors/Darkly.conf".source = ./home/qt6ct/Darkly.conf;
+              gtk = {
+                enable = true;
+                iconTheme = {
+                  name = "candy-icons";
+                  package = pkgs.candy-icons;
+                };
+              };
+              home.activation.dolphinColorScheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+                $DRY_RUN_CMD ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 \
+                  --file "$HOME/.config/dolphinrc" \
+                  --group UiSettings \
+                  --key ColorScheme "*"
+              '';
+              home.activation.kdeIconTheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+                $DRY_RUN_CMD ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 \
+                  --file "$HOME/.config/kdeglobals" \
+                  --group Icons \
+                  --key Theme "candy-icons"
+              '';
               xdg.userDirs = {
                 enable = true;
                 createDirectories = true;

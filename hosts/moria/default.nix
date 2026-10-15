@@ -306,6 +306,7 @@ in
     gnumake
     kdePackages.dolphin
     kdePackages.breeze
+    candy-icons
     darkly.packages.${pkgs.system}.darkly-qt6
     spotify
     qt6Packages.qt6ct
