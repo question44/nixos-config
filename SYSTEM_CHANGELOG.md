@@ -14,6 +14,16 @@ Vicinae from Niri. `niri validate`, `nix flake check`, and
 the configuration was activated successfully. Verified the service is enabled
 and running, and all three bindings are deployed. No failed units remain.
 
+## [COMPLETED] Fix Vicinae user-service executable lookup — 2026-10-15T19:20:00Z
+
+Override the packaged user service's bare `vicinae` command with the absolute
+executable path from the pinned Vicinae package; the user service manager could
+not resolve the command from its environment, causing repeated `203/EXEC`
+restarts. `nix flake check` and `nixos-rebuild dry-build --flake
+/etc/nixos#moria` passed before activation; the configuration was activated
+successfully. Verified the service drop-in uses the absolute package path and
+Vicinae is active and running (PID 797905); no failed user units remain.
+
 ## [COMPLETED] Pin Vicinae to its upstream Nix flake — 2026-10-15T17:05:00Z
 
 Replace Nixpkgs’ Vicinae v0.23.2 with the upstream flake’s v0.29.1 package,

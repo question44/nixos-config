@@ -166,6 +166,11 @@
               xdg.configFile."noctalia/starship-base.toml".source = ./home/starship.toml;
               xdg.configFile."systemd/user/graphical-session.target.wants/vicinae.service".source =
                 "${vicinae.packages.x86_64-linux.default}/share/systemd/user/vicinae.service";
+              xdg.configFile."systemd/user/vicinae.service.d/override.conf".text = ''
+                [Service]
+                ExecStart=
+                ExecStart=${vicinae.packages.x86_64-linux.default}/bin/vicinae server --replace
+              '';
               xdg.configFile."niri/config.kdl".source = ./home/niri/config.kdl;
               xdg.configFile."xremap/config.yml".source = ./home/xremap/config.yml;
             };
