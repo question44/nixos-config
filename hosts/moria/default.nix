@@ -79,8 +79,17 @@ in
     }
   ];
   security.polkit.enable = true;
+  security.pam.services.greetd.rules.auth.unix_early = {
+    order = config.security.pam.services.greetd.rules.auth.unix.order - 20;
+    control = "optional";
+    modulePath = "${pkgs.linux-pam}/lib/security/pam_unix.so";
+    settings = {
+      likeauth = true;
+      nullok = true;
+    };
+  };
   security.pam.services.greetd.rules.auth.oo7 = {
-    order = config.security.pam.services.greetd.rules.auth.unix.order - 10;
+    order = config.security.pam.services.greetd.rules.auth.unix_early.order + 10;
     control = "optional";
     modulePath = "${oo7Pam}/lib/security/pam_oo7.so";
   };

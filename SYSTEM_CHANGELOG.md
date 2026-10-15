@@ -5,7 +5,7 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
-## [COMPLETED] Integrate Oo7 with greetd PAM login — 2026-10-15T00:09:10Z
+## [PENDING] Integrate Oo7 with greetd PAM login — 2026-10-15T00:09:10Z
 
 Enable NixOS's `pam_oo7` integration for the `greetd` authentication and
 session stack so the login password automatically unlocks Oo7's keyring, as on
@@ -15,9 +15,12 @@ builds the matching `oo7-pam` module from the pinned Oo7 source and installs it
 declaratively. `nix flake check` and `nixos-rebuild dry-build --flake
 /etc/nixos#moria` passed. Activated generation
 `0r9ww1vb7vpqnrwnnp7mbw5zfki17l6y-nixos-system-moria-26.05.20261013.a033e66`.
-Verified `pam_oo7.so` is present in the generated `greetd` auth/session stack
-and zero failed system units. After logout/login, verified the Oo7 Login
-collection reports `Locked=false`.
+Verified `pam_oo7.so` is present in the generated `greetd` auth/session stack,
+but the first login test showed `PAM_AUTHTOK` was unavailable, so Oo7 remained
+locked. Add an early password-capture step before the Oo7 PAM module; a new
+validation and logout/login test is pending. Activated generation
+`w3l7w7a5rjgkfnbhjczvzjb92q3n4107-nixos-system-moria-26.05.20261013.a033e66`.
+The generated stack now orders `pam_unix` password capture before `pam_oo7`.
 
 ## [COMPLETED] Set Helium as the default browser — 2026-10-15T00:00:00Z
 
