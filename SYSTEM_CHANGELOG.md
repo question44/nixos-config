@@ -790,6 +790,14 @@ four `noctalia-screen-corner` surfaces on DP-1, `noctalia.service` remains
 active, and `rounded-corners.service` is inactive and no longer installed.
 No Niri restart was needed.
 
+## [COMPLETED] Bind Caps+V to Vicinae clipboard history — 2026-10-15
+
+Bind the existing Caps+V xremap chord (`Ctrl+Alt+Super+V`) to Vicinae's
+clipboard-history deeplink. `niri validate`, `nix flake check`, and
+`nixos-rebuild dry-build` passed before activation. Reloaded Niri's config
+without restarting the compositor and invoked the Vicinae deeplink
+successfully; `vicinae.service` remains active.
+
 # [COMPLETED] Install Gwenview — 2026-10-15
 
 Added `kdePackages.gwenview` to the declarative system package list without

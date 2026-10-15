@@ -371,6 +371,7 @@ binds {
     Ctrl+Alt+Super+Space { spawn "vicinae" "toggle"; }
     Super+Space { spawn "vicinae" "toggle"; }
     Alt+Space { spawn "vicinae" "toggle"; }
+    Ctrl+Alt+Super+V { spawn "vicinae" "vicinae://launch/clipboard/history"; }
     Ctrl+Alt+Super+O { spawn "vicinae" "cmd" "launch" "@mattisssa/store.raycast.spotify-player:search"; }
     Ctrl+Alt+Super+Comma { spawn "noctalia" "msg" "settings-toggle"; }
     Ctrl+Alt+Super+Escape { spawn "noctalia" "msg" "session" "logout"; }
