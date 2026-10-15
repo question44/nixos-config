@@ -5,6 +5,25 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [PENDING] Keep the user manager alive across Niri logouts and restore Oo7 unlock — 2026-10-15T02:15:13Z
+
+Previous boots showed a Niri/greetd login race: greetd accepted the next login
+while the non-lingering `janzon` systemd user manager was still shutting down
+the preceding Niri session, leaving the new graphical session without a live
+manager. Fedora's installed configuration has lingering enabled for `janzon`.
+Enable `users.users.janzon.linger` declaratively to preserve the user manager
+between sessions. Restore Oo7's custom greetd PAM auth/session integration,
+with `pam_unix` password capture before `pam_oo7`, so the login password can
+unlock Oo7 without restoring GNOME Keyring. Validate the generated PAM stack,
+linger state, and system services before attempting a logout/login test.
+`nix flake check` and `nixos-rebuild dry-build --flake /etc/nixos#moria`
+passed. Activated generation
+`p2iwml8nfi3bn7yrm4amsb0qsfyn9xh6-nixos-system-moria-26.05.20261013.a033e66`.
+Verified `Linger=yes`, successful `linger-users.service` activation, the
+generated greetd stack's `pam_unix` → `pam_oo7` → final `pam_unix` order, an
+active Oo7 daemon, and zero failed system units. A deliberate logout/login
+must still verify that Niri returns normally and Oo7's keyring unlocks.
+
 ## [COMPLETED] Disable unsafe Oo7 login integration — 2026-10-15T00:09:10Z
 
 The attempted `pam_oo7` integration for greetd did not unlock Oo7 reliably.
