@@ -5,6 +5,17 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Preserve Lyrics-only bar choice and add cache repair — 2026-10-15T17:50:01Z
+
+The live Noctalia bar no longer includes `media_lyrics`; removed it from the
+managed bar layout while retaining the plugin. Added `make
+repair-noctalia-lyrics` to recreate the first Lyrics plugin's temporary request
+directory and reload Noctalia after plugin updates. The repair action,
+`nix flake check`, dry build, test activation, config validation, and persistent
+switch passed. Verified the effective bar retains `lyrics_2` but not
+`media_lyrics`, Noctalia is active, and no system units are failed. Existing
+unrelated Noctalia validation warnings remain.
+
 ## [COMPLETED] Show both Noctalia lyrics plugins on the bar — 2026-10-15T17:43:32Z
 
 Added the existing `h465855hgg/lyrics` widget and the enabled
