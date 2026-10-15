@@ -98,6 +98,7 @@ in
   networking.firewall.allowedTCPPorts = [ 22 ];
   networking.firewall.interfaces.enp4s0.allowedTCPPorts = [ 80 8080 ];
   services.tailscale.enable = true;
+  hardware.i2c.enable = true;
   time.timeZone = "Europe/Warsaw";
   i18n.defaultLocale = "en_US.UTF-8";
   console.keyMap = "pl";
@@ -357,6 +358,7 @@ in
     kdePackages.dolphin
     kdePackages.gwenview
     nomacs
+    ddcutil
     kdePackages.breeze
     candy-icons
     darkly.packages.${pkgs.system}.darkly-qt6

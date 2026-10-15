@@ -814,6 +814,14 @@ colors and 8-pixel corner radius. `niri validate`, `nix flake check`, and
 `nixos-rebuild dry-build` passed before activation. Reloaded Niri's deployed
 configuration successfully without restarting the compositor.
 
+## [COMPLETED] Install ddcutil — 2026-10-16
+
+Add `ddcutil` to the system packages and enable the NixOS I2C module so local
+seat users can access `/dev/i2c-*` for monitor DDC/CI control. `nix flake
+check` and `nixos-rebuild dry-build --flake /etc/nixos#moria` passed before
+activation. Verified `ddcutil` 2.2.7 is installed and, as the regular user,
+`ddcutil detect --brief` found the Dell AW3423DWF on DP-1 via `/dev/i2c-4`.
+
 # [COMPLETED] Install Gwenview — 2026-10-15
 
 Added `kdePackages.gwenview` to the declarative system package list without
