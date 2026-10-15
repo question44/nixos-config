@@ -32,7 +32,21 @@
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.backupFileExtension = "backup";
-            home-manager.users.janzon = { pkgs, ... }: {
+            home-manager.users.janzon = { pkgs, ... }:
+              let
+                sessionEditor = pkgs.writeShellScriptBin "session-editor" ''
+                  if [ -n "''${WAYLAND_DISPLAY:-}" ] \
+                    && [ -n "''${XDG_RUNTIME_DIR:-}" ] \
+                    && [ -S "''${XDG_RUNTIME_DIR}/''${WAYLAND_DISPLAY}" ]; then
+                    exec ${pkgs.zed-editor}/bin/zeditor --wait "$@"
+                  fi
+                  if [ -n "''${DISPLAY:-}" ]; then
+                    exec ${pkgs.zed-editor}/bin/zeditor --wait "$@"
+                  fi
+                  exec ${pkgs.neovim}/bin/nvim "$@"
+                '';
+              in
+              {
               home.stateVersion = "26.05";
               home.packages = with pkgs; [
                 zed-editor
@@ -47,9 +61,9 @@
                 nodejs
               ];
               home.sessionVariables = {
-                EDITOR = "zeditor --wait";
-                VISUAL = "zeditor --wait";
-                GIT_EDITOR = "zeditor --wait";
+                EDITOR = "${sessionEditor}/bin/session-editor";
+                VISUAL = "${sessionEditor}/bin/session-editor";
+                GIT_EDITOR = "${sessionEditor}/bin/session-editor";
               };
               programs.fish = {
                 enable = true;
