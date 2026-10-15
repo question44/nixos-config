@@ -86,6 +86,7 @@ in
       "nvidia-settings"
       "spotify"
       "discord"
+      "stremio-linux-shell"
     ];
 
   boot.loader.systemd-boot.enable = true;
@@ -360,6 +361,7 @@ in
     kdePackages.okular
     kdePackages.ark
     haruna
+    stremio-linux-shell
     nomacs
     ddcutil
     kdePackages.breeze

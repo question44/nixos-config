@@ -5,6 +5,13 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Install Stremio Linux shell — 2026-10-16
+
+Added the current `stremio-linux-shell` package and its scoped unfree allowance.
+The flake check and dry build passed. The local source build, test activation,
+and persistent switch succeeded. The active system contains `stremio`, and no
+system units are failed.
+
 ## [COMPLETED] Install Haruna video player — 2026-10-16
 
 Added Haruna as a graphical video player alongside the existing mpv package.
