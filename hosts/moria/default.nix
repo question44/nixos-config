@@ -129,7 +129,7 @@ in
   security.polkit.enable = true;
   security.polkit.extraConfig = ''
     polkit.addRule(function(action, subject) {
-      if (subject.user == "janzon" &&
+      if (subject.isInGroup("wheel") &&
           [
             "org.freedesktop.login1.reboot",
             "org.freedesktop.login1.reboot-multiple-sessions",

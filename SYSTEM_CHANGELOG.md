@@ -5,6 +5,14 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Scope power actions to the wheel group — 2026-10-15T18:04:57Z
+
+Replaced the user-specific Polkit power rule with a `wheel` group check. The
+flake check, dry build, test activation, and persistent switch passed;
+generation 72 is active. Authorization checks against Noctalia's process
+passed for all six actions after activation. Polkit and Noctalia are active,
+mounts are unchanged, and no units are failed. No power action was executed.
+
 ## [COMPLETED] Allow janzon to reboot, shut down, and suspend — 2026-10-15T18:02:04Z
 
 Added a Polkit rule for the normal logind power actions, including the
