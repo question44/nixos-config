@@ -32,8 +32,25 @@
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.backupFileExtension = "backup";
-            home-manager.users.janzon = {
+            home-manager.users.janzon = { pkgs, ... }: {
               home.stateVersion = "26.05";
+              home.packages = with pkgs; [
+                zed-editor
+                neovim
+                fd
+                ripgrep
+                git
+                curl
+                lazygit
+                gcc
+                tree-sitter
+                nodejs
+              ];
+              home.sessionVariables = {
+                EDITOR = "zeditor --wait";
+                VISUAL = "zeditor --wait";
+                GIT_EDITOR = "zeditor --wait";
+              };
               programs.fish = {
                 enable = true;
                 shellAliases.t3pair = "t3 pair --base-dir /home/janzon/.t3/server";
@@ -64,6 +81,7 @@
               xdg.mimeApps = {
                 enable = true;
                 defaultApplications = {
+                  "text/plain" = [ "dev.zed.Zed.desktop" ];
                   "application/xhtml+xml" = [ "helium.desktop" ];
                   "text/html" = [ "helium.desktop" ];
                   "text/xml" = [ "helium.desktop" ];
@@ -72,6 +90,7 @@
                   "x-scheme-handler/https" = [ "helium.desktop" ];
                 };
               };
+              xdg.configFile."nvim".source = ./home/nvim;
               xdg.configFile."niri/config.kdl".source = ./home/niri/config.kdl;
               xdg.configFile."xremap/config.yml".source = ./home/xremap/config.yml;
             };

@@ -5,6 +5,18 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Install Zed and configure LazyVim — 2026-10-15T11:40:11Z
+
+Installed Zed 1.3.6 and Neovim 0.12.4 for `janzon` through Home Manager and
+deployed the official LazyVim starter configuration. Zed is the terminal
+`EDITOR`, `VISUAL`, and `GIT_EDITOR` (`zeditor --wait`) and the XDG handler for
+`text/plain`. LazyVim stores its generated plugin lockfile in writable Neovim
+state because the Nix managed config is read only. `nix flake check`, the
+NixOS dry build, and test activation passed before persistent activation of
+`system-44-link`. Verified the Zed CLI version, editor environment variables,
+plain text handler, and headless LazyVim startup with its plugins loaded; no
+system units are failed.
+
 ## [COMPLETED] Bootstrap Codex CLI with npm — 2026-10-15T08:16:38Z
 
 Replace the persistent bootstrap service with an explicit `make setup-codex`
