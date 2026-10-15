@@ -5,6 +5,17 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Install and configure Tailscale — 2026-10-15T02:35:00Z
+
+Enabled the NixOS Tailscale service declaratively, without an auth key or
+special routing configuration. `nix flake check` and
+`nixos-rebuild dry-build --flake /etc/nixos#moria` passed. Activated generation
+`7zg9wpkl4w2n4dwrpzihyhh6bjzhcf7q-nixos-system-moria-26.05.20261013.a033e66`.
+Verified `tailscaled` is enabled and active, and interactive authentication
+joined this device as `moria-1` with Tailscale address `100.108.216.80`. The
+root-only persistent state is held outside the Nix store at
+`/var/lib/tailscale/tailscaled.state`; no secret is committed to this repository.
+
 ## [COMPLETED] Fix qt6ct Darkly palette and remove forced style override — 2026-10-15T01:15:00Z
 
 Stopped setting Home Manager `QT_STYLE_OVERRIDE`; retained the Darkly Qt 6
