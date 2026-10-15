@@ -28,6 +28,7 @@ keymap:
   - name: Caps desktop layer - Meta movement
     exact_match: true
     remap:
+      CapsLock-Super-v: Ctrl-Alt-Shift-Super-v
       CapsLock-Super-w: Ctrl-Alt-Shift-Super-w
       CapsLock-Super-a: Ctrl-Alt-Shift-Super-a
       CapsLock-Super-s: Ctrl-Alt-Shift-Super-s

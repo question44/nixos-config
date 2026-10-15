@@ -798,6 +798,15 @@ clipboard-history deeplink. `niri validate`, `nix flake check`, and
 without restarting the compositor and invoked the Vicinae deeplink
 successfully; `vicinae.service` remains active.
 
+## [COMPLETED] Bind Caps+Cmd+V to Vicinae snippets — 2026-10-16
+
+Map Caps+Cmd+V to a distinct Niri chord and open Vicinae's `snippets:manage`
+command. `niri validate`, `nix flake check`, and
+`nixos-rebuild dry-build --flake /etc/nixos#moria` passed before activation.
+Restarted xremap to load the new remap and reloaded Niri without restarting
+the compositor. Verified both deployed configs and successfully invoked
+`vicinae cmd launch snippets:manage`; xremap and Vicinae are active.
+
 # [COMPLETED] Install Gwenview — 2026-10-15
 
 Added `kdePackages.gwenview` to the declarative system package list without
