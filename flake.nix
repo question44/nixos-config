@@ -34,6 +34,10 @@
             home-manager.backupFileExtension = "backup";
             home-manager.users.janzon = {
               home.stateVersion = "26.05";
+              programs.fish = {
+                enable = true;
+                shellAliases.t3pair = "t3 pair --base-dir /home/janzon/.t3/server";
+              };
               qt = {
                 enable = true;
                 style.package = darkly.packages.x86_64-linux.darkly-qt6;

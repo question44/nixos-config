@@ -5,6 +5,16 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Add T3 Code pairing alias — 2026-10-15T08:04:55Z
+
+Added the managed Fish alias `t3pair`, which runs
+`t3 pair --base-dir /home/janzon/.t3/server` against the native T3 Code
+service. `nix flake check` and `nixos-rebuild dry-build --flake
+/etc/nixos#moria` passed, then the Home Manager configuration was activated.
+Verified a new interactive Fish shell defines `t3pair` with the expected
+arguments and its T3 help output succeeds; zero system units are failed. The
+prior unmanaged Fish configuration was preserved as `config.fish.backup`.
+
 ## [COMPLETED] Add native T3 Code and LAN Caddy index — 2026-10-15T07:56:42Z
 
 Installed the supported T3 Code CLI 0.0.45 for `janzon` and enabled
