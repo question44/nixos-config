@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Service
+ServiceTypes=KonqPopupMenu/Plugin
+MimeType=image/*;
+Actions=SetNiriOverviewWallpaper
+
+[Desktop Action SetNiriOverviewWallpaper]
+Name=Set as Niri Overview Wallpaper
+Icon=preferences-desktop-wallpaper
+Exec=/home/janzon/.local/bin/niri-overview-wallpaper --set %f

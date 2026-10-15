@@ -164,6 +164,8 @@
               xdg.configFile."nvim".source = ./home/nvim;
               xdg.configFile."noctalia/config.toml".source = ./home/noctalia/config.toml;
               xdg.configFile."noctalia/starship-base.toml".source = ./home/starship.toml;
+              xdg.configFile."systemd/user/niri-overview-wallpaper.service.d/override.conf".source =
+                ./home/systemd/niri-overview-wallpaper-override.conf;
               xdg.configFile."systemd/user/graphical-session.target.wants/vicinae.service".source =
                 "${vicinae.packages.x86_64-linux.default}/share/systemd/user/vicinae.service";
               xdg.configFile."systemd/user/vicinae.service.d/override.conf".text = ''
@@ -173,6 +175,14 @@
               '';
               xdg.configFile."niri/config.kdl".source = ./home/niri/config.kdl;
               xdg.configFile."xremap/config.yml".source = ./home/xremap/config.yml;
+              home.file.".local/bin/niri-overview-wallpaper" = {
+                source = ./home/dolphin/niri-overview-wallpaper;
+                executable = true;
+              };
+              home.file.".local/share/kio/servicemenus/set-niri-overview-wallpaper.desktop" = {
+                source = ./home/dolphin/set-niri-overview-wallpaper.desktop;
+                executable = true;
+              };
             };
           }
         ];

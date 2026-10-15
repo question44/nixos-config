@@ -754,3 +754,16 @@ was activated as generation `37saps9hdwvfgdwywrhf7l6q8kglnpk0`, and
 configuration live via `niri msg action load-config-file`; a captured Overview
 showed the galaxy image behind the workspace grid while the normal desktop
 wallpaper remained unchanged. No user or system units are failed.
+
+# [COMPLETED] Make Overview wallpaper Dolphin action declarative — 2026-10-15
+
+Moved the Dolphin service menu, its wallpaper-setting helper, and the
+`niri-overview-wallpaper.service` user override into the NixOS/Home Manager
+configuration. The selected Overview wallpaper remains user-managed state at
+`~/.config/niri/overview-wallpaper`. `nix flake check` and
+`nixos-rebuild dry-build --flake /etc/nixos#moria` passed, then
+`nixos-rebuild switch --flake /etc/nixos#moria` activated successfully. The
+menu and helper are deployed as executable Home Manager links, the service is
+active with zero restarts and exit status 0, and the current wallpaper target
+is preserved. The KService cache was rebuilt for Dolphin to discover the new
+menu; Niri did not need to be restarted.
