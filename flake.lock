@@ -1,5 +1,25 @@
 {
   "nodes": {
+    "darkly": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1791856274,
+        "narHash": "sha256-ivTU+lcMXiyCOLbwYaz1hD2qRWQ5Th2tFX8VIAgGszg=",
+        "owner": "Bali10050",
+        "repo": "Darkly",
+        "rev": "6fc65177b22983d54aa965ea3617f8c9d658f442",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Bali10050",
+        "repo": "Darkly",
+        "type": "github"
+      }
+    },
     "helium": {
       "inputs": {
         "nixpkgs": [
@@ -90,6 +110,7 @@
     },
     "root": {
       "inputs": {
+        "darkly": "darkly",
         "helium": "helium",
         "home-manager": "home-manager",
         "nixpkgs": "nixpkgs",

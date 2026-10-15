@@ -8,16 +8,21 @@
       url = "github:oxcl/nix-flake-helium-browser";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    darkly = {
+      url = "github:Bali10050/Darkly";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = { self, nixpkgs, noctalia, helium, home-manager, ... }:
+  outputs = { self, nixpkgs, noctalia, helium, darkly, home-manager, ... }:
     {
       nixosConfigurations.moria = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
+        specialArgs = { inherit darkly; };
         modules = [
           ./hosts/moria/default.nix
           noctalia.nixosModules.default

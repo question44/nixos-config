@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, darkly, lib, pkgs, ... }:
 
 let
   oo7Pam = pkgs.stdenv.mkDerivation (finalAttrs: {
@@ -192,6 +192,7 @@ in
     gh
     kdePackages.dolphin
     kdePackages.breeze
+    darkly.packages.${pkgs.system}.darkly-qt6
     spotify
     qt6Packages.qt6ct
     ghostty

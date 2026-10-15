@@ -5,6 +5,16 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Install Darkly Qt 6 style — 2026-10-15T00:55:00Z
+
+Added Bali10050/Darkly at locked revision
+`6fc65177b22983d54aa965ea3617f8c9d658f442`, following the system's pinned
+nixpkgs, and installed its Qt 6 style package for qt6ct. `nix flake check` and
+the full system build passed. Activated generation
+`598p2l7gxl38a3011y3dag74rxsxdyx6-nixos-system-moria-26.05.20261013.a033e66`;
+verified `darkly6.so` and Darkly settings/decorations plugins are in the system
+profile. The default qt6ct selection was not changed.
+
 ## [COMPLETED] Install Breeze Qt style — 2026-10-15T00:50:00Z
 
 Added `kdePackages.breeze` alongside qt6ct. `nix flake check` and dry-build
