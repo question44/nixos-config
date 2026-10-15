@@ -102,13 +102,12 @@ in
   console.keyMap = "pl";
 
   users.defaultUserShell = pkgs.fish;
-  users.groups.storage = { };
   users.users.janzon = {
     isNormalUser = true;
     description = "Janzon";
     shell = pkgs.fish;
     linger = true;
-    extraGroups = [ "networkmanager" "wheel" "video" "audio" "input" "storage" ];
+    extraGroups = [ "networkmanager" "wheel" "video" "audio" "input" ];
   };
 
   programs.fish.enable = true;
@@ -142,7 +141,7 @@ in
       }
     });
     polkit.addRule(function(action, subject) {
-      if (subject.isInGroup("storage") &&
+      if (subject.isInGroup("wheel") &&
           action.id == "org.freedesktop.udisks2.filesystem-mount-system") {
         return polkit.Result.YES;
       }

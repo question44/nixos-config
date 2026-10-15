@@ -5,6 +5,15 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Use wheel for UDisks system data mounts — 2026-10-15T18:08:04Z
+
+Replaced the dedicated `storage` group with `wheel` for the UDisks system data
+mount rule and removed `storage` from the user configuration. The flake check,
+dry build, test activation, and persistent switch passed; generation 73 is
+active. A `wheel` session without `storage` passed the mount authorization
+check. UDisks and Polkit are active, existing mounts are unchanged, and no
+units are failed. No drive was mounted or unmounted during verification.
+
 ## [COMPLETED] Scope power actions to the wheel group — 2026-10-15T18:04:57Z
 
 Replaced the user-specific Polkit power rule with a `wheel` group check. The
