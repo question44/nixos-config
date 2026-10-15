@@ -5,22 +5,23 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
-## [PENDING] Integrate Oo7 with greetd PAM login — 2026-10-15T00:09:10Z
+## [COMPLETED] Disable unsafe Oo7 login integration — 2026-10-15T00:09:10Z
 
-Enable NixOS's `pam_oo7` integration for the `greetd` authentication and
-session stack so the login password automatically unlocks Oo7's keyring, as on
-the Fedora installation. Because the pinned NixOS release does not yet expose
-the `security.pam.services.<name>.oo7` convenience option, the configuration
-builds the matching `oo7-pam` module from the pinned Oo7 source and installs it
-declaratively. `nix flake check` and `nixos-rebuild dry-build --flake
-/etc/nixos#moria` passed. Activated generation
-`0r9ww1vb7vpqnrwnnp7mbw5zfki17l6y-nixos-system-moria-26.05.20261013.a033e66`.
-Verified `pam_oo7.so` is present in the generated `greetd` auth/session stack,
-but the first login test showed `PAM_AUTHTOK` was unavailable, so Oo7 remained
-locked. Add an early password-capture step before the Oo7 PAM module; a new
-validation and logout/login test is pending. Activated generation
-`w3l7w7a5rjgkfnbhjczvzjb92q3n4107-nixos-system-moria-26.05.20261013.a033e66`.
-The generated stack now orders `pam_unix` password capture before `pam_oo7`.
+The attempted `pam_oo7` integration for greetd did not unlock Oo7 reliably.
+The initial module placement had no `PAM_AUTHTOK`; the follow-up early
+`pam_unix` placement was activated in generation
+`w3l7w7a5rjgkfnbhjczvzjb92q3n4107-nixos-system-moria-26.05.20261013.a033e66`,
+but the next logout/login attempt produced a black screen, a systemd session
+allocation failure, and required a reboot. The keyring was not verified
+unlocked. Remove the experimental PAM auth/session rules and keep Oo7 as the
+desktop Secret Service provider; design a safer Fedora-like unlock path before
+attempting another logout test. Removed the experimental PAM module and early
+password-capture rules, then passed `nix flake check` and
+`nixos-rebuild dry-build --flake /etc/nixos#moria`. Activated generation
+`jpy6m61da6b2l70nal37xmd4yq5zadkw-nixos-system-moria-26.05.20261013.a033e66`.
+Verified the generated greetd PAM stack no longer contains `pam_oo7.so`, Oo7's
+daemon remains active, and zero system units are failed. Automatic Oo7 unlock
+is not configured or claimed to work; a safer design is still pending.
 
 ## [COMPLETED] Set Helium as the default browser — 2026-10-15T00:00:00Z
 
