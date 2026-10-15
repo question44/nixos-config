@@ -102,12 +102,13 @@ in
   console.keyMap = "pl";
 
   users.defaultUserShell = pkgs.fish;
+  users.groups.storage = { };
   users.users.janzon = {
     isNormalUser = true;
     description = "Janzon";
     shell = pkgs.fish;
     linger = true;
-    extraGroups = [ "networkmanager" "wheel" "video" "audio" "input" ];
+    extraGroups = [ "networkmanager" "wheel" "video" "audio" "input" "storage" ];
   };
 
   programs.fish.enable = true;
@@ -128,7 +129,7 @@ in
   security.polkit.enable = true;
   security.polkit.extraConfig = ''
     polkit.addRule(function(action, subject) {
-      if (subject.user == "janzon" &&
+      if (subject.isInGroup("storage") &&
           action.id == "org.freedesktop.udisks2.filesystem-mount-system") {
         return polkit.Result.YES;
       }

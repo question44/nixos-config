@@ -7,14 +7,16 @@ secrets, routine read-only inspections, or one-off command failures.
 
 ## [COMPLETED] Permit regular-user mounting of data disks — 2026-10-15T10:30:00Z
 
-Allow `janzon` to mount UDisks-classified system data devices without a
-password, so the internal ExFAT `Expansion` disk can be mounted through the
-regular desktop or `udisksctl` flow. Do not grant permissions to format,
-partition, or otherwise administer disks. `nix flake check` and
-`nixos-rebuild dry-build --flake /etc/nixos#moria` passed, then the
-configuration was activated. Verified `janzon` can mount `/dev/sdb1` at
+Allow members of the dedicated `storage` group to mount UDisks-classified
+system data devices without a password, so access can be managed by group
+membership rather than a user-specific Polkit rule. Add `janzon` to that
+group. Do not grant permissions to format, partition, or otherwise administer
+disks. `nix flake check` and `nixos-rebuild dry-build --flake
+/etc/nixos#moria` passed, then the configuration was activated. Verified a
+fresh `janzon` process has the `storage` group and can mount `/dev/sdb1` at
 `/run/media/janzon/Expansion` and unmount it without sudo or a password; zero
-units are failed.
+units are failed. Existing desktop processes require a logout/login to receive
+the new supplementary group.
 
 ## [PENDING] Import OldUnreal UT2004 from GoodRam — 2026-10-15T15:04:00Z
 
