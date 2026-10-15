@@ -5,6 +5,15 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Enable UDisks2 for Dolphin devices — 2026-10-15T00:40:00Z
+
+Enabled the NixOS UDisks2 service so Dolphin/Solid can enumerate and manage
+removable drives. `nix flake check` and dry-build evaluation passed. Activated
+generation `8ysib37piw2ijyq8dcdj0p85rv0zajai-nixos-system-moria-26.05.20261013.a033e66`.
+Verified the D-Bus activated `udisks2.service` is running and `udisksctl status`
+enumerates the connected internal and external drives. No drive was mounted,
+unlocked, or modified.
+
 ## [COMPLETED] Install Spotify desktop client — 2026-10-15T00:38:00Z
 
 Add the Nixpkgs Spotify package and allow only the `spotify` unfree package

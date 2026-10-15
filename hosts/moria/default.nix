@@ -127,6 +127,7 @@ in
   };
 
   services.dbus.enable = true;
+  services.udisks2.enable = true;
   services.dbus.packages = [ pkgs.oo7-server ];
   services.gnome.gnome-keyring.enable = false;
 
