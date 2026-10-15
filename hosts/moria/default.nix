@@ -126,6 +126,14 @@ in
     }
   ];
   security.polkit.enable = true;
+  security.polkit.extraConfig = ''
+    polkit.addRule(function(action, subject) {
+      if (subject.user == "janzon" &&
+          action.id == "org.freedesktop.udisks2.filesystem-mount-system") {
+        return polkit.Result.YES;
+      }
+    });
+  '';
   services.udev.extraRules = ''
     KERNEL=="uinput", GROUP="input", MODE="0660", TAG+="uaccess"
     ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="320f", ATTR{idProduct}=="5055", TAG+="systemd", ENV{SYSTEMD_USER_WANTS}+="xremap-restart.service"

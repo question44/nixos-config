@@ -5,6 +5,17 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Permit regular-user mounting of data disks — 2026-10-15T10:30:00Z
+
+Allow `janzon` to mount UDisks-classified system data devices without a
+password, so the internal ExFAT `Expansion` disk can be mounted through the
+regular desktop or `udisksctl` flow. Do not grant permissions to format,
+partition, or otherwise administer disks. `nix flake check` and
+`nixos-rebuild dry-build --flake /etc/nixos#moria` passed, then the
+configuration was activated. Verified `janzon` can mount `/dev/sdb1` at
+`/run/media/janzon/Expansion` and unmount it without sudo or a password; zero
+units are failed.
+
 ## [PENDING] Import OldUnreal UT2004 from GoodRam — 2026-10-15T15:04:00Z
 
 Added a declarative native launcher, an RPM importer, and the pinned official
