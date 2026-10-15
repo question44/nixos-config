@@ -359,6 +359,7 @@ in
     kdePackages.gwenview
     kdePackages.okular
     kdePackages.ark
+    haruna
     nomacs
     ddcutil
     kdePackages.breeze

@@ -5,6 +5,12 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Install Haruna video player — 2026-10-16
+
+Added Haruna as a graphical video player alongside the existing mpv package.
+The flake check, dry build, test activation, and persistent switch passed.
+The active system contains `haruna`, and no system units are failed.
+
 ## [COMPLETED] Install Ark — 2026-10-16
 
 Added Ark as a system package. The flake check and dry build passed, then test
