@@ -419,3 +419,22 @@ enabled and active, listens on IPv4 and IPv6 port 22, and the active IPv4 and
 IPv6 firewall chains both accept TCP port 22. The effective SSH policy permits
 password authentication for normal users and prohibits root password login;
 zero system units are failed.
+# [COMPLETED] Migrate HyperHDR from Fedora — 2026-10-15T13:19:46Z
+
+Add HyperHDR v22.0.0.0 from the Fedora source revision to the NixOS
+configuration, run it as a user service in the graphical session for PipeWire
+capture, and migrate the Fedora HyperHDR state directory. Fedora remains the
+source of record and must remain bootable. Pre-change NixOS system profile is
+`system-41-link`; no failed system units were reported. Run `nix flake check`,
+build the HyperHDR package, and `nixos-rebuild dry-build` before activation.
+Verify the service, screen capture portal, retained database, and LED output
+after activation. The v22 package build, `nix flake check`, dry build, and
+NixOS test activation passed. The Fedora database copy matches its source
+checksum. The old PipeWire restoration token was backed up and cleared because
+Niri's portal rejected it as an invalid UUID. After the user selected the
+monitor, capture exposed a missing EGL runtime library; the HyperHDR wrapper
+now includes libglvnd and the active OpenGL driver path. `nixos-rebuild switch`
+activated generation `system-43-link`. Verified HyperHDR entered `STREAMING`
+with a 3440×1440 PipeWire source using EGL/DMA-BUF acceleration,
+`hyperhdr.service` is active with zero restarts, the web UI returns HTTP 200,
+and no system units are failed. Fedora remains intact and bootable.

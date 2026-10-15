@@ -1,6 +1,8 @@
 { config, darkly, lib, pkgs, ... }:
 
 let
+  hyperhdr = pkgs.callPackage ../../packages/hyperhdr.nix { };
+
   oo7Pam = pkgs.stdenv.mkDerivation (finalAttrs: {
     pname = "oo7-pam";
     inherit (pkgs.oo7) version src cargoDeps;
@@ -107,6 +109,34 @@ in
       Restart = "on-failure";
     };
   };
+  systemd.user.services.hyperhdr = {
+    description = "HyperHDR ambient lighting with PipeWire screen capture";
+    after = [
+      "graphical-session.target"
+      "pipewire.service"
+      "wireplumber.service"
+      "xdg-desktop-portal.service"
+      "xdg-desktop-portal-gnome.service"
+    ];
+    partOf = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
+    wants = [
+      "pipewire.service"
+      "wireplumber.service"
+      "xdg-desktop-portal.service"
+      "xdg-desktop-portal-gnome.service"
+    ];
+    serviceConfig = {
+      ExecStart = "${hyperhdr}/bin/hyperhdr --pipewire --desktop";
+      TimeoutStopSec = 5;
+      KillMode = "mixed";
+      Restart = "on-failure";
+      RestartSec = 2;
+      NoNewPrivileges = true;
+      ProtectControlGroups = true;
+      RestrictNamespaces = true;
+    };
+  };
   systemd.user.services.xremap-restart = {
     description = "Restart xremap after keyboard connection";
     serviceConfig = {
@@ -191,7 +221,7 @@ in
 
   xdg.portal = {
     enable = true;
-    extraPortals = [ pkgs.oo7-portal pkgs.xdg-desktop-portal-gtk ];
+    extraPortals = [ pkgs.oo7-portal pkgs.xdg-desktop-portal-gnome pkgs.xdg-desktop-portal-gtk ];
     configPackages = [ pkgs.niri ];
     config.niri."org.freedesktop.impl.portal.Secret" = lib.mkForce "oo7";
   };
@@ -245,6 +275,7 @@ in
     pavucontrol
     tuigreet
     xremap
+    hyperhdr
   ];
 
   programs.dconf.enable = true;
