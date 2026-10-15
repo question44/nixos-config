@@ -785,3 +785,12 @@ Added `kdePackages.gwenview` to the declarative system package list without
 changing the existing nomacs image associations. `nix flake check` and
 `nixos-rebuild dry-build --flake /etc/nixos#moria` passed, then the
 configuration was activated. Verified the Gwenview executable is available.
+
+# [COMPLETED] Reduce Niri window top and bottom outer gaps — 2026-10-15
+
+Set Niri layout top and bottom struts to `-8`, reducing only the outer
+vertical space to eight logical pixels while leaving the global 16-pixel gaps
+and Noctalia bar margins unchanged. `niri validate`, `nix flake check`, and
+`nixos-rebuild dry-build --flake /etc/nixos#moria` passed. After activation,
+the deployed Niri config was loaded live with `niri msg action
+load-config-file` and validated successfully; Niri was not restarted.
