@@ -5,6 +5,23 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Tie Noctalia to the Niri graphical session — 2026-10-15T02:20:20Z
+
+The first logout/login after enabling lingering returned to Niri successfully,
+confirming the user-manager race is resolved. However, Noctalia was previously
+started by Niri as an independent transient scope; it survived logout, retained
+the old Wayland connection, and prevented a visible instance in the new
+session. Enable Noctalia's NixOS-provided systemd user service and attach it to
+`graphical-session.target`, then remove the Niri transient startup command.
+Verify that the old process is replaced by the managed service and that it is
+active in the current Niri session. `nix flake check` and
+`nixos-rebuild dry-build --flake /etc/nixos#moria` passed. Activated generation
+`k0imq0gw4a2vrdhcx14m2v42hxmm7q4p-nixos-system-moria-26.05.20261013.a033e66`.
+The previous transient Noctalia process did not exit after logout and was
+terminated after confirming its exact stale scope. Verified the replacement
+`noctalia.service` is active, the transient scope is absent, and zero system
+units are failed.
+
 ## [PENDING] Keep the user manager alive across Niri logouts and restore Oo7 unlock — 2026-10-15T02:15:13Z
 
 Previous boots showed a Niri/greetd login race: greetd accepted the next login
