@@ -6,6 +6,7 @@
 // Ensure Qt applications launched directly by Niri use the qt6ct integration.
 environment {
     QT_QPA_PLATFORMTHEME "qt6ct"
+    STARSHIP_CONFIG "/home/janzon/.config/noctalia/starship.toml"
 }
 
 // Input device configuration.

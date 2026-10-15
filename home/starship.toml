@@ -1,5 +1,6 @@
 # version: 1.0.0
 "$schema" = 'https://starship.rs/config-schema.json'
+palette = "noctalia"
 
 add_newline = true
 continuation_prompt = "[▸▹ ](dimmed white)"

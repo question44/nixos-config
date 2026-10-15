@@ -64,6 +64,7 @@
                 EDITOR = "${sessionEditor}/bin/session-editor";
                 VISUAL = "${sessionEditor}/bin/session-editor";
                 GIT_EDITOR = "${sessionEditor}/bin/session-editor";
+                STARSHIP_CONFIG = lib.mkForce "/home/janzon/.config/noctalia/starship.toml";
               };
               programs.fish = {
                 enable = true;
@@ -72,7 +73,6 @@
               programs.starship = {
                 enable = true;
                 enableFishIntegration = true;
-                settings = builtins.fromTOML (builtins.readFile ./home/starship.toml);
               };
               qt = {
                 enable = true;
@@ -105,6 +105,32 @@
                   --group Icons \
                   --key Theme "candy-icons"
               '';
+              home.activation.starshipNoctaliaConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+                base="$HOME/.config/noctalia/starship-base.toml"
+                palette="$HOME/.cache/noctalia/starship-palette.toml"
+                target="$HOME/.config/noctalia/starship.toml"
+                $DRY_RUN_CMD ${pkgs.coreutils}/bin/mkdir -p "$(dirname "$target")"
+                if [ -f "$palette" ]; then
+                  temporary="$(${pkgs.coreutils}/bin/mktemp "$(dirname "$target")/.starship.toml.XXXXXX")"
+                  {
+                    ${pkgs.gawk}/bin/awk '
+                      $0 == "# >>> NOCTALIA STARSHIP PALETTE >>>" { skip = 1; next }
+                      skip && $0 == "# <<< NOCTALIA STARSHIP PALETTE <<<" { skip = 0; next }
+                      !skip { print }
+                    ' "$base"
+                    printf '\n# >>> NOCTALIA STARSHIP PALETTE >>>\n'
+                    ${pkgs.coreutils}/bin/cat "$palette"
+                    printf '# <<< NOCTALIA STARSHIP PALETTE <<<\n'
+                  } >"$temporary"
+                  if ! ${pkgs.diffutils}/bin/cmp -s "$temporary" "$target" 2>/dev/null; then
+                    $DRY_RUN_CMD ${pkgs.coreutils}/bin/mv "$temporary" "$target"
+                  else
+                    ${pkgs.coreutils}/bin/rm "$temporary"
+                  fi
+                elif [ ! -e "$target" ]; then
+                  $DRY_RUN_CMD ${pkgs.coreutils}/bin/cp "$base" "$target"
+                fi
+              '';
               xdg.userDirs = {
                 enable = true;
                 createDirectories = true;
@@ -136,6 +162,7 @@
               '';
               xdg.configFile."nvim".source = ./home/nvim;
               xdg.configFile."noctalia/config.toml".source = ./home/noctalia/config.toml;
+              xdg.configFile."noctalia/starship-base.toml".source = ./home/starship.toml;
               xdg.configFile."niri/config.kdl".source = ./home/niri/config.kdl;
               xdg.configFile."xremap/config.yml".source = ./home/xremap/config.yml;
             };

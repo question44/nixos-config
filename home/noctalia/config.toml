@@ -297,7 +297,7 @@ source = "community"
 wallpaper_scheme = "m3-tonal-spot"
 
     [theme.templates]
-    builtin_ids = [ "cava", "gtk4", "ghostty", "kcolorscheme", "niri", "qt" ]
+    builtin_ids = [ "cava", "gtk4", "ghostty", "kcolorscheme", "niri", "qt", "starship" ]
     community_ids = [
         "claude-code",
         "codex",

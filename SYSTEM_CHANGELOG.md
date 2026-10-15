@@ -5,6 +5,18 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Make Starship follow Noctalia’s active palette — 2026-10-15T17:00:00Z
+
+Use Noctalia’s built-in Starship template to generate a runtime palette while
+keeping the custom prompt as a declarative base. Export `STARSHIP_CONFIG` to
+both Fish and Niri-launched programs, and maintain a writable generated
+Starship configuration for Noctalia to update when its palette changes.
+`niri validate`, `nix flake check`, and `nixos-rebuild dry-build --flake
+/etc/nixos#moria` passed before activation; the configuration was activated
+successfully with no failed units. Verified Fish and a Niri-spawned process
+use the writable runtime config, which selects the `noctalia` palette and
+contains the generated Flexoki palette block.
+
 ## [COMPLETED] Make Niri follow Noctalia’s active palette — 2026-10-15T16:54:07Z
 
 Include Noctalia’s generated Niri palette after the managed compositor
