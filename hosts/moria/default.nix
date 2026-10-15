@@ -54,6 +54,7 @@ in
 
   networking.hostName = "moria";
   networking.networkmanager.enable = true;
+  networking.firewall.allowedTCPPorts = [ 22 ];
   time.timeZone = "Europe/Warsaw";
   i18n.defaultLocale = "en_US.UTF-8";
   console.keyMap = "pl";
@@ -127,6 +128,7 @@ in
   };
 
   services.dbus.enable = true;
+  services.openssh.enable = true;
   services.udisks2.enable = true;
   services.dbus.packages = [ pkgs.oo7-server ];
   services.gnome.gnome-keyring.enable = false;

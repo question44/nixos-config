@@ -322,3 +322,14 @@ booting normally and remaining intact.
 - Bootability gate passed. Mandatory next action: reboot and select the
   explicit `NixOS` UEFI entry for first-boot acceptance; do not change the
   firmware default until acceptance checks pass.
+
+## [COMPLETED] Enable OpenSSH server — 2026-10-15T07:16:11Z
+
+Enabled the declarative OpenSSH server and allowed inbound TCP port 22 through
+the NixOS firewall. `nix flake check` (with the required `nix-command flakes`
+feature flags) and `nixos-rebuild dry-build --flake /etc/nixos#moria` passed,
+then the configuration was activated successfully. Verified `sshd.service` is
+enabled and active, listens on IPv4 and IPv6 port 22, and the active IPv4 and
+IPv6 firewall chains both accept TCP port 22. The effective SSH policy permits
+password authentication for normal users and prohibits root password login;
+zero system units are failed.
