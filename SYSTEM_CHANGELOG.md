@@ -5,6 +5,17 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Bootstrap Codex CLI with npm — 2026-10-15T08:16:38Z
+
+Add a declarative user service that uses Nix-managed Node.js to install
+`@openai/codex@latest` into `/home/janzon/.local` only if the Codex executable
+is absent. The existing standalone Codex installation was preserved. The
+native T3 Code service starts after the bootstrap service. `nix flake check`
+and `nixos-rebuild dry-build --flake /etc/nixos#moria` passed, then the
+configuration was activated. Verified Node.js 24.21.0 and npm 11.19.0 are
+available, `codex-bootstrap.service` completed successfully, T3 Code remains
+active, Codex 0.162.1 remains available, and there are zero failed units.
+
 ## [COMPLETED] Restore Fedora Starship prompt — 2026-10-15T08:08:00Z
 
 Restored the complete Fedora Starship prompt configuration for `janzon` and
