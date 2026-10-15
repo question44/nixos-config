@@ -714,3 +714,19 @@ activated generation `system-43-link`. Verified HyperHDR entered `STREAMING`
 with a 3440×1440 PipeWire source using EGL/DMA-BUF acceleration,
 `hyperhdr.service` is active with zero restarts, the web UI returns HTTP 200,
 and no system units are failed. Fedora remains intact and bootable.
+
+# [COMPLETED] Restore HyperHDR ScreenCast portal routing — 2026-10-15T18:32:47Z
+
+HyperHDR lost access to the PipeWire ScreenCast portal after the graphical
+session restarted: the Niri portal configuration did not explicitly route
+`org.freedesktop.impl.portal.ScreenCast` to the installed GNOME backend, whose
+metadata is otherwise limited to GNOME sessions. Added that declarative route
+in `hosts/moria/default.nix`. `nix flake check` and
+`nixos-rebuild dry-build --flake /etc/nixos#moria` passed, then
+`nixos-rebuild switch --flake /etc/nixos#moria` activated generation
+`fn8ljavigzzl4kj4386f536cv5rp8wrd-nixos-system-moria-26.05.20261013.a033e66`.
+After restarting the user portal and HyperHDR services, the ScreenCast portal
+reported protocol v5 and HyperHDR restored its saved permission, connected to
+the 3440x1440 PipeWire stream, entered `STREAMING`, and enabled DMA-BUF GPU
+acceleration. `hyperhdr.service` is active with zero restarts and no user units
+are failed.

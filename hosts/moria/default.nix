@@ -288,7 +288,10 @@ in
     enable = true;
     extraPortals = [ pkgs.oo7-portal pkgs.xdg-desktop-portal-gnome pkgs.xdg-desktop-portal-gtk ];
     configPackages = [ pkgs.niri ];
-    config.niri."org.freedesktop.impl.portal.Secret" = lib.mkForce "oo7";
+    config.niri = {
+      "org.freedesktop.impl.portal.Secret" = lib.mkForce "oo7";
+      "org.freedesktop.impl.portal.ScreenCast" = "gnome";
+    };
   };
 
   programs.niri = {
