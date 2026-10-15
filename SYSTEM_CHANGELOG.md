@@ -802,3 +802,13 @@ focus ring and borders to an 8-pixel radius. Window content is not forcibly
 clipped. `niri validate`, `nix flake check`, and
 `nixos-rebuild dry-build --flake /etc/nixos#moria` passed. The configuration
 was activated and loaded live via Niri IPC; Niri was not restarted.
+
+# [COMPLETED] Prefer undecorated Niri windows — 2026-10-15
+
+Enabled Niri's top-level `prefer-no-csd` option so applications omit
+client-side titlebars and decorations when they support the request. Apps
+that explicitly require client-side decorations may retain them, and already
+open windows need to be restarted individually. `niri validate`,
+`nix flake check`, and `nixos-rebuild dry-build --flake /etc/nixos#moria`
+passed; the deployed Niri config was activated and loaded live via IPC without
+restarting Niri.
