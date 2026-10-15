@@ -5,6 +5,19 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Fix qt6ct Darkly palette and remove forced style override — 2026-10-15T01:15:00Z
+
+Stopped setting Home Manager `QT_STYLE_OVERRIDE`; retained the Darkly Qt 6
+plugin package and plugin-path setup. Added a qt6ct-format Darkly palette and
+managed qt6ct's style/palette selection declaratively. `nix flake check` and
+the full system build passed. Activated generation
+`g3ba9l71qc5bf6l08id376pj4njx44ma-nixos-system-moria-26.05.20261013.a033e66`.
+Verified generated `qt6ct.conf` selects Darkly and the managed palette, and the
+user manager no longer exports `QT_STYLE_OVERRIDE`. The previous GUI-managed
+configuration is preserved at `~/.config/qt6ct/qt6ct.conf.backup`. The running
+Niri process retains its old environment; a fresh graphical login is needed
+before it stops exporting the removed override to newly launched applications.
+
 ## [COMPLETED] Expose Darkly plugins to Qt applications — 2026-10-15T01:05:00Z
 
 Configured Home Manager's Qt integration with the Darkly Qt 6 style package.

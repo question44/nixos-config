@@ -36,11 +36,17 @@
               home.stateVersion = "26.05";
               qt = {
                 enable = true;
-                style = {
-                  name = "Darkly";
-                  package = darkly.packages.x86_64-linux.darkly-qt6;
+                style.package = darkly.packages.x86_64-linux.darkly-qt6;
+                qt6ctSettings = {
+                  Appearance = {
+                    style = "Darkly";
+                    custom_palette = true;
+                    color_scheme_path = "/home/janzon/.config/qt6ct/colors/Darkly.conf";
+                    standard_dialogs = "default";
+                  };
                 };
               };
+              xdg.configFile."qt6ct/colors/Darkly.conf".source = ./home/qt6ct/Darkly.conf;
               xdg.mimeApps = {
                 enable = true;
                 defaultApplications = {
