@@ -5,6 +5,24 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [PENDING] Install xremap with the Fedora configuration — 2026-10-15T02:22:00Z
+
+Copy Fedora's active xremap mapping and three device filters (both IQUNIX
+keyboards and the Logitech G502 X LS), grant the `janzon` account the same
+`input` group access, and load/configure `uinput` with the Fedora-equivalent
+udev rule. Start xremap through a user service bound to
+`graphical-session.target` and restart it when the MQ80 USB receiver
+(`320f:5055`) reconnects. Validate the configuration, active service, device
+access, and no failed system units. `nix flake check` and
+`nixos-rebuild dry-build --flake /etc/nixos#moria` passed. Activated generation
+`ldv08n0975kdls9nwi0yvs76q08zknh1-nixos-system-moria-26.05.20261013.a033e66`.
+The mapping is byte-for-byte identical to Fedora's active configuration, the
+service and udev rules are installed, and there are zero failed system units.
+The existing lingering user manager was created before `janzon` joined the
+`input` group, so it cannot yet open the selected devices; a reboot is required
+to recreate that manager with the declarative group membership, then verify the
+active xremap service and mappings.
+
 ## [COMPLETED] Tie Noctalia to the Niri graphical session — 2026-10-15T02:20:20Z
 
 The first logout/login after enabling lingering returned to Niri successfully,

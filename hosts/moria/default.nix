@@ -49,6 +49,7 @@ in
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = "/boot";
+  boot.kernelModules = [ "uinput" ];
 
   networking.hostName = "moria";
   networking.networkmanager.enable = true;
@@ -62,7 +63,7 @@ in
     description = "Janzon";
     shell = pkgs.fish;
     linger = true;
-    extraGroups = [ "networkmanager" "wheel" "video" "audio" ];
+    extraGroups = [ "networkmanager" "wheel" "video" "audio" "input" ];
   };
 
   programs.fish.enable = true;
@@ -80,6 +81,29 @@ in
     }
   ];
   security.polkit.enable = true;
+  services.udev.extraRules = ''
+    KERNEL=="uinput", GROUP="input", MODE="0660", TAG+="uaccess"
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="320f", ATTR{idProduct}=="5055", TAG+="systemd", ENV{SYSTEMD_USER_WANTS}+="xremap-restart.service"
+  '';
+
+  systemd.user.services.xremap = {
+    description = "xremap key remapper";
+    after = [ "graphical-session.target" ];
+    partOf = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.xremap}/bin/xremap --mouse --device \"Telink IQUNIX 2.4GHz\" --device \"RDR IQUNIX MQ80 KB\" --device \"Logitech G502 X LS\" /home/janzon/.config/xremap/config.yml";
+      Restart = "on-failure";
+    };
+  };
+  systemd.user.services.xremap-restart = {
+    description = "Restart xremap after keyboard connection";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.systemd}/bin/systemctl --user restart xremap.service";
+    };
+  };
+
   security.pam.services.greetd.rules.auth.unix_early = {
     order = config.security.pam.services.greetd.rules.auth.unix.order - 20;
     control = "optional";
@@ -171,6 +195,7 @@ in
     wl-clipboard
     pavucontrol
     tuigreet
+    xremap
   ];
 
   programs.dconf.enable = true;

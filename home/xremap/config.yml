@@ -1,0 +1,255 @@
+virtual_modifiers:
+  - CapsLock
+
+modmap:
+  - name: CapsLock shortcut layer with double-tap lock
+    remap:
+      CapsLock:
+        held: CapsLock
+        alone: BTN_TRIGGER_HAPPY1
+        free_hold: true
+
+keymap:
+  - name: Double-tap CapsLock
+    remap:
+      BTN_TRIGGER_HAPPY1:
+        remap:
+          BTN_TRIGGER_HAPPY1: CapsLock
+        timeout_millis: 300
+
+  - name: Right Control app launcher
+    remap:
+      Ctrl_R-t: KEY_F15
+      Ctrl_R-b: KEY_F16
+      Ctrl_R-f: KEY_F17
+      Ctrl_R-s: KEY_F18
+      Ctrl_R-y: KEY_F19
+
+  - name: Caps desktop layer - Meta movement
+    exact_match: true
+    remap:
+      CapsLock-Super-w: Ctrl-Alt-Shift-Super-w
+      CapsLock-Super-a: Ctrl-Alt-Shift-Super-a
+      CapsLock-Super-s: Ctrl-Alt-Shift-Super-s
+      CapsLock-Super-d: Ctrl-Alt-Shift-Super-d
+      CapsLock-Super-q: Ctrl-Alt-Shift-Super-q
+      CapsLock-Super-KEY_HOME: Ctrl-Alt-Shift-Super-KEY_HOME
+      CapsLock-Super-KEY_END: Ctrl-Alt-Shift-Super-KEY_END
+      CapsLock-Super-KEY_PAGEUP: Ctrl-Alt-Shift-Super-KEY_PAGEUP
+      CapsLock-Super-KEY_PAGEDOWN: Ctrl-Alt-Shift-Super-KEY_PAGEDOWN
+
+  - name: Caps desktop layer - non-letter keys
+    exact_match: true
+    remap:
+      CapsLock-space: Ctrl-Alt-Super-space
+      CapsLock-tab: Ctrl-Alt-Super-tab
+      CapsLock-enter: Ctrl-Alt-Super-enter
+      CapsLock-comma: Ctrl-Alt-Super-comma
+      CapsLock-dot: Ctrl-Alt-Super-dot
+      CapsLock-slash: Ctrl-Alt-Super-slash
+      CapsLock-KEY_LEFTBRACE: Ctrl-Alt-Super-KEY_LEFTBRACE
+      CapsLock-KEY_RIGHTBRACE: Ctrl-Alt-Super-KEY_RIGHTBRACE
+      CapsLock-esc: Ctrl-Alt-Super-esc
+      # Avoid Ctrl+Alt+F1, which the kernel intercepts for VT switching.
+      CapsLock-f1: Ctrl-Alt-Super-KEY_INSERT
+      CapsLock-f4: Ctrl-Alt-Super-Shift-KEY_INSERT
+      CapsLock-KEY_HOME: Ctrl-Alt-Super-KEY_HOME
+      CapsLock-KEY_END: Ctrl-Alt-Super-KEY_END
+      CapsLock-backspace: Delete
+      CapsLock-XDOWNSCROLL: KEY_F13
+      CapsLock-XUPSCROLL: KEY_F14
+      CapsLock-XLEFTSCROLL: Ctrl-Alt-Super-KEY_PAGEUP
+      CapsLock-XRIGHTSCROLL: Ctrl-Alt-Super-KEY_PAGEDOWN
+      CapsLock-KEY_PAGEUP: Ctrl-Alt-Super-KEY_PAGEUP
+      CapsLock-KEY_PAGEDOWN: Ctrl-Alt-Super-KEY_PAGEDOWN
+
+  - name: Caps desktop layer - shell management
+    exact_match: true
+    remap:
+      CapsLock-Shift-0: Ctrl-Alt-Shift-Super-0
+      CapsLock-Shift-k: Ctrl-Alt-Shift-Super-k
+      CapsLock-Shift-l: Ctrl-Alt-Shift-Super-l
+
+  - name: Caps desktop layer - media keys
+    remap:
+      CapsLock-p: KEY_PLAYPAUSE
+      CapsLock-left: KEY_PREVIOUSSONG
+      CapsLock-right: KEY_NEXTSONG
+      CapsLock-up: KEY_VOLUMEUP
+      CapsLock-down: KEY_VOLUMEDOWN
+
+  - name: Caps desktop layer - letters and digits
+    exact_match: true
+    remap:
+      CapsLock-a: Ctrl-Alt-Super-a
+      CapsLock-b: Ctrl-Alt-Super-b
+      CapsLock-c: Ctrl-Alt-Super-c
+      CapsLock-d: Ctrl-Alt-Super-d
+      CapsLock-e: Ctrl-Alt-Super-e
+      CapsLock-f: Ctrl-Alt-Super-f
+      CapsLock-g: Ctrl-Alt-Super-g
+      CapsLock-h: Ctrl-Alt-Super-h
+      CapsLock-i: Ctrl-Alt-Super-i
+      CapsLock-j: Ctrl-Alt-Super-j
+      CapsLock-k: Ctrl-Alt-Super-k
+      CapsLock-l: Ctrl-Alt-Super-l
+      CapsLock-m: Ctrl-Alt-Super-m
+      CapsLock-n: Ctrl-Alt-Super-n
+      CapsLock-o: Ctrl-Alt-Super-o
+      CapsLock-p: Ctrl-Alt-Super-p
+      CapsLock-q: Ctrl-Alt-Super-q
+      CapsLock-r: Ctrl-Alt-Super-r
+      CapsLock-s: Ctrl-Alt-Super-s
+      CapsLock-t: Ctrl-Alt-Super-t
+      CapsLock-u: Ctrl-Alt-Super-u
+      CapsLock-v: Ctrl-Alt-Super-v
+      CapsLock-w: Ctrl-Alt-Super-w
+      CapsLock-x: Ctrl-Alt-Super-x
+      CapsLock-y: Ctrl-Alt-Super-y
+      CapsLock-z: Ctrl-Alt-Super-z
+      CapsLock-0: Ctrl-Alt-Super-0
+      CapsLock-1: Ctrl-Alt-Super-1
+      CapsLock-2: Ctrl-Alt-Super-2
+      CapsLock-3: Ctrl-Alt-Super-3
+      CapsLock-4: Ctrl-Alt-Super-4
+      CapsLock-5: Ctrl-Alt-Super-5
+      CapsLock-6: Ctrl-Alt-Super-6
+      CapsLock-7: Ctrl-Alt-Super-7
+      CapsLock-8: Ctrl-Alt-Super-8
+      CapsLock-9: Ctrl-Alt-Super-9
+      CapsLock-slash: Ctrl-Alt-Super-slash
+      CapsLock-grave: Ctrl-Alt-Super-grave
+
+  - name: Caps desktop layer - Ghostty
+    application:
+      only:
+        - ghostty
+        - com.mitchellh.ghostty
+    remap:
+      CapsLock-comma: Ctrl-comma
+
+  - name: Terminal clipboard (Konsole, xterm, Ghostty)
+    application:
+      only:
+        - konsole
+        - org.kde.konsole
+        - xterm
+        - ghostty
+        - com.mitchellh.ghostty
+        - gnome-terminal
+        - gnome-terminal-server
+        - alacritty
+        - kitty
+        - wezterm
+        - org.wezfurlong.wezterm
+        - tilix
+        - terminator
+        - urxvt
+        - foot
+        - footclient
+        - xfce4-terminal
+        - st
+        - hyper
+    remap:
+      Super-c: Ctrl-Shift-c
+      Super-v: Ctrl-Shift-v
+      Super-t: Ctrl-Shift-t
+      Super-w: Ctrl-Shift-w
+
+  - name: Ctrl+A/E line navigation (non-terminal)
+    application:
+      not:
+        - konsole
+        - org.kde.konsole
+        - xterm
+        - ghostty
+        - com.mitchellh.ghostty
+        - gnome-terminal
+        - gnome-terminal-server
+        - alacritty
+        - kitty
+        - wezterm
+        - org.wezfurlong.wezterm
+        - tilix
+        - terminator
+        - urxvt
+        - foot
+        - footclient
+        - xfce4-terminal
+        - st
+        - hyper
+    remap:
+      Ctrl-a: Home
+      Ctrl-e: End
+      Ctrl-d: Delete
+      Ctrl-k:
+        - Shift-End
+        - Delete
+      Alt-left: Ctrl-left
+      Alt-right: Ctrl-right
+
+  - name: "Preferences (general)"
+    application:
+      not:
+        - com.mitchellh.ghostty
+        - ghostty
+    remap:
+      # Preferences
+      Super-comma: Ctrl-Shift-comma
+
+  - name: "Preferences (ghostty)"
+    application:
+      only:
+        - com.mitchellh.ghostty
+        - ghostty
+    remap:
+      Super-comma: Ctrl-comma
+      Super-shift-comma: Ctrl-Shift-comma
+
+  - name: Mac-like shortcuts (global)
+    remap:
+      # Clipboard
+      Super-c: Ctrl-c
+      Super-v: Ctrl-v
+      Super-x: Ctrl-x
+
+      # Undo / Redo
+      Super-z: Ctrl-z
+      Super-Shift-z: Ctrl-Shift-z
+
+      # Select all
+      Super-a: Ctrl-a
+
+      # Save
+      Super-s: Ctrl-s
+
+      # Find
+      Super-f: Ctrl-f
+
+      # New window/tab
+      Super-t: Ctrl-t
+      Super-n: Ctrl-n
+
+      # Close tab / window
+      Super-w: Ctrl-w
+
+      # Quit application
+      Super-q: Alt-F4
+
+      # Switch tabs
+      Super-Shift-LeftBrace: Ctrl-Shift-Tab
+      Super-Shift-RightBrace: Ctrl-Tab
+
+      # Reopen closed tab
+      Super-Shift-t: Ctrl-Shift-t
+
+      # Bold / Italic / Underline (text editing)
+      Super-b: Ctrl-b
+      Super-i: Ctrl-i
+      Super-u: Ctrl-u
+
+      # Reload
+      Super-r: Ctrl-r
+
+      # URL bar
+      Super-l: Ctrl-l
