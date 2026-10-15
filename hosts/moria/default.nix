@@ -1,4 +1,4 @@
-{ config, darkly, lib, pkgs, ... }:
+{ config, darkly, lib, pkgs, vicinae, ... }:
 
 let
   hyperhdr = pkgs.callPackage ../../packages/hyperhdr.nix { };
@@ -310,7 +310,7 @@ in
     darkly.packages.${pkgs.system}.darkly-qt6
     spotify
     qt6Packages.qt6ct
-    vicinae
+    vicinae.packages.${pkgs.system}.default
     ghostty
     chromiumWithSecretService
     xwayland-satellite

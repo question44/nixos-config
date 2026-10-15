@@ -5,6 +5,16 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Pin Vicinae to its upstream Nix flake — 2026-10-15T17:05:00Z
+
+Replace Nixpkgs’ Vicinae v0.23.2 with the upstream flake’s v0.29.1 package,
+without changing the system-wide Nixpkgs pin. `nix flake check` and
+`nixos-rebuild dry-build --flake /etc/nixos#moria` passed before activation;
+the configuration was activated successfully. The upstream closure required a
+771 MiB download (1.6 GiB unpacked) because it uses a newer independent
+Qt/Node stack. Verified the active system runs Vicinae v0.29.1 and no units
+are failed.
+
 ## [COMPLETED] Install Vicinae launcher — 2026-10-15T17:02:00Z
 
 Add the packaged Vicinae application launcher to the declarative system
