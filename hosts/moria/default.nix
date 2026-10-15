@@ -4,6 +4,7 @@ let
   hyperhdr = pkgs.callPackage ../../packages/hyperhdr.nix { };
   aiUsagebar = pkgs.callPackage ../../packages/ai-usagebar.nix { };
   auroraNcs = pkgs.callPackage ../../packages/aurora-ncs.nix { };
+  ut2004 = pkgs.callPackage ../../packages/ut2004.nix { };
 
   noctaliaPython = pkgs.symlinkJoin {
     name = "noctalia-plugin-python";
@@ -310,6 +311,9 @@ in
     hyperhdr
     aiUsagebar
     auroraNcs
+    ut2004.ut2004
+    ut2004.ut2004-import-rpm
+    ut2004.ut2004-setup
     noctaliaPython
     spotifyLauncher
     cava

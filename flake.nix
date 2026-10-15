@@ -104,6 +104,18 @@
                   "x-scheme-handler/https" = [ "helium.desktop" ];
                 };
               };
+              home.file.".local/share/applications/ut2004.desktop".text = ''
+                [Desktop Entry]
+                Type=Application
+                Name=Unreal Tournament 2004
+                Comment=Play Unreal Tournament 2004 with the OldUnreal patch
+                TryExec=ut2004
+                Exec=ut2004
+                Icon=applications-games
+                Terminal=false
+                Categories=Game;ActionGame;
+                StartupNotify=true
+              '';
               xdg.configFile."nvim".source = ./home/nvim;
               xdg.configFile."noctalia/config.toml".source = ./home/noctalia/config.toml;
               xdg.configFile."niri/config.kdl".source = ./home/niri/config.kdl;

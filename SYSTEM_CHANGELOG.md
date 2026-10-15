@@ -5,6 +5,16 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [PENDING] Import OldUnreal UT2004 from GoodRam — 2026-10-15T15:04:00Z
+
+Added a declarative native launcher, an RPM importer, and the pinned official
+OldUnreal installer wrapper. The launcher is deployed through Home Manager and
+the NixOS flake check, dry build, and switch passed. The OldUnreal-built
+UT2004 3374 RPM was identified on the GoodRam SSD, but the drive was
+disconnected before the read-only import could run. Reconnect it to finish
+copying the game data to `~/Games/UT2004`; the GoodRam source will remain
+unchanged.
+
 ## [COMPLETED] Set Niri refresh rate and disable Mango Displays — 2026-10-15T14:52:48Z
 
 Configured DP-1 declaratively for 3440x1440 at 164.899994 Hz in the managed
