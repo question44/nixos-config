@@ -157,7 +157,7 @@ enabled = [
     "davemhammer/tailscale",
     "goatnath/spotify-lyrics",
     "h465855hgg/lyrics",
-    "azokyen/spotify-media",
+    "question44/spotify-media-niri",
     "notfinaldev/spotify",
     "felipeartur/ai-usagebar",
     "noctalia/bitwarden",
@@ -294,7 +294,7 @@ mirrored = false
 width = 128
 
 [widget.bar]
-type = "azokyen/spotify-media:bar"
+type = "question44/spotify-media-niri:bar"
 
 [widget.bar_2]
 type = "icefish/phone-connect:bar"

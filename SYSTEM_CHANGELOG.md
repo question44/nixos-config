@@ -5,6 +5,20 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Adapt Spotify Media plugin for Niri — 2026-10-15T14:05:49Z
+
+Published the standalone Noctalia plugin fork at
+`https://github.com/question44/spotify-media-niri` (commit `9eb7314`). Replaced
+Hyprland window detection and focus with Niri window listing and
+`focus-window`, retaining Spotify MPRIS metadata, controls, artwork, and launch
+behavior. Added the Git source to Noctalia and updated the managed bar config
+to use the fork; disabled the original Hyprland-specific community plugin.
+Noctalia plugin lint passed with zero errors and warnings, as did `nix flake
+check` and the NixOS dry build. Test activation and switch completed on
+generation 48. Verified the fork is enabled, the Noctalia service is active,
+Spotify's Niri `app_id` is `spotify`, the Niri focus action focuses its window,
+Playerctl reads its MPRIS state, and no system units are failed.
+
 ## [COMPLETED] Install Noctalia plugin dependencies — 2026-10-15T13:20:42Z
 
 Added the available dependencies declared by enabled Noctalia plugin manifests
