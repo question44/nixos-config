@@ -2,6 +2,35 @@
 
 let
   hyperhdr = pkgs.callPackage ../../packages/hyperhdr.nix { };
+  aiUsagebar = pkgs.callPackage ../../packages/ai-usagebar.nix { };
+  auroraNcs = pkgs.callPackage ../../packages/aurora-ncs.nix { };
+
+  noctaliaPython = pkgs.symlinkJoin {
+    name = "noctalia-plugin-python";
+    paths = [ (pkgs.python3.withPackages (ps: [
+      ps.pygobject3
+      ps.speedtest-cli
+      ps.syncedlyrics
+    ])) ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram "$out/bin/python3" \
+        --prefix GI_TYPELIB_PATH : "${pkgs.gobject-introspection.out}/lib/girepository-1.0:${pkgs.at-spi2-core.out}/lib/girepository-1.0:${pkgs.gdk-pixbuf.out}/lib/girepository-1.0:${pkgs.pango.out}/lib/girepository-1.0:${pkgs.harfbuzz.out}/lib/girepository-1.0:${pkgs.gtk3.out}/lib/girepository-1.0:${pkgs.gtk-layer-shell.out}/lib/girepository-1.0" \
+        --prefix LD_LIBRARY_PATH : "${pkgs.gtk3}/lib:${pkgs.gtk-layer-shell}/lib"
+      if [ ! -e "$out/bin/python" ]; then
+        ln -s python3 "$out/bin/python"
+      fi
+    '';
+  };
+
+  noctaliaPkgConfig = pkgs.writeShellScriptBin "pkg-config" ''
+    export PKG_CONFIG_PATH="${pkgs.pipewire.dev}/lib/pkgconfig''${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+    exec ${pkgs.pkg-config}/bin/pkg-config "$@"
+  '';
+
+  spotifyLauncher = pkgs.writeShellScriptBin "spotify-launcher" ''
+    exec ${pkgs.spotify}/bin/spotify "$@"
+  '';
 
   oo7Pam = pkgs.stdenv.mkDerivation (finalAttrs: {
     pname = "oo7-pam";
@@ -276,6 +305,42 @@ in
     tuigreet
     xremap
     hyperhdr
+    aiUsagebar
+    auroraNcs
+    noctaliaPython
+    spotifyLauncher
+    cava
+    jq
+    playerctl
+    spotify-player
+    libnotify
+    gtk3
+    gtk-layer-shell
+    xdg-utils
+    bitwarden-cli
+    hyprpicker
+    mangowc
+    efibootmgr
+    grim
+    kdePackages.kdeconnect-kde
+    sshfs
+    qrencode
+    speedtest
+    slurp
+    tesseract
+    imagemagick
+    zbar
+    translate-shell
+    ffmpeg
+    gpu-screen-recorder
+    wl-screenrec
+    wf-recorder
+    bc
+    pulseaudio
+    mpv
+    noctaliaPkgConfig
+    pipewire.dev
+    sway
   ];
 
   programs.dconf.enable = true;

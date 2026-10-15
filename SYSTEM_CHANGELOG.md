@@ -5,6 +5,18 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Install Noctalia plugin dependencies — 2026-10-15T13:20:42Z
+
+Added the available dependencies declared by enabled Noctalia plugin manifests
+to the NixOS package set, including Python plugin modules, Screen Toolkit tools,
+PipeWire development metadata, and packaged `ai-usagebar` and NCS renderer
+binaries. Kept Hyprland and `hyprctl` excluded as requested; Hyprland-specific
+plugin actions remain unavailable. Nix flake check, dry build, test activation,
+and persistent activation passed. Verified the mapped plugin commands are on
+the session PATH, GTK3 and GtkLayerShell import through Python, PipeWire is
+discoverable by pkg-config, Noctalia config validates and its service is active
+on `system-47-link`; no system units are failed.
+
 ## [COMPLETED] Migrate Noctalia configuration from Fedora — 2026-10-15T12:37:43Z
 
 Imported Fedora's Noctalia v5 configuration through Home Manager, copied its
