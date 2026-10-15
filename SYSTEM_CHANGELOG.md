@@ -5,6 +5,12 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Install Okular — 2026-10-16
+
+Added Okular as a system package. The flake check and dry build passed, then
+test activation and persistent switch succeeded. The active system contains
+`okular`, and no system units are failed.
+
 ## [COMPLETED] Restore Dolphin Open With applications — 2026-10-15T18:10:29Z
 
 Added a small freedesktop applications menu for the Niri session so KDE's

@@ -357,6 +357,7 @@ in
     gnumake
     kdePackages.dolphin
     kdePackages.gwenview
+    kdePackages.okular
     nomacs
     ddcutil
     kdePackages.breeze
