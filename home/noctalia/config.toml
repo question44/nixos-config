@@ -1,0 +1,361 @@
+
+[backdrop]
+enabled = true
+
+[bar.default]
+background_opacity = 0.68999998457729816
+border = "surface_variant"
+capsule = true
+capsule_radius = 8
+center = [ "clock", "weather" ]
+compositor_blur = false
+contact_shadow = true
+end = [
+    "group:g1",
+    "group:g2",
+    "tray",
+    "notifications",
+    "network",
+    "bluetooth",
+    "volume",
+    "brightness",
+    "battery",
+    "control-center",
+    "session"
+]
+layer = "overlay"
+margin_edge = 4
+margin_ends = 20
+margin_opposite_edge = 4
+radius = 8
+start = [ "launcher", "group:g3", "group:g4", "preview", "cat", "bar", "lyrics", "audio_visualizer", "lyrics_2" ]
+thickness = 32
+
+    [[bar.default.capsule_group]]
+    accordion = false
+    accordion_direction = "end"
+    border_width = 1.0
+    enabled = true
+    fill = "surface_variant"
+    id = "g1"
+    members = [ "summary_2", "widget" ]
+    opacity = 1.0
+    padding = 6.0
+    radius = 8.0
+
+    [[bar.default.capsule_group]]
+    accordion = false
+    accordion_direction = "end"
+    border_width = 1.0
+    enabled = true
+    fill = "surface_variant"
+    id = "g2"
+    members = [ "widget_2", "clipboard", "widget_3", "launcher_2", "widget_5", "bar_2", "nextboot-selector" ]
+    opacity = 1.0
+    padding = 6.0
+    radius = 8.0
+
+    [[bar.default.capsule_group]]
+    accordion = false
+    accordion_direction = "end"
+    border_width = 1.0
+    enabled = true
+    fill = "surface_variant"
+    id = "g3"
+    members = [ "wallpaper", "wallhaven" ]
+    opacity = 1.0
+    padding = 6.0
+    radius = 8.0
+
+    [[bar.default.capsule_group]]
+    accordion = false
+    accordion_direction = "end"
+    border_width = 1.0
+    enabled = true
+    fill = "surface_variant"
+    id = "g4"
+    members = [ "workspaces" ]
+    opacity = 1.0
+    padding = 6.0
+    radius = 8.0
+
+[brightness]
+enable_ddcutil = true
+sync_all_monitors = true
+
+[calendar]
+enabled = true
+
+[control_center]
+sidebar = "full"
+sidebar_section = "full"
+
+[dock]
+background_opacity = 0.79999998211860657
+border_width = 0.5
+enabled = true
+icon_size = 42
+item_spacing = 8
+pinned = [ "com.spotify.Client", "helium", "t3_code_alpha" ]
+reserve_space = false
+show_dots = true
+smart_auto_hide = true
+
+[location]
+auto_locate = true
+
+[lockscreen_widgets]
+enabled = false
+schema_version = 2
+widget_order = [ "lockscreen-login-box@DP-1" ]
+
+    [lockscreen_widgets.grid]
+    cell_size = 16
+    major_interval = 4
+    visible = true
+
+    [lockscreen_widgets.widget."lockscreen-login-box@DP-1"]
+    box_height = 196.0
+    box_width = 810.0
+    cx = 1720.0
+    cy = 1258.0
+    output = "DP-1"
+    placement_height = 1440.0
+    placement_width = 3440.0
+    rotation = 0.0
+    type = "login_box"
+
+        [lockscreen_widgets.widget."lockscreen-login-box@DP-1".settings]
+        background_color = "surface_variant"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
+
+[osd]
+background_opacity = 0.81999998167157173
+border_color = "on_secondary"
+orientation = "vertical"
+position = "bottom_left"
+position_vertical = "top_left"
+
+[plugin_settings."goatnath/spotify-lyrics"]
+lyrics-panel_layer = "overlay"
+lyrics-panel_open_near_click = true
+
+[plugins]
+enabled = [
+    "davemhammer/tailscale",
+    "goatnath/spotify-lyrics",
+    "h465855hgg/lyrics",
+    "azokyen/spotify-media",
+    "notfinaldev/spotify",
+    "felipeartur/ai-usagebar",
+    "noctalia/bitwarden",
+    "dotnetrob/cat",
+    "oldirtty/color_picker",
+    "liamwh/emoji-picker",
+    "whyoolw/dropwall",
+    "alexander/game-launcher",
+    "blackbartblues/keymap",
+    "notoxus/media-island",
+    "tausif/ncs-visualizer",
+    "avivbintangaringga/nextboot-selector",
+    "teagar/niri-workspace-preview",
+    "mgeldi/pixel-shift",
+    "icefish/phone-connect",
+    "weinguyen/procmon",
+    "tordex/processes",
+    "yocraft/qrcode",
+    "alexander/screen-toolkit",
+    "nilsonlinux/speedtest-meter",
+    "tmelik/system-monitor",
+    "noctalia/translator",
+    "noctalia/wallhaven",
+    "notfinaldev/web-search",
+    "al3x/visualizerp"
+]
+
+[shell]
+button_borders = false
+card_borders = false
+font_family = "SF Pro"
+input_borders = false
+niri_overview_type_to_launch_enabled = true
+telemetry_enabled = true
+
+    [shell.launcher]
+    show_app_actions = true
+
+    [shell.panel]
+    clipboard_placement = "attached"
+    floating_layer = "top"
+    launcher_placement = "attached"
+    open_near_click_clipboard = true
+    open_near_click_control_center = true
+    open_near_click_launcher = true
+    open_near_click_session = true
+    open_near_click_wallpaper = true
+    transparency_mode = "glass"
+    wallpaper_placement = "floating"
+
+    [shell.screenshot]
+    annotate = true
+    confirm_region = true
+    remember_last_region = true
+    skip_annotate_on_copy_save = true
+
+    [shell.session]
+    grid = true
+
+        [[shell.session.actions]]
+        action = "lock"
+        countdown_seconds = 0.0
+        enabled = true
+        shortcut = "1"
+        variant = "default"
+
+        [[shell.session.actions]]
+        action = "logout"
+        countdown_seconds = 0.0
+        enabled = true
+        shortcut = "2"
+        variant = "default"
+
+        [[shell.session.actions]]
+        action = "lock_and_suspend"
+        countdown_seconds = 0.0
+        enabled = true
+        shortcut = "3"
+        variant = "default"
+
+        [[shell.session.actions]]
+        action = "reboot"
+        countdown_seconds = 0.0
+        enabled = true
+        shortcut = "4"
+        variant = "default"
+
+        [[shell.session.actions]]
+        action = "shutdown"
+        countdown_seconds = 0.0
+        enabled = true
+        shortcut = "5"
+        variant = "destructive"
+
+        [[shell.session.actions]]
+        action = "command"
+        command = "notify-send 'Noctalia' 'Custom session entry'"
+        countdown_seconds = 0.0
+        enabled = false
+        variant = "default"
+
+    [shell.window_switcher]
+    style = "compact"
+
+[theme]
+mode = "auto"
+source = "wallpaper"
+wallpaper_scheme = "m3-tonal-spot"
+
+[wallpaper.default]
+path = "/home/janzon/Pictures/redhead.png"
+
+[wallpaper.last]
+path = "/home/janzon/Pictures/redhead.png"
+
+[wallpaper.monitors.DP-1]
+path = "/home/janzon/Pictures/redhead.png"
+
+[[wallpaper.favorite]]
+palette_source = "wallpaper"
+path = "/home/janzon/Pictures/wallhaven-473895.jpg"
+theme_mode = "dark"
+wallpaper_scheme = "m3-tonal-spot"
+
+[[wallpaper.favorite]]
+path = "/home/janzon/Pictures/redhead.png"
+
+[widget.audio_visualizer]
+bands = 64
+capsule = true
+centered = false
+color_2 = "tertiary"
+mirrored = false
+width = 128
+
+[widget.bar]
+type = "azokyen/spotify-media:bar"
+
+[widget.bar_2]
+type = "icefish/phone-connect:bar"
+
+[widget.cat]
+type = "dotnetrob/cat:cat"
+
+[widget.launcher_2]
+type = "alexander/game-launcher:launcher"
+
+[widget.lyrics]
+type = "goatnath/spotify-lyrics:lyrics"
+
+[widget.lyrics_2]
+active_color = "primary"
+hide_when_no_lyrics = true
+hide_when_paused = true
+scroll_mode = "static"
+secondary_line_mode = "romanization"
+show_artist = false
+show_glyph = false
+type = "h465855hgg/lyrics:lyrics"
+
+[widget.nextboot-selector]
+type = "avivbintangaringga/nextboot-selector:nextboot-selector"
+
+[widget.preview]
+max_output_length = 233
+normal_color = "on_primary"
+type = "teagar/niri-workspace-preview:preview"
+window_gap = 0
+
+[widget.summary_2]
+hide_unavailable = true
+show_cpu_details_in_tooltip = true
+show_disk = false
+show_download = false
+show_gpu_usage = "on"
+show_gpu_vram = "off"
+show_swap = false
+show_upload = false
+type = "tmelik/system-monitor:summary"
+
+[widget.sysmon]
+enabled = false
+
+[widget.wallhaven]
+type = "noctalia/wallhaven:wallhaven"
+
+[widget.widget]
+type = "tordex/processes:widget"
+
+[widget.widget_2]
+type = "oldirtty/color_picker:widget"
+
+[widget.widget_3]
+type = "liamwh/emoji-picker:widget"
+
+[widget.widget_5]
+type = "yocraft/qrcode:widget"
+
+[widget.workspaces]
+label_source = "name"
+style = "minimal"

@@ -5,6 +5,17 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Migrate Noctalia configuration from Fedora — 2026-10-15T12:37:43Z
+
+Imported Fedora's Noctalia v5 configuration through Home Manager, copied its
+29 enabled plugin repositories and two referenced wallpapers into NixOS user
+state, and preserved the existing NixOS GUI overrides. Kept a backup of the
+previous NixOS plugin tree; the Fedora source remains untouched. `nix flake
+check`, dry build, test activation, and persistent activation passed. Noctalia
+config validation passes and its user service is active on `system-46-link`.
+Two migrated plugins log repeated missing-setting warnings (`ncs-visualizer`
+and `pixel-shift`); the overall Noctalia config remains valid.
+
 ## [COMPLETED] Install Zed and configure LazyVim — 2026-10-15T11:55:58Z
 
 Installed Zed 1.3.6 and Neovim 0.12.4 for `janzon` through Home Manager and

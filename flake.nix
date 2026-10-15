@@ -105,6 +105,7 @@
                 };
               };
               xdg.configFile."nvim".source = ./home/nvim;
+              xdg.configFile."noctalia/config.toml".source = ./home/noctalia/config.toml;
               xdg.configFile."niri/config.kdl".source = ./home/niri/config.kdl;
               xdg.configFile."xremap/config.yml".source = ./home/xremap/config.yml;
             };
