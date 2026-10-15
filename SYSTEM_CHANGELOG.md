@@ -5,6 +5,17 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Show both Noctalia lyrics plugins on the bar — 2026-10-15T17:43:32Z
+
+Added the existing `h465855hgg/lyrics` widget and the enabled
+`tranzem/media-lyrics` now-playing widget to the bar, with inline lyrics
+enabled for Media Lyrics. Updated the live bar override while preserving its
+unrelated settings. `nix flake check`, dry build, test activation, Noctalia
+config validation, and persistent switch passed. Verified both widget types in
+the effective configuration, Noctalia active with its bar visible, and no
+failed system units. Noctalia validation still reports unrelated pre-existing
+warnings for the generated Starship file and disabled `mango-displays` widget.
+
 ## [COMPLETED] Start the Noctalia Spotify lyrics daemon — 2026-10-15T19:35:00Z
 
 The active bar entries use `goatnath/spotify-lyrics`, whose widget reads

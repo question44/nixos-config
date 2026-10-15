@@ -31,7 +31,7 @@ margin_edge = 4
 margin_ends = 20
 margin_opposite_edge = 4
 radius = 16
-start = [ "group:g3", "cat", "bar", "lyrics", "audio_visualizer", "lyrics_2" ]
+start = [ "group:g3", "cat", "bar", "lyrics", "audio_visualizer", "lyrics_2", "media_lyrics" ]
 thickness = 48
 
     [bar.default.dead_zone.actions]
@@ -182,6 +182,7 @@ enabled = [
     "davemhammer/tailscale",
     "goatnath/spotify-lyrics",
     "h465855hgg/lyrics",
+    "tranzem/media-lyrics",
     "question44/spotify-media-niri",
     "notfinaldev/spotify",
     "felipeartur/ai-usagebar",
@@ -383,6 +384,10 @@ secondary_line_mode = "romanization"
 show_artist = false
 show_glyph = false
 type = "h465855hgg/lyrics:lyrics"
+
+[widget.media_lyrics]
+show_lyric_line = true
+type = "tranzem/media-lyrics:now-playing"
 
 [widget.nextboot-selector]
 type = "avivbintangaringga/nextboot-selector:nextboot-selector"
