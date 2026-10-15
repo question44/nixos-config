@@ -803,6 +803,14 @@ clipped. `niri validate`, `nix flake check`, and
 `nixos-rebuild dry-build --flake /etc/nixos#moria` passed. The configuration
 was activated and loaded live via Niri IPC; Niri was not restarted.
 
+# [COMPLETED] Clip Niri windows to rounded geometry — 2026-10-15
+
+Enabled `clip-to-geometry true` in the global 8-pixel geometry-corner rule so
+window content is clipped to rounded corners, in addition to the rounded
+focus ring and border. `niri validate`, `nix flake check`, and
+`nixos-rebuild dry-build --flake /etc/nixos#moria` passed. The configuration
+was activated and loaded live via Niri IPC without restarting Niri.
+
 # [COMPLETED] Prefer undecorated Niri windows — 2026-10-15
 
 Enabled Niri's top-level `prefer-no-csd` option so applications omit

@@ -361,6 +361,7 @@ window-rule {
 // Give window borders and the focus ring rounded geometry.
 window-rule {
     geometry-corner-radius 8
+    clip-to-geometry true
 }
 
 binds {
