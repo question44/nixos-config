@@ -191,6 +191,7 @@ in
     oo7
     gh
     kdePackages.dolphin
+    kdePackages.breeze
     spotify
     qt6Packages.qt6ct
     ghostty

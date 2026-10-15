@@ -5,6 +5,14 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Install Breeze Qt style — 2026-10-15T00:50:00Z
+
+Added `kdePackages.breeze` alongside qt6ct. `nix flake check` and dry-build
+evaluation passed. Activated generation
+`fas5d9kv38rb14gyh7lcr2xsp6hll70p-nixos-system-moria-26.05.20261013.a033e66`;
+verified Breeze 6.6.6 is in the system package closure. Choose Breeze as the
+widget style in qt6ct if it is not already selected.
+
 ## [COMPLETED] Install qt6ct and set Qt platform theme — 2026-10-15T00:45:00Z
 
 Added `qt6Packages.qt6ct` and set `QT_QPA_PLATFORMTHEME=qt6ct` in the
