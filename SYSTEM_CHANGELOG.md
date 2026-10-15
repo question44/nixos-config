@@ -5,6 +5,17 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Expose Darkly plugins to Qt applications — 2026-10-15T01:05:00Z
+
+Configured Home Manager's Qt integration with the Darkly Qt 6 style package.
+`nix flake check` and the full system build passed. Activated generation
+`jdkbfl9yi8yq07cz0j3wg76ihwglf49q-nixos-system-moria-26.05.20261013.a033e66`.
+Verified the user's Qt plugin path includes `darkly6.so` and the user manager
+exports `QT_STYLE_OVERRIDE=Darkly` and `QT_QPA_PLATFORMTHEME=qt6ct`. The
+existing Niri process predates this environment update; a fresh login is
+required before Dolphin inherits the updated Qt plugin path. The current
+session was left running.
+
 ## [COMPLETED] Install Darkly Qt 6 style — 2026-10-15T00:55:00Z
 
 Added Bali10050/Darkly at locked revision

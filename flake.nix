@@ -34,6 +34,13 @@
             home-manager.backupFileExtension = "backup";
             home-manager.users.janzon = {
               home.stateVersion = "26.05";
+              qt = {
+                enable = true;
+                style = {
+                  name = "Darkly";
+                  package = darkly.packages.x86_64-linux.darkly-qt6;
+                };
+              };
               xdg.mimeApps = {
                 enable = true;
                 defaultApplications = {
