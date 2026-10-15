@@ -150,6 +150,18 @@ in
       Restart = "on-failure";
     };
   };
+  systemd.user.services.noctalia-lyrics = {
+    description = "Noctalia Spotify lyrics daemon";
+    after = [ "graphical-session.target" "noctalia.service" ];
+    partOf = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
+    path = [ pkgs.playerctl ];
+    serviceConfig = {
+      ExecStart = "${noctaliaPython}/bin/python3 -B /home/janzon/.local/state/noctalia/plugins/materialized/community/spotify-lyrics/spotify_lyrics_daemon.py";
+      Restart = "on-failure";
+      RestartSec = 5;
+    };
+  };
   systemd.user.services.hyperhdr = {
     description = "HyperHDR ambient lighting with PipeWire screen capture";
     after = [

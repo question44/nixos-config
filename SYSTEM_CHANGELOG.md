@@ -5,6 +5,17 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Start the Noctalia Spotify lyrics daemon — 2026-10-15T19:35:00Z
+
+The active bar entries use `goatnath/spotify-lyrics`, whose widget reads
+`~/.cache/noctalia/lyrics/current.json` from a separate Python daemon. Add a
+graphical-session user service for that daemon with the existing packaged
+Python `syncedlyrics` environment and `playerctl`. `nix flake check` and
+`nixos-rebuild dry-build --flake /etc/nixos#moria` passed; a live `test`
+activation produced current-track lyrics before `switch` made the service
+persistent. Verified the service is enabled and running, its state file updates
+continuously with real lyric lines, and no units are failed.
+
 ## [COMPLETED] Start Vicinae with Niri and bind launcher shortcuts — 2026-10-15T17:10:00Z
 
 Enable Vicinae's packaged user service through the graphical-session target.
