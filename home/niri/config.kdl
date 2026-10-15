@@ -108,6 +108,12 @@ input {
     position x=1280 y=0
 }
 
+// Primary external display. Keep its high-refresh native mode explicit rather
+// than relying on MangoWM-specific monitor rules.
+output "DP-1" {
+    mode "3440x1440@164.899994"
+}
+
 // Settings that influence how windows are positioned and sized.
 // Find more information on the wiki:
 // https://niri-wm.github.io/niri/Configuration:-Layout

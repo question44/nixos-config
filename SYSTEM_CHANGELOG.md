@@ -5,6 +5,14 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Set Niri refresh rate and disable Mango Displays — 2026-10-15T14:52:48Z
+
+Configured DP-1 declaratively for 3440x1440 at 164.899994 Hz in the managed
+Niri configuration. Disabled the Mango Displays plugin, which writes MangoWM
+rules and cannot apply display settings under Niri. Niri config validation,
+`nix flake check`, dry build, and switch passed. Verified the active Niri
+output reports 3440x1440 at 164.900 Hz and the plugin remains disabled.
+
 ## [COMPLETED] Add Noctalia Processes dependencies and wlr-randr — 2026-10-15T14:50:11Z
 
 Added `psutil` and Pillow to the dedicated Noctalia plugin Python environment,
