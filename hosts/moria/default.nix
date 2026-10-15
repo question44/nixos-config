@@ -355,6 +355,7 @@ in
     gnupg
     gnumake
     kdePackages.dolphin
+    nomacs
     kdePackages.breeze
     candy-icons
     darkly.packages.${pkgs.system}.darkly-qt6

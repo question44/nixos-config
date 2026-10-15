@@ -767,3 +767,10 @@ menu and helper are deployed as executable Home Manager links, the service is
 active with zero restarts and exit status 0, and the current wallpaper target
 is preserved. The KService cache was rebuilt for Dolphin to discover the new
 menu; Niri did not need to be restarted.
+
+# [COMPLETED] Install nomacs image viewer — 2026-10-15
+
+Added nomacs to the declarative system package list. `nix flake check` and
+`nixos-rebuild dry-build --flake /etc/nixos#moria` passed, then the system
+configuration was activated. Verified the nomacs executable and desktop
+launcher are available.
