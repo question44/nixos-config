@@ -26,4 +26,9 @@ changes belong in `SYSTEM_CHANGELOG.md`, not here.
   modules. The repository is authoritative for those.
 - Secrets or one-off command history.
 
-No NixOS-only operational exceptions have been recorded.
+## Reusable operational pitfalls
+
+- The installed Nix CLI has `nix-command` disabled by default. Run flake
+  commands as `nix --extra-experimental-features 'nix-command flakes' flake
+  <subcommand>` (for example, `flake check`) unless the feature is enabled in
+  the environment.
