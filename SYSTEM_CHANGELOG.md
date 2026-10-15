@@ -5,6 +5,18 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Make Niri follow Noctalia’s active palette — 2026-10-15T16:54:07Z
+
+Include Noctalia’s generated Niri palette after the managed compositor
+configuration, allowing Noctalia to set focus-ring, border, tab-indicator,
+insert-hint, and recent-window highlight colors whenever its palette changes.
+`niri validate`, `nix flake check`, and `nixos-rebuild dry-build --flake
+/etc/nixos#moria` passed before activation; the configuration was activated
+successfully with no failed units. Niri automatically reloads changed
+configuration, so no compositor restart or logout is required. Verified the
+managed configuration includes the active generated palette, whose current
+focus color is Noctalia’s Flexoki primary `#879a39`.
+
 ## [COMPLETED] Align Dolphin, Noctalia, and apps with shared desktop themes — 2026-10-15T18:45:00Z
 
 Keep the Darkly Qt widget style, but make Qt6ct use Noctalia's existing

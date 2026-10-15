@@ -700,3 +700,7 @@ binds {
     // moving the mouse or pressing any other key.
     Mod+Shift+P { power-off-monitors; }
 }
+
+// Noctalia regenerates this file whenever its active palette changes. Keep the
+// include last so these palette-derived values override the static examples.
+include "/home/janzon/.config/niri/noctalia.kdl"
