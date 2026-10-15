@@ -5,6 +5,13 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Move the Noctalia dock to the left — 2026-10-15T17:52:58Z
+
+Set the managed Noctalia dock position to `left`. `nix flake check`, the
+NixOS dry build, test activation, and persistent switch passed. Reloaded the
+Noctalia configuration and dock successfully; the deployed configuration
+contains `position = "left"` and Noctalia reports its bar visible.
+
 ## [COMPLETED] Preserve Lyrics-only bar choice and add cache repair — 2026-10-15T17:50:01Z
 
 The live Noctalia bar no longer includes `media_lyrics`; removed it from the
