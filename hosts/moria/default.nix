@@ -358,6 +358,7 @@ in
     kdePackages.dolphin
     kdePackages.gwenview
     kdePackages.okular
+    kdePackages.ark
     nomacs
     ddcutil
     kdePackages.breeze
