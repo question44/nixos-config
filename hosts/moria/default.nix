@@ -129,6 +129,19 @@ in
   security.polkit.enable = true;
   security.polkit.extraConfig = ''
     polkit.addRule(function(action, subject) {
+      if (subject.user == "janzon" &&
+          [
+            "org.freedesktop.login1.reboot",
+            "org.freedesktop.login1.reboot-multiple-sessions",
+            "org.freedesktop.login1.power-off",
+            "org.freedesktop.login1.power-off-multiple-sessions",
+            "org.freedesktop.login1.suspend",
+            "org.freedesktop.login1.suspend-multiple-sessions"
+          ].indexOf(action.id) >= 0) {
+        return polkit.Result.YES;
+      }
+    });
+    polkit.addRule(function(action, subject) {
       if (subject.isInGroup("storage") &&
           action.id == "org.freedesktop.udisks2.filesystem-mount-system") {
         return polkit.Result.YES;

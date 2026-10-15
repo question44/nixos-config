@@ -5,6 +5,15 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Allow janzon to reboot, shut down, and suspend — 2026-10-15T18:02:04Z
+
+Added a Polkit rule for the normal logind power actions, including the
+multiple-session variants used while SSH is connected. The flake check, dry
+build, test activation, and persistent switch passed; generation 71 is active.
+Authorization checks against Noctalia's process succeeded for all six actions.
+Polkit and Noctalia are active, and no system or user units are failed. No
+power action was executed during verification.
+
 ## [COMPLETED] Move the Noctalia dock to the left — 2026-10-15T17:52:58Z
 
 Set the managed Noctalia dock position to `left`. `nix flake check`, the
