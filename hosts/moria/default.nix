@@ -87,6 +87,8 @@ in
       "spotify"
       "discord"
       "stremio-linux-shell"
+      "steam"
+      "steam-unwrapped"
     ];
 
   boot.loader.systemd-boot.enable = true;
@@ -114,6 +116,7 @@ in
   };
 
   programs.fish.enable = true;
+  programs.steam.enable = true;
   programs.nix-ld.enable = true;
 
   security.sudo.wheelNeedsPassword = true;

@@ -5,6 +5,13 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Enable Steam — 2026-10-16
+
+Enabled the NixOS Steam module with scoped unfree package allowances. The
+flake check, dry build, test activation, and persistent switch passed. The
+active system contains `steam`, 32-bit graphics support is enabled, and no
+system units are failed.
+
 ## [COMPLETED] Install Stremio Linux shell — 2026-10-16
 
 Added the current `stremio-linux-shell` package and its scoped unfree allowance.
