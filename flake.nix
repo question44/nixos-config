@@ -106,6 +106,12 @@
                   --group Icons \
                   --key Theme "candy-icons"
               '';
+              home.activation.nomacsSystemTheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+                $DRY_RUN_CMD ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 \
+                  --file "$HOME/.config/nomacs/Image Lounge.conf" \
+                  --group General \
+                  --key themeName312 "System Theme"
+              '';
               home.activation.starshipNoctaliaConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
                 base="$HOME/.config/noctalia/starship-base.toml"
                 palette="$HOME/.cache/noctalia/starship-palette.toml"
@@ -147,6 +153,23 @@
                   "x-scheme-handler/about" = [ "helium.desktop" ];
                   "x-scheme-handler/http" = [ "helium.desktop" ];
                   "x-scheme-handler/https" = [ "helium.desktop" ];
+                  "image/avif" = [ "org.nomacs.ImageLounge.desktop" ];
+                  "image/bmp" = [ "org.nomacs.ImageLounge.desktop" ];
+                  "image/gif" = [ "org.nomacs.ImageLounge.desktop" ];
+                  "image/heic" = [ "org.nomacs.ImageLounge.desktop" ];
+                  "image/heif" = [ "org.nomacs.ImageLounge.desktop" ];
+                  "image/jpeg" = [ "org.nomacs.ImageLounge.desktop" ];
+                  "image/jxl" = [ "org.nomacs.ImageLounge.desktop" ];
+                  "image/png" = [ "org.nomacs.ImageLounge.desktop" ];
+                  "image/tiff" = [ "org.nomacs.ImageLounge.desktop" ];
+                  "image/webp" = [ "org.nomacs.ImageLounge.desktop" ];
+                  "image/x-eps" = [ "org.nomacs.ImageLounge.desktop" ];
+                  "image/x-ico" = [ "org.nomacs.ImageLounge.desktop" ];
+                  "image/x-portable-bitmap" = [ "org.nomacs.ImageLounge.desktop" ];
+                  "image/x-portable-graymap" = [ "org.nomacs.ImageLounge.desktop" ];
+                  "image/x-portable-pixmap" = [ "org.nomacs.ImageLounge.desktop" ];
+                  "image/x-xbitmap" = [ "org.nomacs.ImageLounge.desktop" ];
+                  "image/x-xpixmap" = [ "org.nomacs.ImageLounge.desktop" ];
                 };
               };
               home.file.".local/share/applications/ut2004.desktop".text = ''

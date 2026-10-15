@@ -770,7 +770,11 @@ menu; Niri did not need to be restarted.
 
 # [COMPLETED] Install nomacs image viewer — 2026-10-15
 
-Added nomacs to the declarative system package list. `nix flake check` and
-`nixos-rebuild dry-build --flake /etc/nixos#moria` passed, then the system
-configuration was activated. Verified the nomacs executable and desktop
-launcher are available.
+Added nomacs to the declarative system package list, set it as the default
+handler for its supported image MIME types, and declaratively selected its
+System Theme option while preserving the rest of its user settings.
+`nix flake check` and `nixos-rebuild dry-build --flake /etc/nixos#moria`
+passed, then the system configuration was activated. Verified JPEG and PNG
+open with the nomacs desktop entry and its config contains
+`themeName312=System Theme`. The already-running nomacs instance was left
+untouched; the theme change takes effect after restarting nomacs.
