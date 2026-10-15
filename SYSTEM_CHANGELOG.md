@@ -5,6 +5,15 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Start Vicinae with Niri and bind launcher shortcuts — 2026-10-15T17:10:00Z
+
+Enable Vicinae's packaged user service through the graphical-session target.
+Bind Caps+Space (translated by xremap), Super+Space, and Alt+Space to toggle
+Vicinae from Niri. `niri validate`, `nix flake check`, and
+`nixos-rebuild dry-build --flake /etc/nixos#moria` passed before activation;
+the configuration was activated successfully. Verified the service is enabled
+and running, and all three bindings are deployed. No failed units remain.
+
 ## [COMPLETED] Pin Vicinae to its upstream Nix flake — 2026-10-15T17:05:00Z
 
 Replace Nixpkgs’ Vicinae v0.23.2 with the upstream flake’s v0.29.1 package,

@@ -364,9 +364,9 @@ binds {
     // Fedora-derived xremap layer: physical Caps chords arrive as
     // Ctrl+Alt+Super, while right-Ctrl app shortcuts arrive as XF86Launch keys.
     Ctrl+Alt+Super+Insert repeat=false { show-hotkey-overlay; }
-    Ctrl+Alt+Super+Space { spawn "noctalia" "msg" "panel-toggle" "launcher"; }
-    Super+Space { spawn "noctalia" "msg" "panel-toggle" "launcher"; }
-    Alt+Space { spawn "noctalia" "msg" "panel-toggle" "launcher"; }
+    Ctrl+Alt+Super+Space { spawn "vicinae" "toggle"; }
+    Super+Space { spawn "vicinae" "toggle"; }
+    Alt+Space { spawn "vicinae" "toggle"; }
     Ctrl+Alt+Super+Comma { spawn "noctalia" "msg" "settings-toggle"; }
     Ctrl+Alt+Super+Escape { spawn "noctalia" "msg" "session" "logout"; }
     Ctrl+Alt+Super+X { spawn "noctalia" "msg" "session" "lock"; }
