@@ -3,7 +3,25 @@ SHELL := /run/current-system/sw/bin/bash
 
 TAILSCALE_STATE_ARCHIVE := secrets/tailscale-state.tar.gpg
 
-.PHONY: tailscale-state-backup tailscale-state-restore
+.PHONY: help setup-codex tailscale-state-backup tailscale-state-restore
+
+help:
+	@printf '%s\n' \
+		'Available targets:' \
+		'  help                     List available maintenance actions.' \
+		'  setup-codex              Install Codex with npm if it is absent.' \
+		'  tailscale-state-backup   Create an encrypted Tailscale state backup.' \
+		'  tailscale-state-restore  Restore an encrypted Tailscale state backup.'
+
+# Install Codex into ~/.local only when no Codex executable is already present.
+setup-codex:
+	@set -euo pipefail
+	@if [[ -x "$(HOME)/.local/bin/codex" ]]; then \
+		echo "Codex is already available at $(HOME)/.local/bin/codex."; \
+		exit 0; \
+	fi
+	@NPM_CONFIG_PREFIX="$(HOME)/.local" npm install --global @openai/codex@latest
+	@"$(HOME)/.local/bin/codex" --version
 
 # Create the Git-trackable, password-encrypted Tailscale identity backup.
 tailscale-state-backup:

@@ -36,16 +36,6 @@ let
     exec /home/janzon/.local/bin/t3 serve --mode web --host 127.0.0.1 --port 3773 --base-dir /home/janzon/.t3/server
   '';
 
-  codexBootstrap = pkgs.writeShellScript "codex-bootstrap" ''
-    export HOME=/home/janzon
-    export NPM_CONFIG_PREFIX="$HOME/.local"
-
-    if [ -x "$HOME/.local/bin/codex" ]; then
-      exit 0
-    fi
-
-    exec ${pkgs.nodejs}/bin/npm install --global @openai/codex@latest
-  '';
 in
 
 {
@@ -126,9 +116,8 @@ in
   };
   systemd.user.services.t3code = {
     description = "T3 Code web server";
-    after = [ "network-online.target" "codex-bootstrap.service" ];
-    wants = [ "network-online.target" "codex-bootstrap.service" ];
-    requires = [ "codex-bootstrap.service" ];
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
     wantedBy = [ "default.target" ];
     environment = {
       HOME = "/home/janzon";
@@ -138,18 +127,6 @@ in
       ExecStart = t3codeStart;
       Restart = "on-failure";
       RestartSec = "10s";
-    };
-  };
-  systemd.user.services.codex-bootstrap = {
-    description = "Install Codex CLI with npm when it is absent";
-    after = [ "network-online.target" ];
-    wants = [ "network-online.target" ];
-    wantedBy = [ "default.target" ];
-    environment.HOME = "/home/janzon";
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = codexBootstrap;
-      RemainAfterExit = true;
     };
   };
 

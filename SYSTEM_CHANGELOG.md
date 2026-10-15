@@ -7,14 +7,16 @@ secrets, routine read-only inspections, or one-off command failures.
 
 ## [COMPLETED] Bootstrap Codex CLI with npm — 2026-10-15T08:16:38Z
 
-Add a declarative user service that uses Nix-managed Node.js to install
-`@openai/codex@latest` into `/home/janzon/.local` only if the Codex executable
-is absent. The existing standalone Codex installation was preserved. The
-native T3 Code service starts after the bootstrap service. `nix flake check`
-and `nixos-rebuild dry-build --flake /etc/nixos#moria` passed, then the
-configuration was activated. Verified Node.js 24.21.0 and npm 11.19.0 are
-available, `codex-bootstrap.service` completed successfully, T3 Code remains
-active, Codex 0.162.1 remains available, and there are zero failed units.
+Replace the persistent bootstrap service with an explicit `make setup-codex`
+target. It uses Nix-managed Node.js to install `@openai/codex@latest` into
+`/home/janzon/.local` only if Codex is absent. Add `make help` to list the
+available maintenance targets. The existing standalone Codex installation must
+remain untouched and T3 Code must remain active. `make help` lists the four
+available actions and `make setup-codex` correctly preserved the existing
+Codex executable. `nix flake check` and `nixos-rebuild dry-build --flake
+/etc/nixos#moria` passed, then the configuration was activated. Verified the
+bootstrap user service is removed, T3 Code remains active, and zero units are
+failed.
 
 ## [COMPLETED] Restore Fedora Starship prompt — 2026-10-15T08:08:00Z
 
