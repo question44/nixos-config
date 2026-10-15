@@ -5,6 +5,16 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Restore Fedora Starship prompt — 2026-10-15T08:08:00Z
+
+Restored the complete Fedora Starship prompt configuration for `janzon` and
+enabled its Fish integration declaratively through Home Manager. `nix flake
+check` and `nixos-rebuild dry-build --flake /etc/nixos#moria` passed, then the
+Home Manager configuration was activated. Verified Starship 1.25.1 is present,
+a fresh Fish shell loads Starship's `fish_prompt`, and its success symbol
+renders as configured. Home Manager canonically rewrites the TOML, but it uses
+the full recovered Fedora settings; zero system units are failed.
+
 ## [COMPLETED] Add T3 Code pairing alias — 2026-10-15T08:04:55Z
 
 Added the managed Fish alias `t3pair`, which runs

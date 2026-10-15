@@ -38,6 +38,11 @@
                 enable = true;
                 shellAliases.t3pair = "t3 pair --base-dir /home/janzon/.t3/server";
               };
+              programs.starship = {
+                enable = true;
+                enableFishIntegration = true;
+                settings = builtins.fromTOML (builtins.readFile ./home/starship.toml);
+              };
               qt = {
                 enable = true;
                 style.package = darkly.packages.x86_64-linux.darkly-qt6;
