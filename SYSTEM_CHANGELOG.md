@@ -730,3 +730,13 @@ reported protocol v5 and HyperHDR restored its saved permission, connected to
 the 3440x1440 PipeWire stream, entered `STREAMING`, and enabled DMA-BUF GPU
 acceleration. `hyperhdr.service` is active with zero restarts and no user units
 are failed.
+
+# [COMPLETED] Install Discord — 2026-10-15T20:27:13Z
+
+Added the Discord desktop package to `environment.systemPackages` and allowed
+only its unfree package name through the existing restrictive unfree predicate.
+`nix flake check` and `nixos-rebuild dry-build --flake /etc/nixos#moria`
+passed, then `nixos-rebuild switch --flake /etc/nixos#moria` activated
+generation `8gw8xqrac3fx1i4s5gf2w6k75n0hxz32`. Verified the `discord`
+executable is present in the active system profile, Discord 1.0.159 starts
+under Wayland, and no system units are failed.

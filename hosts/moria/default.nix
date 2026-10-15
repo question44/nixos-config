@@ -85,6 +85,7 @@ in
       "nvidia-kernel-modules"
       "nvidia-settings"
       "spotify"
+      "discord"
     ];
 
   boot.loader.systemd-boot.enable = true;
@@ -347,6 +348,7 @@ in
     candy-icons
     darkly.packages.${pkgs.system}.darkly-qt6
     spotify
+    discord
     qt6Packages.qt6ct
     vicinae.packages.${pkgs.system}.default
     ghostty
