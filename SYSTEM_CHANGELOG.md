@@ -5,6 +5,14 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [PENDING] Add encrypted Tailscale state backup workflow — 2026-10-15T09:35:00Z
+
+At the user's explicit request, make a password-encrypted archive of
+`/var/lib/tailscale` suitable for Git tracking, despite the repository's
+usual prohibition on private-key material. Add declarative GnuPG support and
+Make targets to create and restore the archive. The backup password is entered
+interactively and must never be recorded in the repository or Nix store.
+
 ## [COMPLETED] Rename Tailscale node to erebor — 2026-10-15T09:28:00Z
 
 Changed the connected Tailscale device hostname from `moria-1` to `erebor`

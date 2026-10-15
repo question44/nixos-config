@@ -193,6 +193,8 @@ in
   environment.systemPackages = with pkgs; [
     oo7
     gh
+    gnupg
+    gnumake
     kdePackages.dolphin
     kdePackages.breeze
     darkly.packages.${pkgs.system}.darkly-qt6

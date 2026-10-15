@@ -1,0 +1,3 @@
+# Never stage plaintext or incomplete Tailscale state backups.
+secrets/*.tmp.*
+secrets/*.tar
