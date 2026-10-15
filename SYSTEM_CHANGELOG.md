@@ -807,6 +807,13 @@ Restarted xremap to load the new remap and reloaded Niri without restarting
 the compositor. Verified both deployed configs and successfully invoked
 `vicinae cmd launch snippets:manage`; xremap and Vicinae are active.
 
+## [COMPLETED] Thin Niri focus ring — 2026-10-16
+
+Reduce the focus-ring width from 4 to 2 logical pixels, preserving its current
+colors and 8-pixel corner radius. `niri validate`, `nix flake check`, and
+`nixos-rebuild dry-build` passed before activation. Reloaded Niri's deployed
+configuration successfully without restarting the compositor.
+
 # [COMPLETED] Install Gwenview — 2026-10-15
 
 Added `kdePackages.gwenview` to the declarative system package list without
