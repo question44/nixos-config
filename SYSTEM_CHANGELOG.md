@@ -778,3 +778,10 @@ passed, then the system configuration was activated. Verified JPEG and PNG
 open with the nomacs desktop entry and its config contains
 `themeName312=System Theme`. The already-running nomacs instance was left
 untouched; the theme change takes effect after restarting nomacs.
+
+# [COMPLETED] Install Gwenview — 2026-10-15
+
+Added `kdePackages.gwenview` to the declarative system package list without
+changing the existing nomacs image associations. `nix flake check` and
+`nixos-rebuild dry-build --flake /etc/nixos#moria` passed, then the
+configuration was activated. Verified the Gwenview executable is available.

@@ -355,6 +355,7 @@ in
     gnupg
     gnumake
     kdePackages.dolphin
+    kdePackages.gwenview
     nomacs
     kdePackages.breeze
     candy-icons
