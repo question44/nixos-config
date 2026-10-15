@@ -13,17 +13,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     vicinae.url = "github:vicinaehq/vicinae";
-    rounded-corners = {
-      url = "github:rezzubs/wayland-rounded-corners";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = { self, nixpkgs, noctalia, helium, darkly, vicinae, home-manager, rounded-corners, ... }:
+  outputs = { self, nixpkgs, noctalia, helium, darkly, vicinae, home-manager, ... }:
     {
       nixosConfigurations.moria = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
@@ -52,7 +48,6 @@
                 '';
               in
               {
-              imports = [ rounded-corners.homeModules.default ];
               home.stateVersion = "26.05";
               home.packages = with pkgs; [
                 zed-editor
@@ -66,12 +61,6 @@
                 tree-sitter
                 nodejs
               ];
-              services.rounded-corners = {
-                enable = true;
-                radius = 8;
-                color = "#000000";
-                antialiasing = true;
-              };
               home.sessionVariables = {
                 EDITOR = "${sessionEditor}/bin/session-editor";
                 VISUAL = "${sessionEditor}/bin/session-editor";

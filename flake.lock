@@ -169,28 +169,7 @@
         "home-manager": "home-manager",
         "nixpkgs": "nixpkgs",
         "noctalia": "noctalia",
-        "rounded-corners": "rounded-corners",
         "vicinae": "vicinae"
-      }
-    },
-    "rounded-corners": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1785865485,
-        "narHash": "sha256-qemaSQ9fwUEMjTB0YUFoRM/t5q2SvHnM4w+g81snLSs=",
-        "owner": "rezzubs",
-        "repo": "wayland-rounded-corners",
-        "rev": "27a5372192f3364b024638e7e711296ab9800550",
-        "type": "github"
-      },
-      "original": {
-        "owner": "rezzubs",
-        "repo": "wayland-rounded-corners",
-        "type": "github"
       }
     },
     "soulver-cpp": {

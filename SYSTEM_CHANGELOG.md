@@ -779,17 +779,15 @@ open with the nomacs desktop entry and its config contains
 `themeName312=System Theme`. The already-running nomacs instance was left
 untouched; the theme change takes effect after restarting nomacs.
 
-## [COMPLETED] Add fake rounded display corners — 2026-10-15
+## [COMPLETED] Use Noctalia for rounded display corners — 2026-10-15
 
-Add the pinned `wayland-rounded-corners` Home Manager service, using black
-8-logical-pixel antialiased corner overlays on every output. The overlay is
-click-through and uses the Wayland Overlay layer so it stays above fullscreen
-windows and the Niri Overview. `nix flake check`, Niri config validation, and
-`nixos-rebuild dry-build` plus full `nixos-rebuild build` passed. The
-configuration activated as
-`/nix/store/1m60hzwnmmr60h95z6dxvpvk3ffljq07-nixos-system-moria-26.05.20261013.a033e66`.
-Verified `rounded-corners.service` active with zero restarts and exit status 0;
-Niri reports four `rounded-corners` surfaces on DP-1 at the Overlay layer.
+Use Noctalia's native screen-corner setting with an 8-pixel radius, matching
+the Niri window corner radius. Remove the separate `wayland-rounded-corners`
+Home Manager service and flake input. `nix flake check` and
+`nixos-rebuild dry-build --flake /etc/nixos#moria` passed, then the
+configuration was activated. Noctalia accepted `config-reload`; Niri reports
+four `noctalia-screen-corner` surfaces on DP-1, `noctalia.service` remains
+active, and `rounded-corners.service` is inactive and no longer installed.
 No Niri restart was needed.
 
 # [COMPLETED] Install Gwenview — 2026-10-15

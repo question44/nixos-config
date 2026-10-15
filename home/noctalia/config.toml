@@ -218,6 +218,10 @@ font_family = "SF Pro"
 input_borders = false
 niri_overview_type_to_launch_enabled = true
 panel_anchor_bar = "default"
+
+[shell.screen_corners]
+enabled = true
+size = 8
 telemetry_enabled = true
 
     [shell.launcher]
