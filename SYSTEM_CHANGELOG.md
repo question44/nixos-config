@@ -5,6 +5,16 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Install qt6ct and set Qt platform theme — 2026-10-15T00:45:00Z
+
+Added `qt6Packages.qt6ct` and set `QT_QPA_PLATFORMTHEME=qt6ct` in the
+graphical session environment. `nix flake check` and dry-build evaluation
+passed. Activated generation
+`mmg268y6b1rp00pp1rimv2dh0aygsds6-nixos-system-moria-26.05.20261013.a033e66`;
+verified `/run/current-system/sw/bin/qt6ct` is present and `/etc/set-environment`
+exports the requested variable. Existing processes keep their old environment;
+the variable applies to applications launched in a fresh login session.
+
 ## [COMPLETED] Enable UDisks2 for Dolphin devices — 2026-10-15T00:40:00Z
 
 Enabled the NixOS UDisks2 service so Dolphin/Solid can enumerate and manage

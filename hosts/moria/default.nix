@@ -192,6 +192,7 @@ in
     gh
     kdePackages.dolphin
     spotify
+    qt6Packages.qt6ct
     ghostty
     chromiumWithSecretService
     xwayland-satellite
