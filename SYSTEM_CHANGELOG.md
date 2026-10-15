@@ -5,6 +5,20 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [PENDING] Integrate Oo7 with greetd PAM login — 2026-10-15T02:10:00+02:00
+
+Enable NixOS's `pam_oo7` integration for the `greetd` authentication and
+session stack so the login password automatically unlocks Oo7's keyring, as on
+the Fedora installation. Because the pinned NixOS release does not yet expose
+the `security.pam.services.<name>.oo7` convenience option, the configuration
+builds the matching `oo7-pam` module from the pinned Oo7 source and installs it
+declaratively. `nix flake check` and `nixos-rebuild dry-build --flake
+/etc/nixos#moria` passed. Activated generation
+`0r9ww1vb7vpqnrwnnp7mbw5zfki17l6y-nixos-system-moria-26.05.20261013.a033e66`.
+Verified `pam_oo7.so` is present in the generated `greetd` auth/session stack
+and zero failed system units. A logout/login is still required to verify that
+the current session unlocks the already-locked Login collection.
+
 ## [COMPLETED] Set Helium as the default browser — 2026-10-15T00:00:00Z
 
 Configure Home Manager MIME associations so Helium handles HTTP, HTTPS, HTML,
