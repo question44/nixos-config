@@ -741,7 +741,7 @@ generation `8gw8xqrac3fx1i4s5gf2w6k75n0hxz32`. Verified the `discord`
 executable is present in the active system profile, Discord 1.0.159 starts
 under Wayland, and no system units are failed.
 
-# [PENDING] Add dedicated Niri Overview backdrop — 2026-10-15T20:49:50Z
+# [COMPLETED] Add dedicated Niri Overview backdrop — 2026-10-15T20:49:50Z
 
 Added a declarative `swaybg` user service that renders
 `wallhaven-vpeq6l.jpg` as a separate background-layer surface on DP-1, plus a
@@ -750,7 +750,7 @@ backdrop. The normal Noctalia desktop wallpaper was restored to
 `wallhaven-p8r2wj.jpg`. `niri validate`, `nix flake check`, and
 `nixos-rebuild dry-build --flake /etc/nixos#moria` passed; the configuration
 was activated as generation `37saps9hdwvfgdwywrhf7l6q8kglnpk0`, and
-`niri-overview-wallpaper.service` is active. Mandatory next action: log out
-and back into Niri so it loads the new layer rule, then verify the galaxy image
-appears behind the workspace grid in Overview without replacing the normal
-desktop wallpaper.
+`niri-overview-wallpaper.service` is active. Niri loaded the deployed
+configuration live via `niri msg action load-config-file`; a captured Overview
+showed the galaxy image behind the workspace grid while the normal desktop
+wallpaper remained unchanged. No user or system units are failed.

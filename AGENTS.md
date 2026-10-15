@@ -73,9 +73,9 @@ working Fedora and Windows installations, and verify every material change.
 - After changing Niri settings, run `nix flake check`,
   `nixos-rebuild dry-build --flake /etc/nixos#moria`, and then
   `sudo nixos-rebuild switch --flake /etc/nixos#moria`.
-- Restart Niri with `niri msg action quit` and log back in to load the new
-  configuration. Verify the affected behavior before declaring the change
-  complete.
+- Reload Niri's deployed configuration with `niri msg action load-config-file`
+  and verify the affected behavior before declaring the change complete. A
+  logout is only needed when a change cannot be applied by the live reload.
 
 ## Secrets and source control
 
