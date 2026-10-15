@@ -30,6 +30,11 @@ let
         --add-flags "--password-store=gnome-libsecret"
     '';
   };
+
+  t3codeStart = pkgs.writeShellScript "t3code-start" ''
+    export PATH="/home/janzon/.local/bin:$PATH"
+    exec /home/janzon/.local/bin/t3 serve --mode web --host 127.0.0.1 --port 3773 --base-dir /home/janzon/.t3/server
+  '';
 in
 
 {
@@ -55,6 +60,7 @@ in
   networking.hostName = "moria";
   networking.networkmanager.enable = true;
   networking.firewall.allowedTCPPorts = [ 22 ];
+  networking.firewall.interfaces.enp4s0.allowedTCPPorts = [ 80 8080 ];
   services.tailscale.enable = true;
   time.timeZone = "Europe/Warsaw";
   i18n.defaultLocale = "en_US.UTF-8";
@@ -70,6 +76,7 @@ in
   };
 
   programs.fish.enable = true;
+  programs.nix-ld.enable = true;
 
   security.sudo.wheelNeedsPassword = true;
   security.sudo.extraRules = [
@@ -104,6 +111,21 @@ in
     serviceConfig = {
       Type = "oneshot";
       ExecStart = "${pkgs.systemd}/bin/systemctl --user restart xremap.service";
+    };
+  };
+  systemd.user.services.t3code = {
+    description = "T3 Code web server";
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
+    wantedBy = [ "default.target" ];
+    environment = {
+      HOME = "/home/janzon";
+    };
+    serviceConfig = {
+      WorkingDirectory = "/home/janzon/Projects";
+      ExecStart = t3codeStart;
+      Restart = "on-failure";
+      RestartSec = "10s";
     };
   };
 
@@ -187,6 +209,20 @@ in
   programs.helium = {
     enable = true;
     flags = [ "--password-store=gnome-libsecret" ];
+  };
+
+  services.caddy = {
+    enable = true;
+    extraConfig = ''
+      :80 {
+        root * ${../../home/services}
+        file_server
+      }
+
+      :8080 {
+        reverse_proxy 127.0.0.1:3773
+      }
+    '';
   };
 
   environment.localBinInPath = true;

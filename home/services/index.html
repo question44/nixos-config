@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>moria services</title>
+<style>
+  :root { color-scheme: light dark; --bg:#131315; --fg:#ececec; --mut:#9a9a9a; --card:#1c1c20; --bd:#2c2c32; --ac:#7aa7d9; }
+  @media (prefers-color-scheme: light) { :root { --bg:#fafafa; --fg:#1a1a1a; --mut:#666; --card:#fff; --bd:#e2e2e2; --ac:#3b6ea5; } }
+  * { box-sizing:border-box; }
+  body { margin:0; padding:3rem 1.25rem; background:var(--bg); color:var(--fg); font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif; }
+  main { max-width:44rem; margin:0 auto; }
+  h1 { font-size:1.6rem; margin:0 0 .25rem; letter-spacing:-.02em; }
+  .sub { color:var(--mut); font-size:.9rem; margin:0 0 2.5rem; }
+  .grid { display:grid; gap:.75rem; grid-template-columns:repeat(auto-fill,minmax(15rem,1fr)); }
+  a { display:block; padding:1rem 1.15rem; background:var(--card); border:1px solid var(--bd); border-radius:.6rem; text-decoration:none; color:inherit; transition:border-color .15s,transform .15s; }
+  a:hover { border-color:var(--ac); transform:translateY(-1px); }
+  .name { font-weight:600; color:var(--ac); }
+  .desc { color:var(--mut); font-size:.85rem; margin-top:.15rem; }
+  footer { margin-top:3rem; color:var(--mut); font-size:.8rem; border-top:1px solid var(--bd); padding-top:1rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>moria</h1>
+  <p class="sub">Services available on the local network.</p>
+  <div class="grid">
+    <a id="t3code" href="http://moria:8080">
+      <div class="name">code</div>
+      <div class="desc">T3 Code &middot; collaborative coding workspace</div>
+    </a>
+  </div>
+  <footer>Served by Caddy &middot; additional services are intentionally not enabled.</footer>
+</main>
+<script>
+  document.querySelector("#t3code").href = `${location.protocol}//${location.hostname}:8080`;
+</script>
+</body>
+</html>

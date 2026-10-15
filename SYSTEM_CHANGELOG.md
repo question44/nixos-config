@@ -5,6 +5,22 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Add native T3 Code and LAN Caddy index — 2026-10-15T07:56:42Z
+
+Installed the supported T3 Code CLI 0.0.45 for `janzon` and enabled
+`programs.nix-ld` because its official generic Linux binary requires NixOS's
+compatibility loader. Added a persistent native `t3code.service` user service
+using `/home/janzon/Projects` as its working directory, with the existing
+`/home/janzon/.local/bin/codex` on its runtime `PATH`. Caddy serves the
+minimal service index on LAN TCP 80 and proxies T3 Code on LAN TCP 8080; the
+T3 backend itself is bound only to `127.0.0.1:3773`. No Tailscale route or
+other former Fedora service was added. `nix flake check` and
+`nixos-rebuild dry-build --flake /etc/nixos#moria` passed, then the
+configuration was activated. Verified both services are enabled and active,
+the index and proxy return HTTP 200 through the LAN address, TCP 80 and 8080
+are accepted only on `enp4s0`, T3 Code is ready, Codex 0.162.1 resolves from
+the T3 service environment, and zero system units are failed.
+
 ## [COMPLETED] Create XDG user directories — 2026-10-15T09:45:00Z
 
 Enabled Home Manager's XDG user-directory management for `janzon`, creating
