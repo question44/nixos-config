@@ -183,15 +183,16 @@ fresh `janzon` process has the `storage` group and can mount `/dev/sdb1` at
 units are failed. Existing desktop processes require a logout/login to receive
 the new supplementary group.
 
-## [PENDING] Import OldUnreal UT2004 from GoodRam — 2026-10-15T15:04:00Z
+## [COMPLETED] Import and repair OldUnreal UT2004 from GoodRam — 2026-10-15T20:20:33+02:00
 
-Added a declarative native launcher, an RPM importer, and the pinned official
-OldUnreal installer wrapper. The launcher is deployed through Home Manager and
-the NixOS flake check, dry build, and switch passed. The OldUnreal-built
-UT2004 3374 RPM was identified on the GoodRam SSD, but the drive was
-disconnected before the read-only import could run. Reconnect it to finish
-copying the game data to `~/Games/UT2004`; the GoodRam source will remain
-unchanged.
+Imported the OldUnreal UT2004 3374 RPM from the mounted GoodRam SSD into
+`~/Games/UT2004`, leaving the source unchanged. The Fedora-built game required
+the legacy `libomp.so.5` loader name plus the C++ and OpenGL GLVND runtimes.
+The declarative launcher now provides these libraries. `nix flake check`,
+`nixos-rebuild dry-build --flake /etc/nixos#moria`, and `nixos-rebuild switch`
+passed. A 15-second windowed, soundless launch smoke test resolved the game and
+renderer dependencies, began the first-run content export, and remained running
+until the intentional timeout.
 
 ## [COMPLETED] Set Niri refresh rate and disable Mango Displays — 2026-10-15T14:52:48Z
 

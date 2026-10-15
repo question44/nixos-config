@@ -6,16 +6,30 @@
 , fetchurl
 , gnutar
 , jq
+, libglvnd
 , llvmPackages
 , openal
 , p7zip
 , rpm
 , sdl3
+, stdenv
+, symlinkJoin
 , unshield
 , writeShellApplication
 }:
 
 let
+  # OldUnreal's Fedora build requests the historical libomp.so.5 filename.
+  # Current Nixpkgs OpenMP exposes the ABI-compatible library as libomp.so,
+  # so provide the requested loader name declaratively.
+  openmpCompat = symlinkJoin {
+    name = "ut2004-openmp-compat";
+    paths = [ llvmPackages.openmp ];
+    postBuild = ''
+      ln -s libomp.so "$out/lib/libomp.so.5"
+    '';
+  };
+
   installer = fetchurl {
     url = "https://raw.githubusercontent.com/OldUnreal/FullGameInstallers/de3635efbb8ad2b1d077fde47bb1332b544d6006/Linux/install-ut2004.sh";
     hash = "sha256-znmXrejRi9P/ObuFdMqN2r3SVNmXNDKMig/Bu4NjHcY=";
@@ -23,8 +37,10 @@ let
 
   runtimeLibraryPath = lib.makeLibraryPath [
     sdl3
-    llvmPackages.openmp
+    openmpCompat
     openal
+    stdenv.cc.cc.lib
+    libglvnd
   ];
 
   ut2004-setup = writeShellApplication {
