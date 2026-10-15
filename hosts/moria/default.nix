@@ -175,6 +175,17 @@ in
       RestartSec = 5;
     };
   };
+  systemd.user.services.niri-overview-wallpaper = {
+    description = "Niri overview backdrop wallpaper";
+    after = [ "graphical-session.target" ];
+    partOf = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.swaybg}/bin/swaybg -o DP-1 -i /home/janzon/Pictures/wallhaven-vpeq6l.jpg -m fill";
+      Restart = "on-failure";
+      RestartSec = 2;
+    };
+  };
   systemd.user.services.hyperhdr = {
     description = "HyperHDR ambient lighting with PipeWire screen capture";
     after = [

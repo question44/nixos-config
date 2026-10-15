@@ -284,6 +284,13 @@ layout {
 // Noctalia is started by its systemd user service, tied to Niri's
 // graphical-session.target so it is stopped on logout and restarted on login.
 
+// Show the dedicated overview wallpaper behind the workspace grid without
+// replacing Noctalia's normal desktop wallpaper.
+layer-rule {
+    match namespace="^wallpaper$"
+    place-within-backdrop true
+}
+
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
 // spawn-sh-at-startup "qs -c ~/source/qs/MyAwesomeShell"
 
