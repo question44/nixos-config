@@ -5,6 +5,17 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Restore Fedora Noctalia layout and appearance settings — 2026-10-15T14:46:50Z
+
+Restored the saved Fedora bar layout and sizing, taskbar and widget tuning,
+Flexoki dark community theme, theme templates, launcher pin, and panel anchor
+to the declarative Noctalia configuration. Retained the explicitly requested
+top dock instead of Fedora's saved left dock. Kept the unavailable Mango
+Displays widget and the two display plugins excluded pending compatibility
+work. `nix flake check`, NixOS dry build, and switch passed; the active
+Noctalia configuration reloaded and its service is active. The existing
+Spotify-media validation warning remains unrelated.
+
 ## [COMPLETED] Match Noctalia bar and dock placement to Fedora — 2026-10-15T14:44:17Z
 
 Made the managed Noctalia edges explicit: the default bar is on the bottom and
