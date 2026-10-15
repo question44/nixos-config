@@ -9,6 +9,8 @@ let
     name = "noctalia-plugin-python";
     paths = [ (pkgs.python3.withPackages (ps: [
       ps.pygobject3
+      ps.pillow
+      ps.psutil
       ps.speedtest-cli
       ps.syncedlyrics
     ])) ];
@@ -301,6 +303,7 @@ in
     chromiumWithSecretService
     xwayland-satellite
     wl-clipboard
+    wlr-randr
     pavucontrol
     tuigreet
     xremap

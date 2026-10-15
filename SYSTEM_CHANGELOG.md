@@ -5,6 +5,14 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Add Noctalia Processes dependencies and wlr-randr — 2026-10-15T14:50:11Z
+
+Added `psutil` and Pillow to the dedicated Noctalia plugin Python environment,
+and added `wlr-randr` to the system packages. `nix flake check`, dry build,
+and switch passed. Verified Python imports `psutil 7.2.2` and `Pillow 12.3.0`,
+the Processes plugin statistics script starts successfully, `wlr-randr --help`
+works, and `noctalia.service` remains active.
+
 ## [COMPLETED] Restore Fedora Noctalia layout and appearance settings — 2026-10-15T14:46:50Z
 
 Restored the saved Fedora bar layout and sizing, taskbar and widget tuning,
