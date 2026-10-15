@@ -349,6 +349,63 @@ window-rule {
 }
 
 binds {
+    // Fedora-derived xremap layer: physical Caps chords arrive as
+    // Ctrl+Alt+Super, while right-Ctrl app shortcuts arrive as XF86Launch keys.
+    Ctrl+Alt+Super+Insert repeat=false { show-hotkey-overlay; }
+    Ctrl+Alt+Super+Space { spawn "noctalia" "msg" "panel-toggle" "launcher"; }
+    Super+Space { spawn "noctalia" "msg" "panel-toggle" "launcher"; }
+    Alt+Space { spawn "noctalia" "msg" "panel-toggle" "launcher"; }
+    Ctrl+Alt+Super+Comma { spawn "noctalia" "msg" "settings-toggle"; }
+    Ctrl+Alt+Super+Escape { spawn "noctalia" "msg" "session" "logout"; }
+    Ctrl+Alt+Super+X { spawn "noctalia" "msg" "session" "lock"; }
+    Ctrl+Alt+Super+Return { spawn "helium"; }
+    XF86Launch6 { spawn "ghostty"; }
+    XF86Launch7 { spawn "helium"; }
+    XF86Launch8 { spawn "dolphin"; }
+
+    // Fedora Caps navigation and window-management layer.
+    Ctrl+Alt+Super+T { toggle-column-tabbed-display; }
+    Ctrl+Alt+Super+W { focus-window-up; }
+    Ctrl+Alt+Super+A { focus-column-left; }
+    Ctrl+Alt+Super+S { focus-window-down; }
+    Ctrl+Alt+Super+D { focus-column-right; }
+    Ctrl+Alt+Shift+Super+W { move-window-up; }
+    Ctrl+Alt+Shift+Super+A { move-column-left; }
+    Ctrl+Alt+Shift+Super+S { move-window-down; }
+    Ctrl+Alt+Shift+Super+D { move-column-right; }
+    Ctrl+Alt+Super+Home { focus-column-first; }
+    Ctrl+Alt+Super+End { focus-column-last; }
+    Ctrl+Alt+Shift+Super+Home { move-column-to-first; }
+    Ctrl+Alt+Shift+Super+End { move-column-to-last; }
+    Ctrl+Alt+Super+Page_Up { focus-workspace-up; }
+    Ctrl+Alt+Super+Page_Down { focus-workspace-down; }
+    Ctrl+Alt+Shift+Super+Page_Up { move-window-to-workspace-up; }
+    Ctrl+Alt+Shift+Super+Page_Down { move-window-to-workspace-down; }
+    XF86Tools cooldown-ms=50 { focus-column-right; }
+    XF86Launch5 cooldown-ms=50 { focus-column-left; }
+    Ctrl+Alt+Super+Q repeat=false { close-window; }
+    Ctrl+Alt+Super+C { center-column; }
+    Ctrl+Alt+Super+R { switch-preset-column-width; }
+    Ctrl+Alt+Super+F { spawn-sh "niri msg action maximize-column && sleep 0.3 && niri msg action center-column"; }
+    Ctrl+Alt+Super+G { fullscreen-window; }
+    Ctrl+Alt+Super+E { expand-column-to-available-width; }
+    Ctrl+Alt+Super+B { toggle-window-floating; }
+    Ctrl+Alt+Super+BracketLeft { consume-or-expel-window-left; }
+    Ctrl+Alt+Super+BracketRight { consume-or-expel-window-right; }
+    Ctrl+Alt+Super+Z { focus-workspace-up; }
+    Ctrl+Alt+Super+Period { move-column-to-workspace-down; }
+    Ctrl+Alt+Super+1 { focus-workspace 1; }
+    Ctrl+Alt+Super+2 { focus-workspace 2; }
+    Ctrl+Alt+Super+3 { focus-workspace 3; }
+    Ctrl+Alt+Super+4 { focus-workspace 4; }
+    Ctrl+Alt+Super+5 { focus-workspace 5; }
+    Ctrl+Alt+Super+6 { focus-workspace 6; }
+    Ctrl+Alt+Super+7 { focus-workspace 7; }
+    Ctrl+Alt+Super+8 { focus-workspace 8; }
+    Ctrl+Alt+Super+9 { focus-workspace 9; }
+    Ctrl+Alt+Super+Grave { toggle-overview; }
+    Ctrl+Alt+Super+Tab { focus-workspace-previous; }
+
     // Keys consist of modifiers separated by + signs, followed by an XKB key name
     // in the end. To find an XKB name for a particular key, you may use a program
     // like wev.

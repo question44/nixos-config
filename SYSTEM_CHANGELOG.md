@@ -5,6 +5,19 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Import Fedora Niri shortcuts — 2026-10-15T00:37:00Z
+
+Port the Fedora xremap Caps-layer navigation and window-management shortcuts
+to the declarative Niri config. Connect common launcher, settings, lock, browser,
+terminal, and Dolphin shortcuts to the installed Noctalia/NixOS applications;
+Fedora-only DMS, Vicinae, and custom-helper bindings remain deferred. Niri
+validation, `nix flake check`, and the NixOS dry-build evaluation passed.
+Activated generation
+`vxfwk6qi5cm3js3v1ccxdia0ync1nqqz-nixos-system-moria-26.05.20261013.a033e66`;
+Home Manager deployed the config and its Niri validation passed. Reloaded the
+running compositor with `niri msg action load-config-file`; Noctalia's user
+service remains active.
+
 ## [PENDING] Install xremap with the Fedora configuration — 2026-10-15T02:22:00Z
 
 Copy Fedora's active xremap mapping and three device filters (both IQUNIX
