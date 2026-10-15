@@ -5,6 +5,16 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Match Noctalia bar and dock placement to Fedora — 2026-10-15T14:44:17Z
+
+Made the managed Noctalia edges explicit: the default bar is on the bottom and
+the dock is on the top, matching Fedora instead of Noctalia's implicit default
+layout. `nix flake check`, `nixos-rebuild dry-build`, and
+`nixos-rebuild switch --flake /etc/nixos#moria` completed successfully. Reloaded
+the active Noctalia configuration; it validates and `noctalia.service` remains
+active. The pre-existing Spotify media plugin validation warning remains
+unrelated to these placement settings.
+
 ## [COMPLETED] Adapt Spotify Media plugin for Niri — 2026-10-15T14:05:49Z
 
 Published the standalone Noctalia plugin fork at

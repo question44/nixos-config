@@ -4,6 +4,7 @@ enabled = true
 
 [bar.default]
 background_opacity = 0.68999998457729816
+position = "bottom"
 border = "surface_variant"
 capsule = true
 capsule_radius = 8
@@ -92,6 +93,7 @@ sidebar_section = "full"
 
 [dock]
 background_opacity = 0.79999998211860657
+position = "top"
 border_width = 0.5
 enabled = true
 icon_size = 42
