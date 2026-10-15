@@ -794,3 +794,11 @@ and Noctalia bar margins unchanged. `niri validate`, `nix flake check`, and
 `nixos-rebuild dry-build --flake /etc/nixos#moria` passed. After activation,
 the deployed Niri config was loaded live with `niri msg action
 load-config-file` and validated successfully; Niri was not restarted.
+
+# [COMPLETED] Round Niri focus ring to 8 px — 2026-10-15
+
+Enabled a global `geometry-corner-radius 8` window rule, which rounds Niri's
+focus ring and borders to an 8-pixel radius. Window content is not forcibly
+clipped. `niri validate`, `nix flake check`, and
+`nixos-rebuild dry-build --flake /etc/nixos#moria` passed. The configuration
+was activated and loaded live via Niri IPC; Niri was not restarted.
