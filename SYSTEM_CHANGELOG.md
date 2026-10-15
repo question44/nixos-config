@@ -5,6 +5,14 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Install Vicinae launcher — 2026-10-15T17:02:00Z
+
+Add the packaged Vicinae application launcher to the declarative system
+package set. No launcher binding or additional service configuration is added.
+`nix flake check` and `nixos-rebuild dry-build --flake /etc/nixos#moria`
+passed before activation; Vicinae v0.23.2 and its desktop entries are present
+after activation, with no failed system units.
+
 ## [COMPLETED] Make Starship follow Noctalia’s active palette — 2026-10-15T17:00:00Z
 
 Use Noctalia’s built-in Starship template to generate a runtime palette while
