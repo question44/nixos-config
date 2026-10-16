@@ -299,6 +299,9 @@ hotkey-overlay {
     // skip-at-startup
 }
 
+// Keep background chat clients available without leaving them on the desktop.
+workspace "background-app"
+
 // Ask applications to omit client-side titlebars/decorations when supported.
 // Apps that explicitly require their own decorations may keep them; existing
 // windows need to be restarted for this preference to take effect.
@@ -402,7 +405,9 @@ binds {
     Ctrl+Alt+Shift+Super+Page_Down { move-window-to-workspace-down; }
     XF86Tools cooldown-ms=50 { focus-column-right; }
     XF86Launch5 cooldown-ms=50 { focus-column-left; }
-    Ctrl+Alt+Super+Q repeat=false { close-window; }
+    // Caps+Q parks Discord on its persistent background workspace. Other
+    // windows keep the usual close behavior.
+    Ctrl+Alt+Super+Q repeat=false { spawn "/home/janzon/.local/bin/niri-caps-q"; }
     Ctrl+Alt+Super+C { center-column; }
     Ctrl+Alt+Super+R { switch-preset-column-width; }
     Ctrl+Alt+Super+F { spawn-sh "niri msg action maximize-column && sleep 0.3 && niri msg action center-column"; }

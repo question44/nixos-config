@@ -948,6 +948,16 @@ and Noctalia bar margins unchanged. `niri validate`, `nix flake check`, and
 the deployed Niri config was loaded live with `niri msg action
 load-config-file` and validated successfully; Niri was not restarted.
 
+# [COMPLETED] Add a background-app workspace for Discord — 2026-10-16
+
+Declare a persistent `background-app` Niri workspace. Caps+Q moves a focused
+Discord window there while retaining the existing close-window behavior for
+other applications. `niri validate`, `nix flake check`, and
+`nixos-rebuild dry-build` passed; the change was activated with
+`nixos-rebuild switch` and loaded live. Invoking the shortcut script moved the
+Discord window to the named workspace while leaving focus on the original
+workspace. The window was returned to its original workspace after verification.
+
 # [COMPLETED] Round Niri focus ring to 8 px — 2026-10-15
 
 Enabled a global `geometry-corner-radius 8` window rule, which rounds Niri's

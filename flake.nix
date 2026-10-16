@@ -203,6 +203,10 @@
                 source = ./home/dolphin/niri-overview-wallpaper;
                 executable = true;
               };
+              home.file.".local/bin/niri-caps-q" = {
+                source = ./home/niri/caps-q-window;
+                executable = true;
+              };
               home.file.".local/share/kio/servicemenus/set-niri-overview-wallpaper.desktop" = {
                 source = ./home/dolphin/set-niri-overview-wallpaper.desktop;
                 executable = true;
