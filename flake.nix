@@ -226,6 +226,10 @@
               '';
               xdg.configFile."niri/config.kdl".source = ./home/niri/config.kdl;
               xdg.configFile."xremap/config.yml".source = ./home/xremap/config.yml;
+              home.file.".local/bin/reboot-windows" = {
+                source = ./home/reboot-windows.py;
+                executable = true;
+              };
               home.file.".local/bin/niri-overview-wallpaper" = {
                 source = ./home/dolphin/niri-overview-wallpaper;
                 executable = true;

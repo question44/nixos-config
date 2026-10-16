@@ -1500,3 +1500,23 @@ Home Manager config file is deployed and the source change persists for
 future rebuilds. No boot selection or reboot was tested. Noctalia logs also
 identify the underlying agent registration failure: the passed login session
 differs from the caller session. This workaround does not repair that agent.
+
+## [COMPLETED] Add reboot-windows command — 2026-10-17
+
+Add a Home Manager managed ~/.local/bin/reboot-windows command. The user
+selected Windows entry 0007 provisionally. Resolve its active Windows loader
+by stable shared-ESP partition UUID instead of a fixed firmware entry number.
+Set and verify only BootNext before requesting reboot; --dry-run is read-only.
+The loader exists at /boot/EFI/Microsoft/Boot/bootmgfw.efi and dry-run resolves
+Boot0007. Do not execute the reboot path during validation. Existing BootNext
+0001 was already set before this task and is preserved by installation.
+Validate flake, dry build, test activation, and deployed dry run. Persistent
+recovery generation is 156; do not modify boot order or the ESP.
+
+Validation passed: flake check, dry build, test activation, and installed
+reboot-windows --dry-run (Boot0007). Mocked subprocess checks verified the
+success sequence and refusal to reboot after failed BootNext writes or
+verification. No system units failed. BootNext 0001 and BootOrder are
+unchanged; no reboot was performed. Home Manager deployed the executable.
+The persistent system generation remains 156; Windows boot success remains
+unverified, as requested work was script installation only.
