@@ -1480,3 +1480,23 @@ according to console-linux.txt. Verified the active theme configuration,
 shared CSS path, a live Steam window in Niri, and no failed system units.
 Active system profile is generation 156:
 `/nix/store/s6cjkbx9fb3bip9znadbxgqhxypbg94n-nixos-system-erebor-26.05.20261013.a033e66`.
+
+## [COMPLETED] Repair Noctalia Next Boot Selector authentication — 2026-10-17
+
+The plugin defaults to pkexec, but a read-only pkexec probe failed with
+"No authentication agent found". Configure its privilege_command as
+`/run/wrappers/bin/sudo -n`, using the existing sudo policy. A read-only
+privileged efibootmgr query succeeded. Validate the flake and dry build,
+then activate with `nixos-rebuild test` and reload Noctalia. Generation 156
+is the persistent recovery generation. No BootNext is set; boot order and
+EFI entries must remain unchanged. Do not reboot or select an entry as a test.
+
+Validation: flake check, dry build, and test activation passed. Noctalia
+config reload succeeded and the deployed config has the sudo override.
+Read-only sudo efibootmgr succeeds; BootNext remains unset and BootOrder is
+unchanged. No system units failed. Test activation is active; persistent
+system generation remains 156 (no bootloader activation performed). The
+Home Manager config file is deployed and the source change persists for
+future rebuilds. No boot selection or reboot was tested. Noctalia logs also
+identify the underlying agent registration failure: the passed login session
+differs from the caller session. This workaround does not repair that agent.

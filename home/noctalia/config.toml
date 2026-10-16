@@ -173,6 +173,9 @@ orientation = "vertical"
 position = "bottom_left"
 position_vertical = "top_left"
 
+[plugin_settings."avivbintangaringga/nextboot-selector"]
+privilege_command = "/run/wrappers/bin/sudo -n"
+
 [plugin_settings."goatnath/spotify-lyrics"]
 lyrics-panel_layer = "overlay"
 lyrics-panel_open_near_click = true
