@@ -375,6 +375,22 @@ in
     alsa.support32Bit = true;
     pulse.enable = true;
     wireplumber.enable = true;
+    extraConfig.client."90-hyperhdr-music" = {
+      "stream.rules" = [
+        {
+          matches = [
+            {
+              "application.process.binary" = ".hyperhdr-wrapped";
+              "media.class" = "Stream/Input/Audio";
+            }
+          ];
+          actions.update-props = {
+            "target.object" = "alsa_output.usb-iFi__by_AMR__iFi__by_AMR__HD_USB_Audio_0003-00.analog-stereo";
+            "stream.capture.sink" = true;
+          };
+        }
+      ];
+    };
   };
 
   xdg.portal = {

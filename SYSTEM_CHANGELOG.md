@@ -1,5 +1,21 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [COMPLETED] Route HyperHDR music capture to the iFi output — 2026-10-16
+
+HyperHDR's PipeWire ALSA input followed the default USB camera microphone,
+which was muted, while Spotify played through the iFi USB output. Moving the
+live stream to the iFi output monitor made HyperHDR report sound detected.
+Added a PipeWire ALSA client stream rule to select that monitor when HyperHDR
+starts. `nix flake check`, dry build, test activation, and persistent switch
+passed. Active generation is
+`28z1vlbfgj0pyx9pc49sayhn1gba9lsj-nixos-system-erebor-26.05.20261013.a033e66`.
+After restarting WirePlumber and HyperHDR, the new music capture stream linked
+to the iFi output monitor, HyperHDR reported sound detected, and the music
+effect was visible at priority 1. The USB camera input was idle. HyperHDR and
+WirePlumber are active, with no failed system or user units. Root and ESP mounts
+and the NixOS boot entry remain healthy. The rule follows the iFi device; if
+the playback device changes, update the selected monitor.
+
 ## [COMPLETED] Restore HyperHDR capture after graphical login — 2026-10-16
 
 At 15:14 and 15:15, Niri session restarts caused the GNOME portal backend to
