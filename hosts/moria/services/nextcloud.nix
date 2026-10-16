@@ -3,7 +3,7 @@
   virtualisation.oci-containers.containers = {
     nextcloud-db = {
       image = "docker.io/library/postgres:17-alpine";
-      volumes = [ "/var/lib/moria/nextcloud/db:/var/lib/postgresql/data" ];
+      volumes = [ "/srv/nextcloud/db:/var/lib/postgresql/data" ];
       environmentFiles = [ "/etc/nextcloud/db.env" ];
       extraOptions = [ "--ip=10.88.0.20" ];
     };
@@ -16,8 +16,8 @@
       dependsOn = [ "nextcloud-db" "nextcloud-redis" ];
       ports = [ "127.0.0.1:18089:80" ];
       volumes = [
-        "/var/lib/moria/nextcloud/html:/var/www/html"
-        "/var/lib/moria/nextcloud/data:/var/www/data"
+        "/srv/nextcloud/html:/var/www/html"
+        "/srv/nextcloud/data:/var/www/data"
         "/srv/torrents/complete:/var/www/downloads:ro"
         "/srv/external/crucial:/var/www/external/crucial:ro"
         "/srv/external/seagate:/var/www/external/seagate:ro"
