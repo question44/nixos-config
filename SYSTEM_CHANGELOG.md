@@ -1465,3 +1465,18 @@ Spotify's patched colors.css. Verified Spotify runs from the writable copy
 and has a live Niri window. No system units are failed. Active system
 profile is generation 154:
 `/nix/store/kvxqdm95lnrw1az8k7svrjhkazq6yr34-nixos-system-erebor-26.05.20261013.a033e66`.
+
+## [COMPLETED] Apply Noctalia theme to Steam — 2026-10-17
+
+Use Millennium's official Nix overlay and pinned Material Theme with the
+Matugen color source selected. Repair the Noctalia-created ~/.steam/steam
+directory, preserving it as steam.noctalia-bootstrap-backup, so Steam can
+link to ~/.local/share/Steam correctly. Starting system profile is generation
+155. `nix flake check`, dry-build, build, test, and switch passed.
+Added a link from Millennium 3's new theme root to Noctalia's legacy output
+path. Steam now starts successfully; Millennium initializes Material Theme
+with Color=Matugen and repeatedly reads the generated 4.1 KB matugen.css
+according to console-linux.txt. Verified the active theme configuration,
+shared CSS path, a live Steam window in Niri, and no failed system units.
+Active system profile is generation 156:
+`/nix/store/s6cjkbx9fb3bip9znadbxgqhxypbg94n-nixos-system-erebor-26.05.20261013.a033e66`.

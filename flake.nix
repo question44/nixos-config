@@ -5,6 +5,10 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     noctalia.url = "github:noctalia-dev/noctalia-shell";
     umbriel.url = "github:noctalia-dev/umbriel";
+    millennium = {
+      url = "github:SteamClientHomebrew/Millennium?dir=packages/nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     helium = {
       url = "github:oxcl/nix-flake-helium-browser";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -20,7 +24,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, noctalia, umbriel, helium, darkly, vicinae, home-manager, ... }:
+  outputs = { self, nixpkgs, noctalia, umbriel, millennium, helium, darkly, vicinae, home-manager, ... }:
     {
       nixosConfigurations.moria = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
@@ -32,6 +36,7 @@
           helium.nixosModules.default
           home-manager.nixosModules.home-manager
           {
+            nixpkgs.overlays = [ millennium.overlays.default ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.backupFileExtension = "backup";

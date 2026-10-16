@@ -88,6 +88,7 @@ in
 {
   imports = [
     ../../modules/spotify.nix
+    ../../modules/steam-theme.nix
     ./hardware-configuration.nix
     ./services/jellyfin.nix
     ./services/syncthing.nix
