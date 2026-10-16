@@ -117,6 +117,19 @@ in
   networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 80 443 22000 ];
   networking.firewall.interfaces.tailscale0.allowedUDPPorts = [ 22000 ];
   services.tailscale.enable = true;
+  services.cockpit = {
+    enable = true;
+    openFirewall = false;
+    allowed-origins = [
+      "https://sys.erebor.jzon.pl"
+      "wss://sys.erebor.jzon.pl"
+    ];
+    settings.WebService = {
+      AllowUnencrypted = true;
+      LoginTo = false;
+      ProtocolHeader = "X-Forwarded-Proto";
+    };
+  };
   hardware.i2c.enable = true;
   time.timeZone = "Europe/Warsaw";
   i18n.defaultLocale = "en_US.UTF-8";
@@ -500,6 +513,11 @@ in
             header_up Referer https://torrent.moria.jzon.pl/
             header_up -Authorization
           }
+        }
+
+        @sys host sys.erebor.jzon.pl
+        handle @sys {
+          reverse_proxy 127.0.0.1:9090
         }
 
         handle {

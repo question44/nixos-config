@@ -5,6 +5,16 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Add Cockpit at sys.erebor.jzon.pl — 2026-10-16
+
+Enabled the NixOS Cockpit service and proxied `sys.erebor.jzon.pl` through
+Caddy. Port 9090 remains closed in the host firewall; Cockpit accepts the
+configured HTTPS/WSS origin and forwarded protocol from Caddy. Added a system
+link to the service index. `nix flake check`, dry build, test activation, and
+switch passed; generation 122 is active. Verified `cockpit.socket` and Caddy
+are active and the URL returns HTTP 200 with trusted TLS. No failed units and
+no reboot needed.
+
 ## [COMPLETED] Add OVH-backed HTTPS aliases for erebor — 2026-10-16
 
 Set the machine hostname to `erebor` and retained `moria` as an alias. Built
