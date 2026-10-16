@@ -102,7 +102,7 @@ keymap:
         remap:
           CapsLock-q: KEY_F21
         timeout_millis: 400
-        timeout_key: KEY_F20
+        timeout_key: Ctrl-Alt-Super-q
       CapsLock-r: Ctrl-Alt-Super-r
       CapsLock-s: Ctrl-Alt-Super-s
       CapsLock-t: Ctrl-Alt-Super-t
