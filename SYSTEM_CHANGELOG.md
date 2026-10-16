@@ -1432,3 +1432,15 @@ Added `kdePackages.konsole` to the system packages. `nix flake check` and
 successfully. Verified `/run/current-system/sw/bin/konsole` reports version
 26.04.3. Active generation:
 `/nix/store/86lb0kmj0740rl5aa1fiz5ax87mmhya1-nixos-system-erebor-26.05.20261013.a033e66`.
+
+## [COMPLETED] Apply Noctalia theme to Discord — 2026-10-17
+
+Enable Vencord in the existing Discord package and initialize its writable
+settings with Noctalia Midnight selected. Noctalia's existing community
+Discord template owns the generated CSS and follows palette changes.
+`nix flake check`, dry-build, test, and switch passed. Noctalia regenerated
+all three Vencord theme files with resolved palette colors. Restarted Discord
+from the new package; Vencord initialized its settings and retained
+`noctalia.theme.css` as the enabled theme. Discord has a live Niri window and
+no system units are failed. Active system profile is generation 153:
+`/nix/store/bqhjrls9mp0kflpfx2dqgs72ls3c9cdk-nixos-system-erebor-26.05.20261013.a033e66`.

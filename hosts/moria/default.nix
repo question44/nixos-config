@@ -595,7 +595,7 @@ in
     candy-icons
     darkly.packages.${pkgs.system}.darkly-qt6
     spotify
-    discord
+    (discord.override { withVencord = true; })
     vicinae.packages.${pkgs.system}.default
     ghostty
     chromiumWithSecretService

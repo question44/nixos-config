@@ -199,6 +199,16 @@
               xdg.configFile."ghostty/config.ghostty".source = ./home/ghostty/config.ghostty;
               xdg.configFile."noctalia/config.toml".source = ./home/noctalia/config.toml;
               xdg.configFile."noctalia/starship-base.toml".source = ./home/starship.toml;
+              # Keep Vencord settings writable and let Noctalia generate its CSS.
+              home.activation.discordNoctaliaTheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+                $DRY_RUN_CMD ${pkgs.coreutils}/bin/mkdir -p "$HOME/.config/Vencord/themes" "$HOME/.config/Vencord/settings"
+                settings="$HOME/.config/Vencord/settings/settings.json"
+                if [ ! -e "$settings" ]; then
+                  $DRY_RUN_CMD ${pkgs.coreutils}/bin/install -m 600 ${pkgs.writeText "vencord-noctalia-settings.json" (builtins.toJSON {
+                    enabledThemes = [ "noctalia.theme.css" ];
+                  })} "$settings"
+                fi
+              '';
               xdg.configFile."systemd/user/niri-overview-wallpaper.service.d/override.conf".source =
                 ./home/systemd/niri-overview-wallpaper-override.conf;
               xdg.configFile."systemd/user/graphical-session.target.wants/vicinae.service".source =
