@@ -103,7 +103,7 @@ in
   networking.hostName = "moria";
   networking.networkmanager.enable = true;
   networking.firewall.allowedTCPPorts = [ 22 ];
-  networking.firewall.interfaces.enp4s0.allowedTCPPorts = [ 80 8080 22000 ];
+  networking.firewall.interfaces.enp4s0.allowedTCPPorts = [ 80 8080 8095 8096 8384 8082 22000 ];
   networking.firewall.interfaces.enp4s0.allowedUDPPorts = [ 22000 ];
   networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 22000 ];
   networking.firewall.interfaces.tailscale0.allowedUDPPorts = [ 22000 ];
@@ -373,6 +373,25 @@ in
 
       :8080 {
         reverse_proxy 127.0.0.1:3773
+      }
+
+      :8096 {
+        reverse_proxy 127.0.0.1:18096
+      }
+
+      :8095 {
+        reverse_proxy 127.0.0.1:18089
+      }
+
+      :8384 {
+        reverse_proxy 127.0.0.1:18384 {
+          header_up Host localhost:18384
+          header_up Origin http://localhost:18384
+        }
+      }
+
+      :8082 {
+        reverse_proxy 127.0.0.1:18081
       }
     '';
   };

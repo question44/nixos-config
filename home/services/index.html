@@ -25,15 +25,36 @@
   <h1>moria</h1>
   <p class="sub">Services available on the local network.</p>
   <div class="grid">
+    <a id="jellyfin" href="http://moria:8096">
+      <div class="name">media</div>
+      <div class="desc">Jellyfin media library</div>
+    </a>
+    <a id="nextcloud" href="http://moria:8095">
+      <div class="name">cloud</div>
+      <div class="desc">Nextcloud files and calendar</div>
+    </a>
+    <a id="syncthing" href="http://moria:8384">
+      <div class="name">sync</div>
+      <div class="desc">Syncthing device and folder status</div>
+    </a>
+    <a id="qbittorrent" href="http://moria:8082">
+      <div class="name">torrent</div>
+      <div class="desc">qBittorrent Web UI</div>
+    </a>
     <a id="t3code" href="http://moria:8080">
       <div class="name">code</div>
       <div class="desc">T3 Code &middot; collaborative coding workspace</div>
     </a>
   </div>
-  <footer>Served by Caddy &middot; additional services are intentionally not enabled.</footer>
+  <footer>Served by Caddy on the local network.</footer>
 </main>
 <script>
-  document.querySelector("#t3code").href = `${location.protocol}//${location.hostname}:8080`;
+  const localUrl = (port) => `http://${location.hostname}:${port}`;
+  document.querySelector("#jellyfin").href = localUrl(8096);
+  document.querySelector("#nextcloud").href = localUrl(8095);
+  document.querySelector("#syncthing").href = localUrl(8384);
+  document.querySelector("#qbittorrent").href = localUrl(8082);
+  document.querySelector("#t3code").href = localUrl(8080);
 </script>
 </body>
 </html>

@@ -5,18 +5,19 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
-## [PENDING] Import Fedora service mounts and local services — 2026-10-16
+## [COMPLETED] Import Fedora service mounts and local services — 2026-10-16
 
 Checkpoint before mount/service changes: generation 100 is active on the
 `nixos-root` Btrfs subvolume; `/home` is `nixos-home`; `/boot` is the NixOS
-ESP. Fedora and Windows UEFI entries are present, and systemd-boot lists
-generation 100 as the current default. Created and verified read-only Btrfs
+ESP. Fedora and Windows UEFI entries were present. Created and verified read-only Btrfs
 snapshot `/btrfs-top/nixos-root-pre-service-import-20261016` (UUID
-`be74b8ca-fe02-b440-8863-21c3890650dd`, subvolume ID 642). Keep Fedora's
-`/srv` and external-drive data read-only on NixOS. Do not reboot during this
-operation. After activation, verify all five mount sources and read-only
-flags, service health, and local Caddy links; retain generation 100 as the
-recovery path until that verification is complete.
+`be74b8ca-fe02-b440-8863-21c3890650dd`, subvolume ID 642). Kept Fedora's
+`/srv` and external-drive data read-only on NixOS. Generation 107 is now the
+active default; all five mounts are read-only, all imported services and Caddy are
+active, service endpoints
+respond as expected, and no system units have failed. Generation 100 remains
+in the boot menu for recovery. Fedora and Windows boot entries remain
+available. No reboot was performed.
 
 ## [COMPLETED] Mount Fedora service volumes read-only — 2026-10-16
 
@@ -963,3 +964,13 @@ responds with the login redirect, the imported library mounts are read only,
 and the first background cron pass completed. `nix flake check`, dry-build,
 test, and switch passed. Recovery checkpoint remains generation 100 and the
 verified snapshot `/btrfs-top/nixos-root-pre-service-import-20261016`.
+
+## [COMPLETED] Add local service links through Caddy — 2026-10-16
+
+Add local reverse proxies and update the Caddy index for Jellyfin, Nextcloud,
+Syncthing, and qBittorrent. Links use the current hostname or LAN address;
+the imported Fedora HTTPS domains are not used. Open the corresponding ports
+on the LAN interface. `nix flake check`, dry-build, test, and switch passed.
+Verified the index responds with HTTP 200, Jellyfin and Nextcloud redirect to
+their login/setup pages, Syncthing responds with HTTP 200, and qBittorrent
+requires authentication.
