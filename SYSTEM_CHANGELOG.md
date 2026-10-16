@@ -5,6 +5,16 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Force Darkly Qt style in user sessions — 2026-10-16
+
+Set Home Manager's `QT_STYLE_OVERRIDE=Darkly` so Qt applications use the
+Darkly style. `nix flake check` and `nixos-rebuild dry-build` passed; the
+configuration is active as generation
+`4qh5pc4x4gfpvh2pb6xr67w3jv4pqsa5-nixos-system-moria-26.05.20261013.a033e66`.
+Verified the generated Home Manager session environment exports the override.
+After a fresh graphical login, verified Qt applications launched from Niri
+use Darkly with the configured style options.
+
 ## [COMPLETED] Add local service hostnames — 2026-10-16
 
 Added loopback host entries and Caddy host routing for `torrent`, `jellyfin`,

@@ -65,6 +65,7 @@
                 EDITOR = "${sessionEditor}/bin/session-editor";
                 VISUAL = "${sessionEditor}/bin/session-editor";
                 GIT_EDITOR = "${sessionEditor}/bin/session-editor";
+                QT_STYLE_OVERRIDE = "Darkly";
                 STARSHIP_CONFIG = lib.mkForce "/home/janzon/.config/noctalia/starship.toml";
               };
               programs.fish = {
