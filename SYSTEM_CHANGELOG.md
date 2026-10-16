@@ -5,6 +5,19 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [PENDING] Import Fedora service mounts and local services — 2026-10-16
+
+Checkpoint before mount/service changes: generation 100 is active on the
+`nixos-root` Btrfs subvolume; `/home` is `nixos-home`; `/boot` is the NixOS
+ESP. Fedora and Windows UEFI entries are present, and systemd-boot lists
+generation 100 as the current default. Created and verified read-only Btrfs
+snapshot `/btrfs-top/nixos-root-pre-service-import-20261016` (UUID
+`be74b8ca-fe02-b440-8863-21c3890650dd`, subvolume ID 642). Keep Fedora's
+`/srv` and external-drive data read-only on NixOS. Do not reboot during this
+operation. After activation, verify all five mount sources and read-only
+flags, service health, and local Caddy links; retain generation 100 as the
+recovery path until that verification is complete.
+
 ## [COMPLETED] Enable Steam — 2026-10-16
 
 Enabled the NixOS Steam module with scoped unfree package allowances. The
