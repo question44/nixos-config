@@ -232,7 +232,7 @@
                   set -euo pipefail
 
                   output="DP-1"
-                  hdr_active="$(umbriel outputs --json | jq -er --arg name "$output" '.[] | select(.name == $name) | .hdr_active')"
+                  hdr_active="$(umbriel outputs --json | jq -r --arg name "$output" '.[] | select(.name == $name) | .hdr_active')"
                   case "$hdr_active" in
                     true) hdr="off" ;;
                     false) hdr="on" ;;
@@ -246,8 +246,13 @@
                   temporary="$profile.tmp.$$"
                   umask 077
                   trap 'rm -f "$temporary"' EXIT
-                  printf '[include]\\nfiles = ["%s/.config/umbriel/config.toml"]\\n\\n[output."%s"]\\nhdr = "%s"\\n' \\
-                    "$HOME" "$output" "$hdr" > "$temporary"
+                  cat > "$temporary" <<EOF
+                  [include]
+                  files = ["$HOME/.config/umbriel/config.toml"]
+
+                  [output."$output"]
+                  hdr = "$hdr"
+                  EOF
                   mv "$temporary" "$profile"
                   trap - EXIT
                   exec umbriel config-replace "$profile"

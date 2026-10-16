@@ -1139,3 +1139,13 @@ reduce blur strength. Umbriel config validation, `nix flake check`, and
 The deployed config validates, Umbriel reloaded the appearance and scene blur
 settings, and both Umbriel and Vicinae are active. The user approved keeping
 radius 3 and committing the change.
+
+## [COMPLETED] Repair Umbriel HDR toggle script — 2026-10-16
+
+Fix the generated `umbriel-hdr-toggle` script. Escaped newlines produced an
+invalid override, and `jq -e` treated the valid `false` state as an error.
+`nix flake check`, dry-build, `nixos-rebuild test`, and `switch` passed. The
+deployed script passes `bash -n` and was verified in both directions: HDR
+turned off, then on. DP-1 is back in HDR mode (`hdr_active=true`), and the
+active NixOS system is
+`/nix/store/bl81fynrhj8jhj34ca5pgzi5d7nsnkm0-nixos-system-erebor-26.05.20261013.a033e66`.
