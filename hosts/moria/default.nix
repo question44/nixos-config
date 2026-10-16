@@ -75,6 +75,7 @@ in
 {
   imports = [
     ./hardware-configuration.nix
+    ./services/jellyfin.nix
     ../../modules/desktop.nix
     ../../modules/nvidia.nix
   ];

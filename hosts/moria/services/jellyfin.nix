@@ -1,0 +1,22 @@
+{ ... }:
+{
+  virtualisation.oci-containers.backend = "podman";
+  virtualisation.oci-containers.containers.jellyfin = {
+    image = "docker.io/jellyfin/jellyfin:10.11.11";
+    ports = [ "127.0.0.1:18096:8096" ];
+    volumes = [
+      "/var/lib/moria/jellyfin/config:/config"
+      "/var/lib/moria/jellyfin/cache:/cache"
+      "/srv/torrents/complete:/media:ro"
+      "/srv/external/crucial:/media-external/crucial:ro"
+      "/srv/external/seagate:/media-external/seagate:ro"
+      "/srv/external/expansion:/media-external/expansion:ro"
+      "/srv/external/bigdaddy:/media-external/bigdaddy:ro"
+    ];
+    environment = {
+      TZ = "Europe/Warsaw";
+      JELLYFIN_PublishedServerUrl = "http://moria:8096";
+    };
+    extraOptions = [ "--user=1000:1000" ];
+  };
+}

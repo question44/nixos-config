@@ -919,3 +919,14 @@ open windows need to be restarted individually. `niri validate`,
 `nix flake check`, and `nixos-rebuild dry-build --flake /etc/nixos#moria`
 passed; the deployed Niri config was activated and loaded live via IPC without
 restarting Niri.
+
+## [COMPLETED] Import Jellyfin with Fedora libraries read only — 2026-10-16
+
+Copy the Fedora Jellyfin configuration and cache into NixOS-local writable
+state, then run the matching Jellyfin 10.11.11 OCI image. The existing media
+directory and all four external volumes are bind-mounted read only. The
+container's web port is loopback-only pending the local Caddy service index.
+`nix flake check`, `nixos-rebuild dry-build`, and `nixos-rebuild test` ran;
+the first test reported a transient startup health-check failure, then the
+container reached its ready state. Verified the Podman health check succeeds,
+the HTTP endpoint responds with 302, and all data mounts are read only.
