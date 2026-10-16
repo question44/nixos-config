@@ -13,6 +13,7 @@ back_and_forth = true
 
 [output.DP-1]
 mode = "3440x1440@164.899994"
+hdr = "on"
 
 [[workspace]]
 name = "background-apps"
