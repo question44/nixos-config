@@ -1,5 +1,31 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [COMPLETED] Cycle apps by initial with a Vicinae launch chooser — 2026-10-16
+
+Right Ctrl+A–Z now cycles running apps by their desktop-entry display names;
+Right Ctrl+Shift+A–Z cycles backward. Group windows by app and focus its most
+recently used window, then center the column. With no matching running app,
+Vicinae dmenu lists matching installed apps: Enter launches the selected
+desktop entry and Escape cancels. Use Gio's desktop registry for IDs/names
+and gio launch for desktop-entry semantics. New apps run in a separate user
+systemd scope so restarting xremap does not terminate them. Per-letter locks
+and a shared chooser lock prevent repeated presses stacking menus. The Polish
+layout and Caps shortcuts remain intact. Former mnemonic shortcuts T/B/F are
+replaced by actual app-name initials G/H/D.
+
+Flake check, dry build, test activation, and switch passed. Algorithm checks
+covered forward/reverse order across three apps, most-recent window selection,
+accent normalization, and no matches. Live full chords through xremap cycled
+Discord/Dolphin with D and Shift+D, and focused Ghostty/Helium/Spotify with
+G/H/S. Z opened the chooser; Escape launched nothing; Enter launched and
+focused Zed, which survived an xremap restart. Vicinae close/state IPC calls
+can wait during its modal menu; validation used Niri layer visibility instead.
+Active generation 150 is
+`86ijc3svgcaahc5b1gcbgyarp08d9dr1-nixos-system-erebor-26.05.20261013.a033e66`.
+xremap and Vicinae are active; no system/user units failed. Root/ESP UUIDs and
+the default boot entry remain correct. Umbriel code is provided but live
+behavior is only verified in Niri.
+
 ## [COMPLETED] Run all active Right Ctrl app helpers directly — 2026-10-16
 
 Right Ctrl+T/B/F/S/D now directly launch the shared compositor-aware helper

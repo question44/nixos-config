@@ -37,6 +37,12 @@
             home-manager.backupFileExtension = "backup";
             home-manager.users.janzon = { lib, pkgs, ... }:
               let
+                rcmdPython = pkgs.python3.withPackages (ps: [ ps.pygobject3 ]);
+                rcmd = pkgs.writeShellScript "rcmd" ''
+                  export GI_TYPELIB_PATH="${pkgs.glib.out}/lib/girepository-1.0"
+                  export RCMD_GIO="${pkgs.glib.bin}/bin/gio"
+                  exec ${rcmdPython}/bin/python3 ${./home/rcmd/rcmd.py} "$@"
+                '';
                 sessionEditor = pkgs.writeShellScriptBin "session-editor" ''
                   if [ -n "''${WAYLAND_DISPLAY:-}" ] \
                     && [ -n "''${XDG_RUNTIME_DIR:-}" ] \
@@ -210,6 +216,10 @@
               };
               home.file.".local/bin/niri-caps-q" = {
                 source = ./home/niri/caps-q-window;
+                executable = true;
+              };
+              home.file.".local/bin/rcmd" = {
+                source = rcmd;
                 executable = true;
               };
               home.file.".local/bin/xremap-focus-or-launch" = {
