@@ -1,0 +1,210 @@
+# Umbriel counterpart to the active Niri keybindings.
+# Ctrl+Alt+Super chords are emitted by the existing xremap CapsLock layer.
+
+[general]
+autostart = ["noctalia"]
+
+[input.keyboard]
+layout = "pl"
+options = "lv3:ralt_switch"
+
+[workspaces]
+back_and_forth = true
+
+[output.DP-1]
+mode = "3440x1440@164.899994"
+
+[[workspace]]
+name = "background-apps"
+
+[keybinds]
+# Launchers and session controls
+"Ctrl+Alt+Super+Insert" = { action = "cheatsheet-toggle", repeat = false }
+"Ctrl+Alt+Super+Space" = { action = "spawn:vicinae toggle", repeat = false }
+"Mod+Space" = { action = "spawn:vicinae toggle", repeat = false }
+"Alt+Space" = { action = "spawn:vicinae toggle", repeat = false }
+"Ctrl+Alt+Super+V" = { action = "spawn:vicinae toggle clipboard/history", repeat = false }
+"Ctrl+Alt+Shift+Super+V" = { action = "spawn:vicinae cmd launch snippets:manage", repeat = false }
+"Ctrl+Alt+Super+O" = { action = "spawn:vicinae cmd launch @mattisssa/store.raycast.spotify-player:search", repeat = false }
+"Ctrl+Alt+Super+Comma" = { action = "spawn:noctalia msg settings-toggle", repeat = false }
+"Ctrl+Alt+Super+Escape" = { action = "spawn:noctalia msg session logout", repeat = false }
+"Ctrl+Alt+Super+X" = { action = "spawn:noctalia msg session lock", repeat = false }
+"Ctrl+Alt+Super+Return" = { action = "spawn:helium", repeat = false }
+"XF86Launch6" = { action = "spawn:ghostty", repeat = false }
+"XF86Launch7" = { action = "spawn:helium", repeat = false }
+"XF86Launch8" = { action = "spawn:dolphin", repeat = false }
+"Mod+T" = { action = "spawn:ghostty", repeat = false }
+"Mod+Return" = { action = "spawn:ghostty", repeat = false }
+"Mod+D" = { action = "spawn:noctalia msg panel-toggle launcher", repeat = false }
+"Super+Alt+L" = { action = "spawn:noctalia msg session lock", repeat = false }
+"Super+Alt+S" = { action = "spawn:sh -c 'pkill orca || exec orca'", repeat = false }
+
+# CapsLock navigation and window management layer
+"Ctrl+Alt+Super+T" = "column-toggle-tabbed"
+"Ctrl+Alt+Super+W" = "window-focus-up"
+"Ctrl+Alt+Super+A" = "window-focus-left"
+"Ctrl+Alt+Super+S" = "window-focus-down"
+"Ctrl+Alt+Super+D" = "window-focus-right"
+"Ctrl+Alt+Shift+Super+W" = "window-move-up"
+"Ctrl+Alt+Shift+Super+A" = "column-move-left"
+"Ctrl+Alt+Shift+Super+S" = "window-move-down"
+"Ctrl+Alt+Shift+Super+D" = "column-move-right"
+"Ctrl+Alt+Super+Home" = "column-focus-first"
+"Ctrl+Alt+Super+End" = "column-focus-last"
+"Ctrl+Alt+Shift+Super+Home" = "column-move-to-first"
+"Ctrl+Alt+Shift+Super+End" = "column-move-to-last"
+"Ctrl+Alt+Super+Page_Up" = "workspace-previous"
+"Ctrl+Alt+Super+Page_Down" = "workspace-next"
+"Ctrl+Alt+Shift+Super+Page_Up" = "window-move-to-workspace-previous"
+"Ctrl+Alt+Shift+Super+Page_Down" = "window-move-to-workspace-next"
+"Ctrl+Alt+Super+Q" = { action = "spawn:/home/janzon/.local/bin/umbriel-caps-q", repeat = false }
+"XF86Tools" = { action = "window-focus-right", cooldown_ms = 50 }
+"XF86Launch5" = { action = "window-focus-left", cooldown_ms = 50 }
+"Ctrl+Alt+Super+C" = "column-center"
+"Ctrl+Alt+Super+R" = "window-cycle-primary-extent"
+"Ctrl+Alt+Super+F" = { action = "spawn:sh -c 'umbriel msg window-toggle-maximize && sleep 0.3 && umbriel msg column-center'", repeat = false }
+"Ctrl+Alt+Super+G" = "window-toggle-fullscreen"
+"Ctrl+Alt+Super+E" = "window-set-primary-extent:1.0"
+"Ctrl+Alt+Super+B" = "window-toggle-floating"
+"Ctrl+Alt+Super+BracketLeft" = "window-consume-or-expel-left"
+"Ctrl+Alt+Super+BracketRight" = "window-consume-or-expel-right"
+"Ctrl+Alt+Super+Z" = "workspace-previous"
+"Ctrl+Alt+Super+Period" = "column-move-to-workspace-next"
+"Ctrl+Alt+Super+1" = "workspace-switch:1"
+"Ctrl+Alt+Super+2" = "workspace-switch:2"
+"Ctrl+Alt+Super+3" = "workspace-switch:3"
+"Ctrl+Alt+Super+4" = "workspace-switch:4"
+"Ctrl+Alt+Super+5" = "workspace-switch:5"
+"Ctrl+Alt+Super+6" = "workspace-switch:6"
+"Ctrl+Alt+Super+7" = "workspace-switch:7"
+"Ctrl+Alt+Super+8" = "workspace-switch:8"
+"Ctrl+Alt+Super+9" = "workspace-switch:9"
+"Ctrl+Alt+Super+Grave" = "overview-toggle"
+"Ctrl+Alt+Super+Tab" = "workspace-focus-last"
+
+# Standard window navigation
+"Mod+Shift+Slash" = { action = "cheatsheet-toggle", repeat = false }
+"Mod+O" = { action = "overview-toggle", repeat = false }
+"Mod+Q" = { action = "window-close", repeat = false }
+"Mod+Left" = "window-focus-left"
+"Mod+Down" = "window-focus-down"
+"Mod+Up" = "window-focus-up"
+"Mod+Right" = "window-focus-right"
+"Mod+H" = "window-focus-left"
+"Mod+J" = "window-focus-down"
+"Mod+K" = "window-focus-up"
+"Mod+L" = "window-focus-right"
+"Mod+Ctrl+Left" = "column-move-left"
+"Mod+Ctrl+Down" = "window-move-down"
+"Mod+Ctrl+Up" = "window-move-up"
+"Mod+Ctrl+Right" = "column-move-right"
+"Mod+Ctrl+H" = "column-move-left"
+"Mod+Ctrl+J" = "window-move-down"
+"Mod+Ctrl+K" = "window-move-up"
+"Mod+Ctrl+L" = "column-move-right"
+"Mod+Home" = "column-focus-first"
+"Mod+End" = "column-focus-last"
+"Mod+Ctrl+Home" = "column-move-to-first"
+"Mod+Ctrl+End" = "column-move-to-last"
+"Mod+Shift+Left" = "output-focus-left"
+"Mod+Shift+Down" = "output-focus-down"
+"Mod+Shift+Up" = "output-focus-up"
+"Mod+Shift+Right" = "output-focus-right"
+"Mod+Shift+H" = "output-focus-left"
+"Mod+Shift+J" = "output-focus-down"
+"Mod+Shift+K" = "output-focus-up"
+"Mod+Shift+L" = "output-focus-right"
+"Mod+Shift+Ctrl+Left" = "column-move-to-output-left"
+"Mod+Shift+Ctrl+Down" = "column-move-to-output-down"
+"Mod+Shift+Ctrl+Up" = "column-move-to-output-up"
+"Mod+Shift+Ctrl+Right" = "column-move-to-output-right"
+"Mod+Shift+Ctrl+H" = "column-move-to-output-left"
+"Mod+Shift+Ctrl+J" = "column-move-to-output-down"
+"Mod+Shift+Ctrl+K" = "column-move-to-output-up"
+"Mod+Shift+Ctrl+L" = "column-move-to-output-right"
+
+# Workspace navigation and moving columns
+"Mod+Page_Down" = "workspace-next"
+"Mod+Page_Up" = "workspace-previous"
+"Mod+U" = "workspace-next"
+"Mod+I" = "workspace-previous"
+"Mod+Ctrl+Page_Down" = "column-move-to-workspace-next"
+"Mod+Ctrl+Page_Up" = "column-move-to-workspace-previous"
+"Mod+Ctrl+U" = "column-move-to-workspace-next"
+"Mod+Ctrl+I" = "column-move-to-workspace-previous"
+"Mod+Shift+Page_Down" = "workspace-move-down"
+"Mod+Shift+Page_Up" = "workspace-move-up"
+"Mod+Shift+U" = "workspace-move-down"
+"Mod+Shift+I" = "workspace-move-up"
+"Mod+WheelDown" = { action = "workspace-next", cooldown_ms = 150 }
+"Mod+WheelUp" = { action = "workspace-previous", cooldown_ms = 150 }
+"Mod+Ctrl+WheelDown" = { action = "column-move-to-workspace-next", cooldown_ms = 150 }
+"Mod+Ctrl+WheelUp" = { action = "column-move-to-workspace-previous", cooldown_ms = 150 }
+"Mod+WheelRight" = "window-focus-right"
+"Mod+WheelLeft" = "window-focus-left"
+"Mod+Ctrl+WheelRight" = "column-move-right"
+"Mod+Ctrl+WheelLeft" = "column-move-left"
+"Mod+Shift+WheelDown" = "window-focus-right"
+"Mod+Shift+WheelUp" = "window-focus-left"
+"Mod+Ctrl+Shift+WheelDown" = "column-move-right"
+"Mod+Ctrl+Shift+WheelUp" = "column-move-left"
+"Mod+1" = "workspace-switch:1"
+"Mod+2" = "workspace-switch:2"
+"Mod+3" = "workspace-switch:3"
+"Mod+4" = "workspace-switch:4"
+"Mod+5" = "workspace-switch:5"
+"Mod+6" = "workspace-switch:6"
+"Mod+7" = "workspace-switch:7"
+"Mod+8" = "workspace-switch:8"
+"Mod+9" = "workspace-switch:9"
+"Mod+Ctrl+1" = "column-move-to-workspace:1"
+"Mod+Ctrl+2" = "column-move-to-workspace:2"
+"Mod+Ctrl+3" = "column-move-to-workspace:3"
+"Mod+Ctrl+4" = "column-move-to-workspace:4"
+"Mod+Ctrl+5" = "column-move-to-workspace:5"
+"Mod+Ctrl+6" = "column-move-to-workspace:6"
+"Mod+Ctrl+7" = "column-move-to-workspace:7"
+"Mod+Ctrl+8" = "column-move-to-workspace:8"
+"Mod+Ctrl+9" = "column-move-to-workspace:9"
+
+# Column layout and window sizing
+"Mod+BracketLeft" = "window-consume-or-expel-left"
+"Mod+BracketRight" = "window-consume-or-expel-right"
+"Mod+Comma" = "window-consume-from-right"
+"Mod+Period" = "window-consume-or-expel-right"
+"Mod+R" = "window-cycle-primary-extent"
+"Mod+Shift+R" = "window-cycle-primary-extent-back"
+"Mod+Ctrl+Shift+R" = "window-cycle-secondary-extent"
+"Mod+Ctrl+R" = "window-set-secondary-extent:0.5"
+"Mod+F" = "window-toggle-maximize"
+"Mod+Shift+F" = "window-toggle-fullscreen"
+"Mod+M" = "window-toggle-maximize-to-edges"
+"Mod+Ctrl+F" = "window-set-primary-extent:1.0"
+"Mod+C" = "column-center"
+"Mod+Ctrl+C" = "column-center"
+"Mod+Minus" = "window-modify-primary-extent:-0.1"
+"Mod+Equal" = "window-modify-primary-extent:0.1"
+"Mod+Shift+Minus" = "window-modify-secondary-extent:-0.1"
+"Mod+Shift+Equal" = "window-modify-secondary-extent:0.1"
+"Mod+V" = "window-toggle-floating"
+"Mod+Shift+V" = "window-focus-switch-floating"
+"Mod+W" = "column-toggle-tabbed"
+
+# Session, screenshots, media, volume, and brightness
+"Mod+Shift+Escape" = { action = "shortcuts-inhibit-toggle", allow_when_inhibited = true, repeat = false }
+"Mod+Shift+E" = { action = "session-quit", repeat = false }
+"Ctrl+Alt+Delete" = { action = "session-quit", repeat = false }
+"Mod+Shift+P" = { action = "dpms-off", repeat = false }
+"Print" = { action = "spawn:noctalia msg screenshot-region", repeat = false }
+"Ctrl+Print" = { action = "spawn:noctalia msg screenshot-fullscreen", repeat = false }
+"Alt+Print" = { action = "spawn:/home/janzon/.local/bin/umbriel-screenshot-window", repeat = false }
+"XF86AudioRaiseVolume" = { action = "spawn:wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+ -l 1.0", allow_when_locked = true }
+"XF86AudioLowerVolume" = { action = "spawn:wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-", allow_when_locked = true }
+"XF86AudioMute" = { action = "spawn:wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle", allow_when_locked = true, repeat = false }
+"XF86AudioMicMute" = { action = "spawn:wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle", allow_when_locked = true, repeat = false }
+"XF86AudioPlay" = { action = "spawn:playerctl play-pause", allow_when_locked = true }
+"XF86AudioStop" = { action = "spawn:playerctl stop", allow_when_locked = true }
+"XF86AudioPrev" = { action = "spawn:playerctl previous", allow_when_locked = true }
+"XF86AudioNext" = { action = "spawn:playerctl next", allow_when_locked = true }
+"XF86MonBrightnessUp" = { action = "spawn:brightnessctl --class=backlight set +10%", allow_when_locked = true }
+"XF86MonBrightnessDown" = { action = "spawn:brightnessctl --class=backlight set 10%-", allow_when_locked = true }

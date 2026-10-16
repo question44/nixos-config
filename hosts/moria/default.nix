@@ -343,7 +343,7 @@ in
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd ${pkgs.niri}/bin/niri-session";
+        command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --remember-session --sessions ${pkgs.niri}/share/wayland-sessions:${config.programs.umbriel.package}/share/wayland-sessions";
         user = "greeter";
       };
     };
@@ -373,6 +373,8 @@ in
     enable = true;
     useNautilus = false;
   };
+
+  programs.umbriel.enable = true;
 
   programs.noctalia = {
     enable = true;

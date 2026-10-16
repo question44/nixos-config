@@ -5,6 +5,26 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [PENDING] Add Umbriel as a second Wayland session — 2026-10-16
+
+Added the Umbriel NixOS and Home Manager modules and a tuigreet session menu
+for Niri and Umbriel. Ported Niri's application shortcuts, CapsLock/xremap
+navigation and window chords, workspace controls, layout and sizing shortcuts,
+media controls, and screenshots to Umbriel actions. Added Umbriel-aware helpers
+for the Discord/Spotify background workspace and focused-window screenshots.
+Configured Umbriel's connected `DP-1` output to match Niri's native
+3440×1440@164.899994 Hz mode. `nix flake check`, dry build, test activation,
+and persistent switch succeeded; the active generation is
+`d1fz4kmr9px167dacnbsyj1p45llrps7-nixos-system-erebor-26.05.20261013.a033e66`.
+Both source and deployed Umbriel configs pass `umbriel config validate`, and
+the deployed `DP-1` mode matches Niri. No system units are failed. The locked Umbriel
+flake uses its own Nixpkgs revision because this system's 26.05 pin only
+provides wlroots 0.20.0 while Umbriel requires at least 0.20.1. No system
+units are failed. The running greetd process still has the old config because
+restarting it would terminate the active graphical login. Next action: restart
+greetd after the user approves ending the current graphical session, then
+verify both sessions appear in the chooser and complete this entry.
+
 ## [COMPLETED] Add UT2004 runaway-loop launch option — 2026-10-16
 
 Mirrored the Fedora per-user UT2004 desktop entry's `-norunaway` argument in

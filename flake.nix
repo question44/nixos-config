@@ -4,6 +4,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     noctalia.url = "github:noctalia-dev/noctalia-shell";
+    umbriel.url = "github:noctalia-dev/umbriel";
     helium = {
       url = "github:oxcl/nix-flake-helium-browser";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -19,7 +20,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, noctalia, helium, darkly, vicinae, home-manager, ... }:
+  outputs = { self, nixpkgs, noctalia, umbriel, helium, darkly, vicinae, home-manager, ... }:
     {
       nixosConfigurations.moria = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
@@ -27,6 +28,7 @@
         modules = [
           ./hosts/moria/default.nix
           noctalia.nixosModules.default
+          umbriel.nixosModules.default
           helium.nixosModules.default
           home-manager.nixosModules.home-manager
           {
@@ -48,7 +50,12 @@
                 '';
               in
               {
+              imports = [ umbriel.homeModules.default ];
               home.stateVersion = "26.05";
+              programs.umbriel = {
+                enable = true;
+                settings = ./home/umbriel/config.toml;
+              };
               home.packages = with pkgs; [
                 zed-editor
                 neovim
@@ -58,6 +65,7 @@
                 curl
                 lazygit
                 gcc
+                jq
                 tree-sitter
                 nodejs
               ];
@@ -209,6 +217,14 @@
               };
               home.file.".local/bin/niri-background-apps-last" = {
                 source = ./home/niri/background-apps-last;
+                executable = true;
+              };
+              home.file.".local/bin/umbriel-caps-q" = {
+                source = ./home/umbriel/caps-q-window;
+                executable = true;
+              };
+              home.file.".local/bin/umbriel-screenshot-window" = {
+                source = ./home/umbriel/screenshot-window;
                 executable = true;
               };
               home.file.".local/bin/niri-caps-q-quit" = {

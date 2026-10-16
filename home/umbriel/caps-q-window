@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+app_id="$(umbriel windows --json | jq -r '.[] | select(.active == true) | .app_id // empty' | head -n 1)"
+[[ -n "$app_id" ]] || exit 0
+
+case "${app_id,,}" in
+  *discord*|*spotify*)
+    umbriel msg 'window-move-to-workspace-silent:"background-apps"'
+    ;;
+  *)
+    umbriel msg window-close
+    ;;
+esac

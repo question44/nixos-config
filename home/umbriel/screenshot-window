@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+geometry="$(umbriel windows --json | jq -r '.[] | select(.active == true) | "\(.x),\(.y) \(.w)x\(.h)"' | head -n 1)"
+[[ -n "$geometry" ]] || exit 0
+
+mkdir -p "$HOME/Pictures/Screenshots"
+grim -g "$geometry" "$HOME/Pictures/Screenshots/Screenshot from $(date '+%Y-%m-%d %H-%M-%S').png"
