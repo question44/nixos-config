@@ -548,6 +548,7 @@ in
     gnupg
     gnumake
     kdePackages.dolphin
+    kdePackages.konsole
     kdePackages.gwenview
     kdePackages.okular
     kdePackages.ark

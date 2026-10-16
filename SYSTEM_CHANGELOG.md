@@ -1189,3 +1189,11 @@ deployed script passes `bash -n` and was verified in both directions: HDR
 turned off, then on. DP-1 is back in HDR mode (`hdr_active=true`), and the
 active NixOS system is
 `/nix/store/bl81fynrhj8jhj34ca5pgzi5d7nsnkm0-nixos-system-erebor-26.05.20261013.a033e66`.
+
+## [COMPLETED] Install Konsole — 2026-10-16
+
+Added `kdePackages.konsole` to the system packages. `nix flake check` and
+`nixos-rebuild dry-build --flake /etc/nixos#moria` passed; the switch completed
+successfully. Verified `/run/current-system/sw/bin/konsole` reports version
+26.04.3. Active generation:
+`/nix/store/86lb0kmj0740rl5aa1fiz5ax87mmhya1-nixos-system-erebor-26.05.20261013.a033e66`.
