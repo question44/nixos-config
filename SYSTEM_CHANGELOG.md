@@ -1,5 +1,21 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [COMPLETED] Restore HyperHDR capture after graphical login — 2026-10-16
+
+At 15:14 and 15:15, Niri session restarts caused the GNOME portal backend to
+lose its Wayland connection. The portal frontend started just before the
+backend, and HyperHDR then received ScreenCast version -1, fell back to X11,
+and had no usable source. Order the frontend after the graphical session and
+GNOME backend. Before HyperHDR starts, check the ScreenCast version; if it is
+unavailable, queue a portal restart and let systemd retry HyperHDR. `nix flake
+check`, `nixos-rebuild dry-build`, test activation, and persistent switch
+passed. Active generation is
+`1bngfw34ad4krsrjwkhn1q3zbfzl8zxp-nixos-system-erebor-26.05.20261013.a033e66`.
+Verified the user-unit ordering, ScreenCast protocol v5, HyperHDR streaming a
+3440x1440 display with zero service restarts, WLED on, unchanged root and ESP
+mounts and boot entries, and no failed system or user units. A future Niri
+login has not yet exercised the recovery path.
+
 ## [COMPLETED] Enable Ghostty background blur in Niri — 2026-10-16
 
 Add a Ghostty-specific Niri background-effect rule. `nix flake check` and

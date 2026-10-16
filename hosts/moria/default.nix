@@ -2,6 +2,19 @@
 
 let
   hyperhdr = pkgs.callPackage ../../packages/hyperhdr.nix { };
+  hyperhdrPortalCheck = pkgs.writeShellScript "hyperhdr-portal-check" ''
+    if ${pkgs.systemd}/bin/busctl --user get-property \
+      org.freedesktop.portal.Desktop /org/freedesktop/portal/desktop \
+      org.freedesktop.portal.ScreenCast version 2>/dev/null \
+      | ${pkgs.gnugrep}/bin/grep -Eq '^u [1-9][0-9]*$'; then
+      exit 0
+    fi
+
+    echo "ScreenCast portal unavailable; restarting portal services before retrying HyperHDR" >&2
+    ${pkgs.systemd}/bin/systemctl --user --no-block restart \
+      xdg-desktop-portal-gnome.service xdg-desktop-portal.service
+    exit 1
+  '';
   aiUsagebar = pkgs.callPackage ../../packages/ai-usagebar.nix { };
   auroraNcs = pkgs.callPackage ../../packages/aurora-ncs.nix { };
   ut2004 = pkgs.callPackage ../../packages/ut2004.nix { };
@@ -267,15 +280,20 @@ in
       "xdg-desktop-portal-gnome.service"
     ];
     serviceConfig = {
+      ExecStartPre = hyperhdrPortalCheck;
       ExecStart = "${hyperhdr}/bin/hyperhdr --pipewire --desktop";
       TimeoutStopSec = 5;
       KillMode = "mixed";
       Restart = "on-failure";
-      RestartSec = 2;
+      RestartSec = 5;
       NoNewPrivileges = true;
       ProtectControlGroups = true;
       RestrictNamespaces = true;
     };
+  };
+  systemd.user.services.xdg-desktop-portal = {
+    after = [ "graphical-session.target" "xdg-desktop-portal-gnome.service" ];
+    wants = [ "xdg-desktop-portal-gnome.service" ];
   };
   systemd.user.services.xremap-restart = {
     description = "Restart xremap after keyboard connection";
