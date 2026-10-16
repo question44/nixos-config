@@ -5,6 +5,14 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Adjust Ghostty background opacity — 2026-10-16
+
+Change the Home Manager Ghostty setting from `background-opacity = 0.8` to
+`background-opacity = 0.75`. `nix flake check` and dry build passed; test
+activation and persistent switch succeeded. Verified the deployed config and
+`ghostty +show-config` report opacity 0.75. Active generation is
+`myh9qf2a7bji0hillyz3kjpjz36s160p-nixos-system-erebor-26.05.20261013.a033e66`.
+
 ## [COMPLETED] Set Ghostty background opacity — 2026-10-16
 
 Manage Ghostty's existing Noctalia theme and set `background-opacity = 0.8`
