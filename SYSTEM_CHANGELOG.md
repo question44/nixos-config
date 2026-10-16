@@ -5,6 +5,15 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Add local service hostnames — 2026-10-16
+
+Added loopback host entries and Caddy host routing for `torrent`, `jellyfin`,
+`nextcloud`, and `syncthing`, each with a `.localhost` form. Added both
+Nextcloud aliases to the shared trusted domains. Existing LAN links and ports
+remain available. `nix flake check`, dry build, and activation passed;
+generation 109 is active. Verified all eight names resolve to `127.0.0.1` and
+each hostname routes to its service. No system units are failed.
+
 ## [COMPLETED] Share Fedora service state with NixOS — 2026-10-16
 
 Created and verified read-only snapshot `/btrfs-top/srv-pre-shared-services-20261016`

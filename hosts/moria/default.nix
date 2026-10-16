@@ -102,6 +102,14 @@ in
 
   networking.hostName = "moria";
   networking.networkmanager.enable = true;
+  networking.hosts = {
+    "127.0.0.1" = [
+      "torrent" "torrent.localhost"
+      "jellyfin" "jellyfin.localhost"
+      "nextcloud" "nextcloud.localhost"
+      "syncthing" "syncthing.localhost"
+    ];
+  };
   networking.firewall.allowedTCPPorts = [ 22 ];
   networking.firewall.interfaces.enp4s0.allowedTCPPorts = [ 80 8080 8095 8096 8384 8082 22000 ];
   networking.firewall.interfaces.enp4s0.allowedUDPPorts = [ 22000 ];
@@ -367,8 +375,33 @@ in
     enable = true;
     extraConfig = ''
       :80 {
-        root * ${../../home/services}
-        file_server
+        @jellyfin host jellyfin.localhost jellyfin
+        handle @jellyfin {
+          reverse_proxy 127.0.0.1:18096
+        }
+
+        @nextcloud host nextcloud.localhost nextcloud
+        handle @nextcloud {
+          reverse_proxy 127.0.0.1:18089
+        }
+
+        @syncthing host syncthing.localhost syncthing
+        handle @syncthing {
+          reverse_proxy 127.0.0.1:18384 {
+            header_up Host localhost:18384
+            header_up Origin http://localhost:18384
+          }
+        }
+
+        @torrent host torrent.localhost torrent
+        handle @torrent {
+          reverse_proxy 127.0.0.1:18081
+        }
+
+        handle {
+          root * ${../../home/services}
+          file_server
+        }
       }
 
       :8080 {
