@@ -226,6 +226,12 @@ layout {
         // inactive-gradient from="#505050" to="#808080" angle=45 relative-to="workspace-view"
     }
 
+    // Make tab targets easier to see and select.
+    tab-indicator {
+        on
+        width 8
+    }
+
     // You can enable drop shadows for windows.
     shadow {
         // Uncomment the next line to enable shadows.
@@ -304,7 +310,7 @@ workspace "background-apps"
 
 // Keep the named background workspace after the regular workspaces. Niri
 // always retains one empty workspace after it for newly opened windows.
-spawn-sh-at-startup "/home/janzon/.local/bin/niri-background-apps-last"
+spawn-sh-at-startup "/home/janzon/.local/bin/niri-background-apps-last --startup"
 
 // Ask applications to omit client-side titlebars/decorations when supported.
 // Apps that explicitly require their own decorations may keep them; existing

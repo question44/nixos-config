@@ -14,3 +14,9 @@ last_index="$(jq -r '[.[].idx] | max // empty' <<<"$workspaces")"
 [[ -n "$last_index" ]] || exit 0
 
 niri msg action move-workspace-to-index "$last_index" --reference background-apps
+
+# At compositor startup the named workspace may be focused before it is moved.
+# Leave Niri on the first ordinary workspace so newly launched apps land there.
+if [[ "${1:-}" == "--startup" ]]; then
+  niri msg action focus-workspace 1
+fi

@@ -2,7 +2,7 @@
 # Ctrl+Alt+Super chords are emitted by the existing xremap CapsLock layer.
 
 [general]
-autostart = ["noctalia"]
+autostart = ["noctalia", "/home/janzon/.local/bin/umbriel-background-apps-last"]
 
 [environment]
 QT_QPA_PLATFORMTHEME = "kde"
@@ -13,6 +13,7 @@ options = "lv3:ralt_switch,moria:launchers"
 
 [workspaces]
 back_and_forth = true
+empty_above = true
 
 [output.DP-1]
 mode = "3440x1440@164.899994"

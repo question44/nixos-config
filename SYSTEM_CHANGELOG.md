@@ -113,6 +113,43 @@ The deployed configuration includes the rule, and `niri msg action
 load-config-file` succeeded. `niri msg windows` confirms Ghostty is running
 with app ID `com.mitchellh.ghostty`, matching the rule.
 
+## [PENDING] Start Umbriel on the ordinary workspace — 2026-10-16
+
+Enable Umbriel's leading empty workspace and add a startup helper that moves
+the persistent `background-apps` workspace after ordinary workspaces, then
+focuses workspace 1. This makes normal app launches start on the ordinary
+workspace. Umbriel config validation, `nix flake check`, and dry build passed.
+`nixos-rebuild switch` activated generation
+`ahgjmy2v1mccrrfxs2f5alfb4bp0kbfn-nixos-system-erebor-26.05.20261013.a033e66`.
+The deployed config validates. No Umbriel socket is available for live
+verification; verify the startup workspace order and app launch placement in a
+fresh Umbriel session.
+
+## [PENDING] Start Niri on the ordinary workspace — 2026-10-16
+
+Run the background workspace reorder helper with a startup-only option that
+focuses Niri workspace 1 after placing `background-apps` last. The existing
+Caps+Q invocation does not pass the option, so it retains its current focus
+behavior. `niri validate`, `nix flake check`, and dry build passed. The change
+is activated in generation
+`rz7jf0lk7fgrsm8v81635pr5ixmvqbby-nixos-system-erebor-26.05.20261013.a033e66`;
+the deployed config validates. `niri msg action load-config-file` could not
+connect because no Niri socket is available. Verify the startup workspace and
+app launch placement in a fresh Niri session.
+
+## [PENDING] Bind Right Ctrl+D to Discord and widen Niri tab indicators — 2026-10-16
+
+Map Right Ctrl+D to `KEY_PROG4` in xremap and bind `XF86Launch4` to spawn
+Discord in Niri and Umbriel. Increase Niri's tab-indicator width to 8 logical
+pixels. Niri and Umbriel config validation, `nix flake check`, and dry build
+passed. Activated generation
+`2grjk9jkykfqfmv81c3vcjsx7vm2xdl5-nixos-system-erebor-26.05.20261013.a033e66`;
+the deployed configs validate and the Niri config reload succeeded. Directly
+spawning `discord` through Niri opened its window. xremap cannot currently find
+any configured keyboard device and its service is failed, so Right Ctrl+D is
+not yet verified. Reconnect a configured keyboard, confirm xremap is active,
+then verify the shortcut and tab indicator.
+
 Record completed NixOS configuration changes and material pending operations
 here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
