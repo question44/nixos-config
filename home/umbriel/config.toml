@@ -18,6 +18,16 @@ hdr = "on"
 [[workspace]]
 name = "background-apps"
 
+[[layer_rule]]
+match.namespace = "^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd)$"
+blur = true
+blur_ignore_alpha = 0.5
+blur_optimized = false
+
+[[window_rule]]
+blur = true
+blur_optimized = false
+
 [keybinds]
 # Launchers and session controls
 "Ctrl+Alt+Super+Insert" = { action = "cheatsheet-toggle", repeat = false }

@@ -11,7 +11,7 @@ capsule_padding = 8.0
 capsule_radius = 8
 capsule_thickness = 0.81999998539686203
 center = [ "launcher", "taskbar" ]
-compositor_blur = false
+compositor_blur = true
 contact_shadow = true
 end = [
     "group:g2",
@@ -38,10 +38,10 @@ thickness = 48
     back = "media previous"
     forward = "media next"
     left = "exec niri msg action toggle-overview"
-    scroll_down = "exec niri msg action focus-column-right"
+    scroll_down = "exec /home/janzon/.local/bin/noctalia-bar-focus right"
     scroll_left = "workspace-switch prev"
     scroll_right = "workspace-switch next"
-    scroll_up = "exec niri msg action focus-column-left"
+    scroll_up = "exec /home/janzon/.local/bin/noctalia-bar-focus left"
 
     [[bar.default.capsule_group]]
     accordion = false

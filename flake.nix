@@ -227,6 +227,24 @@
                 source = ./home/umbriel/screenshot-window;
                 executable = true;
               };
+              home.file.".local/bin/noctalia-bar-focus" = {
+                source = pkgs.writeShellScript "noctalia-bar-focus" ''
+                  set -euo pipefail
+
+                  direction="''${1:-}"
+                  case "$direction" in
+                    left|right) ;;
+                    *) exit 2 ;;
+                  esac
+
+                  if umbriel windows --json >/dev/null 2>&1; then
+                    exec umbriel msg "window-focus-$direction"
+                  else
+                    exec niri msg action "focus-column-$direction"
+                  fi
+                '';
+                executable = true;
+              };
               home.file.".local/bin/niri-caps-q-quit" = {
                 source = ./home/niri/caps-q-quit;
                 executable = true;
