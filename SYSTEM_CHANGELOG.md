@@ -930,3 +930,11 @@ container's web port is loopback-only pending the local Caddy service index.
 the first test reported a transient startup health-check failure, then the
 container reached its ready state. Verified the Podman health check succeeds,
 the HTTP endpoint responds with 302, and all data mounts are read only.
+
+## [COMPLETED] Import Syncthing identity from Fedora — 2026-10-16
+
+Copy the existing Syncthing identity and configuration into NixOS-local
+writable state and run it with the upstream OCI image. Keep the GUI bound to
+localhost for the local Caddy proxy and allow sync protocol TCP/UDP 22000 on
+the LAN and Tailscale interfaces. Fedora had no configured sync folders.
+`nix flake check` and `nixos-rebuild dry-build` passed before activation.

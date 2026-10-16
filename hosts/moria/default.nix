@@ -76,6 +76,7 @@ in
   imports = [
     ./hardware-configuration.nix
     ./services/jellyfin.nix
+    ./services/syncthing.nix
     ../../modules/desktop.nix
     ../../modules/nvidia.nix
   ];
@@ -100,7 +101,10 @@ in
   networking.hostName = "moria";
   networking.networkmanager.enable = true;
   networking.firewall.allowedTCPPorts = [ 22 ];
-  networking.firewall.interfaces.enp4s0.allowedTCPPorts = [ 80 8080 ];
+  networking.firewall.interfaces.enp4s0.allowedTCPPorts = [ 80 8080 22000 ];
+  networking.firewall.interfaces.enp4s0.allowedUDPPorts = [ 22000 ];
+  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 22000 ];
+  networking.firewall.interfaces.tailscale0.allowedUDPPorts = [ 22000 ];
   services.tailscale.enable = true;
   hardware.i2c.enable = true;
   time.timeZone = "Europe/Warsaw";
