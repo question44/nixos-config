@@ -45,7 +45,7 @@ let
   '';
 
   spotifyLauncher = pkgs.writeShellScriptBin "spotify-launcher" ''
-    exec ${pkgs.spotify}/bin/spotify "$@"
+    exec /run/current-system/sw/bin/spotify "$@"
   '';
 
   oo7Pam = pkgs.stdenv.mkDerivation (finalAttrs: {
@@ -87,6 +87,7 @@ in
 
 {
   imports = [
+    ../../modules/spotify.nix
     ./hardware-configuration.nix
     ./services/jellyfin.nix
     ./services/syncthing.nix
@@ -594,7 +595,6 @@ in
     kdePackages.breeze
     candy-icons
     darkly.packages.${pkgs.system}.darkly-qt6
-    spotify
     (discord.override { withVencord = true; })
     vicinae.packages.${pkgs.system}.default
     ghostty

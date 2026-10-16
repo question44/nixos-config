@@ -1444,3 +1444,16 @@ from the new package; Vencord initialized its settings and retained
 `noctalia.theme.css` as the enabled theme. Discord has a live Niri window and
 no system units are failed. Active system profile is generation 153:
 `/nix/store/bqhjrls9mp0kflpfx2dqgs72ls3c9cdk-nixos-system-erebor-26.05.20261013.a033e66`.
+
+## [COMPLETED] Apply Noctalia theme to Spotify — 2026-10-17
+
+Add Spicetify and a pinned Comfy theme. Launch Spotify from a versioned,
+writable copy of its app files so the existing Noctalia Spicetify template
+can reapply palette colors without modifying the Nix store. Route the
+existing spotify-launcher through the themed package. `nix flake check`,
+dry-build, test, and switch passed. Spicetify backup/apply completed;
+Noctalia reapplied the template and all generated Comfy colors match
+Spotify's patched colors.css. Verified Spotify runs from the writable copy
+and has a live Niri window. No system units are failed. Active system
+profile is generation 154:
+`/nix/store/kvxqdm95lnrw1az8k7svrjhkazq6yr34-nixos-system-erebor-26.05.20261013.a033e66`.
