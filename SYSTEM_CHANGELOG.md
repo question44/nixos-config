@@ -948,14 +948,11 @@ and Noctalia bar margins unchanged. `niri validate`, `nix flake check`, and
 the deployed Niri config was loaded live with `niri msg action
 load-config-file` and validated successfully; Niri was not restarted.
 
-# [COMPLETED] Add a double Caps+Q quit chord — 2026-10-16
+# [REVERTED] Double Caps+Q quit chord — 2026-10-16
 
-Use xremap's 400 ms sequence timeout so one Caps+Q falls back to the
-previously working Niri shortcut and parks Discord or Spotify, while a second
-Caps+Q within the timeout emits a separate quit key. Spotify uses its MPRIS
-Quit method; Discord receives SIGTERM. Niri validation, flake check, dry-build,
-and xremap config parsing passed. Activated, reloaded Niri, and restarted
-xremap successfully. Spotify reports MPRIS `CanQuit=true`.
+The xremap nested sequence stopped producing a usable single Caps+Q action.
+Restored the direct Caps+Q to Niri shortcut mapping so the parking action works
+again. The double press quit chord is disabled pending a reliable implementation.
 
 # [COMPLETED] Rename and place the background-apps workspace last — 2026-10-16
 

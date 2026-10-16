@@ -408,7 +408,6 @@ binds {
     Ctrl+Alt+Shift+Super+Page_Up { move-window-to-workspace-up; }
     Ctrl+Alt+Shift+Super+Page_Down { move-window-to-workspace-down; }
     Ctrl+Alt+Super+Q repeat=false { spawn "/home/janzon/.local/bin/niri-caps-q"; }
-    F21 repeat=false { spawn "/home/janzon/.local/bin/niri-caps-q-quit"; }
     XF86Tools cooldown-ms=50 { focus-column-right; }
     XF86Launch5 cooldown-ms=50 { focus-column-left; }
     // Caps+Q parks Discord and Spotify on the persistent background workspace.

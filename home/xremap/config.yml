@@ -98,11 +98,7 @@ keymap:
       CapsLock-n: Ctrl-Alt-Super-n
       CapsLock-o: Ctrl-Alt-Super-o
       CapsLock-p: Ctrl-Alt-Super-p
-      CapsLock-q:
-        remap:
-          CapsLock-q: KEY_F21
-        timeout_millis: 400
-        timeout_key: Ctrl-Alt-Super-q
+      CapsLock-q: Ctrl-Alt-Super-q
       CapsLock-r: Ctrl-Alt-Super-r
       CapsLock-s: Ctrl-Alt-Super-s
       CapsLock-t: Ctrl-Alt-Super-t
