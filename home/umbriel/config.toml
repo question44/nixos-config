@@ -30,7 +30,8 @@ blur_optimized = false
 
 [keybinds]
 # Launchers and session controls
-"Ctrl+Alt+Super+Insert" = { action = "cheatsheet-toggle", repeat = false }
+"Ctrl+Alt+Super+Insert" = { action = "spawn:/home/janzon/.local/bin/umbriel-hdr-toggle", repeat = false }
+"Ctrl+Alt+Super+Slash" = { action = "cheatsheet-toggle", repeat = false }
 "Ctrl+Alt+Super+Space" = { action = "spawn:vicinae toggle", repeat = false }
 "Mod+Space" = { action = "spawn:vicinae toggle", repeat = false }
 "Alt+Space" = { action = "spawn:vicinae toggle", repeat = false }

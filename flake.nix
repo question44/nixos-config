@@ -227,6 +227,33 @@
                 source = ./home/umbriel/screenshot-window;
                 executable = true;
               };
+              home.file.".local/bin/umbriel-hdr-toggle" = {
+                source = pkgs.writeShellScript "umbriel-hdr-toggle" ''
+                  set -euo pipefail
+
+                  output="DP-1"
+                  hdr_active="$(umbriel outputs --json | jq -er --arg name "$output" '.[] | select(.name == $name) | .hdr_active')"
+                  case "$hdr_active" in
+                    true) hdr="off" ;;
+                    false) hdr="on" ;;
+                    *) exit 1 ;;
+                  esac
+
+                  runtime_dir="''${XDG_RUNTIME_DIR:?}"
+                  display="''${WAYLAND_DISPLAY:-wayland-0}"
+                  display="''${display//[^a-zA-Z0-9_.-]/_}"
+                  profile="$runtime_dir/umbriel-hdr-$display.toml"
+                  temporary="$profile.tmp.$$"
+                  umask 077
+                  trap 'rm -f "$temporary"' EXIT
+                  printf '[include]\\nfiles = ["%s/.config/umbriel/config.toml"]\\n\\n[output."%s"]\\nhdr = "%s"\\n' \\
+                    "$HOME" "$output" "$hdr" > "$temporary"
+                  mv "$temporary" "$profile"
+                  trap - EXIT
+                  exec umbriel config-replace "$profile"
+                '';
+                executable = true;
+              };
               home.file.".local/bin/noctalia-bar-focus" = {
                 source = pkgs.writeShellScript "noctalia-bar-focus" ''
                   set -euo pipefail
