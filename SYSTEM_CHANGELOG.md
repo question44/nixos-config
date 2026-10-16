@@ -5,6 +5,27 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Share Fedora service state with NixOS — 2026-10-16
+
+Created and verified read-only snapshot `/btrfs-top/srv-pre-shared-services-20261016`
+(UUID `29e40720-ff44-034c-8d5f-32af4482ff28`, subvolume ID 643) before changes.
+The source is Fedora's `srv` Btrfs subvolume. NixOS now uses Fedora's service
+state directories for Jellyfin, Nextcloud, Syncthing, and qBittorrent;
+qBittorrent writes downloads to the shared `/srv/torrents` path. Media-library
+and external-drive mounts remain read-only inside Jellyfin/Nextcloud, and the
+NixOS-local copies remain available as rollback data. The same service must
+not run on both operating systems at once. NixOS generation 108 is active;
+`nix flake check` and `nixos-rebuild dry-build` passed. The switch's first
+Jellyfin health check raced container startup, but Jellyfin subsequently
+reported healthy and the transient failed unit was cleared; no units are now
+failed. All four services are active, Nextcloud reports no DB upgrade pending,
+and the local service endpoints return their expected responses. Verified
+qBittorrent's shared profile and downloads are writable, while its external
+drives and the Jellyfin/Nextcloud media binds remain read only. Added the
+NixOS-local Nextcloud hostname to shared trusted domains and allowed the
+NixOS Podman proxy range. The snapshot is retained; the previous NixOS-local
+copies remain available. No reboot was performed.
+
 ## [COMPLETED] Import Fedora service mounts and local services — 2026-10-16
 
 Checkpoint before mount/service changes: generation 100 is active on the

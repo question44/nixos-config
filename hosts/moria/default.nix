@@ -125,7 +125,7 @@ in
   fileSystems."/srv" = {
     device = "/dev/disk/by-uuid/5be9be17-20c9-4a47-ba2d-6adf1ceb4c55";
     fsType = "btrfs";
-    options = [ "subvol=srv" "compress=zstd:1" "ro" ];
+    options = [ "subvol=srv" "compress=zstd:1" ];
   };
   fileSystems."/srv/external/crucial" = {
     device = "/dev/disk/by-uuid/604F-A363";
