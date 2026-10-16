@@ -15,6 +15,9 @@ back_and_forth = true
 mode = "3440x1440@164.899994"
 hdr = "on"
 
+[appearance.blur]
+radius = 3
+
 [[workspace]]
 name = "background-apps"
 
@@ -22,6 +25,11 @@ name = "background-apps"
 match.namespace = "^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd)$"
 blur = true
 blur_ignore_alpha = 0.5
+blur_optimized = false
+
+[[layer_rule]]
+match.namespace = "^vicinae$"
+blur = true
 blur_optimized = false
 
 [[window_rule]]

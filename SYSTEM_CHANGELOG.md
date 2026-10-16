@@ -1119,3 +1119,23 @@ on the LAN interface. `nix flake check`, dry-build, test, and switch passed.
 Verified the index responds with HTTP 200, Jellyfin and Nextcloud redirect to
 their login/setup pages, Syncthing responds with HTTP 200, and qBittorrent
 requires authentication.
+
+## [COMPLETED] Enable blur for Vicinae in Umbriel — 2026-10-16
+
+Added an Umbriel layer rule for Vicinae's `vicinae` layer namespace. The active
+configuration only applies blur to Noctalia layer surfaces and regular
+windows, so it does not match the Vicinae layer surface. Umbriel config
+validation, `nix flake check`, and NixOS dry-build passed. Test activation
+installed `/nix/store/bslvq6cgc36skdfsfr11d7kvr8kbbkvr-nixos-system-erebor-26.05.20261013.a033e66`.
+Umbriel reloaded the layer rules, reported the open `vicinae` surface, and the
+user confirmed blur is visible.
+
+## [COMPLETED] Reduce Umbriel blur strength — 2026-10-16
+
+Set `[appearance.blur].radius` to 3, down from Umbriel's default of 5, to
+reduce blur strength. Umbriel config validation, `nix flake check`, and
+`nixos-rebuild dry-build` passed. `nixos-rebuild test` and `switch` installed
+`/nix/store/7cj9dsfgsi9rmh7lc8h7c5f0jhji8xcj-nixos-system-erebor-26.05.20261013.a033e66`.
+The deployed config validates, Umbriel reloaded the appearance and scene blur
+settings, and both Umbriel and Vicinae are active. The user approved keeping
+radius 3 and committing the change.
