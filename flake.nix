@@ -194,6 +194,7 @@
                 StartupNotify=true
               '';
               xdg.configFile."nvim".source = ./home/nvim;
+              xdg.configFile."ghostty/config.ghostty".source = ./home/ghostty/config.ghostty;
               xdg.configFile."noctalia/config.toml".source = ./home/noctalia/config.toml;
               xdg.configFile."noctalia/starship-base.toml".source = ./home/starship.toml;
               xdg.configFile."systemd/user/niri-overview-wallpaper.service.d/override.conf".source =

@@ -5,6 +5,15 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Set Ghostty background opacity — 2026-10-16
+
+Manage Ghostty's existing Noctalia theme and set `background-opacity = 0.8`
+through Home Manager. `nix flake check` and `nixos-rebuild dry-build` passed;
+test activation and persistent switch succeeded. Verified the deployed file
+is Home Manager-managed and `ghostty +show-config` reports the Noctalia theme
+and opacity 0.8. Active generation is
+`bn2kyy49nl5yyp82vrhcc6hnbq44gza1-nixos-system-erebor-26.05.20261013.a033e66`.
+
 ## [PENDING] Add Umbriel as a second Wayland session — 2026-10-16
 
 Added the Umbriel NixOS and Home Manager modules and a tuigreet session menu
