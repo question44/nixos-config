@@ -34,7 +34,7 @@ blur_optimized = false
 "Ctrl+Alt+Super+Space" = { action = "spawn:vicinae toggle", repeat = false }
 "Mod+Space" = { action = "spawn:vicinae toggle", repeat = false }
 "Alt+Space" = { action = "spawn:vicinae toggle", repeat = false }
-"Ctrl+Alt+Super+V" = { action = "spawn:vicinae toggle clipboard/history", repeat = false }
+"Ctrl+Alt+Super+V" = { action = "spawn:vicinae vicinae://launch/clipboard/history", repeat = false }
 "Ctrl+Alt+Shift+Super+V" = { action = "spawn:vicinae cmd launch snippets:manage", repeat = false }
 "Ctrl+Alt+Super+O" = { action = "spawn:vicinae cmd launch @mattisssa/store.raycast.spotify-player:search", repeat = false }
 "Ctrl+Alt+Super+Comma" = { action = "spawn:noctalia msg settings-toggle", repeat = false }
