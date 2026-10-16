@@ -5,6 +5,16 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Add UT2004 runaway-loop launch option — 2026-10-16
+
+Mirrored the Fedora per-user UT2004 desktop entry's `-norunaway` argument in
+the NixOS-managed desktop entry. The OldUnreal installer workaround
+`MainMenuClass=GUI2K4.UT2K4MainMenuWS` was already active in the user's UT2004
+configuration. `nix flake check` and `nixos-rebuild dry-build` passed; switch
+activated generation 123. Verified the deployed desktop entry contains
+`Exec=ut2004 -norunaway`; Home Manager activation succeeded and no system units
+are failed.
+
 ## [COMPLETED] Add Cockpit at sys.erebor.jzon.pl — 2026-10-16
 
 Enabled the NixOS Cockpit service and proxied `sys.erebor.jzon.pl` through

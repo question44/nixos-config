@@ -179,7 +179,7 @@
                 Name=Unreal Tournament 2004
                 Comment=Play Unreal Tournament 2004 with the OldUnreal patch
                 TryExec=ut2004
-                Exec=ut2004
+                Exec=ut2004 -norunaway
                 Icon=applications-games
                 Terminal=false
                 Categories=Game;ActionGame;
