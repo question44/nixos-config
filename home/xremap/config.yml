@@ -19,13 +19,16 @@ keymap:
 
   - name: Right Control app launcher
     remap:
-      Ctrl_R-t: KEY_F15
-      Ctrl_R-b: KEY_F16
-      Ctrl_R-f: KEY_FILE
+      Ctrl_R-t:
+        launch: ["/home/janzon/.local/bin/xremap-focus-or-launch", "com.mitchellh.ghostty|ghostty", "ghostty"]
+      Ctrl_R-b:
+        launch: ["/home/janzon/.local/bin/xremap-focus-or-launch", "helium|net.imput.helium", "helium"]
+      Ctrl_R-f:
+        launch: ["/home/janzon/.local/bin/xremap-focus-or-launch", "org.kde.dolphin", "dolphin"]
       Ctrl_R-s:
         launch: ["/home/janzon/.local/bin/xremap-focus-or-launch", "spotify|com.spotify.Client", "spotify"]
-      Ctrl_R-y: KEY_F19
-      Ctrl_R-d: KEY_MESSENGER
+      Ctrl_R-d:
+        launch: ["/home/janzon/.local/bin/xremap-focus-or-launch", "discord", "discord"]
 
   - name: Caps desktop layer - Meta movement
     exact_match: true

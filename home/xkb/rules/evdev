@@ -1,4 +1,0 @@
-! include %S/evdev
-
-! option = symbols
-  moria:launchers = +moria(launchers)

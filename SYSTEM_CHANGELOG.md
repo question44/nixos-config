@@ -1,5 +1,24 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [COMPLETED] Run all active Right Ctrl app helpers directly — 2026-10-16
+
+Right Ctrl+T/B/F/S/D now directly launch the shared compositor-aware helper
+for Ghostty, Helium, Dolphin, Spotify, and Discord. Preserve existing-window
+focus, launch-if-missing behavior, and centering. Remove inactive Right Ctrl+Y,
+the custom XKB rules/symbols and deployment, the moria:launchers option, and
+obsolete app launcher bindings in Niri/Umbriel. Caps navigation is preserved.
+
+Flake check, dry build, Niri/Umbriel validation, test activation, and persistent
+switch passed. Full Right Ctrl sequences through a temporary keyboard grabbed
+by xremap focused all five existing apps with no extra windows and no
+intermediate launcher keys. After XKB removal and Niri reload, repeated all
+five focus checks successfully. Both deployed custom XKB files are absent.
+Active system is
+`30wm6pcwgd210yms1q82b5jf20md88hn-nixos-system-erebor-26.05.20261013.a033e66`.
+xremap is active; no failed system/user units. Root and ESP UUIDs and default
+boot entry remain correct. Umbriel configuration validates; live routing
+awaits an Umbriel session.
+
 ## [COMPLETED] Launch Spotify's focus helper directly from xremap — 2026-10-16
 
 Right Ctrl+S now uses xremap launch instead of F18/XF86Music. A wrapper selects
