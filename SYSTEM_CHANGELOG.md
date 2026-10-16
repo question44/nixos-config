@@ -950,6 +950,14 @@ load-config-file` and validated successfully; Niri was not restarted.
 
 # [REVERTED] Double Caps+Q quit chord — 2026-10-16
 
+# [PENDING] Restore xremap keyboard devices — 2026-10-16
+
+Caps+Q is restored to its original direct Niri shortcut mapping. During xremap
+restart, the kernel disconnected the USB hub branch containing the configured
+Telink and RDR input devices. xremap now exits with `No device was selected`,
+so the hotkey cannot work until the keyboard/receiver devices reconnect.
+
+
 The xremap nested sequence stopped producing a usable single Caps+Q action.
 Restored the direct Caps+Q to Niri shortcut mapping so the parking action works
 again. The double press quit chord is disabled pending a reliable implementation.
