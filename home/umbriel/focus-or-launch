@@ -22,8 +22,14 @@ find_window_id() {
   '
 }
 
+focus_window() {
+  umbriel msg "window-focus:$1"
+  umbriel msg column-center
+}
+
 if window_id=$(find_window_id); then
-  exec umbriel msg "window-focus:$window_id"
+  focus_window "$window_id"
+  exit 0
 fi
 
 "$@" 9>&- >/dev/null 2>&1 &
@@ -31,6 +37,7 @@ fi
 for _ in {1..40}; do
   sleep 0.05
   if window_id=$(find_window_id); then
-    exec umbriel msg "window-focus:$window_id"
+    focus_window "$window_id"
+    exit 0
   fi
 done

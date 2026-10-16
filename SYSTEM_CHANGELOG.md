@@ -1,5 +1,15 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [COMPLETED] Center Right Ctrl focus-or-launch windows — 2026-10-16
+
+Center the focused column after each Right Ctrl app shortcut focuses or starts
+Ghostty, Helium, Dolphin, or Spotify. Shell validation, `nix flake check`, dry
+build, test activation, and persistent switch passed. Active generation is
+`q6ai4zk2s8r126sh3iwfd151x1xn1a4r-nixos-system-erebor-26.05.20261013.a033e66`.
+The live Niri helper focused Spotify window ID 38 and completed the center
+column action. The xremap service is active, with no failed system or user
+units.
+
 ## [COMPLETED] Restore Fedora focus-or-launch app shortcuts — 2026-10-16
 
 Direct Right Ctrl app bindings spawn a new process and leave an existing window
