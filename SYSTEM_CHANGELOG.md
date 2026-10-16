@@ -1,5 +1,17 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [COMPLETED] Bind Right Ctrl+S to Spotify — 2026-10-16
+
+Right Ctrl+S is already remapped by xremap to F18, but neither compositor bound
+F18. Bound it to Spotify in Niri and Umbriel. Niri and Umbriel configuration
+validation, `nix flake check`, dry build, test activation, and persistent switch
+passed. Active generation is
+`9z1564c736d84xhdrii0i3aimn0818w6-nixos-system-erebor-26.05.20261013.a033e66`.
+The deployed Niri and Umbriel bindings and active xremap service confirm the
+key sequence; launching Spotify forwarded to its existing instance. No system
+or user units are failed, and the root, ESP, and default boot entry remain
+healthy.
+
 ## [COMPLETED] Route HyperHDR music capture to the iFi output — 2026-10-16
 
 HyperHDR's PipeWire ALSA input followed the default USB camera microphone,

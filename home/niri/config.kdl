@@ -397,6 +397,7 @@ binds {
     XF86Launch6 { spawn "ghostty"; }
     XF86Launch7 { spawn "helium"; }
     XF86Launch8 { spawn "dolphin"; }
+    F18 { spawn "spotify"; }
 
     // Fedora Caps navigation and window-management layer.
     Ctrl+Alt+Super+T { toggle-column-tabbed-display; }

@@ -56,6 +56,7 @@ blur_optimized = false
 "XF86Launch6" = { action = "spawn:ghostty", repeat = false }
 "XF86Launch7" = { action = "spawn:helium", repeat = false }
 "XF86Launch8" = { action = "spawn:dolphin", repeat = false }
+"F18" = { action = "spawn:spotify", repeat = false }
 "Mod+T" = { action = "spawn:ghostty", repeat = false }
 "Mod+Return" = { action = "spawn:ghostty", repeat = false }
 "Mod+D" = { action = "spawn:noctalia msg panel-toggle launcher", repeat = false }
