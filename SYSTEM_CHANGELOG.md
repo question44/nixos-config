@@ -19,6 +19,13 @@ xremap is active; there are no failed system or user units. Root and ESP UUIDs
 and the default NixOS boot entry are correct. Umbriel's configuration and XKB
 map validate; its live bindings await an Umbriel session.
 
+After the user logged in again, the new Niri process loaded the user XKB
+search path. Verified full Right Ctrl+T/S/F/D sequences through a temporary
+keyboard grabbed by xremap, moving focus to another app before each check:
+all four focused their intended apps. The previous running Niri context had
+retained its startup include paths, so reloads alone could not enable the
+new directory. The earlier output-only verification was insufficient.
+
 ## [COMPLETED] Accept the Fedora key name for Right Ctrl+S — 2026-10-16
 
 Fedora's XKB layout reports xremap's F18 output as XF86Launch9. Bind both F18
