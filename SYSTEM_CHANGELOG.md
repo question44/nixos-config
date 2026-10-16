@@ -951,3 +951,15 @@ port is loopback-only pending the local Caddy index. `nix flake check` and
 service is active, its web endpoint requires authentication, and Podman
 reports the Fedora data mounts read only with the NixOS download volume
 writable.
+
+## [COMPLETED] Import Nextcloud data and PostgreSQL 17 — 2026-10-16
+
+NixOS-local copies of the Fedora Nextcloud 34.0.2 files, data, and PostgreSQL
+17 cluster are ready under `/var/lib/moria/nextcloud`; credentials are stored
+outside the repository in `/etc/nextcloud/db.env`. The Fedora source mounts
+remain read only. PostgreSQL 17.11 recovered the copied cluster and Nextcloud
+reports version 34.0.2 with no database upgrade pending. Its local proxy
+responds with the login redirect, the imported library mounts are read only,
+and the first background cron pass completed. `nix flake check`, dry-build,
+test, and switch passed. Recovery checkpoint remains generation 100 and the
+verified snapshot `/btrfs-top/nixos-root-pre-service-import-20261016`.

@@ -78,6 +78,7 @@ in
     ./services/jellyfin.nix
     ./services/syncthing.nix
     ./services/qbittorrent.nix
+    ./services/nextcloud.nix
     ../../modules/desktop.nix
     ../../modules/nvidia.nix
   ];
