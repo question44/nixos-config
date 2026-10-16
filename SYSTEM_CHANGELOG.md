@@ -5,6 +5,20 @@ here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
 secrets, routine read-only inspections, or one-off command failures.
 
+## [COMPLETED] Make KDE applications follow Noctalia theme changes — 2026-10-16
+
+Use KDE's Qt platform integration and Noctalia's generated KColorScheme for
+Dolphin, Gwenview, and other Qt applications. Removed the fixed qt6ct palette
+override and Qt6ct template, and configured both Umbriel and Niri to set
+`QT_QPA_PLATFORMTHEME=kde`. Umbriel and Niri config validation, `nix flake
+check`, dry build, test activation, and persistent switch passed. Verified the
+deployed session configuration and user manager environment select KDE's
+platform integration; active generation is
+`f5l2b7slrm4954w53by3inj0r6bs15is-nixos-system-erebor-26.05.20261013.a033e66`.
+The already-running Umbriel process retains its previous environment; a fresh
+Umbriel login and reopening Dolphin/Gwenview are required to verify their live
+appearance.
+
 ## [COMPLETED] Adjust Ghostty background opacity — 2026-10-16
 
 Change the Home Manager Ghostty setting from `background-opacity = 0.8` to

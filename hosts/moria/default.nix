@@ -560,7 +560,6 @@ in
     darkly.packages.${pkgs.system}.darkly-qt6
     spotify
     discord
-    qt6Packages.qt6ct
     vicinae.packages.${pkgs.system}.default
     ghostty
     chromiumWithSecretService

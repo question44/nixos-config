@@ -4,6 +4,9 @@
 [general]
 autostart = ["noctalia"]
 
+[environment]
+QT_QPA_PLATFORMTHEME = "kde"
+
 [input.keyboard]
 layout = "pl"
 options = "lv3:ralt_switch"

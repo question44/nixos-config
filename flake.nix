@@ -86,15 +86,11 @@
               };
               qt = {
                 enable = true;
-                style.package = darkly.packages.x86_64-linux.darkly-qt6;
-                qt6ctSettings = {
-                  Appearance = {
-                    style = "Darkly";
-                    custom_palette = true;
-                    color_scheme_path = "/home/janzon/.config/qt6ct/colors/noctalia.conf";
-                    standard_dialogs = "default";
-                  };
+                platformTheme = {
+                  name = "kde";
+                  package = pkgs.kdePackages.plasma-integration;
                 };
+                style.package = darkly.packages.x86_64-linux.darkly-qt6;
               };
               gtk = {
                 enable = true;

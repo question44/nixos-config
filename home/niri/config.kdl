@@ -3,9 +3,9 @@
 // Check the wiki for a full description of the configuration:
 // https://niri-wm.github.io/niri/Configuration:-Introduction
 
-// Ensure Qt applications launched directly by Niri use the qt6ct integration.
+// Use KDE's platform theme integration so Qt applications follow KColorScheme.
 environment {
-    QT_QPA_PLATFORMTHEME "qt6ct"
+    QT_QPA_PLATFORMTHEME "kde"
     STARSHIP_CONFIG "/home/janzon/.config/noctalia/starship.toml"
 }
 
