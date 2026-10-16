@@ -300,7 +300,11 @@ hotkey-overlay {
 }
 
 // Keep background chat clients available without leaving them on the desktop.
-workspace "background-app"
+workspace "background-apps"
+
+// Keep the named background workspace after the regular workspaces. Niri
+// always retains one empty workspace after it for newly opened windows.
+spawn-sh-at-startup "/home/janzon/.local/bin/niri-background-apps-last"
 
 // Ask applications to omit client-side titlebars/decorations when supported.
 // Apps that explicitly require their own decorations may keep them; existing
@@ -403,11 +407,12 @@ binds {
     Ctrl+Alt+Super+Page_Down { focus-workspace-down; }
     Ctrl+Alt+Shift+Super+Page_Up { move-window-to-workspace-up; }
     Ctrl+Alt+Shift+Super+Page_Down { move-window-to-workspace-down; }
+    F20 repeat=false { spawn "/home/janzon/.local/bin/niri-caps-q"; }
+    F21 repeat=false { spawn "/home/janzon/.local/bin/niri-caps-q-quit"; }
     XF86Tools cooldown-ms=50 { focus-column-right; }
     XF86Launch5 cooldown-ms=50 { focus-column-left; }
-    // Caps+Q parks Discord on its persistent background workspace. Other
-    // windows keep the usual close behavior.
-    Ctrl+Alt+Super+Q repeat=false { spawn "/home/janzon/.local/bin/niri-caps-q"; }
+    // Caps+Q parks Discord and Spotify on the persistent background workspace.
+    // Other windows keep the usual close behavior.
     Ctrl+Alt+Super+C { center-column; }
     Ctrl+Alt+Super+R { switch-preset-column-width; }
     Ctrl+Alt+Super+F { spawn-sh "niri msg action maximize-column && sleep 0.3 && niri msg action center-column"; }

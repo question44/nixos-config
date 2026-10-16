@@ -948,6 +948,25 @@ and Noctalia bar margins unchanged. `niri validate`, `nix flake check`, and
 the deployed Niri config was loaded live with `niri msg action
 load-config-file` and validated successfully; Niri was not restarted.
 
+# [COMPLETED] Add a double Caps+Q quit chord — 2026-10-16
+
+Use xremap's 400 ms sequence timeout so one Caps+Q parks Discord or Spotify,
+while a second Caps+Q within the timeout emits a separate quit key. Spotify
+uses its MPRIS Quit method; Discord receives SIGTERM. `niri validate`,
+`nix flake check`, `nixos-rebuild dry-build`, and xremap config parsing passed.
+The change was activated, Niri reloaded, and xremap restarted successfully.
+Spotify reports MPRIS `CanQuit=true`.
+
+# [COMPLETED] Rename and place the background-apps workspace last — 2026-10-16
+
+Rename the named workspace to `background-apps` and place it after ordinary
+workspaces, before Niri's required trailing empty workspace. Reorder it at
+startup and whenever Caps+Q parks Discord or Spotify. `niri validate`,
+`nix flake check`, and `nixos-rebuild dry-build` passed; the change was
+activated and loaded live. Verified the workspace follows ordinary workspaces
+and that Caps+Q moves Spotify there while leaving focus on the original
+workspace. Discord remains there as well.
+
 # [COMPLETED] Add a background-app workspace for Discord — 2026-10-16
 
 Declare a persistent `background-app` Niri workspace. Caps+Q moves a focused

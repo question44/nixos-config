@@ -7,8 +7,10 @@ app_id="$(niri msg --json focused-window | jq -r '.Ok.FocusedWindow.app_id // .a
 # when the IPC response is unavailable or changes shape.
 [[ -n "$app_id" ]] || exit 0
 
-if [[ "${app_id,,}" == *discord* ]]; then
-  niri msg action move-window-to-workspace background-app --focus false
-else
-  niri msg action close-window
-fi
+case "${app_id,,}" in
+  *discord*|*spotify*)
+  niri msg action move-window-to-workspace background-apps --focus false
+  /home/janzon/.local/bin/niri-background-apps-last
+    ;;
+  *) niri msg action close-window ;;
+esac

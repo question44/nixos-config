@@ -207,6 +207,14 @@
                 source = ./home/niri/caps-q-window;
                 executable = true;
               };
+              home.file.".local/bin/niri-background-apps-last" = {
+                source = ./home/niri/background-apps-last;
+                executable = true;
+              };
+              home.file.".local/bin/niri-caps-q-quit" = {
+                source = ./home/niri/caps-q-quit;
+                executable = true;
+              };
               home.file.".local/share/kio/servicemenus/set-niri-overview-wallpaper.desktop" = {
                 source = ./home/dolphin/set-niri-overview-wallpaper.desktop;
                 executable = true;
