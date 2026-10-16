@@ -18,6 +18,17 @@ operation. After activation, verify all five mount sources and read-only
 flags, service health, and local Caddy links; retain generation 100 as the
 recovery path until that verification is complete.
 
+## [COMPLETED] Mount Fedora service volumes read-only — 2026-10-16
+
+Mounted Fedora's `srv` Btrfs subvolume at `/srv` and all four external drives
+at Fedora's `/srv/external/*` paths, with read-only mounts and automounts.
+BigDaddy uses its existing private unlock key and a read-only LUKS mapping.
+Expansion was unmounted from its desktop mount before the managed read-only
+mount was activated. The flake check, dry build, test activation, and
+persistent switch passed. Generation 101 is active; all five mounts are
+verified read-only, no system units are failed, and generation 100 remains in
+the boot menu as recovery.
+
 ## [COMPLETED] Enable Steam — 2026-10-16
 
 Enabled the NixOS Steam module with scoped unfree package allowances. The
