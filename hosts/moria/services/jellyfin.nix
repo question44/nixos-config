@@ -5,8 +5,8 @@
     image = "docker.io/jellyfin/jellyfin:10.11.11";
     ports = [ "127.0.0.1:18096:8096" ];
     volumes = [
-      "/var/lib/moria/jellyfin/config:/config"
-      "/var/lib/moria/jellyfin/cache:/cache"
+      "/srv/jellyfin/config:/config"
+      "/srv/jellyfin/cache:/cache"
       "/srv/torrents/complete:/media:ro"
       "/srv/external/crucial:/media-external/crucial:ro"
       "/srv/external/seagate:/media-external/seagate:ro"
