@@ -9,12 +9,13 @@ secrets, routine read-only inspections, or one-off command failures.
 
 Set the machine hostname to `erebor` and retained `moria` as an alias. Built
 Caddy with the OVH DNS provider and reused Fedora's credentials from
-`/etc/caddy/ovh.env` (root-only, outside the Nix store and repository). Updated
-the `moria` and wildcard A records and added matching `erebor` records at
-`100.108.216.80`, the current Tailscale address. Caddy now serves cloud, media,
-sync, torrent, and code under both names with DNS-01 HTTPS; chat and the
-unsupported dashboard were omitted. Added `cloud.erebor.jzon.pl` to Nextcloud's
-trusted domains. The Fedora source remains mounted read-only at `/mnt/fedora-*`.
+`/etc/caddy/ovh.env` (root-only, outside the Nix store and repository). Added
+`erebor` A records at `100.108.216.80`, the current Tailscale address. Restored
+the `moria` and wildcard A records to Fedora's Tailscale address,
+`100.98.112.118`, after initially pointing them at this host. Caddy now serves
+cloud, media, sync, torrent, and code under both names with DNS-01 HTTPS; chat
+and the unsupported dashboard were omitted. Added `cloud.erebor.jzon.pl` to
+Nextcloud's trusted domains. The Fedora source remains mounted read-only at `/mnt/fedora-*`.
 `nix flake check`, dry build, test activation, and switch passed; generation 121
 is active. Verified trusted HTTPS certificates and expected responses for both
 root names and all ten service aliases. No system units are failed and no reboot
