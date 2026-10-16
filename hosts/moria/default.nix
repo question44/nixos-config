@@ -77,6 +77,7 @@ in
     ./hardware-configuration.nix
     ./services/jellyfin.nix
     ./services/syncthing.nix
+    ./services/qbittorrent.nix
     ../../modules/desktop.nix
     ../../modules/nvidia.nix
   ];

@@ -938,3 +938,16 @@ writable state and run it with the upstream OCI image. Keep the GUI bound to
 localhost for the local Caddy proxy and allow sync protocol TCP/UDP 22000 on
 the LAN and Tailscale interfaces. Fedora had no configured sync folders.
 `nix flake check` and `nixos-rebuild dry-build` passed before activation.
+The service is active and its localhost GUI responds with HTTP 200.
+
+## [COMPLETED] Import qBittorrent with NixOS download storage — 2026-10-16
+
+Copy the Fedora qBittorrent profile into NixOS-local writable state, retaining
+the existing torrent metadata and credentials. Mount Fedora torrent and
+external volumes read only so existing torrents can seed without modifying
+Fedora data. New downloads use `/var/lib/moria/torrents`. The qBittorrent web
+port is loopback-only pending the local Caddy index. `nix flake check` and
+`nixos-rebuild dry-build` passed before activation. After activation the
+service is active, its web endpoint requires authentication, and Podman
+reports the Fedora data mounts read only with the NixOS download volume
+writable.
