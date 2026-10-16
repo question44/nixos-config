@@ -395,7 +395,12 @@ in
 
         @torrent host torrent.localhost torrent
         handle @torrent {
-          reverse_proxy 127.0.0.1:18081
+          reverse_proxy 127.0.0.1:18081 {
+            header_up Host torrent.moria.jzon.pl
+            header_up Origin https://torrent.moria.jzon.pl
+            header_up Referer https://torrent.moria.jzon.pl/
+            header_up -Authorization
+          }
         }
 
         handle {

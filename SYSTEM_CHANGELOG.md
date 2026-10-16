@@ -14,6 +14,19 @@ remain available. `nix flake check`, dry build, and activation passed;
 generation 109 is active. Verified all eight names resolve to `127.0.0.1` and
 each hostname routes to its service. No system units are failed.
 
+## [COMPLETED] Proxy local qBittorrent hostnames safely — 2026-10-16
+
+Kept qBittorrent's existing single allowed server domain and host-header
+validation. NixOS Caddy proxies local aliases with the canonical
+Host/Origin/Referer and strips browser HTTP Basic Authorization, matching
+Fedora's proxy. The shared profile retains its original single domain. The
+pre-change recovery point is read-only snapshot
+`/btrfs-top/srv-pre-shared-services-20261016`. `nix flake check`, dry build,
+and switch passed; generation 111 is active. Both local aliases and the
+canonical domain return HTTP 200, including a request carrying a stale Basic
+Authorization header. qBittorrent remains active with its normal login, and
+no system units are failed.
+
 ## [COMPLETED] Share Fedora service state with NixOS — 2026-10-16
 
 Created and verified read-only snapshot `/btrfs-top/srv-pre-shared-services-20261016`
