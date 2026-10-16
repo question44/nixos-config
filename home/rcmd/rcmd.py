@@ -140,6 +140,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('letter', choices=list('abcdefghijklmnopqrstuvwxyz'))
     parser.add_argument('--reverse', action='store_true')
+    parser.add_argument('--choose', action='store_true', help='Always show the installed-app chooser')
     parser.add_argument('--list', action='store_true', help='Print installed matches without opening the chooser')
     args = parser.parse_args()
     apps = catalog()
@@ -154,7 +155,7 @@ def main():
             return
         desktop = Desktop()
         groups = running_groups(desktop.windows(), apps, args.letter)
-        if groups:
+        if groups and not args.choose:
             desktop.focus(cycle(groups, args.reverse))
             return
         app = choose(apps, args.letter)

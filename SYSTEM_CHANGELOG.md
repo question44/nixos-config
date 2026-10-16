@@ -1,5 +1,20 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [COMPLETED] Always show the app chooser with Right Ctrl+Alt — 2026-10-16
+
+Add Right Ctrl+Alt+A–Z and rcmd --choose to always open the installed-app list,
+even when matching applications are running. Selecting an existing app focuses
+and centers it; otherwise its desktop entry launches. Regular and Shift
+cycling remain available.
+
+Flake check, dry build, test activation, and switch passed. Full simulated
+Right Ctrl+Alt+D through xremap opened the chooser with Discord/Dolphin running.
+Escape created no windows; Enter focused existing Discord without duplication.
+Ordinary Right Ctrl+D then cycled to Dolphin. Active system is
+`pkzrm34hyxsi3ns2xz58di8vq9w6jc1m-nixos-system-erebor-26.05.20261013.a033e66`.
+xremap/Vicinae are active; no failed system/user units. Root/ESP UUIDs and the
+default boot entry remain correct. Live behavior verified in Niri.
+
 ## [COMPLETED] Cycle apps by initial with a Vicinae launch chooser — 2026-10-16
 
 Right Ctrl+A–Z now cycles running apps by their desktop-entry display names;

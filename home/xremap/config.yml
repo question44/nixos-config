@@ -24,106 +24,158 @@ keymap:
         launch: ["/home/janzon/.local/bin/rcmd", "a"]
       Ctrl_R-Shift-a:
         launch: ["/home/janzon/.local/bin/rcmd", "a", "--reverse"]
+      Ctrl_R-Alt-a:
+        launch: ["/home/janzon/.local/bin/rcmd", "a", "--choose"]
       Ctrl_R-b:
         launch: ["/home/janzon/.local/bin/rcmd", "b"]
       Ctrl_R-Shift-b:
         launch: ["/home/janzon/.local/bin/rcmd", "b", "--reverse"]
+      Ctrl_R-Alt-b:
+        launch: ["/home/janzon/.local/bin/rcmd", "b", "--choose"]
       Ctrl_R-c:
         launch: ["/home/janzon/.local/bin/rcmd", "c"]
       Ctrl_R-Shift-c:
         launch: ["/home/janzon/.local/bin/rcmd", "c", "--reverse"]
+      Ctrl_R-Alt-c:
+        launch: ["/home/janzon/.local/bin/rcmd", "c", "--choose"]
       Ctrl_R-d:
         launch: ["/home/janzon/.local/bin/rcmd", "d"]
       Ctrl_R-Shift-d:
         launch: ["/home/janzon/.local/bin/rcmd", "d", "--reverse"]
+      Ctrl_R-Alt-d:
+        launch: ["/home/janzon/.local/bin/rcmd", "d", "--choose"]
       Ctrl_R-e:
         launch: ["/home/janzon/.local/bin/rcmd", "e"]
       Ctrl_R-Shift-e:
         launch: ["/home/janzon/.local/bin/rcmd", "e", "--reverse"]
+      Ctrl_R-Alt-e:
+        launch: ["/home/janzon/.local/bin/rcmd", "e", "--choose"]
       Ctrl_R-f:
         launch: ["/home/janzon/.local/bin/rcmd", "f"]
       Ctrl_R-Shift-f:
         launch: ["/home/janzon/.local/bin/rcmd", "f", "--reverse"]
+      Ctrl_R-Alt-f:
+        launch: ["/home/janzon/.local/bin/rcmd", "f", "--choose"]
       Ctrl_R-g:
         launch: ["/home/janzon/.local/bin/rcmd", "g"]
       Ctrl_R-Shift-g:
         launch: ["/home/janzon/.local/bin/rcmd", "g", "--reverse"]
+      Ctrl_R-Alt-g:
+        launch: ["/home/janzon/.local/bin/rcmd", "g", "--choose"]
       Ctrl_R-h:
         launch: ["/home/janzon/.local/bin/rcmd", "h"]
       Ctrl_R-Shift-h:
         launch: ["/home/janzon/.local/bin/rcmd", "h", "--reverse"]
+      Ctrl_R-Alt-h:
+        launch: ["/home/janzon/.local/bin/rcmd", "h", "--choose"]
       Ctrl_R-i:
         launch: ["/home/janzon/.local/bin/rcmd", "i"]
       Ctrl_R-Shift-i:
         launch: ["/home/janzon/.local/bin/rcmd", "i", "--reverse"]
+      Ctrl_R-Alt-i:
+        launch: ["/home/janzon/.local/bin/rcmd", "i", "--choose"]
       Ctrl_R-j:
         launch: ["/home/janzon/.local/bin/rcmd", "j"]
       Ctrl_R-Shift-j:
         launch: ["/home/janzon/.local/bin/rcmd", "j", "--reverse"]
+      Ctrl_R-Alt-j:
+        launch: ["/home/janzon/.local/bin/rcmd", "j", "--choose"]
       Ctrl_R-k:
         launch: ["/home/janzon/.local/bin/rcmd", "k"]
       Ctrl_R-Shift-k:
         launch: ["/home/janzon/.local/bin/rcmd", "k", "--reverse"]
+      Ctrl_R-Alt-k:
+        launch: ["/home/janzon/.local/bin/rcmd", "k", "--choose"]
       Ctrl_R-l:
         launch: ["/home/janzon/.local/bin/rcmd", "l"]
       Ctrl_R-Shift-l:
         launch: ["/home/janzon/.local/bin/rcmd", "l", "--reverse"]
+      Ctrl_R-Alt-l:
+        launch: ["/home/janzon/.local/bin/rcmd", "l", "--choose"]
       Ctrl_R-m:
         launch: ["/home/janzon/.local/bin/rcmd", "m"]
       Ctrl_R-Shift-m:
         launch: ["/home/janzon/.local/bin/rcmd", "m", "--reverse"]
+      Ctrl_R-Alt-m:
+        launch: ["/home/janzon/.local/bin/rcmd", "m", "--choose"]
       Ctrl_R-n:
         launch: ["/home/janzon/.local/bin/rcmd", "n"]
       Ctrl_R-Shift-n:
         launch: ["/home/janzon/.local/bin/rcmd", "n", "--reverse"]
+      Ctrl_R-Alt-n:
+        launch: ["/home/janzon/.local/bin/rcmd", "n", "--choose"]
       Ctrl_R-o:
         launch: ["/home/janzon/.local/bin/rcmd", "o"]
       Ctrl_R-Shift-o:
         launch: ["/home/janzon/.local/bin/rcmd", "o", "--reverse"]
+      Ctrl_R-Alt-o:
+        launch: ["/home/janzon/.local/bin/rcmd", "o", "--choose"]
       Ctrl_R-p:
         launch: ["/home/janzon/.local/bin/rcmd", "p"]
       Ctrl_R-Shift-p:
         launch: ["/home/janzon/.local/bin/rcmd", "p", "--reverse"]
+      Ctrl_R-Alt-p:
+        launch: ["/home/janzon/.local/bin/rcmd", "p", "--choose"]
       Ctrl_R-q:
         launch: ["/home/janzon/.local/bin/rcmd", "q"]
       Ctrl_R-Shift-q:
         launch: ["/home/janzon/.local/bin/rcmd", "q", "--reverse"]
+      Ctrl_R-Alt-q:
+        launch: ["/home/janzon/.local/bin/rcmd", "q", "--choose"]
       Ctrl_R-r:
         launch: ["/home/janzon/.local/bin/rcmd", "r"]
       Ctrl_R-Shift-r:
         launch: ["/home/janzon/.local/bin/rcmd", "r", "--reverse"]
+      Ctrl_R-Alt-r:
+        launch: ["/home/janzon/.local/bin/rcmd", "r", "--choose"]
       Ctrl_R-s:
         launch: ["/home/janzon/.local/bin/rcmd", "s"]
       Ctrl_R-Shift-s:
         launch: ["/home/janzon/.local/bin/rcmd", "s", "--reverse"]
+      Ctrl_R-Alt-s:
+        launch: ["/home/janzon/.local/bin/rcmd", "s", "--choose"]
       Ctrl_R-t:
         launch: ["/home/janzon/.local/bin/rcmd", "t"]
       Ctrl_R-Shift-t:
         launch: ["/home/janzon/.local/bin/rcmd", "t", "--reverse"]
+      Ctrl_R-Alt-t:
+        launch: ["/home/janzon/.local/bin/rcmd", "t", "--choose"]
       Ctrl_R-u:
         launch: ["/home/janzon/.local/bin/rcmd", "u"]
       Ctrl_R-Shift-u:
         launch: ["/home/janzon/.local/bin/rcmd", "u", "--reverse"]
+      Ctrl_R-Alt-u:
+        launch: ["/home/janzon/.local/bin/rcmd", "u", "--choose"]
       Ctrl_R-v:
         launch: ["/home/janzon/.local/bin/rcmd", "v"]
       Ctrl_R-Shift-v:
         launch: ["/home/janzon/.local/bin/rcmd", "v", "--reverse"]
+      Ctrl_R-Alt-v:
+        launch: ["/home/janzon/.local/bin/rcmd", "v", "--choose"]
       Ctrl_R-w:
         launch: ["/home/janzon/.local/bin/rcmd", "w"]
       Ctrl_R-Shift-w:
         launch: ["/home/janzon/.local/bin/rcmd", "w", "--reverse"]
+      Ctrl_R-Alt-w:
+        launch: ["/home/janzon/.local/bin/rcmd", "w", "--choose"]
       Ctrl_R-x:
         launch: ["/home/janzon/.local/bin/rcmd", "x"]
       Ctrl_R-Shift-x:
         launch: ["/home/janzon/.local/bin/rcmd", "x", "--reverse"]
+      Ctrl_R-Alt-x:
+        launch: ["/home/janzon/.local/bin/rcmd", "x", "--choose"]
       Ctrl_R-y:
         launch: ["/home/janzon/.local/bin/rcmd", "y"]
       Ctrl_R-Shift-y:
         launch: ["/home/janzon/.local/bin/rcmd", "y", "--reverse"]
+      Ctrl_R-Alt-y:
+        launch: ["/home/janzon/.local/bin/rcmd", "y", "--choose"]
       Ctrl_R-z:
         launch: ["/home/janzon/.local/bin/rcmd", "z"]
       Ctrl_R-Shift-z:
         launch: ["/home/janzon/.local/bin/rcmd", "z", "--reverse"]
+      Ctrl_R-Alt-z:
+        launch: ["/home/janzon/.local/bin/rcmd", "z", "--choose"]
 
   - name: Caps desktop layer - Meta movement
     exact_match: true
