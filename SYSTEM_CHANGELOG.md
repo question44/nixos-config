@@ -1,5 +1,23 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [COMPLETED] Launch Spotify's focus helper directly from xremap — 2026-10-16
+
+Right Ctrl+S now uses xremap launch instead of F18/XF86Music. A wrapper selects
+the existing Niri/Umbriel helper by the active desktop and preserves centering.
+Explicitly allow launching and give the user service both system and Home
+Manager command paths. Other Right Ctrl shortcuts retain their key mappings
+while this direct-launch approach is tried.
+
+Flake check, dry build, test activation, and persistent switch passed. A full
+Right Ctrl+S sequence through a temporary keyboard grabbed by xremap focused
+Spotify, retained exactly one Spotify window, and emitted no F18 event.
+After the service path expansion, the deployed wrapper also focused Spotify
+with the exact service environment; all required commands including Umbriel
+resolve. Active generation 148 is
+`g5xamf0l2fpzhwkvk7jp0dfqkm1z32zr-nixos-system-erebor-26.05.20261013.a033e66`.
+xremap is active; no system or user units failed. Root, ESP, and the default
+boot entry remain correct. Umbriel routing is implemented but not live-tested.
+
 ## [COMPLETED] Use semantic Wayland launcher keys — 2026-10-16
 
 Right Ctrl+T/F/S/D now emit XF86Terminal, XF86Explorer, XF86Music, and

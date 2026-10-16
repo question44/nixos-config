@@ -231,11 +231,12 @@ in
 
   systemd.user.services.xremap = {
     description = "xremap key remapper";
+    path = [ config.system.path config.home-manager.users.janzon.home.path ];
     after = [ "graphical-session.target" ];
     partOf = [ "graphical-session.target" ];
     wantedBy = [ "graphical-session.target" ];
     serviceConfig = {
-      ExecStart = "${pkgs.xremap}/bin/xremap --mouse --device \"Telink IQUNIX 2.4GHz\" --device \"RDR IQUNIX MQ80 KB\" --device \"Logitech G502 X LS\" /home/janzon/.config/xremap/config.yml";
+      ExecStart = "${pkgs.xremap}/bin/xremap --allow-launch true --mouse --device \"Telink IQUNIX 2.4GHz\" --device \"RDR IQUNIX MQ80 KB\" --device \"Logitech G502 X LS\" /home/janzon/.config/xremap/config.yml";
       Restart = "on-failure";
     };
   };

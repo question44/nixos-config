@@ -22,7 +22,8 @@ keymap:
       Ctrl_R-t: KEY_F15
       Ctrl_R-b: KEY_F16
       Ctrl_R-f: KEY_FILE
-      Ctrl_R-s: KEY_F18
+      Ctrl_R-s:
+        launch: ["/home/janzon/.local/bin/xremap-focus-or-launch", "spotify|com.spotify.Client", "spotify"]
       Ctrl_R-y: KEY_F19
       Ctrl_R-d: KEY_MESSENGER
 

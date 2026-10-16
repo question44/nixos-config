@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# xremap runs as a user service; route commands to the active compositor.
+case ":${XDG_CURRENT_DESKTOP,,}:" in
+  *:niri:*)
+    if [[ ! -S "${NIRI_SOCKET:-}" ]]; then
+      shopt -s nullglob
+      sockets=("${XDG_RUNTIME_DIR:?}"/niri.wayland-*.sock)
+      (( ${#sockets[@]} == 1 )) || { echo "Cannot identify the active Niri socket" >&2; exit 1; }
+      export NIRI_SOCKET="${sockets[0]}"
+    fi
+    exec "$HOME/.local/bin/niri-focus-or-launch" "$@"
+    ;;
+  *:umbriel:*)
+    exec "$HOME/.local/bin/umbriel-focus-or-launch" "$@"
+    ;;
+  *)
+    echo "Unsupported desktop: ${XDG_CURRENT_DESKTOP:-unset}" >&2
+    exit 1
+    ;;
+esac

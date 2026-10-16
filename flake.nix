@@ -214,6 +214,10 @@
                 source = ./home/niri/caps-q-window;
                 executable = true;
               };
+              home.file.".local/bin/xremap-focus-or-launch" = {
+                source = ./home/xremap/focus-or-launch;
+                executable = true;
+              };
               home.file.".local/bin/niri-focus-or-launch" = {
                 source = ./home/niri/focus-or-launch;
                 executable = true;
