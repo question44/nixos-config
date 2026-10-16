@@ -1,5 +1,15 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [COMPLETED] Accept the Fedora key name for Right Ctrl+S — 2026-10-16
+
+Fedora's XKB layout reports xremap's F18 output as XF86Launch9. Bind both F18
+and XF86Launch9 to the Spotify focus-or-launch helper in Niri and Umbriel.
+Niri and Umbriel validation, `nix flake check`, dry build, test activation, and
+persistent switch passed. Active generation is
+`kmbyq6l3b612kz1cbpvyyn9ryx3fm73w-nixos-system-erebor-26.05.20261013.a033e66`.
+Reloaded Niri and verified both deployed configurations contain the XF86Launch9
+binding. xremap is active and there are no failed system or user units.
+
 ## [COMPLETED] Center Right Ctrl focus-or-launch windows — 2026-10-16
 
 Center the focused column after each Right Ctrl app shortcut focuses or starts

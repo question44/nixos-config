@@ -57,6 +57,7 @@ blur_optimized = false
 "XF86Launch7" = { action = "spawn:/home/janzon/.local/bin/umbriel-focus-or-launch helium|net.imput.helium helium", repeat = false }
 "XF86Launch8" = { action = "spawn:/home/janzon/.local/bin/umbriel-focus-or-launch org.kde.dolphin dolphin", repeat = false }
 "F18" = { action = "spawn:/home/janzon/.local/bin/umbriel-focus-or-launch spotify|com.spotify.Client spotify", repeat = false }
+"XF86Launch9" = { action = "spawn:/home/janzon/.local/bin/umbriel-focus-or-launch spotify|com.spotify.Client spotify", repeat = false }
 "Mod+T" = { action = "spawn:ghostty", repeat = false }
 "Mod+Return" = { action = "spawn:ghostty", repeat = false }
 "Mod+D" = { action = "spawn:noctalia msg panel-toggle launcher", repeat = false }

@@ -398,6 +398,7 @@ binds {
     XF86Launch7 repeat=false { spawn "/home/janzon/.local/bin/niri-focus-or-launch" "helium|net.imput.helium" "helium"; }
     XF86Launch8 repeat=false { spawn "/home/janzon/.local/bin/niri-focus-or-launch" "org.kde.dolphin" "dolphin"; }
     F18 repeat=false { spawn "/home/janzon/.local/bin/niri-focus-or-launch" "spotify|com.spotify.Client" "spotify"; }
+    XF86Launch9 repeat=false { spawn "/home/janzon/.local/bin/niri-focus-or-launch" "spotify|com.spotify.Client" "spotify"; }
 
     // Fedora Caps navigation and window-management layer.
     Ctrl+Alt+Super+T { toggle-column-tabbed-display; }
