@@ -1,5 +1,21 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [COMPLETED] Cycle every matching application window — 2026-10-16
+
+Right Ctrl+letter traverses all windows of matching apps, with Shift reversing
+the same stable order. Sort by app name then window ID, so focus changes do
+not reorder the cycle. Entering from another app initially focuses the most
+recently used match. Preserve Alt's installed-app chooser and centering.
+
+Algorithm checks covered three windows, reverse, wraparound, MRU entry, and
+multiple apps. Flake check, dry build, test activation, and switch passed.
+Full simulated Right Ctrl+H and Shift+Right Ctrl+H through xremap traversed
+Helium windows 7 and 12 and wrapped in both directions with no new windows.
+Active system is
+`kkvxm8ilr0h480f9rhk021ihpf7w3wc9-nixos-system-erebor-26.05.20261013.a033e66`.
+xremap and Vicinae are active, no failed system/user units, and root/ESP UUIDs
+and the default boot entry remain correct. Live behavior verified in Niri.
+
 ## [COMPLETED] Always show the app chooser with Right Ctrl+Alt — 2026-10-16
 
 Add Right Ctrl+Alt+A–Z and rcmd --choose to always open the installed-app list,

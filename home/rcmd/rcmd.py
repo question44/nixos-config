@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Cycle running applications by initial, or choose an installed application."""
+"""Cycle matching application windows by initial, or choose an installed app."""
 import argparse
 import fcntl
 import glob
@@ -104,12 +104,14 @@ def running_groups(windows, apps, letter):
 
 
 def cycle(groups, reverse=False):
-    current = next((i for i, group in enumerate(groups) if any(focused(w) for w in group['windows'])), None)
+    # Keep app-name order and stable window IDs. Focus timestamps change after
+    # every press; sorting the cycle by recency would skip windows or bounce.
+    windows = [window for group in groups
+               for window in sorted(group['windows'], key=lambda w: w['id'])]
+    current = next((i for i, window in enumerate(windows) if focused(window)), None)
     if current is None:
-        group = max(groups, key=lambda g: max(timestamp(w) for w in g['windows']))
-    else:
-        group = groups[(current + (-1 if reverse else 1)) % len(groups)]
-    return max(group['windows'], key=timestamp)
+        return max(windows, key=timestamp)
+    return windows[(current + (-1 if reverse else 1)) % len(windows)]
 
 
 def choose(apps, letter):
