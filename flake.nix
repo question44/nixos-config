@@ -202,6 +202,8 @@
                 ExecStart=
                 ExecStart=${vicinae.packages.x86_64-linux.default}/bin/vicinae server --replace
               '';
+              xdg.configFile."xkb/rules/evdev".source = ./home/xkb/rules/evdev;
+              xdg.configFile."xkb/symbols/moria".source = ./home/xkb/symbols/moria;
               xdg.configFile."niri/config.kdl".source = ./home/niri/config.kdl;
               xdg.configFile."xremap/config.yml".source = ./home/xremap/config.yml;
               home.file.".local/bin/niri-overview-wallpaper" = {

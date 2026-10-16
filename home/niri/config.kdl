@@ -16,7 +16,7 @@ input {
     keyboard {
         xkb {
             layout "pl"
-            options "lv3:ralt_switch"
+            options "lv3:ralt_switch,moria:launchers"
             // You can set rules, model, layout, variant and options.
             // For more information, see xkeyboard-config(7).
 
@@ -381,7 +381,7 @@ window-rule {
 
 binds {
     // Fedora-derived xremap layer: physical Caps chords arrive as
-    // Ctrl+Alt+Super, while right-Ctrl app shortcuts arrive as XF86Launch keys.
+    // Ctrl+Alt+Super, while right-Ctrl app shortcuts arrive as native XF86 keys.
     Ctrl+Alt+Super+Insert repeat=false { show-hotkey-overlay; }
     Ctrl+Alt+Super+Slash repeat=false { show-hotkey-overlay; }
     Ctrl+Alt+Super+Space { spawn "vicinae" "toggle"; }
@@ -394,11 +394,11 @@ binds {
     Ctrl+Alt+Super+Escape { spawn "noctalia" "msg" "session" "logout"; }
     Ctrl+Alt+Super+X { spawn "noctalia" "msg" "session" "lock"; }
     Ctrl+Alt+Super+Return { spawn "helium"; }
-    XF86Launch6 repeat=false { spawn "/home/janzon/.local/bin/niri-focus-or-launch" "com.mitchellh.ghostty|ghostty" "ghostty"; }
+    XF86Terminal repeat=false { spawn "/home/janzon/.local/bin/niri-focus-or-launch" "com.mitchellh.ghostty|ghostty" "ghostty"; }
     XF86Launch7 repeat=false { spawn "/home/janzon/.local/bin/niri-focus-or-launch" "helium|net.imput.helium" "helium"; }
-    XF86Launch8 repeat=false { spawn "/home/janzon/.local/bin/niri-focus-or-launch" "org.kde.dolphin" "dolphin"; }
-    F18 repeat=false { spawn "/home/janzon/.local/bin/niri-focus-or-launch" "spotify|com.spotify.Client" "spotify"; }
-    XF86Launch9 repeat=false { spawn "/home/janzon/.local/bin/niri-focus-or-launch" "spotify|com.spotify.Client" "spotify"; }
+    XF86Explorer repeat=false { spawn "/home/janzon/.local/bin/niri-focus-or-launch" "org.kde.dolphin" "dolphin"; }
+    XF86Messenger repeat=false { spawn "/home/janzon/.local/bin/niri-focus-or-launch" "discord" "discord"; }
+    XF86Music repeat=false { spawn "/home/janzon/.local/bin/niri-focus-or-launch" "spotify|com.spotify.Client" "spotify"; }
 
     // Fedora Caps navigation and window-management layer.
     Ctrl+Alt+Super+T { toggle-column-tabbed-display; }

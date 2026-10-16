@@ -1,0 +1,6 @@
+// Applied after inet(evdev), so generic F15/F18 aliases cannot override it.
+partial function_keys
+xkb_symbols "launchers" {
+    key <FK15> { [ XF86Terminal ] };
+    key <FK18> { [ XF86Music ] };
+};

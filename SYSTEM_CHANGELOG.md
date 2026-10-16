@@ -1,5 +1,24 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [COMPLETED] Use semantic Wayland launcher keys — 2026-10-16
+
+Right Ctrl+T/F/S/D now emit XF86Terminal, XF86Explorer, XF86Music, and
+XF86Messenger for Ghostty, Dolphin, Spotify, and Discord. Deploy an XKB option
+through ~/.config/xkb/rules and symbols, preserving Polish typing and applying
+the F15/F18 overrides after inet(evdev). This avoids relying on environment
+variables unavailable to the running Wayland compositor. All four bindings
+use focus-or-launch and center the focused column.
+
+Compiled the deployed keymap, validated Niri and Umbriel, passed flake check,
+dry build, test activation, and persistent switch. Live uinput events 185,
+188, 430, and 144 focused Ghostty, Spotify, Discord, and Dolphin respectively.
+Niri needed its keyboard options toggled once to discard the earlier cached
+keymap. Active generation 147 is
+`lc8y5hgwnrjzsav89d4vklp4dl3azrix-nixos-system-erebor-26.05.20261013.a033e66`.
+xremap is active; there are no failed system or user units. Root and ESP UUIDs
+and the default NixOS boot entry are correct. Umbriel's configuration and XKB
+map validate; its live bindings await an Umbriel session.
+
 ## [COMPLETED] Accept the Fedora key name for Right Ctrl+S — 2026-10-16
 
 Fedora's XKB layout reports xremap's F18 output as XF86Launch9. Bind both F18

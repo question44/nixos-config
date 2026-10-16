@@ -21,9 +21,10 @@ keymap:
     remap:
       Ctrl_R-t: KEY_F15
       Ctrl_R-b: KEY_F16
-      Ctrl_R-f: KEY_F17
+      Ctrl_R-f: KEY_FILE
       Ctrl_R-s: KEY_F18
       Ctrl_R-y: KEY_F19
+      Ctrl_R-d: KEY_MESSENGER
 
   - name: Caps desktop layer - Meta movement
     exact_match: true

@@ -9,7 +9,7 @@ QT_QPA_PLATFORMTHEME = "kde"
 
 [input.keyboard]
 layout = "pl"
-options = "lv3:ralt_switch"
+options = "lv3:ralt_switch,moria:launchers"
 
 [workspaces]
 back_and_forth = true
@@ -53,11 +53,11 @@ blur_optimized = false
 "Ctrl+Alt+Super+Escape" = { action = "spawn:noctalia msg session logout", repeat = false }
 "Ctrl+Alt+Super+X" = { action = "spawn:noctalia msg session lock", repeat = false }
 "Ctrl+Alt+Super+Return" = { action = "spawn:helium", repeat = false }
-"XF86Launch6" = { action = "spawn:/home/janzon/.local/bin/umbriel-focus-or-launch com.mitchellh.ghostty|ghostty ghostty", repeat = false }
+"XF86Terminal" = { action = "spawn:/home/janzon/.local/bin/umbriel-focus-or-launch com.mitchellh.ghostty|ghostty ghostty", repeat = false }
 "XF86Launch7" = { action = "spawn:/home/janzon/.local/bin/umbriel-focus-or-launch helium|net.imput.helium helium", repeat = false }
-"XF86Launch8" = { action = "spawn:/home/janzon/.local/bin/umbriel-focus-or-launch org.kde.dolphin dolphin", repeat = false }
-"F18" = { action = "spawn:/home/janzon/.local/bin/umbriel-focus-or-launch spotify|com.spotify.Client spotify", repeat = false }
-"XF86Launch9" = { action = "spawn:/home/janzon/.local/bin/umbriel-focus-or-launch spotify|com.spotify.Client spotify", repeat = false }
+"XF86Explorer" = { action = "spawn:/home/janzon/.local/bin/umbriel-focus-or-launch org.kde.dolphin dolphin", repeat = false }
+"XF86Messenger" = { action = "spawn:/home/janzon/.local/bin/umbriel-focus-or-launch discord discord", repeat = false }
+"XF86Music" = { action = "spawn:/home/janzon/.local/bin/umbriel-focus-or-launch spotify|com.spotify.Client spotify", repeat = false }
 "Mod+T" = { action = "spawn:ghostty", repeat = false }
 "Mod+Return" = { action = "spawn:ghostty", repeat = false }
 "Mod+D" = { action = "spawn:noctalia msg panel-toggle launcher", repeat = false }
