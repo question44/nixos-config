@@ -1,5 +1,14 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [COMPLETED] Enable Ghostty background blur in Niri — 2026-10-16
+
+Add a Ghostty-specific Niri background-effect rule. `nix flake check` and
+`nixos-rebuild dry-build` passed; `nixos-rebuild switch` activated generation
+`fnbjkq4kbhbg5vqv8m4j87qz16lk1kqn-nixos-system-erebor-26.05.20261013.a033e66`.
+The deployed configuration includes the rule, and `niri msg action
+load-config-file` succeeded. `niri msg windows` confirms Ghostty is running
+with app ID `com.mitchellh.ghostty`, matching the rule.
+
 Record completed NixOS configuration changes and material pending operations
 here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
 **[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record

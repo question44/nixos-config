@@ -353,6 +353,14 @@ window-rule {
     open-floating true
 }
 
+// Blur the desktop behind Ghostty's translucent terminal background.
+window-rule {
+    match app-id=r#"^com\.mitchellh\.ghostty$"#
+    background-effect {
+        blur true
+    }
+}
+
 // Example: block out two password managers from screen capture.
 // (This example rule is commented out with a "/-" in front.)
 /-window-rule {
