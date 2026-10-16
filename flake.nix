@@ -67,6 +67,7 @@
                 neovim
                 fd
                 ripgrep
+                fastfetch
                 git
                 curl
                 lazygit

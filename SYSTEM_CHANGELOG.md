@@ -1,5 +1,13 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [COMPLETED] Install Fastfetch — 2026-10-17
+
+Added `fastfetch` to Janzon's declarative Home Manager packages. Flake check,
+build, test activation, and switch passed. Verified Fastfetch 2.63.1 runs and
+reports OS, kernel, CPU, and memory. No failed system or user units; root and
+ESP retain their expected UUIDs. Active system profile is generation 155:
+`/nix/store/9vhh9mqpymhawqxg0g0n7d7syg54dgi6-nixos-system-erebor-26.05.20261013.a033e66`.
+
 ## [COMPLETED] Cycle every matching application window — 2026-10-16
 
 Right Ctrl+letter traverses all windows of matching apps, with Shift reversing
