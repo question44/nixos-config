@@ -1,6 +1,6 @@
-# System context for NixOS `moria`
+# System context for NixOS `erebor` (flake target `moria`)
 
-Last inspected: 2026-10-14. NixOS 26.05 is installed and currently booted
+Last inspected: 2026-10-16. NixOS 26.05 is installed and currently booted
 from the `nixos-root` subvolume. Initial NixOS boot and desktop checks passed,
 and Fedora was subsequently verified intact from its firmware entry.
 

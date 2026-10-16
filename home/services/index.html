@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>moria services</title>
+<title>erebor services</title>
 <style>
   :root { color-scheme: light dark; --bg:#131315; --fg:#ececec; --mut:#9a9a9a; --card:#1c1c20; --bd:#2c2c32; --ac:#7aa7d9; }
   @media (prefers-color-scheme: light) { :root { --bg:#fafafa; --fg:#1a1a1a; --mut:#666; --card:#fff; --bd:#e2e2e2; --ac:#3b6ea5; } }
@@ -22,8 +22,8 @@
 </head>
 <body>
 <main>
-  <h1>moria</h1>
-  <p class="sub">Services available on the local network.</p>
+  <h1>erebor</h1>
+  <p class="sub">Services available on the tailnet and local network.</p>
   <div class="grid">
     <a id="jellyfin" href="http://moria:8096">
       <div class="name">media</div>
@@ -49,12 +49,15 @@
   <footer>Served by Caddy on the local network.</footer>
 </main>
 <script>
-  const localUrl = (port) => `http://${location.hostname}:${port}`;
-  document.querySelector("#jellyfin").href = localUrl(8096);
-  document.querySelector("#nextcloud").href = localUrl(8095);
-  document.querySelector("#syncthing").href = localUrl(8384);
-  document.querySelector("#qbittorrent").href = localUrl(8082);
-  document.querySelector("#t3code").href = localUrl(8080);
+  const isDomain = location.hostname.endsWith(".jzon.pl");
+  const serviceUrl = (name, port) => isDomain
+    ? `https://${name}.${location.hostname}`
+    : `http://${location.hostname}:${port}`;
+  document.querySelector("#jellyfin").href = serviceUrl("media", 8096);
+  document.querySelector("#nextcloud").href = serviceUrl("cloud", 8095);
+  document.querySelector("#syncthing").href = serviceUrl("sync", 8384);
+  document.querySelector("#qbittorrent").href = serviceUrl("torrent", 8082);
+  document.querySelector("#t3code").href = serviceUrl("code", 8080);
 </script>
 </body>
 </html>

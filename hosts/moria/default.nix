@@ -100,10 +100,11 @@ in
   boot.loader.efi.efiSysMountPoint = "/boot";
   boot.kernelModules = [ "uinput" ];
 
-  networking.hostName = "moria";
+  networking.hostName = "erebor";
   networking.networkmanager.enable = true;
   networking.hosts = {
     "127.0.0.1" = [
+      "moria" "erebor"
       "torrent" "torrent.localhost"
       "jellyfin" "jellyfin.localhost"
       "nextcloud" "nextcloud.localhost"
@@ -113,7 +114,7 @@ in
   networking.firewall.allowedTCPPorts = [ 22 ];
   networking.firewall.interfaces.enp4s0.allowedTCPPorts = [ 80 8080 8095 8096 8384 8082 22000 ];
   networking.firewall.interfaces.enp4s0.allowedUDPPorts = [ 22000 ];
-  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 22000 ];
+  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 80 443 22000 ];
   networking.firewall.interfaces.tailscale0.allowedUDPPorts = [ 22000 ];
   services.tailscale.enable = true;
   hardware.i2c.enable = true;
@@ -373,8 +374,29 @@ in
 
   services.caddy = {
     enable = true;
+    package = pkgs.caddy.withPlugins {
+      plugins = [ "github.com/caddy-dns/ovh@v1.1.0" ];
+      hash = "sha256-Yakgn5FnLaZqfHzX0cxG/1Ypg/dyKS+n8OPFlIPpdBo=";
+    };
+    environmentFile = "/etc/caddy/ovh.env";
+    globalConfig = "auto_https disable_redirects";
     extraConfig = ''
+      (ovh_tls) {
+        tls {
+          dns ovh {
+            endpoint {$OVH_ENDPOINT}
+            application_key {$OVH_APPLICATION_KEY}
+            application_secret {$OVH_APPLICATION_SECRET}
+            consumer_key {$OVH_CONSUMER_KEY}
+          }
+          resolvers 1.1.1.1 9.9.9.9
+        }
+      }
+
       :80 {
+        @domain host moria.jzon.pl erebor.jzon.pl *.moria.jzon.pl *.erebor.jzon.pl
+        redir @domain https://{host}{uri} permanent
+
         @jellyfin host jellyfin.localhost jellyfin
         handle @jellyfin {
           reverse_proxy 127.0.0.1:18096
@@ -430,6 +452,59 @@ in
 
       :8082 {
         reverse_proxy 127.0.0.1:18081
+      }
+
+      moria.jzon.pl, erebor.jzon.pl {
+        import ovh_tls
+        encode gzip
+        root * ${../../home/services}
+        file_server
+      }
+
+      *.moria.jzon.pl, *.erebor.jzon.pl {
+        import ovh_tls
+        encode gzip
+
+        @code host code.moria.jzon.pl code.erebor.jzon.pl
+        handle @code {
+          reverse_proxy 127.0.0.1:3773
+        }
+
+        @cloud host cloud.moria.jzon.pl cloud.erebor.jzon.pl
+        handle @cloud {
+          @carddav path /.well-known/carddav
+          redir @carddav /remote.php/dav 301
+          @caldav path /.well-known/caldav
+          redir @caldav /remote.php/dav 301
+          reverse_proxy 127.0.0.1:18089
+        }
+
+        @media host media.moria.jzon.pl media.erebor.jzon.pl
+        handle @media {
+          reverse_proxy 127.0.0.1:18096
+        }
+
+        @sync host sync.moria.jzon.pl sync.erebor.jzon.pl
+        handle @sync {
+          reverse_proxy 127.0.0.1:18384 {
+            header_up Host localhost:18384
+            header_up Origin http://localhost:18384
+          }
+        }
+
+        @torrent host torrent.moria.jzon.pl torrent.erebor.jzon.pl
+        handle @torrent {
+          reverse_proxy 127.0.0.1:18081 {
+            header_up Host torrent.moria.jzon.pl
+            header_up Origin https://torrent.moria.jzon.pl
+            header_up Referer https://torrent.moria.jzon.pl/
+            header_up -Authorization
+          }
+        }
+
+        handle {
+          abort
+        }
       }
     '';
   };
