@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if (( $# < 2 )); then
+  echo "usage: umbriel-focus-or-launch APP_ID[|APP_ID...] COMMAND [ARG...]" >&2
+  exit 2
+fi
+
+app_ids=$1
+shift
+
+lock_key=${app_ids//[^[:alnum:]._-]/_}
+lock_file="${XDG_RUNTIME_DIR:-/run/user/$UID}/umbriel-focus-or-launch-$lock_key.lock"
+exec 9>"$lock_file"
+flock -n 9 || exit 0
+
+find_window_id() {
+  umbriel windows --json | jq -er --arg ids "$app_ids" '
+    ($ids | split("|") | map(ascii_downcase)) as $wanted
+    | [.[] | select((.app_id // "" | ascii_downcase) as $app | $wanted | index($app))]
+    | if length == 0 then empty else first.id end
+  '
+}
+
+if window_id=$(find_window_id); then
+  exec umbriel msg "window-focus:$window_id"
+fi
+
+"$@" 9>&- >/dev/null 2>&1 &
+
+for _ in {1..40}; do
+  sleep 0.05
+  if window_id=$(find_window_id); then
+    exec umbriel msg "window-focus:$window_id"
+  fi
+done

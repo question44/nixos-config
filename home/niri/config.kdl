@@ -394,10 +394,10 @@ binds {
     Ctrl+Alt+Super+Escape { spawn "noctalia" "msg" "session" "logout"; }
     Ctrl+Alt+Super+X { spawn "noctalia" "msg" "session" "lock"; }
     Ctrl+Alt+Super+Return { spawn "helium"; }
-    XF86Launch6 { spawn "ghostty"; }
-    XF86Launch7 { spawn "helium"; }
-    XF86Launch8 { spawn "dolphin"; }
-    F18 { spawn "spotify"; }
+    XF86Launch6 repeat=false { spawn "/home/janzon/.local/bin/niri-focus-or-launch" "com.mitchellh.ghostty|ghostty" "ghostty"; }
+    XF86Launch7 repeat=false { spawn "/home/janzon/.local/bin/niri-focus-or-launch" "helium|net.imput.helium" "helium"; }
+    XF86Launch8 repeat=false { spawn "/home/janzon/.local/bin/niri-focus-or-launch" "org.kde.dolphin" "dolphin"; }
+    F18 repeat=false { spawn "/home/janzon/.local/bin/niri-focus-or-launch" "spotify|com.spotify.Client" "spotify"; }
 
     // Fedora Caps navigation and window-management layer.
     Ctrl+Alt+Super+T { toggle-column-tabbed-display; }

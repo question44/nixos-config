@@ -1,5 +1,19 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [COMPLETED] Restore Fedora focus-or-launch app shortcuts — 2026-10-16
+
+Direct Right Ctrl app bindings spawn a new process and leave an existing window
+unfocused. Restore Fedora's window lookup and focus behavior for Ghostty,
+Helium, Dolphin, and Spotify in Niri and Umbriel. Niri and Umbriel validation,
+`nix flake check`, dry build, test activation, and persistent switch passed.
+Active generation is
+`83iq53rcxzaa4wfyzlr1jp4yh93n1gcm-nixos-system-erebor-26.05.20261013.a033e66`.
+Reloaded Niri's configuration and invoked the helper against its existing
+Spotify window. It focused window ID 4 and retained one Spotify process. The
+managed helper scripts and xremap service are active. The Umbriel helper uses
+the same app-ID lookup and focus path; no Umbriel session was active to verify
+live behavior.
+
 ## [COMPLETED] Bind Right Ctrl+S to Spotify — 2026-10-16
 
 Right Ctrl+S is already remapped by xremap to F18, but neither compositor bound

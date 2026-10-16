@@ -212,12 +212,20 @@
                 source = ./home/niri/caps-q-window;
                 executable = true;
               };
+              home.file.".local/bin/niri-focus-or-launch" = {
+                source = ./home/niri/focus-or-launch;
+                executable = true;
+              };
               home.file.".local/bin/niri-background-apps-last" = {
                 source = ./home/niri/background-apps-last;
                 executable = true;
               };
               home.file.".local/bin/umbriel-caps-q" = {
                 source = ./home/umbriel/caps-q-window;
+                executable = true;
+              };
+              home.file.".local/bin/umbriel-focus-or-launch" = {
+                source = ./home/umbriel/focus-or-launch;
                 executable = true;
               };
               home.file.".local/bin/umbriel-screenshot-window" = {
