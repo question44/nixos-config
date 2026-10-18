@@ -1,5 +1,20 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [COMPLETED] Restore Windows VM mouse input — 2026-10-18
+
+The windows11 guest showed no pointer and ignored viewer mouse input while
+its Windows spice-agent service was running. Restarting that service did not
+resolve it. Direct QEMU USB-tablet movement reached Windows and changed its
+cursor state from suppressed to showing. Stopping spice-agent restored mouse
+input in the existing SPICE viewer; the user confirmed it works.
+Set only that guest service to Manual startup and verified State=Stopped,
+StartMode=Manual, preserving the working tablet input path after guest boot.
+Clipboard integration and automatic display resizing are unavailable while
+this service is stopped. To revert inside Windows, set spice-agent startup
+to Automatic and start it. No host generation, GPU assignment, domain XML,
+or Windows pointer preference changed. Guest restart persistence is configured
+but has not yet been tested with another restart.
+
 ## [COMPLETED] Add Oo7 keyring password maintenance helper — 2026-10-18
 
 Added `make keyring-change-password`, invoking `scripts/oo7-change-password.py`
