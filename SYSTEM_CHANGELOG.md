@@ -1,5 +1,18 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [COMPLETED] Add Oo7 keyring password maintenance helper — 2026-10-18
+
+Added `make keyring-change-password`, invoking `scripts/oo7-change-password.py`
+as the desktop user. The helper reads hidden passwords, backs up encrypted
+keyrings outside the daemon's collection directory with private permissions,
+and sends Oo7 0.6's PAM password-change message over the user's socket. It
+restarts the daemon only if the socket is missing and returns failure if no
+persistent keyring update is detected. It does not change the account password.
+Verified Makefile help and dry-run, Python syntax/help, and an isolated fake
+socket exchange including message decoding, file-update detection, backup
+contents/permissions, and mismatch rejection. No live password change was run.
+No Nix configuration or running generation changed; no rebuild is required.
+
 ## [COMPLETED] Persist IOMMU configuration and reboot — 2026-10-18
 
 User explicitly approved clean Windows shutdown, recovery snapshot, persistent

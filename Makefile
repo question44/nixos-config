@@ -3,7 +3,7 @@ SHELL := /run/current-system/sw/bin/bash
 
 TAILSCALE_STATE_ARCHIVE := secrets/tailscale-state.tar.gpg
 
-.PHONY: help setup-codex repair-noctalia-lyrics tailscale-state-backup tailscale-state-restore
+.PHONY: help setup-codex repair-noctalia-lyrics keyring-change-password tailscale-state-backup tailscale-state-restore
 
 help:
 	@printf '%s\n' \
@@ -11,8 +11,13 @@ help:
 		'  help                     List available maintenance actions.' \
 		'  setup-codex              Install Codex with npm if it is absent.' \
 		'  repair-noctalia-lyrics   Restore the Lyrics plugin cache and reload Noctalia.' \
+		'  keyring-change-password Change the Oo7 keyring password (run without sudo).' \
 		'  tailscale-state-backup   Create an encrypted Tailscale state backup.' \
 		'  tailscale-state-restore  Restore an encrypted Tailscale state backup.'
+
+# Match the keyring password to the current login password after changing it.
+keyring-change-password:
+	@python3 scripts/oo7-change-password.py
 
 # The community Lyrics plugin writes temporary requests beneath its materialized
 # runtime directory. Plugin updates can remove that directory.
