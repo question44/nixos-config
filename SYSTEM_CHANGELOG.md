@@ -45,6 +45,17 @@ as expected before reboot. No ESP/boot/profile changes or reboot performed.
 Next: obtain Windows ISO, install guest, and prepare a verified recovery
 snapshot/boot checkpoint before boot activation and IOMMU reboot.
 
+Guest creation: located /home/janzon/Downloads/windows-vm/windws.is, a Polish
+x64 Windows ISO. SHA-256 0eadddd47a6d6d4524df40cbd9b779c32df222f7d2000de2b82a000ca9c5470f
+matches Microsoft's Polish x64 download table. Created persistent windows11
+domain UUID 152dd897-6203-4cff-919c-bb38345c2dd0 using the installed helper.
+Guest is running and screenshot verifies Windows Setup keyboard selection.
+Only windows11.qcow2 (120 GiB virtual, initially 19 MiB allocated) and the
+two installation CDs are attached. SPICE listens only at 127.0.0.1:5900.
+Guest autostart remains disabled; system generation remains test-activated.
+No janzon Linux GUI session is active. Open console locally with virt-viewer
+or through qemu+ssh from a client with Virt Viewer. Installation, account setup,
+guest drivers, persistent host activation and GPU passthrough are outstanding.
 
 ## [COMPLETED] Import Fedora fish greeting — 2026-10-18
 

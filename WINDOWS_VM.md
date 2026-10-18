@@ -52,3 +52,20 @@ CD inside Windows to provide network and other guest drivers.
 SPICE provides the initial installation console; it does not automatically
 capture the passed-through Intel GPU's framebuffer. RDP or another capture
 method may be needed to use the accelerated Windows desktop in a Linux window.
+
+## Created guest
+
+`windows11` is created, with Windows Setup started from
+`/home/janzon/Downloads/windows-vm/windws.is` (Polish x64 ISO, verified against
+Microsoft's SHA-256 table). The fresh virtual disk is
+`/var/lib/libvirt/images/windows11.qcow2`. Do not rerun windows-vm-create.
+
+Local console: `virt-viewer --connect qemu:///system windows11`.
+From another computer with Virt Viewer and SSH access to this host:
+`virt-viewer --connect qemu+ssh://janzon@erebor/system windows11`
+(replace erebor with a reachable host address if needed).
+The SSH login gains current libvirtd group membership. The SPICE listener
+stays on loopback; do not expose port 5900 to the network.
+
+The VM runs independently of a Linux desktop login, but guest autostart is
+currently disabled. Windows installation and Intel passthrough are unfinished.
