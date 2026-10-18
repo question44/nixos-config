@@ -1,5 +1,21 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [COMPLETED] Match Looking Glass to the host's high refresh rate — 2026-10-18
+
+Niri reports the Dell AW3423DWF on DP-1 already running at 3440x1440,
+164.900 Hz. The Windows IDD had no explicit DefaultRefresh (60 Hz default).
+Exported its settings to
+C:\ProgramData\LookingGlass-Setup\idd-before-high-refresh.reg, set
+HKLM\SOFTWARE\LookingGlass\IDD\DefaultRefresh to REG_SZ "164.900", and
+restarted only ROOT\DISPLAY\0001. Retain ForceIndirectCopy=1, the verified
+artifact workaround. No host configuration, generation, or boot change.
+The retained ExtraMode still explicitly selected 1696x1368@60, so changed
+only that mode's refresh to 164.900 as well and reloaded the display device.
+Verified the IDD log reports ExtraMode 1696x1368@164.9000*, Windows reports
+CurrentRefreshRate=164 (integer API value). Future dynamic resolutions use
+the new default refresh.
+This verifies display timing, not sustained application/game frame rates.
+
 ## [COMPLETED] Set up Looking Glass for the Windows VM — 2026-10-18
 
 Use matching pinned B7-829-cdba29f2 Linux client and Windows IDD. The IDD

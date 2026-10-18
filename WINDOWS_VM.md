@@ -114,3 +114,9 @@ uses an additional CPU copy. The original IDD settings are backed up at
 
 Looking Glass USB Audio is connected through a dedicated SPICE USB channel.
 The Windows audio device is healthy; physical speaker output was not tested.
+
+The guest IDD default refresh is 164.900 Hz, matching the host monitor.
+Its current dynamic mode was updated to that refresh too; changing
+DefaultRefresh alone does not update an already stored ExtraMode when the
+whole device is restarted. The previous settings are backed up at
+`C:\ProgramData\LookingGlass-Setup\idd-before-high-refresh.reg`.
