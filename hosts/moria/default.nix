@@ -97,6 +97,7 @@ in
     ./services/nextcloud.nix
     ../../modules/desktop.nix
     ../../modules/nvidia.nix
+    ../../modules/windows-vm.nix
   ];
 
   nixpkgs.config.allowUnfreePredicate = pkg:

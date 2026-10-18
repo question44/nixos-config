@@ -1,5 +1,51 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [PENDING] Windows 11 VM with Intel GPU passthrough — 2026-10-18
+
+User requested setup and selected a fresh Windows 11 guest in a Linux window.
+Add modules/windows-vm.nix and its host import: libvirt/KVM, virt-manager,
+TPM emulation, IOMMU kernel parameters, and windows-vm-create (8 vCPUs,
+12 GiB RAM, sparse 120 GiB virtual disk, Secure Boot, local SPICE console).
+Do not bind the Intel GPU until post-reboot IOMMU isolation and host render
+usage are inspected. No physical guest disks are exposed. See WINDOWS_VM.md.
+
+Preflight: active/persistent system generation 157,
+/nix/store/hcdm0rmfk9jy24l58xvrr4r81h03hq2z-nixos-system-erebor-26.05.20261013.a033e66.
+No failed system units. Root/home Btrfs UUID and ESP UUID match AGENTS.md.
+Read-only firmware inspection: BootCurrent 0004, BootOrder
+0004,0007,0002,0000,0008,0009,000A,0003; BootNext absent.
+Btrfs currently has 35.54 GiB unallocated and metadata 2.60/6.50 GiB used.
+
+Flake check, nixos-rebuild dry-build, and full system build passed using an
+isolated copy of HEAD plus this module/import, excluding unrelated pending
+Home Manager changes. Build: /tmp/windows-vm-system ->
+/nix/store/4mmma92l817k0bxp8fhxnfh5pi6ky81m-nixos-system-erebor-26.05.20261013.a033e66.
+Generated creation script passes the build's shell checks and usage check.
+No activation, bootloader write, GPU unbinding, VM creation, or reboot yet.
+sudo -n requires authentication; Mac approval socket is absent. Mandatory
+next step: authenticate locally and test the built system, then verify libvirt
+and NAT networking. Before any boot installation/reboot, create and verify a
+recovery snapshot and update this checkpoint with the exact new generation.
+Windows installation ISO is still required. Intel guest acceleration and
+accelerated remote display remain unverified; SPICE is the install console.
+
+Retry: Mac approval forwarding was restored. Rebuilt against current HEAD
+to preserve the subsequently activated fish greeting; persistent recovery is
+now generation 158, /nix/store/mphhdbrmlhiklpg178cjd5c7bhicmyr4-nixos-system-erebor-26.05.20261013.a033e66.
+Flake check, dry-build, full build, and interactive-sudo test activation passed.
+Live test system is /nix/store/z2lfrlfggmpwd0b2nsb578lmdhyfk0b6-nixos-system-erebor-26.05.20261013.a033e66.
+Verified libvirtd active, KVM/device/cgroup checks pass, and default NAT network
+active with autostart. No system or user units failed. Corrected creation
+helper to use OVMFFull Microsoft-keyed firmware (default QEMU firmware lacks
+enrolled keys), and declare /var/lib/libvirt/images via tmpfiles. The helper's
+virt-install dry-run successfully generated installation and final XML with
+Secure Boot firmware, SMM, TPM 2.0, and loopback SPICE; no VM or disk was created.
+VirtIO ISO download completed. IOMMU still disabled in the running kernel,
+as expected before reboot. No ESP/boot/profile changes or reboot performed.
+Next: obtain Windows ISO, install guest, and prepare a verified recovery
+snapshot/boot checkpoint before boot activation and IOMMU reboot.
+
+
 ## [COMPLETED] Import Fedora fish greeting — 2026-10-18
 
 Imported the captured Fedora moria banner, compact Fastfetch statistics, and
