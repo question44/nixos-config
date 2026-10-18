@@ -1,5 +1,24 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [PENDING] Import Fedora fish greeting — 2026-10-18
+
+Import the captured Fedora banner, Fastfetch statistics, and fortune cow into
+Home Manager, with required packages. Replace Fedora/DNF and nvm cache checks
+with Nix flake update guidance and the installed Node version. Preserve the
+cyan/purple gradient with a portable renderer and measure cow width without
+ANSI codes. Validate separately from pending eza changes before activation.
+
+Isolated flake check and full system build passed, excluding pending eza edits.
+The built greeting rendered with no stderr; verified banner, statistics, and
+fortune cow. Figlet supplies the slant font. Activation is blocked because
+this session has neither a forwarded SSH agent nor cached sudo credentials.
+System generation 157 remains unchanged. Run from an authenticated terminal:
+`sudo nixos-rebuild test --flake /tmp/fish-greeting-yifr4hpj#moria`, verify a
+new fish shell, then `sudo nixos-rebuild switch --flake /tmp/fish-greeting-yifr4hpj#moria`.
+Built system: `/nix/store/mphhdbrmlhiklpg178cjd5c7bhicmyr4-nixos-system-erebor-26.05.20261013.a033e66`.
+Update this entry after activation. The isolated source is temporary; the
+canonical greeting configuration is also saved in this repository.
+
 ## [COMPLETED] Mac Touch ID approval for sudo and Polkit — 2026-10-18
 
 Enabled pam_rssh approval through Secretive's forwarded Mac agent for sudo

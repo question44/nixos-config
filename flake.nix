@@ -73,6 +73,9 @@
                 fd
                 ripgrep
                 fastfetch
+                fortune
+                cowsay
+                toilet
                 git
                 curl
                 lazygit
@@ -88,8 +91,11 @@
                 QT_STYLE_OVERRIDE = "Darkly";
                 STARSHIP_CONFIG = lib.mkForce "/home/janzon/.config/noctalia/starship.toml";
               };
+              xdg.configFile."fish/functions/shell_welcome.fish".source = pkgs.replaceVars ./home/fish/shell_welcome.fish { figlet = pkgs.figlet; };
+              xdg.configFile."fastfetch/shell.jsonc".source = ./home/fastfetch/shell.jsonc;
               programs.fish = {
                 enable = true;
+                functions.fish_greeting.body = "printf '\\n'; shell_welcome; printf '\\n'";
                 shellAliases.t3pair = "t3 pair --base-dir /home/janzon/.t3/server";
               };
               programs.starship = {

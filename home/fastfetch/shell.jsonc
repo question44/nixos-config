@@ -1,0 +1,36 @@
+{
+  "logo": {
+    "type": "small",
+    "padding": {
+      "left": 2,
+      "right": 2
+    }
+  },
+  "modules": [
+    {
+      "type": "datetime",
+      "key": "Date & Time"
+    },
+    "uptime",
+    {
+      "type": "loadavg",
+      "key": "Load"
+    },
+    "memory",
+    {
+      "type": "disk",
+      "key": "Disk",
+      "folders": "/"
+    },
+    {
+      "type": "command",
+      "key": "Node",
+      "text": "node --version"
+    },
+    {
+      "type": "custom",
+      "key": "Updates",
+      "format": "Managed by Nix flake"
+    }
+  ]
+}
