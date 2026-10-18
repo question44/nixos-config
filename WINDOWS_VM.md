@@ -68,4 +68,11 @@ The SSH login gains current libvirtd group membership. The SPICE listener
 stays on loopback; do not expose port 5900 to the network.
 
 The VM runs independently of a Linux desktop login, but guest autostart is
-currently disabled. Windows installation and Intel passthrough are unfinished.
+currently disabled. Intel passthrough is unfinished.
+
+Windows installation and VirtIO guest tools have subsequently been completed
+by the user; the desktop and DHCP lease 192.168.122.2 were verified. Added a
+persistent and live Unix virtio channel named org.qemu.guest_agent.0 to the
+existing domain. The guest agent connected after detecting the new channel;
+guest-ping succeeded without requiring a guest restart.
+Intel passthrough and persistent host activation are still pending.

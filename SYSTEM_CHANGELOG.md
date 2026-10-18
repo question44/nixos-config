@@ -57,6 +57,13 @@ No janzon Linux GUI session is active. Open console locally with virt-viewer
 or through qemu+ssh from a client with Virt Viewer. Installation, account setup,
 guest drivers, persistent host activation and GPU passthrough are outstanding.
 
+User completed Windows installation and virtio-win-guest-tools. Verified the
+Windows desktop, running domain, and DHCP lease 192.168.122.2. Added missing
+org.qemu.guest_agent.0 virtio Unix channel with --live --config; guest-ping
+initially reported agent disconnected, then succeeded after hotplug detection
+without a guest restart. Host remains on the validated test activation;
+persistent IOMMU boot configuration and passthrough are still pending.
+
 ## [COMPLETED] Import Fedora fish greeting — 2026-10-18
 
 Imported the captured Fedora moria banner, compact Fastfetch statistics, and
