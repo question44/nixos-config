@@ -9,15 +9,17 @@ cyan/purple gradient with a portable renderer and measure cow width without
 ANSI codes. Validate separately from pending eza changes before activation.
 
 Isolated flake check and full system build passed, excluding pending eza edits.
-The built greeting rendered with no stderr; verified banner, statistics, and
-fortune cow. Figlet supplies the slant font. Activation is blocked because
-this session has neither a forwarded SSH agent nor cached sudo credentials.
-System generation 157 remains unchanged. Run from an authenticated terminal:
-`sudo nixos-rebuild test --flake /tmp/fish-greeting-yifr4hpj#moria`, verify a
-new fish shell, then `sudo nixos-rebuild switch --flake /tmp/fish-greeting-yifr4hpj#moria`.
-Built system: `/nix/store/mphhdbrmlhiklpg178cjd5c7bhicmyr4-nixos-system-erebor-26.05.20261013.a033e66`.
-Update this entry after activation. The isolated source is temporary; the
-canonical greeting configuration is also saved in this repository.
+The greeting rendered with no stderr; verified banner, statistics, and fortune
+cow. Figlet supplies the slant font. On retry, authenticated test activation
+succeeded and a fresh interactive fish shell displayed the deployed greeting.
+No failed system/user units after test; root and ESP UUIDs remain correct.
+Live system: `/nix/store/mphhdbrmlhiklpg178cjd5c7bhicmyr4-nixos-system-erebor-26.05.20261013.a033e66`.
+Persistent system profile remains generation 157. The subsequent switch was
+stalled awaiting sudo authentication and was cancelled before rebuild started.
+To persist, run `sudo nixos-rebuild switch --flake /tmp/fish-greeting-yifr4hpj#moria`
+from an authenticated terminal, verify generation/boot entries, and complete
+this entry. The isolated source is temporary; canonical configuration is
+committed in this repository.
 
 ## [COMPLETED] Mac Touch ID approval for sudo and Polkit — 2026-10-18
 
