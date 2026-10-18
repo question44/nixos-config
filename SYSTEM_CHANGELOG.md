@@ -1,5 +1,44 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [PENDING] Persist IOMMU configuration and reboot — 2026-10-18
+
+User explicitly approved clean Windows shutdown, recovery snapshot, persistent
+activation of the validated virtualization configuration, and host reboot.
+Starting persistent recovery generation is 158. Before boot writes, verify
+root/ESP UUIDs, shut down windows11 through its responsive guest agent, save
+ESP and firmware state, and create/verify a read-only Btrfs root snapshot
+(Snapper is not configured). Preserve firmware BootOrder/BootNext and other
+operating systems' EFI files. Activate only the already built/tested system
+at /tmp/windows-vm-system, excluding unrelated pending flake changes.
+Do not reboot until the new generation, recovery entry, boot parameters,
+EFI preservation and checkpoint have all been verified and recorded below.
+Mandatory post-reboot checks: generation, mounts, failed units, libvirt,
+intel_iommu=on, GPU IOMMU group, NVIDIA host driver, and Windows VM state.
+Intel GPU remains on i915 until its isolation is verified.
+
+Pre-boot recovery verified: Windows shut down cleanly through QEMU guest
+agent. Read-only snapshot /btrfs-top/nixos-root-pre-iommu-20261018,
+subvolume 646, UUID 090420ee-dd76-f04b-a8ad-8f76c1ed9f0a, ro=true.
+Recovery archive /var/lib/windows-vm-recovery/pre-iommu-20261018/esp-before.tar
+was listed successfully; directory also holds firmware state, generation 158
+entry, Windows domain XML, and verified checksums of all Microsoft/Fedora/moria
+EFI files. Recovery is selecting retained generation 158 from systemd-boot
+(hold Space during boot); snapshot and ESP archive provide additional recovery.
+Validated target is /nix/store/z2lfrlfggmpwd0b2nsb578lmdhyfk0b6-nixos-system-erebor-26.05.20261013.a033e66.
+
+Final reboot checkpoint: persistent and active generation 159 is the validated
+target above. Switch succeeded; nixos-generation-159.conf is the loader
+default and includes intel_iommu=on iommu=pt. Generation 158 and its referenced
+kernel/initrd remain available. Firmware before/after dumps are identical,
+all Microsoft/Fedora/moria EFI checksums pass, and generation 158 entry is
+byte-identical to its backup. Libvirt is active; no system/user units failed.
+Windows remains shut down, with autostart disabled. No GPU binding changes.
+Remaining risk: IOMMU enablement has not yet been tested at boot; if boot
+fails, choose generation 158 by holding Space in systemd-boot. Mandatory next
+action after reboot is verifying /proc/cmdline, generation 159, stable mounts,
+failed units, libvirt, Intel GPU IOMMU isolation and NVIDIA driver before
+resuming passthrough. Mac SSH approval forwarding may need reconnecting.
+
 ## [PENDING] Windows 11 VM with Intel GPU passthrough — 2026-10-18
 
 User requested setup and selected a fresh Windows 11 guest in a Linux window.
