@@ -1,5 +1,42 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [COMPLETED] Mac Touch ID approval for sudo and Polkit — 2026-10-18
+
+Enabled pam_rssh approval through Secretive's forwarded Mac agent for sudo
+and Polkit, retaining Unix-password fallback. Removed Janzon's unrestricted
+NOPASSWD rule. Public key remains locally provisioned, root:root 0644,
+outside Git and the Nix store. Login/screen-lock PAM stacks are unchanged.
+Polkit's sandbox hides home directories with ProtectHome=tmpfs and exposes
+only OpenSSH's agent directory through a read-only bind.
+
+The earlier Btrfs ENOSPC blocker is resolved. Isolated source excluded the
+unrelated pending eza changes. Flake check, dry build, full build, test
+activation, and persistent switch passed. Fresh sudo and Polkit checks
+returned 0; user confirmed successful prompts required Touch ID. User also
+confirmed explicitly cancelling a diagnostic Secretive prompt; the agent
+rejected signing and PAM failed (exit 1). Sudo password fallback returned 0
+after Mac cancellation, confirmed by the user. A disconnected agent also
+fails the signature-only diagnostic. MAC_APPROVAL.md records reconnection
+and the unprivileged pkttyagent workaround for upstream Polkit 127 issue
+#686 (internal terminal agent fails with No session for cookie).
+
+Active/persistent system and default boot entry are generation 157:
+`/nix/store/hcdm0rmfk9jy24l58xvrr4r81h03hq2z-nixos-system-erebor-26.05.20261013.a033e66`.
+Sudoers validates with no NOPASSWD; deployed sudo/Polkit PAM files match the
+validated build. Polkit, Home Manager, sshd, and nix-daemon are active.
+No failed system or user units at final verification. Root/ESP UUIDs retain
+expected values; Windows/Fedora EFI hashes and all firmware entries are
+unchanged. Generation 157's boot entry references the validated system and
+existing kernel/initrd. No reboot performed or needed.
+
+Recovery: generation 156 remains available. Verified read-only snapshot
+`/btrfs-top/nixos-root-pre-mac-approval-persist-20261018`, subvolume 645,
+UUID d3d11d92-73bb-1e42-a687-b45bb8345b34, ro=true. Reconnect the Mac's
+forwarding session after disconnect/reboot to use Touch ID; Unix password
+remains available. Pending eza configuration was neither activated nor
+included in this commit.
+
+
 ## [COMPLETED] Install Fastfetch — 2026-10-17
 
 Added `fastfetch` to Janzon's declarative Home Manager packages. Flake check,

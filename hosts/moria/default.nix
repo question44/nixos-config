@@ -87,6 +87,7 @@ in
 
 {
   imports = [
+    ../../modules/mac-approval.nix
     ../../modules/spotify.nix
     ../../modules/steam-theme.nix
     ./hardware-configuration.nix
@@ -193,17 +194,6 @@ in
   programs.nix-ld.enable = true;
 
   security.sudo.wheelNeedsPassword = true;
-  security.sudo.extraRules = [
-    {
-      users = [ "janzon" ];
-      commands = [
-        {
-          command = "ALL";
-          options = [ "NOPASSWD" ];
-        }
-      ];
-    }
-  ];
   security.polkit.enable = true;
   security.polkit.extraConfig = ''
     polkit.addRule(function(action, subject) {
