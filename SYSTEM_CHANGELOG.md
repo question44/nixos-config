@@ -1,25 +1,19 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
-## [PENDING] Import Fedora fish greeting — 2026-10-18
+## [COMPLETED] Import Fedora fish greeting — 2026-10-18
 
-Import the captured Fedora banner, Fastfetch statistics, and fortune cow into
-Home Manager, with required packages. Replace Fedora/DNF and nvm cache checks
-with Nix flake update guidance and the installed Node version. Preserve the
-cyan/purple gradient with a portable renderer and measure cow width without
-ANSI codes. Validate separately from pending eza changes before activation.
+Imported the captured Fedora moria banner, compact Fastfetch statistics, and
+fortune cow into Home Manager with required packages and the slant font.
+Preserved the cyan/purple gradient using a portable renderer. Replaced Fedora
+DNF/nvm checks with Nix flake update guidance and the installed Node version.
 
-Isolated flake check and full system build passed, excluding pending eza edits.
-The greeting rendered with no stderr; verified banner, statistics, and fortune
-cow. Figlet supplies the slant font. On retry, authenticated test activation
-succeeded and a fresh interactive fish shell displayed the deployed greeting.
-No failed system/user units after test; root and ESP UUIDs remain correct.
-Live system: `/nix/store/mphhdbrmlhiklpg178cjd5c7bhicmyr4-nixos-system-erebor-26.05.20261013.a033e66`.
-Persistent system profile remains generation 157. The subsequent switch was
-stalled awaiting sudo authentication and was cancelled before rebuild started.
-To persist, run `sudo nixos-rebuild switch --flake /tmp/fish-greeting-yifr4hpj#moria`
-from an authenticated terminal, verify generation/boot entries, and complete
-this entry. The isolated source is temporary; canonical configuration is
-committed in this repository.
+Isolated flake check, full build, test activation, and persistent switch passed,
+excluding unrelated pending changes. Reconnecting the Mac SSH forwarding
+socket restored authentication; switch completed successfully. Verified the
+deployed greeting with no stderr, no failed system/user units, expected root
+and ESP UUIDs, and the generation 158 boot entry. Active and persistent system:
+`/nix/store/mphhdbrmlhiklpg178cjd5c7bhicmyr4-nixos-system-erebor-26.05.20261013.a033e66`.
+No reboot required.
 
 ## [COMPLETED] Mac Touch ID approval for sudo and Polkit — 2026-10-18
 
