@@ -581,6 +581,7 @@ in
     kdePackages.okular
     kdePackages.ark
     haruna
+    moonlight-qt
     stremio-linux-shell
     nomacs
     ddcutil

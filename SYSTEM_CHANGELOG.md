@@ -1716,3 +1716,23 @@ verification. No system units failed. BootNext 0001 and BootOrder are
 unchanged; no reboot was performed. Home Manager deployed the executable.
 The persistent system generation remains 156; Windows boot success remains
 unverified, as requested work was script installation only.
+
+## [COMPLETED] Install Moonlight — 2026-10-18
+
+Add moonlight-qt to the desktop system packages. Validate an isolated source
+copy excluding the unrelated pending eza/Fish changes. Existing VFIO
+configuration matches the active generation 160. Run flake check and dry-build
+before activation; verify the executable and desktop entry afterward.
+
+Flake check, dry-build and full build passed. Moonlight --version reports 6.1.0.
+Built system: /nix/store/3ncpxykndiprl5zmxkfi88vznrbysj7h-nixos-system-erebor-26.05.20261013.a033e66.
+Pre-activation recovery: generation 160 and read-only root snapshot
+/btrfs-top/nixos-root-pre-moonlight-20261018 (Snapper unavailable).
+Verify snapshot, test activation, then persist and verify boot entries and mounts.
+
+Verified read-only snapshot 648, UUID 9bfc680d-3b7a-9e4c-9cf0-f85c8bbc68f1.
+Test and switch activations succeeded; persistent system generation is 161.
+Moonlight 6.1.0 launches graphically and detects the RTX 4090; the desktop
+entry is installed. No failed system units. Root and ESP UUIDs unchanged;
+UEFI entries/order unchanged, generation 160 retained. No reboot or streaming
+session tested. Unrelated pending eza/Fish changes were excluded from activation.
