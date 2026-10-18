@@ -2,9 +2,12 @@
 
 ## Current phase
 
-The virtualization module enables libvirt/KVM, virt-manager, TPM emulation,
-and Intel IOMMU. The Intel GPU remains owned by Linux until its IOMMU group
-and host usage have been checked after reboot. GPU passthrough is unfinished.
+Windows is installed. The Intel UHD 770 is assigned to the guest, with its
+Windows driver and Direct3D 11 device creation verified. Linux uses the
+NVIDIA RTX 4090. See SYSTEM_CHANGELOG.md for validation and recovery records.
+
+Looking Glass is installed and streaming. It uses a matching Linux client and
+Windows IDD, which supplies a virtual display and direct mouse/keyboard input.
 
 The intended guest has 8 virtual CPUs, 12 GiB RAM, a sparse 120 GiB qcow2
 disk, Secure Boot, TPM 2.0, VirtIO storage/network, and a local SPICE display.
@@ -67,17 +70,47 @@ From another computer with Virt Viewer and SSH access to this host:
 The SSH login gains current libvirtd group membership. The SPICE listener
 stays on loopback; do not expose port 5900 to the network.
 
-The VM runs independently of a Linux desktop login, but guest autostart is
-currently disabled. Intel passthrough is unfinished.
+The VM runs independently of a Linux desktop login; guest autostart is disabled.
 
 Windows installation and VirtIO guest tools have subsequently been completed
 by the user; the desktop and DHCP lease 192.168.122.2 were verified. Added a
 persistent and live Unix virtio channel named org.qemu.guest_agent.0 to the
 existing domain. The guest agent connected after detecting the new channel;
 guest-ping succeeded without requiring a guest restart.
-Host configuration is now persistent as generation 159. Reboot verification
-passed: IOMMU enabled; Intel UHD 770 at 0000:00:02.0 is alone in group 0,
-still using i915. The NVIDIA RTX 4090 remains on nvidia. Intel GPU binding,
-guest firmware configuration and passthrough validation are still pending.
-Recovery generation 158 and read-only snapshot
-`/btrfs-top/nixos-root-pre-iommu-20261018` remain available.
+The Intel GPU was subsequently bound to vfio-pci and assigned through custom
+OVMF firmware. Recovery copies from before assignment remain under
+`/var/lib/windows-vm-recovery/pre-igd-20261018`.
+
+## Looking Glass
+
+Open **Windows (Looking Glass)** from the application launcher or
+run `windows-looking-glass`. This starts the existing guest if necessary.
+`Scroll Lock` toggles input capture; `Scroll Lock`+`F` toggles fullscreen;
+`Scroll Lock`+`Q` closes the client without shutting down Windows.
+
+Download the [matching Windows installer](https://looking-glass.io/artifact/B7-829-cdba29f2/idd).
+Use `/S /ivshmem` for silent installation. Keep the IDD and Linux client at the same release.
+Guest diagnostic logs are in `C:\ProgramData\Looking Glass (IDD)`.
+
+The Windows `spice-agent` service is intentionally stopped with Manual startup:
+its mouse handling prevented input through the original SPICE console. This
+also disables SPICE clipboard sharing and automatic resize integration.
+Looking Glass's IDD supplies input, display resizing, and clipboard integration
+independently over LGMP.
+
+The IDD normally makes its virtual display the only active Windows monitor.
+If the SPICE console is blank, use Looking Glass. To restore another display,
+disable **Make LG the only monitor** in the IDD helper preferences, then
+enable the desired display in Windows settings. The QEMU guest-agent channel
+is separate from SPICE and remains available for recovery.
+
+Intel's direct shared-memory frame-copy path produced missing strips and
+blocks while moving windows. The guest currently uses the IDD preference
+**Force indirect copy** (`HKLM\SOFTWARE\LookingGlass\IDD`,
+`ForceIndirectCopy=1`, `ForceFullDirectCopy=0`). The user verified a clean image
+with this setting. Rendering remains accelerated on Intel; frame transport
+uses an additional CPU copy. The original IDD settings are backed up at
+`C:\ProgramData\LookingGlass-Setup\idd-before-artifact-fix.reg`.
+
+Looking Glass USB Audio is connected through a dedicated SPICE USB channel.
+The Windows audio device is healthy; physical speaker output was not tested.

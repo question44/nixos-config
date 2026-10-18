@@ -98,6 +98,7 @@ in
     ../../modules/desktop.nix
     ../../modules/nvidia.nix
     ../../modules/windows-vm.nix
+    ../../modules/looking-glass.nix
   ];
 
   nixpkgs.config.allowUnfreePredicate = pkg:

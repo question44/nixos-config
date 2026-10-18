@@ -32,3 +32,13 @@ changes belong in `SYSTEM_CHANGELOG.md`, not here.
   commands as `nix --extra-experimental-features 'nix-command flakes' flake
   <subcommand>` (for example, `flake check`) unless the feature is enabled in
   the environment.
+- A newly added kernel module is not found by default modprobe after a NixOS
+  test activation because it searches `/run/booted-system/kernel-modules`.
+  For a module built against the running kernel, load it with
+  `modprobe --dirname /run/current-system/kernel-modules <module>`.
+- NixOS libvirt copies qemu.conf through libvirtd-config.service at daemon
+  startup. After changing its device ACL, restart libvirtd to load it;
+  test activation alone leaves an already-running daemon on its old config.
+- Windows Looking Glass IDD needs **Force indirect copy** on this UHD 770:
+  direct transport produced missing strips/blocks even with full-frame copies.
+  The guest registry workaround and recovery locations are in WINDOWS_VM.md.

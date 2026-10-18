@@ -1,5 +1,74 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [COMPLETED] Set up Looking Glass for the Windows VM — 2026-10-18
+
+Use matching pinned B7-829-cdba29f2 Linux client and Windows IDD. The IDD
+creates a virtual monitor and supplies direct input, avoiding dependence on
+an Intel physical output and the guest's broken SPICE-agent mouse path.
+Add a declarative KVMFR module (128 MiB), device permissions, libvirt access,
+client configuration, and Windows launcher. Keep existing guest GPU assignment
+and console configuration. Build from isolated HEAD plus the existing VFIO
+module/firmware changes and this task, excluding unrelated flake edits.
+Starting persistent/live host generation: 161. Root and ESP UUIDs match the
+system instructions; no failed system units. Before guest changes, cleanly
+stop Windows and preserve offline disk, NVRAM, TPM, and XML recovery copies.
+Create a verified root snapshot and EFI backup before persistent activation.
+Test-activate the built host, assign IVSHMEM at free guest PCI slot 00:05.0,
+install the matching signed Windows drivers, and verify Intel rendering,
+Looking Glass video and direct input before recording completion.
+
+Validation checkpoint: flake check, dry-build and full build passed. Tested
+host is /nix/store/x3zi5f12kyzcprmlxvnlzar0hq71vcnd-nixos-system-erebor-26.05.20261013.a033e66;
+persistent generation remains 161 before activation. Recovery directory
+/var/lib/windows-vm-recovery/pre-looking-glass-20261018 contains the clean
+qcow2 reflink (qemu-img check passed), NVRAM, TPM, exact XML, EFI archive and
+foreign-OS EFI hashes. Read-only root snapshot
+/btrfs-top/nixos-root-pre-looking-glass-20261018 is verified ro=true.
+KVMFR is loaded from the tested generation's module directory; default
+modprobe searches the booted generation instead. Its ioctl reports exactly
+134217728 bytes, accessible as janzon:kvm with mode 0660. Restarted libvirtd
+to copy/load the new qemu.conf ACL. Existing domain changes made concurrently
+were recovered from the offline XML; preserved its Intel ROM setting and
+added IVSHMEM, disabled ballooning, and added loopback SPICE for audio/fallback.
+Windows installer archive SHA256
+bf91dbe3b69d369f8180247881739144308c2c0f6c85785ab8220d8a8e4b2665;
+installer and driver catalogs have valid HostFission/Sectigo signatures.
+Silent driver installation required adding the verified leaf certificate
+57476AACDE410C05A63E9FEC8B97938605B9D8F5 to LocalMachine TrustedPublisher;
+no root certificate or Secure Boot policy was changed. Installer exit 0;
+LGIddHelper is running with Automatic startup; display/input/IVSHMEM devices
+report OK. Secure Boot is still enabled. Guest IDD log selects Intel UHD 770
+(8086:a780), hardware D3D12 transport, 128 MiB IVSHMEM. Linux client uses
+EGL on RTX 4090, DMA buffers, LGMP video/input/clipboard; desktop screenshot
+and live mouse events verified. Guest resolution follows the Niri window.
+Persisted this exact target as generation 162. Generation 161 is retained;
+all Microsoft/Fedora/moria EFI hashes pass and the firmware before/after
+files are byte-identical. No system/user units failed; NVIDIA remains the
+Linux GPU and Intel remains bound to vfio-pci. No host reboot performed.
+User confirmed Looking Glass display, mouse and keyboard work. The normal
+launcher was reopened without debug input tracing and reconnects successfully.
+Added one persistent/live SPICE USB-redirection device for Looking Glass USB
+audio: client reports USB Audio active and Windows reports its audio device
+and endpoint healthy. Actual speaker output was not checked.
+User then reported visible render artifacts; screenshot showed corrupted
+strips in a notification. Backed up guest IDD settings to
+C:\ProgramData\LookingGlass-Setup\idd-before-artifact-fix.reg and enabled
+HKLM\SOFTWARE\LookingGlass\IDD\ForceFullDirectCopy=1. Restarted only the
+virtual display device; driver log confirms full direct transport copies and
+continued Intel rendering. Full-frame direct copies did not resolve the
+corruption. Set ForceFullDirectCopy=0 and ForceIndirectCopy=1 and restarted
+only the virtual display device again. The user confirmed the artifacts are
+gone. Intel still renders through D3D12; the transport now uses a CPU copy
+through readback memory, trading some bandwidth for correct frames. This
+setting persists in the guest registry. Client video/input/clipboard remain
+on LGMP; SPICE guest-agent service remains stopped. User-confirmed display,
+mouse and keyboard work. No additional host rebuild or reboot was required
+for the guest compatibility setting. Guest/host cold reboot with the final
+IDD configuration has not been tested; current live operation is verified.
+Existing CPU topology was retained; the client reports two guest logical
+processors despite the domain's eight-vCPU allocation. That is a separate
+performance follow-up.
+
 ## [COMPLETED] Restore Windows VM mouse input — 2026-10-18
 
 The windows11 guest showed no pointer and ignored viewer mouse input while

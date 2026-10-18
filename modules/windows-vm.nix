@@ -1,9 +1,17 @@
 { pkgs, ... }:
 
+let
+  igdOvmf = pkgs.callPackage ../packages/ovmf-vfio-igd.nix { };
+in
+
 {
-  # First enable DMA isolation. Bind the iGPU only after inspecting its
-  # IOMMU group following a reboot, and checking host render-device users.
+  # UHD 770 is alone in IOMMU group 0 and unused by host processes.
+  # Reserve only this PCI ID; the RTX 4090 remains the host display GPU.
   boot.kernelParams = [ "intel_iommu=on" "iommu=pt" ];
+  boot.initrd.kernelModules = [ "vfio_pci" ];
+  boot.extraModprobeConfig = ''
+    options vfio-pci ids=8086:a780
+  '';
 
   virtualisation.libvirtd = {
     enable = true;
@@ -15,6 +23,7 @@
   programs.virt-manager.enable = true;
   users.users.janzon.extraGroups = [ "libvirtd" "kvm" ];
   systemd.tmpfiles.rules = [ "d /var/lib/libvirt/images 0755 root root -" ];
+  environment.etc."windows-vm/OVMF_CODE.fd".source = "${igdOvmf.fd}/FV/OVMF_CODE.fd";
 
   environment.systemPackages = with pkgs; [
     virt-viewer
