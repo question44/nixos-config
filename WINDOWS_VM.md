@@ -75,4 +75,9 @@ by the user; the desktop and DHCP lease 192.168.122.2 were verified. Added a
 persistent and live Unix virtio channel named org.qemu.guest_agent.0 to the
 existing domain. The guest agent connected after detecting the new channel;
 guest-ping succeeded without requiring a guest restart.
-Intel passthrough and persistent host activation are still pending.
+Host configuration is now persistent as generation 159. Reboot verification
+passed: IOMMU enabled; Intel UHD 770 at 0000:00:02.0 is alone in group 0,
+still using i915. The NVIDIA RTX 4090 remains on nvidia. Intel GPU binding,
+guest firmware configuration and passthrough validation are still pending.
+Recovery generation 158 and read-only snapshot
+`/btrfs-top/nixos-root-pre-iommu-20261018` remain available.

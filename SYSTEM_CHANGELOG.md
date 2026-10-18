@@ -1,6 +1,6 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
-## [PENDING] Persist IOMMU configuration and reboot — 2026-10-18
+## [COMPLETED] Persist IOMMU configuration and reboot — 2026-10-18
 
 User explicitly approved clean Windows shutdown, recovery snapshot, persistent
 activation of the validated virtualization configuration, and host reboot.
@@ -38,6 +38,19 @@ fails, choose generation 158 by holding Space in systemd-boot. Mandatory next
 action after reboot is verifying /proc/cmdline, generation 159, stable mounts,
 failed units, libvirt, Intel GPU IOMMU isolation and NVIDIA driver before
 resuming passthrough. Mac SSH approval forwarding may need reconnecting.
+
+Post-reboot: booted generation 159, active/persistent store path matches the
+checkpoint; /proc/cmdline includes intel_iommu=on iommu=pt. Root and ESP UUIDs
+match expected values. Libvirt and default NAT network active; no system/user
+units failed. Intel UHD 770 remains on i915 and is isolated in IOMMU group 0
+with only 0000:00:02.0. RTX 4090 remains bound to nvidia. Windows was cleanly
+shut off as expected (autostart disabled), then started for guest verification.
+Firmware BootCurrent remains 0004; original BootOrder sequence preserved,
+with 000B,000C,000D appended during reboot. No entries were removed or reordered
+by this task; inspect the additional entries separately before changing them.
+Windows guest-ping succeeded after boot; its SPICE console is again on
+127.0.0.1:5900 and DHCP lease is 192.168.122.2.
+IOMMU boot stage is verified; GPU binding and guest acceleration remain pending.
 
 ## [PENDING] Windows 11 VM with Intel GPU passthrough — 2026-10-18
 
