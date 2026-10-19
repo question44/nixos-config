@@ -76,6 +76,7 @@
                 fortune
                 cowsay
                 toilet
+                eza
                 git
                 curl
                 lazygit
@@ -96,7 +97,14 @@
               programs.fish = {
                 enable = true;
                 functions.fish_greeting.body = "printf '\\n'; shell_welcome; printf '\\n'";
-                shellAliases.t3pair = "t3 pair --base-dir /home/janzon/.t3/server";
+                shellAliases = {
+                  t3pair = "t3 pair --base-dir /home/janzon/.t3/server";
+                  ls = "eza --group-directories-first --icons=auto";
+                  ll = "eza --long --header --group-directories-first --icons=auto";
+                  la = "eza --all --group-directories-first --icons=auto";
+                  lla = "eza --long --all --header --group-directories-first --icons=auto";
+                  lt = "eza --tree --level=2 --group-directories-first --icons=auto";
+                };
               };
               programs.starship = {
                 enable = true;

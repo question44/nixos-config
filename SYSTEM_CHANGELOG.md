@@ -113,6 +113,51 @@ socket exchange including message decoding, file-update detection, backup
 contents/permissions, and mismatch rejection. No live password change was run.
 No Nix configuration or running generation changed; no rebuild is required.
 
+## [PENDING] Assign Intel UHD 770 to Windows — 2026-10-18
+
+Post-IOMMU baseline: generation 159, Intel 8086:a780 at 0000:00:02.0 alone in
+IOMMU group 0, no host processes hold /dev/dri/card0 or renderD128. NVIDIA
+RTX 4090 remains the host GPU. Guest agent and QXL display are healthy.
+Prepare pinned VfioIgdPkg 067328df2554c865cc0078cb922357301c4c36c6's
+IgdAssignmentDxe inside OVMFFull, as recommended by QEMU IGD documentation.
+Keep existing Microsoft-keyed guest NVRAM and QXL/SPICE console. Build only
+isolated HEAD plus this change, excluding unrelated flake edits. Before
+changing the guest, check BitLocker, shut down cleanly, and preserve offline
+disk/NVRAM/TPM/domain recovery copies. Move virtual root ports away from
+guest 00:02.0, assign only the isolated Intel device, and limit guest physical
+address width to the host IOMMU's verified 39 bits. Start and verify Windows,
+QXL console, guest agent, Intel driver status and host GPU/services. Do not
+claim passthrough complete until Intel acceleration works in Windows.
+
+Built custom OVMF successfully; flake check, dry-build, full build, and test
+activation passed. Intel host device detached to vfio-pci, assigned as guest
+00:02.0; guest root ports previously occupying that slot moved to slot 04.
+Guest firmware CODE is
+/nix/store/lfpc063w74lbwqzb6jzisx9sf211h6wa-OVMF-vfio-igd-202602-fd/FV/OVMF_CODE.fd.
+Windows booted, QXL/SPICE and guest agent work. Device initially had code 28
+(driver missing); Windows Update installed Intel 32.0.101.6129, now reports
+Intel UHD 770 healthy with code 0. Installing Intel's current 32.0.101.7092
+from official downloadmirror URL after SHA-512 and Authenticode verification.
+Offline guest recovery copies are in /var/lib/windows-vm-recovery/pre-igd-20261018:
+reflink-cloned disk, original XML, NVRAM and TPM state. BitLocker reports
+encrypted volume but ProtectionStatus=Off; no recovery secrets were read.
+Added early vfio-pci binding for only 8086:a780 to the module; validated and
+test-activated system /nix/store/ly2hfh2bmp7hfgs53464rcvad9njna7b-nixos-system-erebor-26.05.20261013.a033e66.
+Persistent boot profile remains generation 159 until further verification.
+
+Intel 32.0.101.7092 is installed and reports code 0; the Intel installer log
+ends with successful silent installation and internal exit code 0 (outer
+self-extracting wrapper returned 1000). Secure Boot remains enabled.
+An explicit DXGI enumeration and D3D11CreateDevice call targeting Intel
+vendor 8086, device A780 succeeded: HRESULT 0, feature level 0xB000 (11.0).
+Before persisting the host VFIO binding, cleanly stop the guest, create a
+verified root snapshot and EFI recovery backup, then activate the already
+built/tested /nix/store/ly2hfh2bmp7hfgs53464rcvad9njna7b-nixos-system-erebor-26.05.20261013.a033e66.
+Retain generation 159 and the pre-IGD offline guest copies for recovery.
+No second host reboot is needed for the current live test; early binding
+must be rechecked at the next normal host boot. Verify a cold guest start
+with the GPU still bound to vfio-pci before declaring guest passthrough done.
+
 ## [COMPLETED] Persist IOMMU configuration and reboot — 2026-10-18
 
 User explicitly approved clean Windows shutdown, recovery snapshot, persistent
@@ -244,6 +289,58 @@ and ESP UUIDs, and the generation 158 boot entry. Active and persistent system:
 `/nix/store/mphhdbrmlhiklpg178cjd5c7bhicmyr4-nixos-system-erebor-26.05.20261013.a033e66`.
 No reboot required.
 
+## [PENDING] Bounded Btrfs data compaction — 2026-10-18
+
+User explicitly authorized `sudo btrfs balance start -dusage=10,limit=2 /`.
+Limit relocation to two data block groups at most 10% occupied; do not change
+profiles, partitions, ESP, boot entries, or other filesystems. Existing verified
+read-only root snapshot: /btrfs-top/nixos-root-pre-empty-block-cleanup-20261018
+(subvolume 644, UUID 5def1c0f-9313-1a43-9d99-a64e893f335f).
+Root filesystem UUID verified as 5be9be17-20c9-4a47-ba2d-6adf1ceb4c55.
+Generation 156 remains active and available for recovery. After compaction,
+inspect space and balance status, retry isolated eza checks/build, and verify
+before activation. Mac authentication changes remain pending and inactive.
+
+Both the approved 10%-usage/two-block command and a narrower 1%-usage/one-block
+attempt failed with ENOSPC. No balance remains running; unallocated capacity
+is still 1 MiB. No authentication/eza activation, profile conversion, file
+deletion, or broader balance was performed. Further progress requires freeing
+filesystem workspace before retrying. The recovery snapshot remains read-only.
+
+## [COMPLETED] Check and reclaim empty Btrfs data blocks — 2026-10-18
+
+User explicitly approved the proposed empty-block cleanup. Verify UUID
+5be9be17-20c9-4a47-ba2d-6adf1ceb4c55 at / and /btrfs-top; create and verify
+read-only snapshot /btrfs-top/nixos-root-pre-empty-block-cleanup-20261018.
+Snapper is not installed. Recovery: generation 156 remains bootable and the
+snapshot preserves the pre-operation NixOS root subvolume. No reboot, boot
+entry, ESP, partition, profile conversion, or occupied-block relocation is
+authorized. Run only btrfs balance start -dusage=0 /, inspect the result,
+then retry the isolated eza build. Starting usage: metadata 6.00/6.50 GiB;
+unallocated device capacity 1 MiB; estimated free data capacity 120.80 GiB.
+
+Read-only root snapshot created and verified: subvolume 644, UUID
+5def1c0f-9313-1a43-9d99-a64e893f335f, ro=true. The approved command exited 0:
+"Done, had to relocate 0 out of 389 chunks". No empty data block groups were
+available, so unallocated device capacity remains 1 MiB and the allocation
+problem is unresolved. Root/ESP UUIDs and active system generation are
+unchanged; no balance remains running. No occupied-block compaction was done.
+
+## [PENDING] Install eza and Fish listing aliases — 2026-10-18
+
+Add eza to Home Manager packages and aliases ls, ll, la, lla, and lt, with
+directories first, automatic icons, and a two-level tree. Validate and activate
+this change independently of the pending Mac authentication changes.
+
+Downloaded eza 0.23.4 and verified the listing flags. The isolated source
+copy excludes pending authentication changes. Flake check, system build,
+and Home Manager-only build attempts failed with ENOSPC; no activation has
+occurred. The retry after the approved empty-block cleanup still fails while
+creating a Nix store lock file. Complete storage remediation and validation
+before activation and committing the eza configuration. Nix daemon remains
+active. Logrotate and a Podman healthcheck were already failed at preflight;
+Nextcloud cron had also failed by the subsequent check.
+
 ## [COMPLETED] Mac Touch ID approval for sudo and Polkit — 2026-10-18
 
 Enabled pam_rssh approval through Secretive's forwarded Mac agent for sudo
@@ -279,7 +376,6 @@ UUID d3d11d92-73bb-1e42-a687-b45bb8345b34, ro=true. Reconnect the Mac's
 forwarding session after disconnect/reboot to use Touch ID; Unix password
 remains available. Pending eza configuration was neither activated nor
 included in this commit.
-
 
 ## [COMPLETED] Install Fastfetch — 2026-10-17
 
