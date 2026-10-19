@@ -2200,3 +2200,18 @@ timer remains set. No failed system units; root/ESP UUIDs unchanged.
 Active persistent generation 175:
 /nix/store/7adydjvhmiyhkaj1p3nks9129bipvghk-nixos-system-erebor-26.05.20261013.a033e66.
 Visual appearance awaits the next greeter launch; current session preserved.
+
+
+## [COMPLETED] Match greeter UI to Matrix background — 2026-10-20
+
+Added declarative tuigreet theme: black container, green text/borders/prompts,
+bright green clock/title/input/key hints. Matrix animation preserved.
+Installed greeter --dump-config verifies all ten theme entries; deployed
+TOML verified. Flake check, dry-build, test and switch activations passed.
+Restarted greetd while seat0 was at the greeter (no user session there).
+New greetd PID 32722 and tuigreet PID 32727 are active with the theme config
+and --background matrix. No failed system units; console timer remains 60.
+Active persistent generation 176:
+/nix/store/6xjnk28vm6vk9f6b8z8sbl2pm9nfvzwz-nixos-system-erebor-26.05.20261013.a033e66.
+Root/ESP UUIDs verified before activation; no reboot. Physical appearance
+has not been observed remotely.

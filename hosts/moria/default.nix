@@ -1,6 +1,20 @@
 { config, darkly, lib, pkgs, vicinae, ... }:
 
 let
+  greeterTheme = pkgs.writeText "tuigreet-matrix.toml" ''
+    [theme]
+    border = "green"
+    text = "green"
+    time = "bright-green"
+    container = "black"
+    title = "bright-green"
+    greet = "green"
+    prompt = "green"
+    input = "bright-green"
+    action = "green"
+    button = "bright-green"
+  '';
+
   hyperhdr = pkgs.callPackage ../../packages/hyperhdr.nix { };
   hyperhdrPortalCheck = pkgs.writeShellScript "hyperhdr-portal-check" ''
     if ${pkgs.systemd}/bin/busctl --user get-property \
@@ -359,7 +373,7 @@ in
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.tuigreet}/bin/tuigreet --background matrix --time --remember --remember-session --sessions ${pkgs.niri}/share/wayland-sessions:${config.programs.umbriel.package}/share/wayland-sessions";
+        command = "${pkgs.tuigreet}/bin/tuigreet --config ${greeterTheme} --background matrix --time --remember --remember-session --sessions ${pkgs.niri}/share/wayland-sessions:${config.programs.umbriel.package}/share/wayland-sessions";
         user = "greeter";
       };
     };
