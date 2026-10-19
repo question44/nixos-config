@@ -2111,3 +2111,22 @@ Recovery XML: /home/janzon/.local/state/windows-vm/pre-resources-20261019/window
 Host root/ESP UUIDs and active system are unchanged; persistent generation
 remains 172. No failed system units; about 6.3 GiB host memory available
 immediately after Windows boot. No host activation or reboot performed.
+
+## [COMPLETED] Assign all host CPU threads to Windows VM — 2026-10-19
+
+Gracefully shut down Windows via the guest agent, expanded to 20 vCPUs,
+pinned each vCPU to corresponding host logical CPU 0-19, and permitted
+emulator threads on 0-19. This covers all six SMT performance cores and
+eight efficiency cores. RAM stays 20 GiB. Guest topology is one socket and
+20 single-thread virtual cores to accommodate the host's mixed core types.
+Host CPU scheduling remains shared; no exclusive CPU isolation was added.
+
+Domain XML schema validation, flake check, NixOS dry-build and creation-helper
+build passed. The checks used an isolated tree excluding pending sudo changes.
+VM restarted successfully. Live/persistent XML and CPU affinities verified;
+Windows reports 20 logical processors and unchanged usable memory. Apollo
+service is Running, serverinfo returns 200, and LAN address is 192.168.1.120.
+No failed host system units; host system/generation and root/ESP UUIDs unchanged.
+No host activation or reboot performed. Nix creation defaults updated for the
+next host rebuild; existing VM resources are already persistent in libvirt.
+Recovery XML: /home/janzon/.local/state/windows-vm/pre-all-cpus-20261019/windows11.xml.

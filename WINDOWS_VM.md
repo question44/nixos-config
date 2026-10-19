@@ -11,19 +11,21 @@ Looking Glass is installed, but its guest display device and QXL are currently
 disabled. The SudoMaker virtual display is active. These guest display choices
 were preserved during the GPU swap; Looking Glass streaming was not retested.
 
-The guest has 12 virtual CPUs (six cores with SMT), 20 GiB RAM, a sparse 120 GiB qcow2
+The guest has 20 virtual CPUs, 20 GiB RAM, a sparse 120 GiB qcow2
 disk, Secure Boot, TPM 2.0, VirtIO storage/network, and a local SPICE display.
 It uses a fresh virtual disk, never a physical Windows disk or partition.
 
 ## CPU and memory
 
-The persistent libvirt domain assigns each vCPU 0-11 to the corresponding
-host logical CPU 0-11 (the six performance cores and their SMT siblings).
-Emulator threads run on efficiency-core logical CPUs 12-19. This pins the
-VM's CPU threads; the host scheduler can still use the performance cores.
+The persistent libvirt domain assigns each vCPU 0-19 to the corresponding
+host logical CPU 0-19, covering all six SMT performance cores and eight
+single-thread efficiency cores. Emulator threads may run on CPUs 0-19.
+The host scheduler shares these CPUs; no cores are reserved exclusively
+for the guest. Guest topology uses one socket and 20 single-thread virtual
+cores to accommodate the mixed host core types. RAM remains 20 GiB.
 The pre-change domain XML is saved at
-`/home/janzon/.local/state/windows-vm/pre-resources-20261019/windows11.xml`.
-Creation defaults in Nix use 20 GiB and 12 threads restricted to CPUs 0-11;
+`/home/janzon/.local/state/windows-vm/pre-all-cpus-20261019/windows11.xml`.
+Creation defaults in Nix use 20 GiB and 20 vCPUs restricted to CPUs 0-19;
 the existing domain's exact per-thread pins are stored persistently in libvirt.
 
 ## LAN access
