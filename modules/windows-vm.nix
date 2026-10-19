@@ -90,7 +90,8 @@ in
           exit 1
         fi
         exec virt-install --connect "$connection" \
-          --name windows11 --memory 12288 --vcpus 8 --cpu host-passthrough \
+          --name windows11 --memory 20480 \
+          --vcpus 12,sockets=1,cores=6,threads=2 --cpuset 0-11 --cpu host-passthrough \
           --machine q35 --os-variant win11 \
           --boot loader=${pkgs.OVMFFull.fd}/FV/OVMF_CODE.ms.fd,loader.readonly=yes,loader.type=pflash,loader.secure=yes,nvram.template=${pkgs.OVMFFull.fd}/FV/OVMF_VARS.ms.fd \
           --features smm=on \

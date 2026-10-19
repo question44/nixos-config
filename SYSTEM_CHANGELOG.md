@@ -2090,3 +2090,24 @@ Root/ESP UUIDs verified; no failed units.
 Next: authenticate the pending persistent switch, then verify generation,
 boot entries, mounts, and services. No reboot planned. Playback from another
 physical LAN device has not been exercised.
+
+## [COMPLETED] Give Windows VM 20 GiB and performance cores — 2026-10-19
+
+Gracefully shut down Windows through its guest agent, then persistently set
+20 GiB RAM and 12 vCPUs as one socket/six cores/two threads. Pin each vCPU
+0-11 to the corresponding P-core logical CPU; emulator threads use the
+efficiency-core CPUs 12-19. Restarted successfully with the same LAN address,
+192.168.1.120. Windows reports six cores, 12 logical processors and
+21,193,420,800 usable bytes (hardware reservations account for the difference
+from 20 GiB). ApolloService is Running and its serverinfo endpoint returns 200.
+Live and persistent libvirt XML and vCPU/emulator affinities verified.
+
+Updated VM creation defaults in Nix to 20 GiB and 12 threads restricted to
+performance cores. Flake check, dry-build, helper package build and domain XML
+schema validation passed; an isolated source copy excluded the unrelated
+pending sudo/YubiKey change. Creation helper changes will deploy on the next
+host rebuild; the existing VM's resource changes are already persistent.
+Recovery XML: /home/janzon/.local/state/windows-vm/pre-resources-20261019/windows11.xml.
+Host root/ESP UUIDs and active system are unchanged; persistent generation
+remains 172. No failed system units; about 6.3 GiB host memory available
+immediately after Windows boot. No host activation or reboot performed.
