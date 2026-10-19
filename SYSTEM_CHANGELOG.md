@@ -2022,3 +2022,23 @@ name, keeping the existing `●` marker and window count. Flake check, Python
 compilation, and dry-build passed. Activated through pkexec as generation 164;
 the deployed rcmd source contains the state-first ordering and no system units
 failed. Verify the graphical order in the active Niri session.
+
+## [COMPLETED] Bypass xremap in Moonlight — 2026-10-19
+
+Exclude the observed `com.moonlight_stream.Moonlight` app ID and `moonlight`
+from all general modmap/keymap rules, including CapsLock and Right Ctrl.
+Application-only terminal rules already exclude Moonlight. Forward CapsLock
+press/repeat/release directly in Moonlight because virtual modifiers otherwise
+remain swallowed even without a matching keymap.
+
+Flake check, NixOS dry-build, and Home Manager build passed. Activated only
+Home Manager to avoid applying unrelated pending PAM changes; the deployed
+config matches the source and xremap was restarted successfully. An isolated
+virtual keyboard with its output grabbed away from applications verified exact
+Ctrl+A, Right Ctrl+A, Super+A, CapsLock, and held CapsLock+A event passthrough
+while the actual Moonlight window was focused. Ghostty still remaps Super+A
+to Ctrl+A. Original window focus restored. Streaming-host behavior was not
+exercised because the test events were captured locally.
+
+System generation remains 172; root and ESP UUIDs are unchanged. No failed
+system or user units. No system/boot activation or reboot was needed.

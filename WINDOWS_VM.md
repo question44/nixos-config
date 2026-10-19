@@ -2,15 +2,14 @@
 
 ## Current phase
 
-Windows is installed. A GPU swap is staged in NixOS generation 172: Linux
-will use Intel UHD 770, and Windows will receive RTX 4090 and its HDMI audio
-function. Generation 171 is still running with the former GPU arrangement;
-the VM is shut off. Reboot before starting it. NVIDIA driver, acceleration
-and Looking Glass verification remain pending. See SYSTEM_CHANGELOG.md for
-the reboot checkpoint and recovery instructions.
+Linux uses Intel UHD 770; Windows receives RTX 4090 and its HDMI audio
+function. Generation 172 is active after reboot. NVIDIA 610.88 is installed,
+the GPU reports healthy, and explicit Direct3D 11 device creation on the
+RTX 4090 succeeded. See SYSTEM_CHANGELOG.md for validation and recovery.
 
-Looking Glass is installed and streaming. It uses a matching Linux client and
-Windows IDD, which supplies a virtual display and direct mouse/keyboard input.
+Looking Glass is installed, but its guest display device and QXL are currently
+disabled. The SudoMaker virtual display is active. These guest display choices
+were preserved during the GPU swap; Looking Glass streaming was not retested.
 
 The intended guest has 8 virtual CPUs, 12 GiB RAM, a sparse 120 GiB qcow2
 disk, Secure Boot, TPM 2.0, VirtIO storage/network, and a local SPICE display.
@@ -41,23 +40,22 @@ At disk selection, load the storage driver from the VirtIO CD's
 `viostor/w11/amd64` directory. Install `virtio-win-guest-tools.exe` from that
 CD inside Windows to provide network and other guest drivers.
 
-## Before enabling GPU passthrough
+## GPU assignment and recovery
 
-1. Complete live validation, create and verify a recovery snapshot as required
-   by AGENTS.md, and record the boot checkpoint before installing a boot entry.
-2. Preserve firmware BootOrder/BootNext and Fedora/Windows EFI files. Record the
-   new NixOS generation and retain generation 158 as the starting recovery entry.
-3. Reboot when the user is ready. Check `/proc/cmdline` for `intel_iommu=on`
-   and inspect `/sys/bus/pci/devices/0000:00:02.0/iommu_group/devices`.
-   If groups remain absent, check firmware VT-d settings.
-4. Check compositor and media-service use of the Intel render device before
-   changing ownership. Bind only `8086:a780` to VFIO in a subsequent change.
-5. Configure Intel IGD guest firmware/OpRegion requirements and test the Windows
-   Intel driver, VM restart behavior, acceleration, and a suitable remote display.
+Keep the Linux monitor on a motherboard video output. Verify Intel
+`0000:00:02.0` uses i915 and both NVIDIA functions `0000:01:00.0` and
+`0000:01:00.1` use vfio-pci before starting Windows.
 
-SPICE provides the initial installation console; it does not automatically
-capture the passed-through Intel GPU's framebuffer. RDP or another capture
-method may be needed to use the accelerated Windows desktop in a Linux window.
+The previous arrangement can be recovered with Windows shut off: restore
+the domain using `virsh -c qemu:///system define
+/var/lib/windows-vm-recovery/pre-gpu-swap-20261019/windows11.xml` with root
+access and boot NixOS generation 171. This restores NVIDIA to Linux and
+Intel to Windows. Offline disk/NVRAM/TPM and ESP backups are alongside the
+XML; the read-only root snapshot is
+`/btrfs-top/nixos-root-pre-gpu-swap-20261019`.
+
+SPICE does not automatically capture the passed-through GPU's framebuffer.
+Use the configured guest streaming software for the accelerated desktop.
 
 ## Created guest
 
