@@ -114,7 +114,7 @@ def cycle(groups, reverse=False):
     return windows[(current + (-1 if reverse else 1)) % len(windows)]
 
 
-def choose(apps, letter):
+def choose(apps, running, letter):
     # A single chooser across letters prevents repeated chords stacking menus.
     lock_path = Path(os.environ['XDG_RUNTIME_DIR']) / 'rcmd-chooser.lock'
     with lock_path.open('w') as lock:
@@ -125,12 +125,19 @@ def choose(apps, letter):
         choices = {}
         for app in apps:
             if app['visible'] and initial(app['name']) == letter:
-                label = app['name'].replace('\n', ' ')
-                choices.setdefault(label, app)
+                window_count = len(running.get(app['id'], ()))
+                state = '●' if window_count else '○'
+                count = f' — {window_count} window' + ('s' if window_count != 1 else '') if window_count else ''
+                label = f"{state} {app['name'].replace('\n', ' ')}{count}"
+                # Desktop names are normally unique. Retain both apps if two
+                # entries share a name, while keeping the useful state first.
+                if label in choices:
+                    label += f" ({app['id'].removesuffix('.desktop')})"
+                choices[label] = app
         result = subprocess.run(
             ['vicinae', 'dmenu', '--format', 'data', '--no-quick-look',
              '--navigation-title', f'{letter.upper()} — choose an app',
-             '--placeholder', 'Choose an app to launch' if choices else f'No installed apps starting with {letter.upper()}',
+             '--placeholder', '● running  •  ○ not running' if choices else f'No installed apps starting with {letter.upper()}',
              '--section-title', 'Installed apps ({count})'],
             input='\n'.join(choices) + ('\n' if choices else ''), text=True, capture_output=True)
         if result.returncode != 0:
@@ -160,7 +167,8 @@ def main():
         if groups and not args.choose:
             desktop.focus(cycle(groups, args.reverse))
             return
-        app = choose(apps, args.letter)
+        running = {group['app']['id']: group['windows'] for group in groups}
+        app = choose(apps, running, args.letter)
         if app is None:
             return
         # Recheck after the chooser: the app may have opened in the meantime.

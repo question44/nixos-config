@@ -1821,3 +1821,12 @@ Moonlight 6.1.0 launches graphically and detects the RTX 4090; the desktop
 entry is installed. No failed system units. Root and ESP UUIDs unchanged;
 UEFI entries/order unchanged, generation 160 retained. No reboot or streaming
 session tested. Unrelated pending eza/Fish changes were excluded from activation.
+## [PENDING] Mark running applications in Right Ctrl chooser — 2026-10-19
+
+The `Ctrl_R+Alt+letter` Vicinae app chooser now shows `●` beside desktop apps
+with an open matching window, including its window count; apps without a window
+show `○`. The marker is computed from the active Niri or Umbriel window list
+immediately before opening the chooser, so it does not rely on process names.
+Flake evaluation, Python compilation, diff validation, and a dry build passed.
+Activate an isolated configuration containing this change, reload the Home
+Manager deployment, and verify the chooser in the active Wayland session.
