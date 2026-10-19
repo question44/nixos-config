@@ -72,6 +72,7 @@
                 neovim
                 fd
                 ripgrep
+                btop
                 fastfetch
                 fortune
                 cowsay

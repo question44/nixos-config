@@ -2247,3 +2247,13 @@ is active; no failed system or user units. Active persistent generation 178:
 /nix/store/wk6503pn787gflb725vwchhj3m8f7msn-nixos-system-erebor-26.05.20261013.a033e66.
 Root and ESP UUIDs remain correct. No reboot required; existing shells can
 load the aliases with exec fish. Unrelated changelog edits preserved.
+
+
+## [COMPLETED] Install btop — 2026-10-20
+
+Added btop 1.4.7 to the Home Manager package list. Flake check, dry-build,
+full build, test activation and switch passed. Verified version and live
+terminal interface with clean exit. Home Manager active; no failed system
+or user units. Persistent generation 179:
+/nix/store/52p0blmhznl1g5r9ll8mskm1xnzvvzwh-nixos-system-erebor-26.05.20261013.a033e66.
+Root and ESP UUIDs verified before activation. No reboot required.
