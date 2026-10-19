@@ -2217,7 +2217,7 @@ Root/ESP UUIDs verified before activation; no reboot. Physical appearance
 has not been observed remotely.
 
 
-## [PENDING] Restore Matrix animation with explicit greeter config — 2026-10-20
+## [COMPLETED] Restore Matrix animation with explicit greeter config — 2026-10-20
 
 Installed tuigreet load_config returns the explicit file directly, ignoring
 CLI overrides. Previous theme-only file therefore reset animation, clock and
@@ -2229,7 +2229,8 @@ Mock PTY rendering emitted 4879 Matrix glyphs in 3 seconds.
 Active persistent generation 177:
 /nix/store/1m6zcm96iw6xkzw87d3ndmgf265k10js-nixos-system-erebor-26.05.20261013.a033e66.
 Root/ESP UUIDs verified unchanged; no failed system units.
-Live restart could not authenticate: FIDO timed out and sudo requested a
-password; canceled rather than leaving a password prompt open.
-Mandatory next action: authenticate sudo systemctl restart greetd.service
-when seat0 is at the greeter, then verify new process/config and animation.
+Retry with the configured Touch ID-first sudo path succeeded. Restarted
+while seat0 was at the greeter. New greetd PID 36108 and tuigreet PID 36115
+are active; running process config confirms Matrix animation and green UI.
+Console timer remains 60; no failed system units. Physical display appearance
+awaits user confirmation; mock rendering is verified above.
