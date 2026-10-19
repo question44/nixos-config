@@ -2234,3 +2234,16 @@ while seat0 was at the greeter. New greetd PID 36108 and tuigreet PID 36115
 are active; running process config confirms Matrix animation and green UI.
 Console timer remains 60; no failed system units. Physical display appearance
 awaits user confirmation; mock rendering is verified above.
+
+
+## [COMPLETED] Install bat and Fish cat aliases — 2026-10-20
+
+Enabled Home Manager programs.bat (bat 0.26.1) and Fish aliases:
+cat="bat --style=plain --paging=never" and
+catn="bat --style=numbers --paging=never". command cat retains coreutils cat.
+Flake check, dry-build, test activation and switch passed. Verified aliases
+in a fresh interactive Fish shell, file reads and piped input. Home Manager
+is active; no failed system or user units. Active persistent generation 178:
+/nix/store/wk6503pn787gflb725vwchhj3m8f7msn-nixos-system-erebor-26.05.20261013.a033e66.
+Root and ESP UUIDs remain correct. No reboot required; existing shells can
+load the aliases with exec fish. Unrelated changelog edits preserved.

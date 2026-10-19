@@ -94,10 +94,13 @@
               };
               xdg.configFile."fish/functions/shell_welcome.fish".source = pkgs.replaceVars ./home/fish/shell_welcome.fish { figlet = pkgs.figlet; };
               xdg.configFile."fastfetch/shell.jsonc".source = ./home/fastfetch/shell.jsonc;
+              programs.bat.enable = true;
               programs.fish = {
                 enable = true;
                 functions.fish_greeting.body = "printf '\\n'; shell_welcome; printf '\\n'";
                 shellAliases = {
+                  cat = "bat --style=plain --paging=never";
+                  catn = "bat --style=numbers --paging=never";
                   t3pair = "t3 pair --base-dir /home/janzon/.t3/server";
                   ls = "eza --group-directories-first --icons=auto";
                   ll = "eza --long --header --group-directories-first --icons=auto";
