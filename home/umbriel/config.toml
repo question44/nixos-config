@@ -49,6 +49,9 @@ blur_optimized = false
 
 [[window_rule]]
 blur = true
+# Qt menus, context menus, and combo boxes are descendant XDG popups rather
+# than toplevel windows, so they need this explicit opt-in.
+blur_popups = true
 blur_optimized = false
 
 [keybinds]

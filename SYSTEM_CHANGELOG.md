@@ -6,8 +6,10 @@ Activated a declarative Umbriel `ambilight` virtual output at 3440x1440@30,
 placed beside DP-1 without moving the physical monitor, and configured
 Noctalia to render the same wallpaper there. Live verification confirms the
 output is enabled and has only `noctalia-wallpaper` and `dropwall` background
-layers. `nix flake check`, Umbriel configuration validation, and two activated
-NixOS builds passed; the active system is
+layers. Added `blur_popups = true` to Umbriel's global window blur rule so
+Qt descendant XDG popups (including Dolphin menus) receive live-content blur;
+validated and reloaded it in the live Umbriel session. `nix flake check`,
+Umbriel configuration validation, and activated NixOS builds passed; the active system is
 `/nix/store/lgvpgqlisca4qd9c85svp3an8gr289wq-nixos-system-erebor-26.05.20261013.a033e66`.
 
 Mandatory next action: approve Umbriel's screencast target change to
