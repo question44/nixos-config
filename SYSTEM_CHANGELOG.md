@@ -2173,3 +2173,17 @@ Fresh sudo commands each returned UID 0: one using Mac Touch ID alone and
 one after dismissing Mac approval and touching the enrolled YubiKey. Kept an
 authenticated root shell open during validation. Active persistent generation
 is 173. No failed system or user units. No reboot performed.
+
+
+## [COMPLETED] Blank the greeter console after 60 seconds — 2026-10-20
+
+Configured greetd preStart to run setterm --term linux --blank 1 on tty1.
+Applied the same command live; /sys/module/kernel/parameters/consoleblank
+reports 60. Flake check, dry-build, test activation and persistent switch passed.
+Generation 174 is active and persistent:
+/nix/store/0bgmy8yl1lykmbiaf831a8n1kv9d18bg-nixos-system-erebor-26.05.20261013.a033e66.
+Greetd remains active with unchanged PID 2674; no failed system units.
+Root/ESP UUIDs unchanged. No reboot or greeter restart performed.
+The timer and persistent startup command are verified; physical monitor
+blanking/standby was not observed remotely. Keyboard input restores the console.
+Existing unrelated UEFI checkpoint left untouched.

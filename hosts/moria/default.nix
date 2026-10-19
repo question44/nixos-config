@@ -365,6 +365,11 @@ in
     };
   };
 
+  # Blank the greeter's console after one minute without keyboard activity.
+  systemd.services.greetd.preStart = ''
+    ${pkgs.util-linux}/bin/setterm --term linux --blank 1 < /dev/tty1 > /dev/tty1
+  '';
+
   systemd.user.services.niri.enableDefaultPath = false;
 
   services.pipewire = {
