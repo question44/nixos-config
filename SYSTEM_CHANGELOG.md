@@ -2042,3 +2042,25 @@ exercised because the test events were captured locally.
 
 System generation remains 172; root and ESP UUIDs are unchanged. No failed
 system or user units. No system/boot activation or reboot was needed.
+
+
+## [COMPLETED] Enable Intel UHD 770 hardware video decoding — 2026-10-19
+
+Moonlight reports no hardware video decoder. The live graphics driver directory
+lacks iHD_drv_video.so and FFmpeg VA-API device initialization fails on
+/dev/dri/renderD128. Add intel-media-driver to hardware.graphics.extraPackages.
+Validate an isolated source copy excluding the unrelated pending sudo/YubiKey
+policy, then test-activate and verify VA-API and an actual hardware decode.
+Pre-change persistent generation: 172. Root/ESP UUIDs match the recorded system;
+no failed system units. No boot, firmware, VFIO or display-setting changes.
+
+Flake check, dry-build and full build passed. Test activation succeeded using
+Polkit. /run/opengl-driver/lib/dri/iHD_drv_video.so is deployed. FFmpeg using
+the normal system driver path decoded all 60 H.264 test frames via VA-API
+with zero errors. No failed system units. The active system is
+/nix/store/mnma7hiid1rr86b034vx58d7xf65b5h2-nixos-system-erebor-26.05.20261013.a033e66.
+Persistent boot generation remains 172; no bootloader, EFI or VFIO changes.
+The driver is active for this boot and declared for future system rebuilds;
+perform a normal switch before rebooting to retain it in the boot generation.
+Moonlight must restart to repeat decoder detection; streaming and compositor
+frame delivery after this driver fix have not been verified.
