@@ -1,5 +1,20 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [PENDING] Route HyperHDR through Umbriel's wallpaper-only virtual output — 2026-10-19
+
+Activated a declarative Umbriel `ambilight` virtual output at 3440x1440@30,
+placed beside DP-1 without moving the physical monitor, and configured
+Noctalia to render the same wallpaper there. Live verification confirms the
+output is enabled and has only `noctalia-wallpaper` and `dropwall` background
+layers. `nix flake check`, Umbriel configuration validation, and two activated
+NixOS builds passed; the active system is
+`/nix/store/lgvpgqlisca4qd9c85svp3an8gr289wq-nixos-system-erebor-26.05.20261013.a033e66`.
+
+Mandatory next action: approve Umbriel's screencast target change to
+`ambilight`, if its confirmation is visible, or reselect `ambilight` in
+HyperHDR's PipeWire capture picker. Verify that opening or moving a window
+does not change the LEDs, then replace this entry with `[COMPLETED]`.
+
 ## [COMPLETED] Match Looking Glass to the host's high refresh rate — 2026-10-18
 
 Niri reports the Dell AW3423DWF on DP-1 already running at 3440x1440,

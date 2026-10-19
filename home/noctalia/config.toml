@@ -335,6 +335,11 @@ path = "/home/janzon/Pictures/redhead.png"
 [wallpaper.monitors.DP-1]
 path = "/home/janzon/Pictures/redhead.png"
 
+# Umbriel's dedicated virtual output for HyperHDR. Keep this in sync with the
+# physical display so the ambilight reflects only the wallpaper.
+[wallpaper.monitors.ambilight]
+path = "/home/janzon/Pictures/redhead.png"
+
 [[wallpaper.favorite]]
 palette_source = "wallpaper"
 path = "/home/janzon/Pictures/wallhaven-473895.jpg"
