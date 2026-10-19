@@ -1917,12 +1917,15 @@ Moonlight 6.1.0 launches graphically and detects the RTX 4090; the desktop
 entry is installed. No failed system units. Root and ESP UUIDs unchanged;
 UEFI entries/order unchanged, generation 160 retained. No reboot or streaming
 session tested. Unrelated pending eza/Fish changes were excluded from activation.
-## [PENDING] Mark running applications in Right Ctrl chooser — 2026-10-19
+## [COMPLETED] Mark running applications in Right Ctrl chooser — 2026-10-19
 
 The `Ctrl_R+Alt+letter` Vicinae app chooser now shows `●` beside desktop apps
 with an open matching window, including its window count; apps without a window
 show `○`. The marker is computed from the active Niri or Umbriel window list
 immediately before opening the chooser, so it does not rely on process names.
-Flake evaluation, Python compilation, diff validation, and a dry build passed.
-Activate an isolated configuration containing this change, reload the Home
-Manager deployment, and verify the chooser in the active Wayland session.
+Flake evaluation, Python compilation, diff validation, dry build, and full
+build passed. Activated through pkexec as system generation 163; xremap is
+active, its deployed rcmd wrapper references the updated source, and
+`rcmd --list a` succeeds. There are no failed system units. This terminal is
+outside the Niri session, so opening the graphical chooser itself was not
+automated; verify its visual markers with Right Ctrl+Alt+letter in Niri.
