@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# Toggle the Noctalia default bar between disabled and smart auto-hide.
+#
+# `bar-auto-hide-set` is deliberately a runtime-only Noctalia IPC command and
+# its mode is not exposed by `noctalia msg status`.  Keep the state alongside
+# the Wayland session, so a fresh login safely starts from the declarative
+# configuration again.
+set -euo pipefail
+
+usage() {
+  echo "usage: noctalia-bar-autohide [toggle|on|off|smart|status] [monitor-selector]" >&2
+  exit 2
+}
+
+action="${1:-toggle}"
+monitor="${2:-}"
+[[ $# -le 2 ]] || usage
+
+case "$action" in
+  toggle|on|off|smart|status) ;;
+  *) usage ;;
+esac
+
+runtime_dir="${XDG_RUNTIME_DIR:?XDG_RUNTIME_DIR is required}"
+state_file="$runtime_dir/noctalia-bar-autohide-default.state"
+
+# The managed configuration starts with auto-hide off.  A state written by
+# this tool takes precedence for the current graphical session.
+current="off"
+if [[ -r "$state_file" ]]; then
+  read -r current < "$state_file" || current="off"
+fi
+case "$current" in
+  on|off|smart) ;;
+  *) current="off" ;;
+esac
+
+if [[ "$action" == status ]]; then
+  printf '%s\n' "$current"
+  exit 0
+fi
+
+if [[ "$action" == toggle ]]; then
+  # Smart mode delegates the workspace/overview decision to Noctalia.  With
+  # Umbriel, it remains visible on an empty focused workspace or in overview.
+  [[ "$current" == off ]] && action="smart" || action="off"
+fi
+
+args=(bar-auto-hide-set "$action" default)
+[[ -n "$monitor" ]] && args+=("$monitor")
+noctalia msg "${args[@]}"
+
+umask 077
+printf '%s\n' "$action" > "$state_file"
+printf '%s\n' "$action"

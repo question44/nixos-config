@@ -338,6 +338,10 @@
                 '';
                 executable = true;
               };
+              home.file.".local/bin/noctalia-bar-autohide" = {
+                source = ./home/noctalia/bar-autohide;
+                executable = true;
+              };
               home.file.".local/bin/niri-caps-q-quit" = {
                 source = ./home/niri/caps-q-quit;
                 executable = true;

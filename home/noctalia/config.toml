@@ -31,7 +31,7 @@ margin_edge = 4
 margin_ends = 20
 margin_opposite_edge = 4
 radius = 16
-start = [ "group:g3", "cat", "bar", "lyrics", "audio_visualizer", "lyrics_2" ]
+start = [ "bar-autohide", "group:g3", "cat", "bar", "lyrics", "audio_visualizer", "lyrics_2" ]
 thickness = 48
 
     [bar.default.dead_zone.actions]
@@ -42,6 +42,14 @@ thickness = 48
     scroll_left = "workspace-switch prev"
     scroll_right = "workspace-switch next"
     scroll_up = "exec /home/janzon/.local/bin/noctalia-bar-focus left"
+
+[widget.bar-autohide]
+type = "custom_button"
+glyph = "layout-sidebar-left-collapse"
+tooltip = "Toggle smart bar auto-hide"
+
+    [widget.bar-autohide.actions]
+    left = "exec /home/janzon/.local/bin/noctalia-bar-autohide"
 
     [[bar.default.capsule_group]]
     accordion = false

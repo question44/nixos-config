@@ -1,5 +1,15 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [COMPLETED] Add a declarative Noctalia smart-auto-hide control — 2026-10-19
+
+Added `~/.local/bin/noctalia-bar-autohide`, a session-scoped toggle between
+disabled and smart auto-hide for Noctalia's default bar, with a custom button
+at the far left of that bar. `nix flake check`, Noctalia config validation,
+and `nixos-rebuild dry-build --flake /etc/nixos#moria` passed. Activated with
+`pkexec`; generation 168 is active. Noctalia reloaded successfully, the
+deployed utility resolved from the new Home Manager generation, and its
+smart-to-off runtime transition was verified via Noctalia IPC.
+
 ## [PENDING] Route HyperHDR through Umbriel's wallpaper-only virtual output — 2026-10-19
 
 Activated a declarative Umbriel `ambilight` virtual output at 3440x1440@30,
