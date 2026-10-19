@@ -1,7 +1,20 @@
 { config, darkly, lib, pkgs, vicinae, ... }:
 
 let
-  greeterTheme = pkgs.writeText "tuigreet-matrix.toml" ''
+  greeterConfig = pkgs.writeText "tuigreet-matrix.toml" ''
+    [background]
+    kind = "matrix"
+
+    [display]
+    show_time = true
+
+    [remember]
+    username = true
+    session = true
+
+    [session]
+    sessions_dirs = ["${pkgs.niri}/share/wayland-sessions", "${config.programs.umbriel.package}/share/wayland-sessions"]
+
     [theme]
     border = "green"
     text = "green"
@@ -373,7 +386,7 @@ in
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.tuigreet}/bin/tuigreet --config ${greeterTheme} --background matrix --time --remember --remember-session --sessions ${pkgs.niri}/share/wayland-sessions:${config.programs.umbriel.package}/share/wayland-sessions";
+        command = "${pkgs.tuigreet}/bin/tuigreet --config ${greeterConfig}";
         user = "greeter";
       };
     };

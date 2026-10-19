@@ -2215,3 +2215,21 @@ Active persistent generation 176:
 /nix/store/6xjnk28vm6vk9f6b8z8sbl2pm9nfvzwz-nixos-system-erebor-26.05.20261013.a033e66.
 Root/ESP UUIDs verified before activation; no reboot. Physical appearance
 has not been observed remotely.
+
+
+## [PENDING] Restore Matrix animation with explicit greeter config — 2026-10-20
+
+Installed tuigreet load_config returns the explicit file directly, ignoring
+CLI overrides. Previous theme-only file therefore reset animation, clock and
+remembered login settings. Moved those options and session paths into the
+same declarative file; command now uses only --config.
+Flake check, dry-build, test/switch passed. Effective config assertions cover
+Matrix, green theme, clock, remembered username/session and both directories.
+Mock PTY rendering emitted 4879 Matrix glyphs in 3 seconds.
+Active persistent generation 177:
+/nix/store/1m6zcm96iw6xkzw87d3ndmgf265k10js-nixos-system-erebor-26.05.20261013.a033e66.
+Root/ESP UUIDs verified unchanged; no failed system units.
+Live restart could not authenticate: FIDO timed out and sudo requested a
+password; canceled rather than leaving a password prompt open.
+Mandatory next action: authenticate sudo systemctl restart greetd.service
+when seat0 is at the greeter, then verify new process/config and animation.
