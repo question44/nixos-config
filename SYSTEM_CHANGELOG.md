@@ -1929,3 +1929,11 @@ active, its deployed rcmd wrapper references the updated source, and
 `rcmd --list a` succeeds. There are no failed system units. This terminal is
 outside the Niri session, so opening the graphical chooser itself was not
 automated; verify its visual markers with Right Ctrl+Alt+letter in Niri.
+
+## [COMPLETED] Order running applications first in Right Ctrl chooser — 2026-10-19
+
+Sort the `Ctrl_R+Alt+letter` Vicinae chooser by active window state before
+name, keeping the existing `●` marker and window count. Flake check, Python
+compilation, and dry-build passed. Activated through pkexec as generation 164;
+the deployed rcmd source contains the state-first ordering and no system units
+failed. Verify the graphical order in the active Niri session.

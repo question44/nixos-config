@@ -123,17 +123,20 @@ def choose(apps, running, letter):
         except BlockingIOError:
             return None
         choices = {}
-        for app in apps:
-            if app['visible'] and initial(app['name']) == letter:
-                window_count = len(running.get(app['id'], ()))
-                state = '●' if window_count else '○'
-                count = f' — {window_count} window' + ('s' if window_count != 1 else '') if window_count else ''
-                label = f"{state} {app['name'].replace('\n', ' ')}{count}"
-                # Desktop names are normally unique. Retain both apps if two
-                # entries share a name, while keeping the useful state first.
-                if label in choices:
-                    label += f" ({app['id'].removesuffix('.desktop')})"
-                choices[label] = app
+        matching_apps = [app for app in apps
+                         if app['visible'] and initial(app['name']) == letter]
+        for app in sorted(matching_apps,
+                          key=lambda app: (app['id'] not in running,
+                                           app['name'].casefold(), app['id'])):
+            window_count = len(running.get(app['id'], ()))
+            state = '●' if window_count else '○'
+            count = f' — {window_count} window' + ('s' if window_count != 1 else '') if window_count else ''
+            label = f"{state} {app['name'].replace('\n', ' ')}{count}"
+            # Desktop names are normally unique. Retain both apps if two
+            # entries share a name, while keeping the useful state first.
+            if label in choices:
+                label += f" ({app['id'].removesuffix('.desktop')})"
+            choices[label] = app
         result = subprocess.run(
             ['vicinae', 'dmenu', '--format', 'data', '--no-quick-look',
              '--navigation-title', f'{letter.upper()} — choose an app',
