@@ -2187,3 +2187,16 @@ Root/ESP UUIDs unchanged. No reboot or greeter restart performed.
 The timer and persistent startup command are verified; physical monitor
 blanking/standby was not observed remotely. Keyboard input restores the console.
 Existing unrelated UEFI checkpoint left untouched.
+
+
+## [COMPLETED] Default greeter background to Matrix — 2026-10-20
+
+Added --background matrix to the existing tuigreet command. Installed binary
+accepts the option; --dump-config confirms background.kind=matrix.
+Flake check, dry-build, test activation and persistent switch passed.
+Deployed greetd TOML contains --background matrix. Greetd stays active with
+unchanged PID 2674; no session interruption or reboot. The 60-second console
+timer remains set. No failed system units; root/ESP UUIDs unchanged.
+Active persistent generation 175:
+/nix/store/7adydjvhmiyhkaj1p3nks9129bipvghk-nixos-system-erebor-26.05.20261013.a033e66.
+Visual appearance awaits the next greeter launch; current session preserved.

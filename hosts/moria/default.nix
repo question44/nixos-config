@@ -359,7 +359,7 @@ in
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --remember-session --sessions ${pkgs.niri}/share/wayland-sessions:${config.programs.umbriel.package}/share/wayland-sessions";
+        command = "${pkgs.tuigreet}/bin/tuigreet --background matrix --time --remember --remember-session --sessions ${pkgs.niri}/share/wayland-sessions:${config.programs.umbriel.package}/share/wayland-sessions";
         user = "greeter";
       };
     };
