@@ -14,6 +14,43 @@ in
   '';
   boot.blacklistedKernelModules = [ "nouveau" "nvidia" "nvidia_drm" "nvidia_modeset" "nvidia_uvm" ];
 
+  # Put the host and guests on the wired LAN. Keep the physical MAC and
+  # DHCP client identity so the host retains its router lease.
+  networking.networkmanager.ensureProfiles.profiles = {
+    lan-bridge = {
+      connection = {
+        id = "lan-bridge";
+        uuid = "c2a542c7-917d-4d2e-8a93-6462112f38b7";
+        type = "bridge";
+        interface-name = "br0";
+        autoconnect = true;
+        autoconnect-ports = 1;
+        autoconnect-priority = 100;
+      };
+      bridge = {
+        stp = false;
+        mac-address = "D8:5E:D3:E2:35:0A";
+      };
+      ipv4 = {
+        method = "auto";
+        dhcp-client-id = "mac";
+      };
+      ipv6.method = "auto";
+    };
+    lan-bridge-port = {
+      connection = {
+        id = "lan-bridge-port";
+        uuid = "3c0196fc-b358-452f-9930-8944b2fcc131";
+        type = "ethernet";
+        interface-name = "enp4s0";
+        controller = "c2a542c7-917d-4d2e-8a93-6462112f38b7";
+        port-type = "bridge";
+        autoconnect = true;
+        autoconnect-priority = 100;
+      };
+    };
+  };
+
   virtualisation.libvirtd = {
     enable = true;
     qemu = {
@@ -32,7 +69,7 @@ in
     pciutils
     (writeShellApplication {
       name = "windows-vm-create";
-      runtimeInputs = [ virt-manager libvirt coreutils ];
+      runtimeInputs = [ virt-manager libvirt coreutils iproute2 ];
       text = ''
         if [ "$#" -ne 2 ]; then
           echo "Usage: windows-vm-create /path/to/windows11.iso /path/to/virtio-win.iso" >&2
@@ -45,9 +82,9 @@ in
           echo "The windows11 VM already exists; open Virtual Machine Manager." >&2
           exit 1
         fi
-        # Require a working connection and NAT network before creating storage.
+        # Require a working connection and LAN bridge before creating storage.
         virsh --connect "$connection" list >/dev/null
-        virsh --connect "$connection" net-info default
+        ip link show br0 >/dev/null
         if [ -e /var/lib/libvirt/images/windows11.qcow2 ]; then
           echo "Refusing to overwrite an existing Windows disk." >&2
           exit 1
@@ -61,7 +98,7 @@ in
           --disk path=/var/lib/libvirt/images/windows11.qcow2,size=120,format=qcow2,bus=virtio,discard=unmap \
           --cdrom "$windows_iso" \
           --disk "path=$drivers_iso,device=cdrom" \
-          --network network=default,model=virtio \
+          --network bridge=br0,model=virtio \
           --graphics spice,listen=127.0.0.1 --video qxl \
           --channel spicevmc --controller type=usb,model=qemu-xhci \
           --input type=tablet,bus=usb --noautoconsole

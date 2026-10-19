@@ -3,7 +3,7 @@
 ## Current phase
 
 Linux uses Intel UHD 770; Windows receives RTX 4090 and its HDMI audio
-function. Generation 172 is active after reboot. NVIDIA 610.88 is installed,
+function. NVIDIA 610.88 is installed,
 the GPU reports healthy, and explicit Direct3D 11 device creation on the
 RTX 4090 succeeded. See SYSTEM_CHANGELOG.md for validation and recovery.
 
@@ -14,6 +14,20 @@ were preserved during the GPU swap; Looking Glass streaming was not retested.
 The intended guest has 8 virtual CPUs, 12 GiB RAM, a sparse 120 GiB qcow2
 disk, Secure Boot, TPM 2.0, VirtIO storage/network, and a local SPICE display.
 It uses a fresh virtual disk, never a physical Windows disk or partition.
+
+## LAN access
+
+The existing VM interface has been migrated live and persistently to the
+configured LAN bridge, retaining MAC `52:54:00:d3:31:19`. Its router-issued
+address was `192.168.1.120` on 2026-10-19. Verify the current address with
+`virsh -c qemu:///system domifaddr windows11 --source agent`; reserve this
+MAC in the router's DHCP configuration if a stable address is needed.
+Moonlight clients on the LAN can add that address manually. Sunshine's
+server-info endpoint and streaming TCP ports were reachable from the host.
+Windows may block ping even while Sunshine is reachable.
+
+The pre-migration persistent domain XML is saved at
+`/home/janzon/.local/state/windows-vm/pre-lan-bridge-20261019/windows11.xml`.
 
 ## Installation media
 
@@ -29,9 +43,10 @@ https://github.com/virtio-win/virtio-win-pkg-scripts to
 ## After live activation
 
 Verify `libvirtd.service`, `virsh -c qemu:///system list --all`, and
-`virsh -c qemu:///system net-list --all`. The default NAT network must be
-active; if inactive, start it with `virsh -c qemu:///system net-start default`
-and enable it with `virsh -c qemu:///system net-autostart default`.
+`ip address show br0`. The LAN bridge must be active before starting the VM.
+NetworkManager provides the bridge and wired port from the Nix configuration;
+Windows obtains its LAN address from the router. The default NAT network can
+remain available for other guests.
 New group membership may require logging out and back in.
 
 Run `windows-vm-create /absolute/path/to/windows11.iso /home/janzon/Downloads/windows-vm/virtio-win.iso`

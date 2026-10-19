@@ -2064,3 +2064,29 @@ The driver is active for this boot and declared for future system rebuilds;
 perform a normal switch before rebooting to retain it in the boot generation.
 Moonlight must restart to repeat decoder detection; streaming and compositor
 frame delivery after this driver fix have not been verified.
+
+## [PENDING] Bridge Windows VM onto the wired LAN — 2026-10-19
+
+User authorized direct LAN networking. Define NetworkManager br0 and its
+enp4s0 port, move existing LAN host firewall allowances to br0, and use br0
+for newly created VMs. Existing windows11 interface will be migrated live
+and persistently, retaining its MAC. Pre-change XML: /tmp/windows11-before-lan-bridge.xml.
+Flake check, dry-build, and full build passed using an isolated source tree
+that excludes the unrelated pending modules/mac-approval.nix changes.
+Built system: /nix/store/4yqv3l0h050gjs4grclz4j22d6d378ya-nixos-system-erebor-26.05.20261013.a033e66.
+Recovery: test-activated system was /nix/store/mnma7hiid1rr86b034vx58d7xf65b5h2-nixos-system-erebor-26.05.20261013.a033e66; persistent generation 172
+remains available. Before activation, create and verify the read-only root
+snapshot /btrfs-top/nixos-root-pre-lan-bridge-20261019.
+Read-only root snapshot 651 verified, UUID f3d8aea9-7a46-2447-a944-6dabf8f4f304.
+Test activation succeeded. Host retains 192.168.1.106 on br0, its default
+route and DNS work, and router ping has zero packet loss after DHCP settles.
+The running and persistent windows11 interfaces now use br0 and the router
+assigned 192.168.1.120. Sunshine TCP ports 47984, 47989, 47990 and 48010
+are reachable; /serverinfo returns status 200 and hostname gamestation.
+The host HTTP service still returns 200. Windows does not answer ping;
+no guest firewall changes were needed for Sunshine. Persistent pre-migration
+XML backup: /home/janzon/.local/state/windows-vm/pre-lan-bridge-20261019/windows11.xml.
+Root/ESP UUIDs verified; no failed units.
+Next: authenticate the pending persistent switch, then verify generation,
+boot entries, mounts, and services. No reboot planned. Playback from another
+physical LAN device has not been exercised.
