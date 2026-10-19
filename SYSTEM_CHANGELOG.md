@@ -1,5 +1,14 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [COMPLETED] Release Noctalia bar reservation during auto-hide — 2026-10-19
+
+Update the declarative `noctalia-bar-autohide` utility so enabling smart or
+regular auto-hide also releases the default bar's compositor reservation, and
+switching back off restores it. `nix flake check` and a dry build passed.
+Activated using Polkit; generation 170 is active. The live smart-to-off test
+returned success from both reservation and auto-hide IPC calls, ending with
+the bar visible and reservation restored.
+
 ## [COMPLETED] Add a declarative Noctalia smart-auto-hide control — 2026-10-19
 
 Added `~/.local/bin/noctalia-bar-autohide`, a session-scoped toggle between
