@@ -96,7 +96,6 @@ in
     ./services/qbittorrent.nix
     ./services/nextcloud.nix
     ../../modules/desktop.nix
-    ../../modules/nvidia.nix
     ../../modules/windows-vm.nix
     ../../modules/looking-glass.nix
   ];

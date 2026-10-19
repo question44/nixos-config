@@ -63,7 +63,7 @@ in
     (pkgs.makeDesktopItem {
       name = "windows-looking-glass";
       desktopName = "Windows (Looking Glass)";
-      comment = "Open the Windows VM with Intel graphics acceleration";
+      comment = "Open the Windows VM with NVIDIA graphics acceleration";
       exec = "windows-looking-glass";
       icon = "looking-glass";
       categories = [ "System" "Emulator" ];

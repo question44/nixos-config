@@ -2,9 +2,12 @@
 
 ## Current phase
 
-Windows is installed. The Intel UHD 770 is assigned to the guest, with its
-Windows driver and Direct3D 11 device creation verified. Linux uses the
-NVIDIA RTX 4090. See SYSTEM_CHANGELOG.md for validation and recovery records.
+Windows is installed. A GPU swap is staged in NixOS generation 172: Linux
+will use Intel UHD 770, and Windows will receive RTX 4090 and its HDMI audio
+function. Generation 171 is still running with the former GPU arrangement;
+the VM is shut off. Reboot before starting it. NVIDIA driver, acceleration
+and Looking Glass verification remain pending. See SYSTEM_CHANGELOG.md for
+the reboot checkpoint and recovery instructions.
 
 Looking Glass is installed and streaming. It uses a matching Linux client and
 Windows IDD, which supplies a virtual display and direct mouse/keyboard input.

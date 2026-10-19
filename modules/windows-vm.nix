@@ -5,13 +5,14 @@ let
 in
 
 {
-  # UHD 770 is alone in IOMMU group 0 and unused by host processes.
-  # Reserve only this PCI ID; the RTX 4090 remains the host display GPU.
+  # Reserve both functions of the RTX 4090's isolated IOMMU group.
+  # Intel UHD 770 remains available to the Linux desktop through i915.
   boot.kernelParams = [ "intel_iommu=on" "iommu=pt" ];
   boot.initrd.kernelModules = [ "vfio_pci" ];
   boot.extraModprobeConfig = ''
-    options vfio-pci ids=8086:a780
+    options vfio-pci ids=10de:2684,10de:22ba
   '';
+  boot.blacklistedKernelModules = [ "nouveau" "nvidia" "nvidia_drm" "nvidia_modeset" "nvidia_uvm" ];
 
   virtualisation.libvirtd = {
     enable = true;
@@ -23,6 +24,7 @@ in
   programs.virt-manager.enable = true;
   users.users.janzon.extraGroups = [ "libvirtd" "kvm" ];
   systemd.tmpfiles.rules = [ "d /var/lib/libvirt/images 0755 root root -" ];
+  # Retain the existing guest firmware and NVRAM during the GPU migration.
   environment.etc."windows-vm/OVMF_CODE.fd".source = "${igdOvmf.fd}/FV/OVMF_CODE.fd";
 
   environment.systemPackages = with pkgs; [

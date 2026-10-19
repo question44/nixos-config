@@ -1,6 +1,12 @@
 { ... }:
 
 {
+  # Intel UHD 770 drives Linux; the discrete GPU is reserved for Windows.
+  hardware.graphics.enable = true;
+  hardware.graphics.enable32Bit = true;
+  services.xserver.videoDrivers = [ "modesetting" ];
+  boot.initrd.kernelModules = [ "i915" ];
+
   environment.etc."xdg/niri/config.kdl".source = ../home/niri/config.kdl;
 
   environment.sessionVariables = {
