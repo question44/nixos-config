@@ -48,6 +48,20 @@ fi
 
 args=(bar-auto-hide-set "$action" default)
 [[ -n "$monitor" ]] && args+=("$monitor")
+
+# Match the layout reservation to the mode: an auto-hidden bar overlays the
+# workspace instead of leaving an empty strip at the edge.  The Noctalia IPC
+# command is a toggle, so issue it only for an actual mode transition.
+if [[ "$current" == off && "$action" != off ]]; then
+  reserve_args=(bar-reserve-toggle default)
+  [[ -n "$monitor" ]] && reserve_args+=("$monitor")
+  noctalia msg "${reserve_args[@]}"
+elif [[ "$current" != off && "$action" == off ]]; then
+  reserve_args=(bar-reserve-toggle default)
+  [[ -n "$monitor" ]] && reserve_args+=("$monitor")
+  noctalia msg "${reserve_args[@]}"
+fi
+
 noctalia msg "${args[@]}"
 
 umask 077
