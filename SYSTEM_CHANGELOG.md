@@ -1,14 +1,14 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
-## [PENDING] Swap host and Windows GPUs — 2026-10-19
+## [COMPLETED] Swap host and Windows GPUs — 2026-10-19
 
-Staged Intel UHD 770 for Linux and RTX 4090 for the existing Windows VM.
-Generation 172 is the default next boot:
+Intel UHD 770 now drives Linux and RTX 4090 is assigned to the Windows VM.
+Generation 172 is booted, active and persistent:
 /nix/store/207r6picj0fa2q7bhv0wb44pjl6y9yc7-nixos-system-erebor-26.05.20261013.a033e66.
-Generation 171 remains running and is retained as the recovery boot entry:
+Generation 171 is retained as the recovery boot entry:
 /nix/store/dw9l4lk86ccckmhi7kvxwyf2baczg5v3-nixos-system-erebor-26.05.20261013.a033e66.
-No reboot or live GPU detachment has been performed. The user confirms the
-Linux monitor is already connected to a motherboard video output.
+The user rebooted after staging and confirms the Linux monitor is connected
+to a motherboard video output.
 
 Flake checks, dry builds and full builds passed. Preserved the sudo/YubiKey
 configuration already active in generation 171; its unrelated source edits
@@ -19,7 +19,7 @@ windows11 domain assigns 0000:01:00.0 and 0000:01:00.1 with managed=no;
 Intel assignment was removed. XML validates and its non-hostdev contents
 were verified unchanged before libvirt assigned the new guest PCI addresses.
 Existing firmware, NVRAM, TPM, disk and Looking Glass configuration are kept.
-Windows is verified shut off with autostart disabled.
+Windows was cleanly stopped for staging and is now running successfully.
 
 The user ran the reviewed staging script with local sudo authentication.
 It checks the offline qcow2, saves disk/XML/NVRAM/TPM and ESP recovery copies,
@@ -30,17 +30,24 @@ Read-only root snapshot: /btrfs-top/nixos-root-pre-gpu-swap-20261019,
 independently verified ro=true. Snapper is not configured. The correct root
 and ESP UUIDs were rechecked. Boot entry 172 references the built target and
 its installed initrd; entry 171 and its older initrd remain available.
-Two failed Polkit helper instances are from the unsuccessful authorization
-attempts ("No session for cookie"), not a GPU/service activation failure.
 
-Mandatory next action: reboot into generation 172 when ready. Verify Intel
-0000:00:02.0 uses i915 and both NVIDIA functions use vfio-pci, then verify
-the Linux desktop, mounts, services and Windows startup/NVIDIA driver,
-hardware acceleration and Looking Glass. Driver installation may still be
-needed in Windows. Keep this entry pending until these checks pass.
+Post-reboot verification: Intel 0000:00:02.0 uses i915; both NVIDIA functions
+use vfio-pci. Umbriel's live log reports the Intel Mesa iris renderer, with
+DP-1 at 3440x1440@99.982 Hz. Libvirtd and the guest agent work, the correct
+root/ESP UUIDs remain mounted, and no system or user units have failed.
+Windows initially used Microsoft Basic Display Adapter. Windows Update
+automatically installed NVIDIA 32.0.16.1088 (610.88), reporting success; the
+agent's narrowly targeted install attempt found it already installed and
+made no additional driver changes. RTX 4090 reports device status 0.
+An explicit DXGI enumeration targeting vendor 10de/device 2684 followed by
+D3D11CreateDevice succeeded (HRESULT 0, feature level 0xB000). nvidia-smi
+reports RTX 4090, driver 610.88 and 24564 MiB of memory.
+Looking Glass and QXL are currently disabled in the guest (device code 22),
+while the SudoMaker virtual display is healthy; preserved this existing
+guest display setup. Looking Glass streaming was therefore not retested.
+No further host reboot or Windows restart was required for acceleration.
 Recovery: with Windows off, restore windows11.xml from the recovery directory
 using virsh define and boot generation 171 to restore the former GPU split.
-Do not start the newly configured guest on the currently running generation.
 
 ## [COMPLETED] Release Noctalia bar reservation during auto-hide — 2026-10-19
 
