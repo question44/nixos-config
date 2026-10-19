@@ -1,6 +1,6 @@
-{ config, ... }:
+{ config, lib, ... }:
 
-{
+lib.mkIf (!config.virtualisation.windowsGpuPassthrough.enable) {
   hardware.graphics.enable = true;
   hardware.graphics.enable32Bit = true;
 

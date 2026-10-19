@@ -1,7 +1,7 @@
 { pkgs, ... }:
 
 {
-  # Intel UHD 770 drives Linux; the discrete GPU is reserved for Windows.
+  # Keep Intel graphics available alongside the optional host NVIDIA driver.
   hardware.graphics.enable = true;
   hardware.graphics.enable32Bit = true;
   hardware.graphics.extraPackages = [ pkgs.intel-media-driver ];

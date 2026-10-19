@@ -2,10 +2,20 @@
 
 ## Current phase
 
-Linux uses Intel UHD 770; Windows receives RTX 4090 and its HDMI audio
-function. NVIDIA 610.88 is installed,
-the GPU reports healthy, and explicit Direct3D 11 device creation on the
-RTX 4090 succeeded. See SYSTEM_CHANGELOG.md for validation and recovery.
+GPU ownership is controlled by
+`virtualisation.windowsGpuPassthrough.enable` in `hosts/moria/default.nix`.
+It is currently set to `false`; after activation this restores the RTX 4090
+to Linux alongside Intel UHD 770. With `true`, both NVIDIA functions are reserved for Windows
+and the host NVIDIA driver is disabled. Shut down `windows11` before changing
+this setting, rebuild NixOS, and reboot to apply early driver binding reliably.
+The `windows-vm-gpu` service synchronizes the existing domain's PCI assignments
+and backs up every changed XML under `/var/lib/windows-vm-recovery/gpu-toggle/`.
+It refuses to change the assignments while Windows is running. Disk, NVRAM,
+TPM, CPU, memory and networking settings are preserved.
+
+Prior to disabling passthrough, NVIDIA 610.88 and Direct3D 11 acceleration
+were verified in Windows. GPU-dependent guest streaming is unavailable while
+the RTX 4090 belongs to Linux. No guest display settings are changed by this toggle.
 
 Looking Glass is installed, but its guest display device and QXL are currently
 disabled. The SudoMaker virtual display is active. These guest display choices
@@ -70,9 +80,11 @@ CD inside Windows to provide network and other guest drivers.
 
 ## GPU assignment and recovery
 
-Keep the Linux monitor on a motherboard video output. Verify Intel
-`0000:00:02.0` uses i915 and both NVIDIA functions `0000:01:00.0` and
-`0000:01:00.1` use vfio-pci before starting Windows.
+With passthrough disabled, connect the monitor to the NVIDIA card to use its
+physical outputs. The motherboard output can continue to use Intel graphics.
+With passthrough enabled, keep the Linux monitor on the motherboard output;
+verify Intel `0000:00:02.0` uses i915 and both NVIDIA functions
+`0000:01:00.0` and `0000:01:00.1` use vfio-pci before starting Windows.
 
 The previous arrangement can be recovered with Windows shut off: restore
 the domain using `virsh -c qemu:///system define

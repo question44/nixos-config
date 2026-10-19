@@ -2130,3 +2130,48 @@ No failed host system units; host system/generation and root/ESP UUIDs unchanged
 No host activation or reboot performed. Nix creation defaults updated for the
 next host rebuild; existing VM resources are already persistent in libvirt.
 Recovery XML: /home/janzon/.local/state/windows-vm/pre-all-cpus-20261019/windows11.xml.
+
+
+## [PENDING] Temporarily return RTX 4090 to Linux with a passthrough toggle — 2026-10-20
+
+User requested disabling GPU passthrough and a configuration variable.
+Add virtualisation.windowsGpuPassthrough.enable, explicitly false on moria.
+False enables the existing NVIDIA host module and removes VFIO reservation;
+true restores VFIO reservation and disables host NVIDIA. A oneshot service
+synchronizes the stopped windows11 domain's two PCI assignments, backing up
+its XML before changes and refusing changes while the guest runs. Windows
+CPU/RAM, networking, disk, NVRAM, TPM and guest settings are preserved.
+
+Pre-change: windows11 shut off, both NVIDIA functions bound to vfio-pci,
+running/booted/persistent generation 172, no failed system units. Root UUID
+5be9be17-20c9-4a47-ba2d-6adf1ceb4c55 and ESP UUID 38B5-8386 verified.
+Recovery: generation 172 plus pre-change domain XML; preserve Fedora/Windows
+EFI loaders and firmware order. Snapper is unavailable: create and verify
+an important read-only Btrfs root snapshot before privileged activation.
+
+Offline checks passed for both GPU assignment directions, idempotence and
+preservation of unrelated XML. Initial flake check and dry-build passed.
+The build source preserves the already-live uncommitted YubiKey PAM policy;
+that unrelated change is not included in this GPU commit. Polkit retry failed,
+and sudo requires authentication. No root snapshot, domain mutation, host
+activation, driver rebind, boot change or reboot has been performed yet.
+Mandatory next action: finish build/validation, obtain admin authentication,
+create/verify the recovery snapshot, test-activate, verify host GPU binding,
+then persist and verify the boot generation and affected services.
+
+Flake check, dry-build and full build now passed with the live PAM policy
+preserved byte-for-byte. Both Nix toggle values evaluated correctly. Built:
+/nix/store/h6gjr8a919zxpl8ncn124fc3pb0w1xkl-nixos-system-erebor-26.05.20261013.a033e66.
+Activation checkpoint: before test/switch, verify a new read-only root snapshot;
+keep generation 172 as recovery. No reboot is requested. After activation,
+verify NVIDIA binding/nvidia-smi, no VM hostdevs, services, generation, mounts
+and unchanged firmware order. Current compositor may stay on Intel until a
+new desktop session; NVIDIA monitor outputs require connecting to the card.
+
+Final activation retries were rejected by Polkit with "No session for cookie".
+The forwarded Secretive agent is reachable and lists the privilege-approval
+key; no privileged activation steps ran. Ready-to-run activation script:
+/tmp/activate-host-nvidia.sh (snapshot, test, live NVIDIA rebind/verification,
+persistent switch and firmware-order/mount/service verification; no reboot).
+Run it from an authenticated local/SSH terminal to continue. The system is
+still generation 172 with NVIDIA bound to vfio-pci.
