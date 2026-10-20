@@ -13,6 +13,10 @@
       url = "github:SteamClientHomebrew/Millennium?dir=packages/nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    zen-browser = {
+      url = "github:youwen5/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     helium = {
       url = "github:oxcl/nix-flake-helium-browser";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -28,7 +32,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, noctalia, noctalia-greeter, umbriel, millennium, helium, darkly, vicinae, home-manager, ... }:
+  outputs = { self, nixpkgs, noctalia, noctalia-greeter, umbriel, millennium, helium, zen-browser, darkly, vicinae, home-manager, ... }:
     {
       nixosConfigurations.moria = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
@@ -47,6 +51,14 @@
             home-manager.backupFileExtension = "backup";
             home-manager.users.janzon = { lib, pkgs, ... }:
               let
+                zenPackages = zen-browser.packages.${pkgs.stdenv.hostPlatform.system};
+                zenBrowser = zenPackages.default.override {
+                  # The flake's Zen 1.23.3b checksum differs from the release asset.
+                  # This digest matches the official GitHub release asset metadata.
+                  zen-browser-unwrapped = zenPackages.zen-browser-unwrapped.override {
+                    hash = "sha256-uyBF0+IWVNQP6EElAJLurf0sH8gx7vtQkiJ3PIvcoUk=";
+                  };
+                };
                 rcmdPython = pkgs.python3.withPackages (ps: [ ps.pygobject3 ]);
                 rcmd = pkgs.writeShellScript "rcmd" ''
                   export GI_TYPELIB_PATH="${pkgs.glib.out}/lib/girepository-1.0"
@@ -73,6 +85,7 @@
                 settings = ./home/umbriel/config.toml;
               };
               home.packages = with pkgs; [
+                zenBrowser
                 zed-editor
                 neovim
                 fd

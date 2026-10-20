@@ -2580,3 +2580,29 @@ No game settings or existing saves changed; interactive match behavior has
 not been tested. Restart the game and select UT3 Weapons
 (UT3Style.MutUT3Weapons) in the Mutators menu, including the separate campaign
 mutator launcher. No system configuration change or rebuild was needed.
+
+
+## [COMPLETED] Install Zen Browser in the user profile — 2026-10-20
+
+Added pinned youwen5/zen-browser-flake input (revision
+5a0d21f99706b231df9ff35ab95dbccda88414d8), following existing nixpkgs, and
+Zen 1.23.3b to Home Manager packages. The flake's source checksum differed
+from the current upstream asset. Verified the downloaded bytes against the
+official zen-browser/desktop release API digest and pinned that SHA256:
+bb2045d3e21654d40fe841250092eeadfd2c1fc831eefb509222773c8bdca149.
+
+Flake checks, NixOS dry-build and the Home Manager package-path build passed.
+Installed the exact built Zen package into the user's Nix profile for immediate
+use. zen --version reports Mozilla Zen 1.23.3b; zen.desktop is available via
+the profile's application directory, included in XDG_DATA_DIRS. Existing
+browser defaults were not changed. No interactive browsing test performed.
+
+## [PENDING] Activate declarative Zen Browser package — 2026-10-20
+
+System activation requires sudo authentication, unavailable to this session.
+Zen is already usable through the user profile. A future
+sudo nixos-rebuild switch --flake /etc/nixos#moria will also install it through
+the configured Home Manager user packages. The user-profile copy can then be
+removed with nix profile remove zen-browser after verifying the declarative
+installation. Running/persistent system store path remains
+/nix/store/92n2mnai1g78z7y5nbf94qfkwacs59zg-nixos-system-erebor-26.05.20261013.a033e66.
