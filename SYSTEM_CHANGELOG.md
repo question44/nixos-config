@@ -2294,3 +2294,34 @@ and dry-build passed; switch built and activated generation 181:
 Verified both deployed bindings, reloaded Umbriel successfully and restarted
 xremap. Home Manager and xremap are active, with no failed system/user units.
 Physical key presses were not simulated. No logout or reboot required.
+
+
+## [COMPLETED] Noctalia Greeter with appearance sync — 2026-10-20
+
+Replaced tuigreet with upstream Noctalia Greeter 1.7.0, pinned in flake.lock.
+Kept greetd PAM/Oo7 and installed Niri/Umbriel sessions. Enabled constrained
+passwordless sync for janzon's active local session and Noctalia auto-sync.
+Declarative settings select Synced colors, Umbriel and janzon, with a
+one-minute idle timeout. Appearance and monitor layout live in sync.toml.
+
+Flake check, dry-build, full build, test activation and switch passed.
+Active/persistent generation 182:
+/nix/store/j3jnncjs5widbi21gwcn7gxck3n35b9j-nixos-system-erebor-26.05.20261013.a033e66.
+Restarted only Noctalia to discover the newly installed helper; greeter-sync
+IPC returned ok and its journal confirmed successful application. Verified
+sync.toml has the live palette, dark mode, corner radius, font, DP-1 and
+ambilight layout/scales/transforms, and copied wallpaper files. The helper
+advertises secure-sync-v1; packaged Polkit policy restricts argv1 to --sync.
+The greeter lists Niri and Umbriel. greetd, Polkit, AccountsService and Home
+Manager are active, with no failed system/user units. Root/ESP UUIDs match;
+Fedora/Microsoft EFI hashes and firmware entries are unchanged. Snapper is
+not configured; created and verified read-only root snapshot
+/btrfs-top/nixos-root-pre-noctalia-greeter-20261020 before switch.
+Generation 181's boot entry remains available for recovery.
+
+greetd was deliberately not restarted, preserving the active desktop. Its
+running daemon retains the old tuigreet command until its next restart;
+logout alone does not load the new command. New greeter rendering/login
+must be checked after the next reboot or an explicitly requested greetd
+restart. No reboot performed. SF Pro is absent on the host; Fontconfig
+currently falls back to DejaVu Sans, as in the desktop session.

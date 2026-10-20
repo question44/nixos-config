@@ -4,6 +4,10 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     noctalia.url = "github:noctalia-dev/noctalia-shell";
+    noctalia-greeter = {
+      url = "github:noctalia-dev/noctalia-greeter";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     umbriel.url = "github:noctalia-dev/umbriel";
     millennium = {
       url = "github:SteamClientHomebrew/Millennium?dir=packages/nix";
@@ -24,13 +28,14 @@
     };
   };
 
-  outputs = { self, nixpkgs, noctalia, umbriel, millennium, helium, darkly, vicinae, home-manager, ... }:
+  outputs = { self, nixpkgs, noctalia, noctalia-greeter, umbriel, millennium, helium, darkly, vicinae, home-manager, ... }:
     {
       nixosConfigurations.moria = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = { inherit darkly vicinae; };
         modules = [
           ./hosts/moria/default.nix
+          noctalia-greeter.nixosModules.default
           noctalia.nixosModules.default
           umbriel.nixosModules.default
           helium.nixosModules.default

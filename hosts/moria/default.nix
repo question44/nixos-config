@@ -1,33 +1,6 @@
 { config, darkly, lib, pkgs, vicinae, ... }:
 
 let
-  greeterConfig = pkgs.writeText "tuigreet-matrix.toml" ''
-    [background]
-    kind = "matrix"
-
-    [display]
-    show_time = true
-
-    [remember]
-    username = true
-    session = true
-
-    [session]
-    sessions_dirs = ["${pkgs.niri}/share/wayland-sessions", "${config.programs.umbriel.package}/share/wayland-sessions"]
-
-    [theme]
-    border = "green"
-    text = "green"
-    time = "bright-green"
-    container = "black"
-    title = "bright-green"
-    greet = "green"
-    prompt = "green"
-    input = "bright-green"
-    action = "green"
-    button = "bright-green"
-  '';
-
   hyperhdr = pkgs.callPackage ../../packages/hyperhdr.nix { };
   hyperhdrPortalCheck = pkgs.writeShellScript "hyperhdr-portal-check" ''
     if ${pkgs.systemd}/bin/busctl --user get-property \
@@ -382,20 +355,16 @@ in
     capabilities = "cap_ipc_lock=ep";
     source = "${pkgs.oo7-server}/libexec/oo7-daemon";
   };
-  services.greetd = {
+  services.displayManager.noctalia-greeter = {
     enable = true;
+    passwordless-sync-users = [ "janzon" ];
     settings = {
-      default_session = {
-        command = "${pkgs.tuigreet}/bin/tuigreet --config ${greeterConfig}";
-        user = "greeter";
-      };
+      appearance.scheme = "Synced";
+      user.default = "janzon";
+      session.default = "umbriel";
+      idle.timeout = 60;
     };
   };
-
-  # Blank the greeter's console after one minute without keyboard activity.
-  systemd.services.greetd.preStart = ''
-    ${pkgs.util-linux}/bin/setterm --term linux --blank 1 < /dev/tty1 > /dev/tty1
-  '';
 
   systemd.user.services.niri.enableDefaultPath = false;
 

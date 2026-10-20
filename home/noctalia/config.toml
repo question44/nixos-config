@@ -230,6 +230,9 @@ input_borders = false
 niri_overview_type_to_launch_enabled = true
 panel_anchor_bar = "default"
 
+[shell.greeter_sync]
+auto_sync = true
+
 [shell.screen_corners]
 enabled = true
 size = 8
