@@ -94,6 +94,7 @@ blur_optimized = false
 "XF86Launch5" = { action = "window-focus-left", cooldown_ms = 50 }
 "Ctrl+Alt+Super+C" = "column-center"
 "Ctrl+Alt+Super+R" = "window-cycle-primary-extent"
+"Ctrl+Alt+Shift+Super+R" = "window-cycle-primary-extent-back"
 "Ctrl+Alt+Super+F" = { action = "spawn:sh -c 'umbriel msg window-toggle-maximize && sleep 0.3 && umbriel msg column-center'", repeat = false }
 "Ctrl+Alt+Super+G" = "window-toggle-fullscreen"
 "Ctrl+Alt+Super+E" = "window-set-primary-extent:1.0"

@@ -207,6 +207,7 @@ keymap:
       CapsLock-Super-s: Ctrl-Alt-Shift-Super-s
       CapsLock-Super-d: Ctrl-Alt-Shift-Super-d
       CapsLock-Super-q: Ctrl-Alt-Shift-Super-q
+      CapsLock-Super-r: Ctrl-Alt-Shift-Super-r
       CapsLock-Super-0: Ctrl-Alt-Shift-Super-0
       CapsLock-Super-KEY_HOME: Ctrl-Alt-Shift-Super-KEY_HOME
       CapsLock-Super-KEY_END: Ctrl-Alt-Shift-Super-KEY_END

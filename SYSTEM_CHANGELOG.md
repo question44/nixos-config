@@ -2282,3 +2282,15 @@ Spotify-matching app ID, and it could be summoned again. Test windows were
 removed. Live workspace listing contains no background-apps workspace.
 Actual physical key presses and the real Spotify/Discord clients were not
 exercised; configured actions and deployed script behavior were verified.
+
+
+## [COMPLETED] Reverse width cycling with Caps+Super+R — 2026-10-20
+
+Added CapsLock-Super-r to the xremap desktop layer and bound its emitted
+Ctrl+Alt+Shift+Super+R chord to Umbriel window-cycle-primary-extent-back.
+Caps+R continues to cycle forwards. Umbriel config validation, flake checks
+and dry-build passed; switch built and activated generation 181:
+/nix/store/04iw12vf0ypjlrr037ygmllj2hm011il-nixos-system-erebor-26.05.20261013.a033e66.
+Verified both deployed bindings, reloaded Umbriel successfully and restarted
+xremap. Home Manager and xremap are active, with no failed system/user units.
+Physical key presses were not simulated. No logout or reboot required.
