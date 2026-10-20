@@ -2395,3 +2395,42 @@ the Sunshine link. Caddy and Sunshine are active with no failed system/user
 units. Root/ESP UUIDs match. Existing generation 184 remains the recovery
 entry. No credentials changed; authenticated browser use requires the user's
 Sunshine login. No reboot required.
+
+
+## [COMPLETED] Optimize Sunshine capture and scheduling — 2026-10-20
+
+Built the pinned Sunshine release with CUDA 12.9 for GPU-memory capture and
+NVENC conversion. Added only its required CUDA compiler/runtime/CCCL packages
+to the host's unfree allowlist. The existing user service starts through a
+CAP_SYS_NICE wrapper restricted to the users group, enabling high-priority EGL
+contexts without granting KMS/CAP_SYS_ADMIN. Enabled standard RealtimeKit so
+Sunshine can request CPU-thread priority after dropping main-thread caps.
+The code deliberately retains the EGL worker's capability while dropping it
+from the main thread. No credentials, pairing state, streaming resolution,
+codec/bitrate settings, Caddy routes or virtual-output hooks were changed.
+
+Flake checks, dry/full builds, test activations and persistent switches passed.
+Active/persistent generation 187:
+/nix/store/95kh81q82xdl8y2w9f2brmias02gc90b-nixos-system-erebor-26.05.20261013.a033e66.
+The CUDA build log shows CUDA compiler 12.9.86 and cuda.cu compilation. Runtime
+uses the new store binary; the GPU/RAM/GPU fallback warning is absent, EGL
+context priority is HIGH, and H.264/HEVC/AV1 NVENC encoders are detected.
+
+Client reconnected with 3024x1890@90 HEVC at about 55.8 Mbps. Compared with
+52–60 encoded FPS and about 190% CPU in the prior build, the CUDA session
+reached 88–89 encoded FPS with a 10-second CPU sample of 9.6%. Encoder latency
+was about 4 ms, so no encoder-latency reduction is claimed. This was an
+observational comparison, not a fixed game benchmark or client-side latency
+measurement. After enabling RTKit and the final service restart, its journal
+verified Sunshine threads receiving nice -10/-15; no denied setpriority or
+GPU-copy fallback messages appeared in that reconnected session. The client
+disconnected at 09:52:22 before another full performance sample. Sunshine is
+ready and idle; pairing survives the restart.
+
+Caddy HTTPS still returns Sunshine's authenticated login challenge. Sunshine,
+Caddy and RealtimeKit are active with no failed system/user units. Correct
+root/ESP UUIDs verified. Read-only snapshot
+/btrfs-top/nixos-root-pre-sunshine-cuda-20261020 was created and verified before
+persistent activation; Snapper is not configured. Foreign EFI file hashes
+and firmware entries matched across the CUDA switch. Generation 185 remains
+available for recovery to the non-CUDA service. No reboot required.

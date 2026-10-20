@@ -1,6 +1,11 @@
 { config, lib, pkgs, ... }:
 
 let
+  sunshine = pkgs.sunshine.override {
+    cudaSupport = true;
+    cudaPackages = pkgs.cudaPackages;
+  };
+  sunshineConfig = (pkgs.formats.keyValue { }).generate "sunshine.conf" config.services.sunshine.settings;
   output = pkgs.writeShellApplication {
     name = "sunshine-output";
     runtimeInputs = [ config.programs.umbriel.package pkgs.jq ];
@@ -12,6 +17,7 @@ in
 
   services.sunshine = {
     enable = true;
+    package = sunshine;
     openFirewall = true;
     # Compositor capture does not require the privileged KMS wrapper.
     capSysAdmin = false;
@@ -46,11 +52,24 @@ in
     ];
   };
 
+  # Sunshine requests CPU thread priority through RealtimeKit after dropping caps.
+  security.rtkit.enable = true;
+
+  # Grant scheduling priority to Sunshine without granting KMS/admin access.
+  security.wrappers.sunshine = {
+    owner = "root";
+    group = "users";
+    permissions = "u+rx,g+rx,o-rwx";
+    capabilities = "cap_sys_nice+ep";
+    source = "${sunshine}/bin/sunshine";
+  };
+
   # This capture configuration needs an Umbriel session and its Wayland socket.
   # FFmpeg loads CUDA/NVENC at runtime from the active host driver.
   systemd.user.services.sunshine.environment.LD_LIBRARY_PATH = "/run/opengl-driver/lib";
   systemd.user.services.sunshine.serviceConfig = {
     ExecCondition = "${pkgs.bash}/bin/bash -c 'test -S \"$UMBRIEL_SOCKET\"'";
+    ExecStart = lib.mkForce "${config.security.wrapperDir}/sunshine ${sunshineConfig}";
     UMask = "0077";
   };
 }
