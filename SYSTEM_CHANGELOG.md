@@ -2544,3 +2544,21 @@ reloaded Umbriel and started the watcher through compositor-managed spawn.
 Live D-Bus verification found the expected hint with timeout 0 on mode entry,
 confirmed it persisted in the mode, and confirmed removal after mode reset.
 One watcher remains active. System generation unchanged.
+
+
+## [COMPLETED] Install UT2004 campaign mutator support — 2026-10-20
+
+Installed upstream UT2k4SPMutators 1.1.0 to the user's .ut2004/System directory.
+SHA256: 32be6a6bf04bac52d09d5098144a35e6745f62aa6c1d3a2b752d94ff9708593d.
+Separate writable UT2004-SPMutators.ini selects its GUI controller; the normal
+UT2004.ini retains the original controller. Added a local application entry
+and ~/.local/bin/ut2004-campaign-mutators launcher selecting the alternate
+INI and log. No system package or Nix configuration change was needed.
+
+Backups and the install manifest are in
+~/.local/state/ut2004/sp-mutators-20261020-180927/. The running game was left
+alone. Bash syntax and installed INI/package checks passed. OldUnreal 3374's
+UCC successfully loaded the package and exported its 13 classes with zero
+errors/warnings. Interactive campaign play has not been tested. Close the
+current game, launch UT2004 Campaign Mutators, and create a new profile;
+upstream does not support existing normal campaign profiles.
