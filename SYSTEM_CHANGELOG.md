@@ -2434,3 +2434,20 @@ root/ESP UUIDs verified. Read-only snapshot
 persistent activation; Snapper is not configured. Foreign EFI file hashes
 and firmware entries matched across the CUDA switch. Generation 185 remains
 available for recovery to the non-CUDA service. No reboot required.
+
+
+## [COMPLETED] Fix Fish greeting column widths — 2026-10-20
+
+Render Fastfetch's top-position output into explicit logo/info columns before
+placing the fortune cow. Its default left-logo output uses cursor movements
+that invalidated the greeting's per-line width calculations. Measure terminal
+cell widths with Fish's string length --visible, use a compact three-space
+gap, and stack the cow only when the visible sections cannot fit together.
+
+Fish syntax, nix flake check, nixos-rebuild dry-build and the Home Manager
+activation-package build passed. Activated the Home Manager package with
+--driver-version 1; its home-files differ from the previous deployed package
+only in shell_welcome.fish. Verified the deployed greeting at 80, 100, 120 and
+160 columns with no overflow or cursor movement: narrow output stacks, while
+100 columns and above keep the cow beside the information. System generation
+and the pending lsof system activation are unchanged.
