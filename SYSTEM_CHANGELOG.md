@@ -2484,3 +2484,19 @@ only in shell_welcome.fish. Verified the deployed greeting at 80, 100, 120 and
 160 columns with no overflow or cursor movement: narrow output stacks, while
 100 columns and above keep the cow beside the information. System generation
 and the pending lsof system activation are unchanged.
+
+
+## [COMPLETED] Context-aware Caps A/D scratchpad navigation — 2026-10-20
+
+Caps+A/D now dispatch through umbriel-scratchpad-navigate: when the active
+window belongs to a scratchpad, show its previous/next member; otherwise use
+normal window-focus-left/right. Detect keyboard focus using the IPC active
+field, not the workspace-local focused tile. Pass the scratchpad name so
+named pads work too. Deploy the helper through Home Manager.
+
+Bash syntax, Umbriel config validation, mocked routing for normal/default/
+named pads, nix flake check and nixos-rebuild dry-build passed. Built and
+activated the Home Manager package (only the Umbriel config and new helper
+differ), then reloaded the deployed config through umbriel config-replace.
+Live next/previous cycling between Discord and Spotify passed; original
+focus and hidden scratchpad state restored. System generation unchanged.
