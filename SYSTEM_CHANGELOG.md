@@ -2132,6 +2132,23 @@ next host rebuild; existing VM resources are already persistent in libvirt.
 Recovery XML: /home/janzon/.local/state/windows-vm/pre-all-cpus-20261019/windows11.xml.
 
 
+## [PENDING] User-requested reboot into UEFI settings — 2026-10-20
+
+UEFI firmware setup supported according to bootctl. Running, booted, and
+persistent system agree: generation 172, store path
+/nix/store/207r6picj0fa2q7bhv0wb44pjl6y9yc7-nixos-system-erebor-26.05.20261013.a033e66.
+Verified root UUID 5be9be17-20c9-4a47-ba2d-6adf1ceb4c55 and ESP UUID
+38B5-8386; no failed system units. Generation 172 boot entry and Fedora
+and Windows EFI loaders exist. No configuration changes made for this reboot.
+Snapper is not configured (/etc/snapper/configs absent); existing recovery
+snapshot nixos-root-pre-lan-bridge-20261019 is present. Recovery path:
+leave firmware setup and select Linux Boot Manager / NixOS generation 172.
+Earlier bridge persistence note is stale relative to current boot: running,
+booted and persistent systems now agree. No pending activation for this reboot.
+Next action: request systemctl reboot --firmware-setup; after returning,
+verify boot, generation, mounts and services and complete this entry.
+
+
 ## [COMPLETED] Temporarily return RTX 4090 to Linux with a passthrough toggle — 2026-10-20
 
 Added virtualisation.windowsGpuPassthrough.enable, explicitly false on moria.
@@ -2200,6 +2217,14 @@ timer remains set. No failed system units; root/ESP UUIDs unchanged.
 Active persistent generation 175:
 /nix/store/7adydjvhmiyhkaj1p3nks9129bipvghk-nixos-system-erebor-26.05.20261013.a033e66.
 Visual appearance awaits the next greeter launch; current session preserved.
+
+
+## [COMPLETED] Restart greeter to show Matrix background — 2026-10-20
+
+User-requested greetd restart succeeded. New greetd PID 26134 is active;
+tuigreet PID 26174 runs with --background matrix. Console timer reports 60.
+Generation 175 unchanged; root/ESP UUIDs verified; no failed system units.
+Journal confirms a clean stop/start and greeter session opening.
 
 
 ## [COMPLETED] Match greeter UI to Matrix background — 2026-10-20
@@ -2434,6 +2459,14 @@ root/ESP UUIDs verified. Read-only snapshot
 persistent activation; Snapper is not configured. Foreign EFI file hashes
 and firmware entries matched across the CUDA switch. Generation 185 remains
 available for recovery to the non-CUDA service. No reboot required.
+
+## [PENDING] Install lsof — 2026-10-20
+
+Add lsof to the declarative system packages. Previous active/persistent
+system is generation 187. Flake checks and the full build passed. lsof
+4.99.6 successfully queried an open working directory from its store path.
+The user will run sudo nixos-rebuild switch --flake /etc/nixos#moria in a
+separate terminal; activation and installed-command verification are pending.
 
 
 ## [COMPLETED] Fix Fish greeting column widths — 2026-10-20

@@ -589,6 +589,7 @@ in
     </Menu>
   '';
   environment.systemPackages = with pkgs; [
+    lsof
     oo7
     nodejs
     gh
