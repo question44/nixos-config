@@ -5,7 +5,7 @@
 # Create the dedicated wallpaper-only output before Noctalia starts, so it can
 # assign the same wallpaper to it. HyperHDR captures this output rather than
 # the physical display.
-autostart = ["/home/janzon/.local/bin/umbriel-ambilight-session"]
+autostart = ["/home/janzon/.local/bin/umbriel-ambilight-session", "/home/janzon/.local/bin/umbriel-scratchpad-hint"]
 
 [environment]
 QT_QPA_PLATFORMTHEME = "kde"

@@ -2527,3 +2527,20 @@ Home Manager package build passed. Activated Home Manager and reloaded the
 deployed Umbriel config. Live IPC confirmed entering scratchpad mode and
 returning to the default mode; deployed bindings and one-shot transitions
 verified. Physical key input was not simulated. System generation unchanged.
+
+
+## [COMPLETED] Show scratchpad-mode shortcut hint — 2026-10-20
+
+Add a compositor-autostarted scratchpad-hint watcher. It subscribes to Umbriel
+submap events and shows a transient, non-expiring Noctalia notification with
+A/D cycling, M send, R restore, Space toggle and Escape exit shortcuts while
+the scratchpad submap is active. Close only its own notification when leaving
+the mode or stopping the watcher. A per-display lock prevents duplicate
+watchers. libnotify and busctl paths are supplied declaratively from Nix.
+
+Bash syntax, Umbriel config validation, nix flake check, nixos-rebuild dry-build
+and the Home Manager build passed. Activated the final Home Manager package,
+reloaded Umbriel and started the watcher through compositor-managed spawn.
+Live D-Bus verification found the expected hint with timeout 0 on mode entry,
+confirmed it persisted in the mode, and confirmed removal after mode reset.
+One watcher remains active. System generation unchanged.

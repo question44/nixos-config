@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Keep one watcher per compositor socket, including during live reloads.
+exec 9>"${XDG_RUNTIME_DIR:?}/umbriel-scratchpad-hint-${WAYLAND_DISPLAY:?}.lock"
+flock -n 9 || exit 0
+
+notification_id=''
+close_hint() {
+  if [[ -n "$notification_id" ]]; then
+    @systemd@/bin/busctl --user call org.freedesktop.Notifications \
+      /org/freedesktop/Notifications org.freedesktop.Notifications \
+      CloseNotification u "$notification_id" >/dev/null 2>&1 || true
+    notification_id=''
+  fi
+}
+
+coproc EVENTS { exec umbriel subscribe submap; }
+subscription_pid=$EVENTS_PID
+cleanup() {
+  close_hint
+  kill "$subscription_pid" 2>/dev/null || true
+}
+trap cleanup EXIT
+trap 'exit 0' TERM INT
+
+# The subscription includes the current mode, so starting mid-mode works too.
+while IFS= read -r event; do
+  if jq -e '.event == "submap" and .data == "scratchpad"' <<<"$event" >/dev/null; then
+    if [[ -z "$notification_id" ]]; then
+      notification_id=$(@libnotify@/bin/notify-send --print-id --transient \
+        --expire-time=0 --app-name='Umbriel scratchpad' \
+        --hint=boolean:suppress-sound:true 'Scratchpad mode' \
+        $'A/← previous · D/→ next\nM send · R restore · Space show/hide · Esc exit')
+    fi
+  elif jq -e '.event == "submap"' <<<"$event" >/dev/null; then
+    close_hint
+  fi
+done <&"${EVENTS[0]}"

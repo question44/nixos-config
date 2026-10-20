@@ -277,6 +277,12 @@
                 source = ./home/niri/background-apps-last;
                 executable = true;
               };
+              home.file.".local/bin/umbriel-scratchpad-hint" = {
+                source = pkgs.replaceVars ./home/umbriel/scratchpad-hint {
+                  inherit (pkgs) libnotify systemd;
+                };
+                executable = true;
+              };
               home.file.".local/bin/umbriel-scratchpad-navigate" = {
                 source = ./home/umbriel/scratchpad-navigate;
                 executable = true;
