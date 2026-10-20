@@ -2270,10 +2270,11 @@ Niri configuration is unchanged.
 Umbriel config validation, Caps+Q routing checks, nix flake check,
 nixos-rebuild dry-build and full build passed. Built system:
 /nix/store/wmqjs42ixi4ndamfqg45wj04shgxkb5x-nixos-system-erebor-26.05.20261013.a033e66.
-Activation was not performed: sudo requires authentication and pkexec found
-no authentication agent. Current system remains generation 179. No Umbriel
-session was running, so live scratchpad behavior could not be verified.
-Next action: sudo env NIX_CONFIG='experimental-features = nix-command flakes'
-nixos-rebuild switch --flake /etc/nixos#moria; then log into Umbriel and
-verify Caps+0, Caps+Super+0 and Caps+Q on Spotify/Discord. Confirm removal
-of background-apps and the obsolete deployed helper, and complete this entry.
+Activated successfully after hardware-key authentication; persistent and
+running generation 180 match the built system above. Deployed Umbriel config
+validates, Caps+0/Caps+Super+0 and Caps+Q routing are present, and both the
+background-apps declaration and obsolete deployed helper are absent.
+Restarted xremap successfully to load its added chord. Home Manager is active;
+no failed system or user units. No Umbriel session is running, so live
+scratchpad behavior remains unverified. Next action: log into Umbriel,
+verify Caps+0, Caps+Super+0 and Caps+Q on Spotify/Discord, and complete this entry.
