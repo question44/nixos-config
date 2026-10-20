@@ -89,6 +89,7 @@ in
   imports = [
     ../../modules/mac-approval.nix
     ../../modules/spotify.nix
+    ../../modules/sunshine.nix
     ../../modules/steam-theme.nix
     ./hardware-configuration.nix
     ./services/jellyfin.nix

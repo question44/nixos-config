@@ -2325,3 +2325,37 @@ logout alone does not load the new command. New greeter rendering/login
 must be checked after the next reboot or an explicitly requested greetd
 restart. No reboot performed. SF Pro is absent on the host; Fontconfig
 currently falls back to DejaVu Sans, as in the desktop session.
+
+
+## [COMPLETED] Sunshine streaming through an Umbriel virtual output — 2026-10-20
+
+Added the declarative Sunshine service, Virtual Desktop and Steam Big Picture
+entries, and a client-resolution/FPS virtual-output helper. Added Umbriel
+window rules targeting the stream while that output exists. Capture uses wlr;
+encoding uses NVENC with the active NVIDIA driver library path. Router UPnP
+is disabled; the module opens Sunshine's host firewall ports. The service
+starts with the graphical session only when Umbriel's socket is available.
+Credentials/certificates remain under ~/.config/sunshine outside Git/store;
+its directory and credentials subdirectory are mode 0700, files mode 0600.
+
+Umbriel config validation, flake check, dry/full builds, test activation and
+persistent switch passed. Active/persistent generation 183:
+/nix/store/gcbd8fypn26qhvpqls4js4gvj2jq2w23-nixos-system-erebor-26.05.20261013.a033e66.
+Verified virtual output creation at 2560x1440@120, Sunshine wlr capture selecting
+that output and successful H.264/HEVC/AV1 NVENC encoder detection. A temporary
+Ghostty window was moved onto the virtual screen; cleanup returned it to
+DP-1 and removed the output. Closed the temporary window. DP-1/ambilight
+remain active with their original sizes. Deployed Umbriel config validates;
+its streaming window rules were not exercised with an actual Steam game.
+Sunshine is active; its web UI responds at https://192.168.1.106:47990.
+No failed system/user units. Root/ESP UUIDs match, foreign EFI file hashes and
+firmware entries are unchanged, and recovery generation 182 remains present.
+Snapper is not configured; created and verified read-only root snapshot
+/btrfs-top/nixos-root-pre-sunshine-20261020 before switch. No reboot needed.
+
+Remaining user steps: create web UI credentials, pair Moonlight and test an
+actual network stream, audio, input and game performance. No client is paired
+by this change. The cached Sunshine package lacks CUDA zero-copy support;
+NVENC works through GPU/RAM transfers. Its capability/probe warnings did not
+prevent successful encoder detection. For native Wine Wayland games, use
+WAYLANDDRV_PRIMARY_MONITOR=sunshine in the game's launch environment if needed.
