@@ -2562,3 +2562,21 @@ UCC successfully loaded the package and exported its 13 classes with zero
 errors/warnings. Interactive campaign play has not been tested. Close the
 current game, launch UT2004 Campaign Mutators, and create a new profile;
 upstream does not support existing normal campaign profiles.
+
+
+## [COMPLETED] Install UT3 Weapons Beta 4 for UT2004 — 2026-10-20
+
+Mounted volumes contained UT3 map packages but no weapons mutator. Downloaded
+GreatEmerald/Wormbo's UT3 Weapons Beta 4 from the Unreal Archive vohzd mirror.
+Archive SHA1 ef2d513958ac14fea061e03548f9dc0478faf0f7 matches archive metadata.
+Installed 28 files under ~/.ut2004, including code, mutator catalog, animation,
+sound, mesh and texture packages plus readme/license. Preflight found no
+conflicting existing package contents. Archive, per-file SHA256 manifest and
+validation logs are in ~/.local/state/ut2004/ut3-weapons-b4/.
+
+OldUnreal 3374 UCC loaded UT3Common and UT3Style successfully and exported
+their classes with zero errors/warnings. Installed files match the manifest.
+No game settings or existing saves changed; interactive match behavior has
+not been tested. Restart the game and select UT3 Weapons
+(UT3Style.MutUT3Weapons) in the Mutators menu, including the separate campaign
+mutator launcher. No system configuration change or rebuild was needed.
