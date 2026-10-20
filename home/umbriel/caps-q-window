@@ -6,7 +6,7 @@ app_id="$(umbriel windows --json | jq -r '.[] | select(.active == true) | .app_i
 
 case "${app_id,,}" in
   *discord*|*spotify*)
-    umbriel msg 'window-move-to-workspace-silent:"background-apps"'
+    umbriel msg window-move-to-scratchpad
     ;;
   *)
     umbriel msg window-close

@@ -5,7 +5,7 @@
 # Create the dedicated wallpaper-only output before Noctalia starts, so it can
 # assign the same wallpaper to it. HyperHDR captures this output rather than
 # the physical display.
-autostart = ["/home/janzon/.local/bin/umbriel-ambilight-session", "/home/janzon/.local/bin/umbriel-background-apps-last"]
+autostart = ["/home/janzon/.local/bin/umbriel-ambilight-session"]
 
 [environment]
 QT_QPA_PLATFORMTHEME = "kde"
@@ -32,9 +32,6 @@ position = [3440, 0]
 
 [appearance.blur]
 radius = 3
-
-[[workspace]]
-name = "background-apps"
 
 [[layer_rule]]
 match.namespace = "^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd)$"
@@ -105,6 +102,9 @@ blur_optimized = false
 "Ctrl+Alt+Super+BracketRight" = "window-consume-or-expel-right"
 "Ctrl+Alt+Super+Z" = "workspace-previous"
 "Ctrl+Alt+Super+Period" = "column-move-to-workspace-next"
+# Caps+0 shows/hides the scratchpad; Caps+Super+0 stores the focused window.
+"Ctrl+Alt+Super+0" = { action = "scratchpad-toggle", repeat = false }
+"Ctrl+Alt+Shift+Super+0" = { action = "window-move-to-scratchpad", repeat = false }
 "Ctrl+Alt+Super+1" = "workspace-switch:1"
 "Ctrl+Alt+Super+2" = "workspace-switch:2"
 "Ctrl+Alt+Super+3" = "workspace-switch:3"

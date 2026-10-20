@@ -2257,3 +2257,23 @@ terminal interface with clean exit. Home Manager active; no failed system
 or user units. Persistent generation 179:
 /nix/store/52p0blmhznl1g5r9ll8mskm1xnzvvzwh-nixos-system-erebor-26.05.20261013.a033e66.
 Root and ESP UUIDs verified before activation. No reboot required.
+
+
+## [PENDING] Replace Umbriel background workspace with scratchpad — 2026-10-20
+
+Removed Umbriel's persistent background-apps workspace and its startup
+positioning script. Caps+Q stores Spotify/Discord in the native scratchpad;
+other apps still close. Caps+0 toggles scratchpad visibility and Caps+Super+0
+stores any focused workspace window. Added the latter chord to xremap;
+Niri configuration is unchanged.
+
+Umbriel config validation, Caps+Q routing checks, nix flake check,
+nixos-rebuild dry-build and full build passed. Built system:
+/nix/store/wmqjs42ixi4ndamfqg45wj04shgxkb5x-nixos-system-erebor-26.05.20261013.a033e66.
+Activation was not performed: sudo requires authentication and pkexec found
+no authentication agent. Current system remains generation 179. No Umbriel
+session was running, so live scratchpad behavior could not be verified.
+Next action: sudo env NIX_CONFIG='experimental-features = nix-command flakes'
+nixos-rebuild switch --flake /etc/nixos#moria; then log into Umbriel and
+verify Caps+0, Caps+Super+0 and Caps+Q on Spotify/Discord. Confirm removal
+of background-apps and the obsolete deployed helper, and complete this entry.

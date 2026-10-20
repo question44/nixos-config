@@ -280,10 +280,6 @@
                 source = ./home/umbriel/focus-or-launch;
                 executable = true;
               };
-              home.file.".local/bin/umbriel-background-apps-last" = {
-                source = ./home/umbriel/background-apps-last;
-                executable = true;
-              };
               home.file.".local/bin/umbriel-screenshot-window" = {
                 source = ./home/umbriel/screenshot-window;
                 executable = true;
