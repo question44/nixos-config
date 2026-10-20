@@ -2512,3 +2512,18 @@ Umbriel config validation, nix flake check, nixos-rebuild dry-build and the
 Home Manager package build passed. Activated Home Manager, reloaded the
 deployed Umbriel configuration successfully, and checked all four deployed
 bindings. Physical wheel input was not simulated. System generation unchanged.
+
+
+## [COMPLETED] Add scratchpad manipulation submap — 2026-10-20
+
+Meta+0 enters scratchpad mode. After releasing Meta, A/Left and D/Right
+show the previous/next scratchpad window; M sends the focused window, R
+restores it to its saved workspace, Space toggles scratchpad visibility,
+and Escape exits. M/R/Space reset the mode after their action. Existing
+Caps scratchpad bindings remain available.
+
+Umbriel config validation, nix flake check, nixos-rebuild dry-build and the
+Home Manager package build passed. Activated Home Manager and reloaded the
+deployed Umbriel config. Live IPC confirmed entering scratchpad mode and
+returning to the default mode; deployed bindings and one-shot transitions
+verified. Physical key input was not simulated. System generation unchanged.

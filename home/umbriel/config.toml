@@ -117,6 +117,18 @@ default_output = "sunshine"
 # Caps+0 shows/hides the scratchpad; Caps+Super+0 stores the focused window.
 "Ctrl+Alt+Super+0" = { action = "scratchpad-toggle", repeat = false }
 "Ctrl+Alt+Shift+Super+0" = { action = "window-move-to-scratchpad", repeat = false }
+
+# Meta+0 enters scratchpad mode; release Meta before the mode keys.
+"Mod+0" = { action = "submap:scratchpad", repeat = false }
+"submap[scratchpad],A" = "scratchpad-window-show-previous"
+"submap[scratchpad],Left" = "scratchpad-window-show-previous"
+"submap[scratchpad],D" = "scratchpad-window-show-next"
+"submap[scratchpad],Right" = "scratchpad-window-show-next"
+"submap[scratchpad],M" = { action = "window-move-to-scratchpad", submap = "reset", repeat = false }
+"submap[scratchpad],R" = { action = "window-restore-from-scratchpad", submap = "reset", repeat = false }
+"submap[scratchpad],Space" = { action = "scratchpad-toggle", submap = "reset", repeat = false }
+"submap[scratchpad],Escape" = { action = "submap:reset", repeat = false }
+
 "Ctrl+Alt+Super+1" = "workspace-switch:1"
 "Ctrl+Alt+Super+2" = "workspace-switch:2"
 "Ctrl+Alt+Super+3" = "workspace-switch:3"
