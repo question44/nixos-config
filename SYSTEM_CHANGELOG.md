@@ -2616,3 +2616,21 @@ and the Home Manager build passed. Activated Home Manager with nix-command /
 flakes enabled for the activation process, then reloaded Noctalia. Verified
 both deployed config and the effective merged config contain zen and no
 Flatpak Zen ID. No system-generation change.
+
+## [COMPLETED] Update T3 Code for mobile compatibility — 2026-10-20T19:42:20Z
+
+Updated the existing native T3 Code CLI from 0.0.45 to stable 0.1.0 using
+`t3 update 0.1.0 --yes` after the phone reported an older-server mismatch.
+Stopped the user service and created/read back a private backup at
+`/home/janzon/.t3/backups/server-before-0.1.0-20261020T194139Z.tar.gz` before
+migration. Restarted the existing declarative `t3code.service`; verified its
+running executable is `/home/janzon/.t3/runtime/versions/0.1.0/t3`, its listener
+remains on loopback port 3773, V2 recovery completed, and 10 legacy threads
+with 343 transcript messages imported. Both backend GET and
+`https://code.erebor.jzon.pl/` return HTTP 200, with zero failed user units.
+Nix configuration and system generation are unchanged, so no rebuild was
+needed. The previous runtime and V1 data remain available, but V1 and V2
+histories diverge after migration. Phone reconnection awaits user validation.
+The updater was initially given the server base directory and also installed
+an unused runtime under `.t3/server/runtime/versions/0.1.0`; the active launcher
+was then updated through the normal default runtime location.
