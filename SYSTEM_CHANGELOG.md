@@ -2259,7 +2259,7 @@ or user units. Persistent generation 179:
 Root and ESP UUIDs verified before activation. No reboot required.
 
 
-## [PENDING] Replace Umbriel background workspace with scratchpad — 2026-10-20
+## [COMPLETED] Replace Umbriel background workspace with scratchpad — 2026-10-20
 
 Removed Umbriel's persistent background-apps workspace and its startup
 positioning script. Caps+Q stores Spotify/Discord in the native scratchpad;
@@ -2275,6 +2275,10 @@ running generation 180 match the built system above. Deployed Umbriel config
 validates, Caps+0/Caps+Super+0 and Caps+Q routing are present, and both the
 background-apps declaration and obsolete deployed helper are absent.
 Restarted xremap successfully to load its added chord. Home Manager is active;
-no failed system or user units. No Umbriel session is running, so live
-scratchpad behavior remains unverified. Next action: log into Umbriel,
-verify Caps+0, Caps+Super+0 and Caps+Q on Spotify/Discord, and complete this entry.
+no failed system or user units. After login, live IPC checks with a temporary
+Ghostty window verified store-hidden, show/focus, hide, and restore to the
+original workspace. The deployed Caps+Q script stored a test window with a
+Spotify-matching app ID, and it could be summoned again. Test windows were
+removed. Live workspace listing contains no background-apps workspace.
+Actual physical key presses and the real Spotify/Discord clients were not
+exercised; configured actions and deployed script behavior were verified.
