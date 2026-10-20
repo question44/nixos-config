@@ -2359,3 +2359,17 @@ by this change. The cached Sunshine package lacks CUDA zero-copy support;
 NVENC works through GPU/RAM transfers. Its capability/probe warnings did not
 prevent successful encoder detection. For native Wine Wayland games, use
 WAYLANDDRV_PRIMARY_MONITOR=sunshine in the game's launch environment if needed.
+
+
+## [COMPLETED] Allow Sunshine web requests from its LAN URL — 2026-10-20
+
+Added the exact https://192.168.1.106:47990 origin to Sunshine's CSRF
+allowlist after its log confirmed that the browser at 192.168.1.97 was
+blocked. Flake check, dry/full builds, test activation and switch passed.
+An empty account-setup request with that Origin now reaches input validation
+(Invalid Username), whereas it previously failed with Missing CSRF token.
+No credentials were set or changed by the verification request.
+Active/persistent generation 184:
+/nix/store/lmzgvs59aj3lnqmv8axlqds2hlb5j0cl-nixos-system-erebor-26.05.20261013.a033e66.
+Sunshine is active with no failed system/user units. Root/ESP UUIDs match.
+The browser can reload the LAN URL and retry account setup.

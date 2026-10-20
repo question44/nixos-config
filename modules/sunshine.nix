@@ -22,6 +22,7 @@ in
       output_name = "sunshine";
       upnp = "disabled";
       origin_web_ui_allowed = "lan";
+      csrf_allowed_origins = "https://192.168.1.106:47990";
       global_prep_cmd = builtins.toJSON [ {
         do = "${output}/bin/sunshine-output create";
         undo = "${output}/bin/sunshine-output remove";
