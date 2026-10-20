@@ -183,12 +183,12 @@ default_output = "sunshine"
 "Mod+Shift+Page_Up" = "workspace-move-up"
 "Mod+Shift+U" = "workspace-move-down"
 "Mod+Shift+I" = "workspace-move-up"
-"Mod+WheelDown" = { action = "workspace-next", cooldown_ms = 150 }
-"Mod+WheelUp" = { action = "workspace-previous", cooldown_ms = 150 }
+"Mod+WheelDown" = { action = "window-focus-next", cooldown_ms = 150 }
+"Mod+WheelUp" = { action = "window-focus-previous", cooldown_ms = 150 }
 "Mod+Ctrl+WheelDown" = { action = "column-move-to-workspace-next", cooldown_ms = 150 }
 "Mod+Ctrl+WheelUp" = { action = "column-move-to-workspace-previous", cooldown_ms = 150 }
-"Mod+WheelRight" = "window-focus-right"
-"Mod+WheelLeft" = "window-focus-left"
+"Mod+WheelRight" = { action = "workspace-next", cooldown_ms = 150 }
+"Mod+WheelLeft" = { action = "workspace-previous", cooldown_ms = 150 }
 "Mod+Ctrl+WheelRight" = "column-move-right"
 "Mod+Ctrl+WheelLeft" = "column-move-left"
 "Mod+Shift+WheelDown" = "window-focus-right"

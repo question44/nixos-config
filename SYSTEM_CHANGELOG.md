@@ -2500,3 +2500,15 @@ activated the Home Manager package (only the Umbriel config and new helper
 differ), then reloaded the deployed config through umbriel config-replace.
 Live next/previous cycling between Discord and Spotify passed; original
 focus and hidden scratchpad state restored. System generation unchanged.
+
+
+## [COMPLETED] Swap Meta wheel navigation axes — 2026-10-20
+
+Meta+WheelUp/Down now focus the previous/next window in layout order;
+Meta+WheelLeft/Right select the previous/next workspace. Each uses a 150 ms
+cooldown. Other modified wheel bindings remain as configured.
+
+Umbriel config validation, nix flake check, nixos-rebuild dry-build and the
+Home Manager package build passed. Activated Home Manager, reloaded the
+deployed Umbriel configuration successfully, and checked all four deployed
+bindings. Physical wheel input was not simulated. System generation unchanged.
