@@ -449,7 +449,7 @@ capsule_radius = "auto"
 group_by_workspace = true
 icon_scale = 2.0
 minimal = true
-pinned = [ "org.kde.dolphin", "helium", "app.zen_browser.zen", "com.spotify.Client" ]
+pinned = [ "org.kde.dolphin", "helium", "zen", "com.spotify.Client" ]
 show_window_title = true
 workspace_label_placement = "inside"
 

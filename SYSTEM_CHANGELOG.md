@@ -2606,3 +2606,13 @@ the configured Home Manager user packages. The user-profile copy can then be
 removed with nix profile remove zen-browser after verifying the declarative
 installation. Running/persistent system store path remains
 /nix/store/92n2mnai1g78z7y5nbf94qfkwacs59zg-nixos-system-erebor-26.05.20261013.a033e66.
+
+
+## [COMPLETED] Correct Noctalia's Zen taskbar pin — 2026-10-20
+
+Replaced app.zen_browser.zen with zen in the declarative widget.taskbar pins
+to match the installed Nix package's zen.desktop. Flake checks, NixOS dry-build
+and the Home Manager build passed. Activated Home Manager with nix-command /
+flakes enabled for the activation process, then reloaded Noctalia. Verified
+both deployed config and the effective merged config contain zen and no
+Flatpak Zen ID. No system-generation change.
