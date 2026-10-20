@@ -2373,3 +2373,25 @@ Active/persistent generation 184:
 /nix/store/lmzgvs59aj3lnqmv8axlqds2hlb5j0cl-nixos-system-erebor-26.05.20261013.a033e66.
 Sunshine is active with no failed system/user units. Root/ESP UUIDs match.
 The browser can reload the LAN URL and retry account setup.
+
+
+## [COMPLETED] Sunshine administration through Caddy — 2026-10-20
+
+Added the Sunshine route to the existing wildcard Caddy site and linked it
+from the services dashboard. Added exact erebor/moria HTTPS origins to
+Sunshine's CSRF allowlist while retaining its direct LAN origin. The backend
+is https://127.0.0.1:47990; certificate verification is skipped only for that
+loopback self-signed endpoint. Browser TLS uses the existing wildcard cert.
+
+Caddy validation, flake check, dry/full builds, test activation and switch
+passed. Active/persistent generation 185:
+/nix/store/9jl5y4sxpdwk5d2cf2c5l2m6qip57l9i-nixos-system-erebor-26.05.20261013.a033e66.
+Verified https://sunshine.erebor.jzon.pl through normal DNS with valid TLS;
+it returns Sunshine's HTTP 401 Basic login challenge. Both configured aliases
+also pass via explicit loopback resolution. The moria alias's existing DNS
+points to 100.98.112.118, a different tailnet address; no DNS change was made.
+Use sunshine.erebor.jzon.pl for this machine. The erebor services page has
+the Sunshine link. Caddy and Sunshine are active with no failed system/user
+units. Root/ESP UUIDs match. Existing generation 184 remains the recovery
+entry. No credentials changed; authenticated browser use requires the user's
+Sunshine login. No reboot required.

@@ -22,7 +22,11 @@ in
       output_name = "sunshine";
       upnp = "disabled";
       origin_web_ui_allowed = "lan";
-      csrf_allowed_origins = "https://192.168.1.106:47990";
+      csrf_allowed_origins = lib.concatStringsSep "," [
+        "https://192.168.1.106:47990"
+        "https://sunshine.erebor.jzon.pl"
+        "https://sunshine.moria.jzon.pl"
+      ];
       global_prep_cmd = builtins.toJSON [ {
         do = "${output}/bin/sunshine-output create";
         undo = "${output}/bin/sunshine-output remove";

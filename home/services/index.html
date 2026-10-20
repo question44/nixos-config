@@ -45,6 +45,10 @@
       <div class="name">code</div>
       <div class="desc">T3 Code &middot; collaborative coding workspace</div>
     </a>
+    <a id="sunshine" href="https://sunshine.erebor.jzon.pl">
+      <div class="name">sunshine</div>
+      <div class="desc">Game streaming and Moonlight pairing</div>
+    </a>
     <a id="cockpit" href="https://sys.erebor.jzon.pl">
       <div class="name">system</div>
       <div class="desc">Cockpit server administration</div>
@@ -62,6 +66,9 @@
   document.querySelector("#syncthing").href = serviceUrl("sync", 8384);
   document.querySelector("#qbittorrent").href = serviceUrl("torrent", 8082);
   document.querySelector("#t3code").href = serviceUrl("code", 8080);
+  document.querySelector("#sunshine").href = isDomain
+    ? `https://sunshine.${location.hostname}`
+    : `https://${location.hostname}:47990`;
 </script>
 </body>
 </html>

@@ -551,6 +551,16 @@ in
           }
         }
 
+        @sunshine host sunshine.moria.jzon.pl sunshine.erebor.jzon.pl
+        handle @sunshine {
+          reverse_proxy https://127.0.0.1:47990 {
+            # Sunshine serves a self-signed certificate on this loopback hop.
+            transport http {
+              tls_insecure_skip_verify
+            }
+          }
+        }
+
         @sys host sys.erebor.jzon.pl
         handle @sys {
           reverse_proxy 127.0.0.1:9090
