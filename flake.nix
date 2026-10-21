@@ -8,6 +8,10 @@
       url = "github:noctalia-dev/noctalia-greeter";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    mango = {
+      url = "github:mangowm/mango/0.18.2";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     umbriel.url = "github:noctalia-dev/umbriel";
     millennium = {
       url = "github:SteamClientHomebrew/Millennium?dir=packages/nix";
@@ -32,7 +36,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, noctalia, noctalia-greeter, umbriel, millennium, helium, zen-browser, darkly, vicinae, home-manager, ... }:
+  outputs = { self, nixpkgs, noctalia, noctalia-greeter, umbriel, mango, millennium, helium, zen-browser, darkly, vicinae, home-manager, ... }:
     {
       nixosConfigurations.moria = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
@@ -42,9 +46,14 @@
           noctalia-greeter.nixosModules.default
           noctalia.nixosModules.default
           umbriel.nixosModules.default
+          mango.nixosModules.mango
+          ./modules/mango.nix
           helium.nixosModules.default
           home-manager.nixosModules.home-manager
           {
+            programs.mango.package = import ./packages/mango.nix {
+              mango = mango.packages.x86_64-linux.mango;
+            };
             nixpkgs.overlays = [ millennium.overlays.default ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -78,7 +87,25 @@
                 '';
               in
               {
-              imports = [ umbriel.homeModules.default ];
+              imports = [ umbriel.homeModules.default mango.hmModules.mango ];
+              wayland.windowManager.mango = {
+                enable = true;
+                package = import ./packages/mango.nix {
+                  mango = mango.packages.${pkgs.stdenv.hostPlatform.system}.mango;
+                };
+                extraConfig = builtins.readFile ./home/mango/config.conf;
+                systemd.variables = [ "DISPLAY" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP"
+                  "XDG_SESSION_TYPE" "NIXOS_OZONE_WL" "XCURSOR_THEME" "XCURSOR_SIZE"
+                  "MANGO_INSTANCE_SIGNATURE" "QT_QPA_PLATFORMTHEME" ];
+                systemd.extraCommands = [
+                  "systemctl --user start mango-session.target"
+                ];
+                autostart_sh = "systemctl --user start noctalia.service";
+              };
+              home.file.".local/bin/mango-action" = {
+                source = ./home/mango/action;
+                executable = true;
+              };
               home.stateVersion = "26.05";
               programs.umbriel = {
                 enable = true;
@@ -358,7 +385,9 @@
                     *) exit 2 ;;
                   esac
 
-                  if umbriel windows --json >/dev/null 2>&1; then
+                  if [ "''${XDG_SESSION_DESKTOP:-}" = mango ] || [ "''${XDG_CURRENT_DESKTOP:-}" = mango ]; then
+                    exec mmsg dispatch "focusdir,$direction"
+                  elif umbriel windows --json >/dev/null 2>&1; then
                     exec umbriel msg "window-focus-$direction"
                   else
                     exec niri msg action "focus-column-$direction"

@@ -636,7 +636,6 @@ in
     xdg-utils
     bitwarden-cli
     hyprpicker
-    mangowc
     efibootmgr
     cryptsetup
     grim

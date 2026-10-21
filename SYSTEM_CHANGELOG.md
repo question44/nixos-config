@@ -2634,3 +2634,64 @@ histories diverge after migration. Phone reconnection awaits user validation.
 The updater was initially given the server base directory and also installed
 an unused runtime under `.t3/server/runtime/versions/0.1.0`; the active launcher
 was then updated through the normal default runtime location.
+
+## [COMPLETED] Install MangoWC 0.18.2 and port Umbriel user configuration — 2026-10-21
+
+Pinned mangowm/mango release 0.18.2 (8ab8dd6da49de0c26b8355806ed3d3684c261aca),
+following the existing nixpkgs input; removed the old mangowc 0.12.8 package
+from the declarative system package list. Added upstream NixOS/Home Manager
+modules, a managed config, and adapters for the existing CapsLock layer,
+scroller navigation, scratchpad, right-Ctrl app switching, Noctalia bar focus,
+screenshots, Polish keyboard and DP-1's 3440x1440/164.9 Hz mode. A small local
+patch makes targeted toggle_scratchpad IPC honor the supplied client, preserving
+bidirectional navigation without turning ordinary pool members into named
+scratchpads. Untargeted behavior is preserved, including the overview guard.
+
+Added a Mango display-manager session wrapper with graphical-session cleanup,
+wlr screen capture portals and Oo7 Secret Service. Noctalia's system unit gains
+a Mango-only pre-start command creating the ambilight output before the shell
+starts. Existing Umbriel/Niri sessions and greeter default are preserved.
+Migration differences, including unavailable HDR in the scenefx build, tag/
+column differences and Sunshine session integration, are documented in
+home/mango/README.md. No firmware, storage, kernel or bootloader settings changed.
+
+Validation: nix flake check, nixos-rebuild dry-build and full NixOS/Home Manager
+builds passed. Mango's parser accepts the deployed config. Isolated headless
+sessions with three real GTK Wayland clients verified startup/IPC, forward and
+reverse scratchpad cycling, width/height adapters, edge focus, centering,
+group actions, right-Ctrl window enumeration/focus, key modes, tag switching,
+virtual-output creation at 3440x1440, and clean compositor exit.
+
+Installed the built package in the user's Nix profile and activated Home
+Manager; ~/.nix-profile/bin/mango -v reports mango 0.18.2(release).
+Active user package: /nix/store/ax226x7ald3334g3rd41arsgiicc6q1b-mango-0.18.2.
+Home Manager: /nix/store/lh5x1jvxzk54jcvlgvkqmqg8pwi6nbva-home-manager-generation.
+The pre-existing xremap failure reported no matching input devices; no device
+configuration was changed. Physical display/HDR, actual DM login, capture and
+interactive input remain unverified.
+
+## [PENDING] Activate Mango display-manager session — 2026-10-21
+
+System activation requires sudo authentication, unavailable to this agent.
+User was asked to run sudo nixos-rebuild test --flake /etc/nixos#moria.
+The fully built system is:
+/nix/store/7l8jm3cjx7y9y067f5yksr2vhmyh2vih-nixos-system-erebor-26.05.20261013.a033e66.
+The running/persistent system remains generation 188:
+/nix/store/92n2mnai1g78z7y5nbf94qfkwacs59zg-nixos-system-erebor-26.05.20261013.a033e66.
+
+Verified the built greeter session directory contains mango.desktop alongside
+niri.desktop and umbriel.desktop; Mango's entry points to its session wrapper.
+Verified built mango-portals.conf routes ScreenCast/Screenshot to wlr and
+Secret to oo7. Verified the new Noctalia unit's pre-start hook. greetd has
+X-RestartIfChanged=false, so test/switch leaves the existing process using its
+old session directory until greetd restarts.
+
+Mandatory next action: activate with sudo nixos-rebuild test --flake
+/etc/nixos#moria and verify services. After saving work, restart greetd with
+sudo systemctl restart greetd (ends the current graphical session), select
+Mango and verify display, keyboard/CapsLock, Noctalia, scratchpad and capture.
+After successful validation persist with sudo nixos-rebuild switch --flake
+/etc/nixos#moria. Remove the temporary user-profile mango package only after
+verifying the declarative package is available. Update this pending entry with
+actual activation/login results; do not claim a hardware session was tested.
+No reboot performed or required.

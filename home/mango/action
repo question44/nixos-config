@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+# Small adapters for Umbriel actions without a direct Mango dispatcher.
+set -euo pipefail
+op=${1:?action required}
+shift
+focused() { mmsg get focusing-client; }
+dispatch() { mmsg dispatch "$1"; }
+case "$op" in
+  close)
+    app=$(focused | jq -r '.appid // ""')
+    case "${app,,}" in
+      *discord*|*spotify*) dispatch minimized ;;
+      *) dispatch killclient ;;
+    esac ;;
+  navigate)
+    if focused | jq -e '.is_scratchpad' >/dev/null; then
+      exec "$0" scratch "$([[ $1 == left ]] && echo previous || echo next)"
+    fi
+    dispatch "focusdir,$1" ;;
+  scratch)
+    # Target a particular member so both directions cycle predictably.
+    clients=$(mmsg get all-clients | jq '.clients')
+    current=$(focused | jq '.id // -1')
+    id=$(jq -r --argjson current "$current" --arg dir "$1" '
+      [.[] | select(.is_scratchpad)] | sort_by(.id) | . as $list |
+      if length == 0 then empty else
+        (map(.id) | index($current)) as $idx |
+        if $idx == null then .[0].id else
+          .[(($idx + (if $dir == "previous" then -1 else 1 end)) + length) % length].id
+        end
+      end' <<< "$clients")
+    if [[ -n $id ]]; then
+      if [[ $current != "$id" ]] && focused | jq -e '.is_scratchpad and (.is_minimized | not)' >/dev/null; then
+        mmsg dispatch toggle_scratchpad "client,$current"
+      fi
+      if [[ $current != "$id" ]] || focused | jq -e '.is_minimized' >/dev/null; then
+        mmsg dispatch toggle_scratchpad "client,$id"
+      fi
+    fi ;;
+  width)
+    width=$(focused | jq -r '.scroller_proportion // 0.5')
+    if [[ $1 == previous ]]; then
+      value=$(jq -n --argjson w "$width" '[0.333333,0.5,0.666667,1.0] | map(select(. < ($w - 0.01))) | last // 1.0')
+    else
+      value=$(jq -n --argjson w "$width" --argjson d "$1" '[$w + $d, 1.0] | min | [.,0.1] | max')
+    fi
+    dispatch "set_proportion,$value" ;;
+  height)
+    monitor=$(focused | jq -r '.monitor')
+    height=$(mmsg get monitor "$monitor" | jq -r '.height / 2 | floor')
+    dispatch "resizewin,+0,$height" ;;
+  edge|move-edge)
+    clients=$(mmsg get all-clients | jq '.clients')
+    current=$(focused)
+    id=$(jq -r --argjson current "$current" --arg edge "$1" '
+      [.[] | select(.monitor == $current.monitor and .is_visible and (.is_minimized | not))] |
+      sort_by(.x,.y) | (if $edge == "first" then first else last end) | .id // empty' <<< "$clients")
+    if [[ -n $id ]]; then
+      if [[ $op == edge ]]; then mmsg dispatch focusid "client,$id"
+      else
+        count=$(jq 'length' <<< "$clients")
+        direction=$([[ $1 == first ]] && echo left || echo right)
+        for ((i=0;i<count;i++)); do dispatch "exchange_client,$direction"; done
+      fi
+    fi ;;
+  center)
+    # Center tiled windows through the scroller; centerwin handles floating ones.
+    if focused | jq -e '.is_floating' >/dev/null; then dispatch centerwin
+    else
+      dispatch 'setoption,scroller_focus_center,1'
+      dispatch 'setoption,scroller_focus_center,0'
+    fi ;;
+  maximize) dispatch togglemaximizescreen; "$0" center ;;
+  tabs)
+    # Groups are Mango's closest equivalent to tabbed columns.
+    if focused | jq -e '.is_group' >/dev/null; then dispatch groupleave
+    else dispatch 'groupjoin,right'; fi ;;
+  screenshot)
+    geometry=$(focused | jq -r '"\(.x),\(.y) \(.width)x\(.height)"')
+    directory="$HOME/Pictures/Screenshots"
+    mkdir -p "$directory"
+    file="$directory/window-$(date +%Y%m%d-%H%M%S-%N).png"
+    grim -g "$geometry" "$file"
+    wl-copy --type image/png < "$file" ;;
+  submap)
+    command=$1; shift
+    args=$(IFS=,; echo "$*")
+    dispatch "${command}${args:+,$args}"
+    dispatch 'setkeymode,default' ;;
+  help)
+    notify-send 'Mango shortcuts' 'CapsLock layer and Super navigation match Umbriel. Caps+0: scratchpad; Caps+Super+0: store. Super+0: scratchpad mode (A/D cycle, M store, R restore, Space toggle, Esc exit). Super+Shift+F5: reload. Migration details: /etc/nixos/home/mango/README.md' ;;
+  unavailable)
+    notify-send 'Mango port' "$1 has no equivalent in this Mango build; see /etc/nixos/home/mango/README.md" ;;
+  *) echo "Unknown Mango action: $op" >&2; exit 2 ;;
+esac
