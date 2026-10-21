@@ -14,6 +14,9 @@ app switching. Existing xremap application shortcuts still apply. The stale
 
 Behavioral differences:
 
+- Super+G opens layout mode for the current tag: S scroller, T tile, G grid,
+  M monocle, D dwindle, V vertical scroller. Selection returns to normal
+  shortcuts; Escape cancels. A notification shows the available keys.
 - Mango has nine tags rather than Umbriel's dynamically inserted workspaces.
   Workspace reorder keys show a notification; previous/next selects adjacent tags.
 - Scroller stacks and groups replace columns and tabbed columns. Column move/tag

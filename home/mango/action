@@ -6,6 +6,16 @@ shift
 focused() { mmsg get focusing-client; }
 dispatch() { mmsg dispatch "$1"; }
 case "$op" in
+  layout-mode)
+    dispatch 'setkeymode,layouts'
+    notify-send -t 5000 'Tag layout' 'S: scroller · T: tile · G: grid · M: monocle · D: dwindle · V: vertical scroller · Esc: cancel' ;;
+  layout)
+    case "${1:-}" in
+      scroller|tile|grid|monocle|dwindle|vertical_scroller) ;;
+      *) echo "Unknown layout: ${1:-}" >&2; exit 2 ;;
+    esac
+    dispatch "setlayout,$1"
+    dispatch 'setkeymode,default' ;;
   close)
     app=$(focused | jq -r '.appid // ""')
     case "${app,,}" in
@@ -58,7 +68,7 @@ case "$op" in
     grim -g "$geometry" "$file"
     wl-copy --type image/png < "$file" ;;
   help)
-    notify-send 'Mango shortcuts' 'CapsLock layer and Super navigation match Umbriel. Caps+0 or Super+0: show/hide tiled scratchpad. Caps+Super+0 or Super+Shift+0: move window in/out. Caps+A/D or Super+Left/Right: columns. Caps+W/S or Super+Up/Down: windows. Caps+semicolon/apostrophe or Super+Alt+Up/Down: previous/next tab. Super+Shift+F5: reload. Migration details: /etc/nixos/home/mango/README.md' ;;
+    notify-send 'Mango shortcuts' 'CapsLock layer and Super navigation match Umbriel. Caps+0 or Super+0: show/hide tiled scratchpad. Caps+Super+0 or Super+Shift+0: move window in/out. Caps+A/D or Super+Left/Right: columns. Caps+W/S or Super+Up/Down: windows. Caps+semicolon/apostrophe or Super+Alt+Up/Down: previous/next tab. Super+G: layout shortcuts. Super+Shift+F5: reload. Migration details: /etc/nixos/home/mango/README.md' ;;
   unavailable)
     notify-send 'Mango port' "$1 has no equivalent in this Mango build; see /etc/nixos/home/mango/README.md" ;;
   *) echo "Unknown Mango action: $op" >&2; exit 2 ;;

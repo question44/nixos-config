@@ -1,5 +1,18 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [COMPLETED] Add Mango tag layout shortcuts — 2026-10-21
+
+Super+G opens a layout key mode with a shortcut notification. S/T/G/M/D/V
+select scroller/tile/grid/monocle/dwindle/vertical_scroller for the current
+tag, then return to default mode; Escape cancels. Flake check, NixOS dry-build,
+full build, Mango parser, shell syntax and diff checks passed. Activated through
+pkexec; generation 191 is active and persistent:
+/nix/store/zrxvp3y3zi32k1d0r8p6pqi6ap8zm0s5-nixos-system-erebor-26.05.20261013.a033e66.
+Reloaded Mango and verified entering layouts mode, selecting tile, and automatic
+return to default mode through the deployed helper. Restored scroller afterward.
+Home Manager succeeded; Mango, xremap and Noctalia remain active. No failed
+system units or reboot. Physical key delivery awaits user confirmation.
+
 ## [COMPLETED] Persist Mango shortcuts with Polkit activation — 2026-10-21
 
 User requested pkexec for the previously validated system rebuild. Successfully
