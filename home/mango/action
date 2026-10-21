@@ -6,6 +6,17 @@ shift
 focused() { mmsg get focusing-client; }
 dispatch() { mmsg dispatch "$1"; }
 case "$op" in
+  focus-vertical)
+    case "${1:-}" in
+      up) tab=prev ;;
+      down) tab=next ;;
+      *) echo "Expected up or down" >&2; exit 2 ;;
+    esac
+    if focused | jq -e '.is_group == true' >/dev/null; then
+      dispatch "groupfocus,$tab"
+    else
+      dispatch "focusdir,$1"
+    fi ;;
   close)
     app=$(focused | jq -r '.appid // ""')
     case "${app,,}" in
@@ -58,7 +69,7 @@ case "$op" in
     grim -g "$geometry" "$file"
     wl-copy --type image/png < "$file" ;;
   help)
-    notify-send 'Mango shortcuts' 'CapsLock layer and Super navigation match Umbriel. Caps+0 or Super+0: show/hide tiled scratchpad. Caps+Super+0 or Super+Shift+0: move window in/out. Caps+A/D or Super+Left/Right: normal scroller navigation. Super+Shift+F5: reload. Migration details: /etc/nixos/home/mango/README.md' ;;
+    notify-send 'Mango shortcuts' 'CapsLock layer and Super navigation match Umbriel. Caps+0 or Super+0: show/hide tiled scratchpad. Caps+Super+0 or Super+Shift+0: move window in/out. Caps+A/D or Super+Left/Right: columns. Caps+W/S or Super+Up/Down: tabs when grouped, otherwise vertical focus. Super+Shift+F5: reload. Migration details: /etc/nixos/home/mango/README.md' ;;
   unavailable)
     notify-send 'Mango port' "$1 has no equivalent in this Mango build; see /etc/nixos/home/mango/README.md" ;;
   *) echo "Unknown Mango action: $op" >&2; exit 2 ;;

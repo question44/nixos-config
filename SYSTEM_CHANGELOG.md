@@ -2740,3 +2740,22 @@ session is currently running, so the configuration applies on the next Mango
 login. A future sudo nixos-rebuild switch --flake /etc/nixos#moria is required
 to persist this change in the system's Home Manager activation; sudo is still
 unavailable to this agent. Physical keyboard behavior awaits user validation.
+
+## [COMPLETED] Add contextual Mango tab navigation — 2026-10-21
+
+Caps+W/S, Super+Up/Down and the equivalent Super+K/J now use a shared
+focus-vertical adapter: previous/next tab when the focused client is grouped,
+otherwise the existing focusdir up/down behavior. Horizontal column navigation
+and Caps+T group join/leave remain as configured. Updated README and shortcut
+hint. Changes affect Mango only.
+
+Flake checks, NixOS dry-build, Home Manager build, shell syntax and Mango config
+validation passed. Isolated headless Wayland clients verified that down selects
+another group member and up returns to the original; ungrouped calls succeed.
+A controlled IPC stub additionally verified exact focusdir up/down fallbacks
+and invalid-direction rejection. Tests isolated runtime/config directories and
+removed DBUS_SESSION_BUS_ADDRESS. Activated Home Manager successfully, validated
+the deployed config and verified Noctalia plus the original Umbriel environment
+remain healthy. No Mango session currently runs, so bindings take effect at the
+next Mango login. Persist the latest user configuration in the system with the
+previously pending sudo nixos-rebuild switch --flake /etc/nixos#moria.
