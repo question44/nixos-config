@@ -225,6 +225,8 @@ keymap:
       CapsLock-comma: Ctrl-Alt-Super-comma
       CapsLock-dot: Ctrl-Alt-Super-dot
       CapsLock-slash: Ctrl-Alt-Super-slash
+      CapsLock-KEY_SEMICOLON: Ctrl-Alt-Super-KEY_SEMICOLON
+      CapsLock-KEY_APOSTROPHE: Ctrl-Alt-Super-KEY_APOSTROPHE
       CapsLock-KEY_LEFTBRACE: Ctrl-Alt-Super-KEY_LEFTBRACE
       CapsLock-KEY_RIGHTBRACE: Ctrl-Alt-Super-KEY_RIGHTBRACE
       CapsLock-esc: Ctrl-Alt-Super-esc

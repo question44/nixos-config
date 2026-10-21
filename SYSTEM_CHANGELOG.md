@@ -1,5 +1,17 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [COMPLETED] Assign Caps punctuation keys to Mango tabs — 2026-10-21
+
+Map Caps+semicolon/apostrophe through the existing xremap desktop layer to
+Mango groupfocus prev/next. Spatial window navigation remains direct focusdir.
+Update shortcut help and README. Flake check, NixOS dry-build, Home Manager
+build, Mango parser, shell syntax and diff checks passed. Activated generation
+/nix/store/nivpf6msa4p8f4mdn2w6r5fr90kv6xpl-home-manager-generation, reloaded
+Mango and restarted xremap successfully; xremap and Noctalia are active.
+Deployed files contain both remaps and matching groupfocus bindings. Physical
+key delivery awaits user confirmation. Persistent system activation still
+requires the previously documented sudo rebuild.
+
 ## [COMPLETED] Separate Mango tab and spatial focus shortcuts — 2026-10-21
 
 Restore Caps+W/S, Super+Up/Down and Super+K/J to direct focusdir up/down so
