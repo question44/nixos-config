@@ -433,6 +433,16 @@ in
     environmentFile = "/etc/caddy/ovh.env";
     globalConfig = "auto_https disable_redirects";
     extraConfig = ''
+      (dashboard_controls) {
+        handle /api/control* {
+          @trusted remote_ip private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
+          handle @trusted {
+            reverse_proxy 127.0.0.1:18090
+          }
+          respond "Controls are available on the local network and tailnet only." 403
+        }
+      }
+
       (ovh_tls) {
         tls {
           dns ovh {
@@ -478,6 +488,7 @@ in
         }
 
         handle {
+          import dashboard_controls
           root * ${../../home/services}
           file_server
         }
@@ -508,6 +519,7 @@ in
 
       moria.jzon.pl, erebor.jzon.pl {
         import ovh_tls
+        import dashboard_controls
         encode gzip
         root * ${../../home/services}
         file_server

@@ -1,5 +1,40 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [PENDING] Add Caddy display, ambilight and power controls — 2026-10-21
+
+Add six dashboard buttons and a loopback user service behind Caddy. The API
+accepts only same-origin JSON requests with an explicit control header; Caddy
+limits access to local/private and tailnet source addresses. Sleep and shutdown
+require browser confirmation and use the existing login1 policy/inhibitors.
+Display power preserves virtual capture outputs; HyperHDR's LEDDEVICE switch
+preserves its PipeWire session. No suspend or power-off operation will be run
+during validation. Activation requires sudo, currently password protected.
+
+Validation passed: flake check, NixOS dry-build and full system build; six
+automated API/dispatch tests; Chromium rendering of all six controls; live
+Mango DP-1 off/on with ambilight remaining on; HyperHDR LED off/on with capture
+remaining active. Both display and LEDs were restored to their initial on
+states. An isolated Caddy instance using the built HTTP routes and the exact
+built user-service sandbox returned 200 for display-on and 403 for a
+cross-origin request. Temporary services were stopped and removed. login1
+CanSuspend/CanPowerOff both report yes; disruptive actions were not executed.
+
+Built system:
+/nix/store/bh3i32plfz8c2bqlc9x8cq4syxs0vs9p-nixos-system-erebor-26.05.20261013.a033e66.
+Current persistent generation remains 191:
+/nix/store/zrxvp3y3zi32k1d0r8p6pqi6ap8zm0s5-nixos-system-erebor-26.05.20261013.a033e66.
+Caddy and HyperHDR remain active; root and ESP UUIDs are unchanged. No boot,
+storage, sleep or power-off operation was performed. Browser preview could not
+start because its host libraries are missing; installed Chromium supplied the
+page-rendering check. Niri/Umbriel command adapters were inspected but only
+Mango is currently running and was physically validated.
+
+Mandatory next action: run sudo nixos-rebuild switch --flake /etc/nixos#moria,
+verify dashboard-control.service in the janzon user manager and caddy.service,
+then verify the controls through the normal dashboard URL. Mark this entry
+completed after activation and user-facing verification. The sleep and power
+buttons require a user-initiated test when saved work allows it.
+
 ## [COMPLETED] Add Mango tag layout shortcuts — 2026-10-21
 
 Super+G opens a layout key mode with a shortcut notification. S/T/G/M/D/V

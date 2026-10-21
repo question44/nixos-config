@@ -18,6 +18,13 @@
   .name { font-weight:600; color:var(--ac); }
   .desc { color:var(--mut); font-size:.85rem; margin-top:.15rem; }
   footer { margin-top:3rem; color:var(--mut); font-size:.8rem; border-top:1px solid var(--bd); padding-top:1rem; }
+  h2 { font-size:1.1rem; margin:2rem 0 .75rem; }
+  .control { padding:1rem 1.15rem; background:var(--card); border:1px solid var(--bd); border-radius:.6rem; }
+  .buttons { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.6rem; }
+  button { font:inherit; color:var(--fg); background:var(--bg); border:1px solid var(--bd); border-radius:.4rem; padding:.4rem .8rem; cursor:pointer; }
+  button:hover, button:focus-visible { border-color:var(--ac); }
+  button:disabled { opacity:.5; cursor:wait; }
+  #control-status { min-height:1.6em; color:var(--mut); font-size:.9rem; }
 </style>
 </head>
 <body>
@@ -54,6 +61,22 @@
       <div class="desc">Cockpit server administration</div>
     </a>
   </div>
+  <h2>Controls</h2>
+  <div class="grid">
+    <div class="control"><div class="name">Display</div><div class="buttons">
+      <button data-action="display-on">Turn on display</button>
+      <button data-action="display-off">Turn off display</button>
+    </div></div>
+    <div class="control"><div class="name">Ambilight</div><div class="buttons">
+      <button data-action="ambilight-on">Turn on ambilight</button>
+      <button data-action="ambilight-off">Turn off ambilight</button>
+    </div></div>
+    <div class="control"><div class="name">System</div><div class="buttons">
+      <button data-action="sleep" data-confirm="Put erebor to sleep? Remote services will disconnect until it wakes.">Sleep</button>
+      <button data-action="power-off" data-confirm="Power off erebor? Save your work first. Remote services will stop.">Power off</button>
+    </div></div>
+  </div>
+  <p id="control-status" role="status" aria-live="polite"></p>
   <footer>Served by Caddy on the local network.</footer>
 </main>
 <script>
@@ -69,6 +92,30 @@
   document.querySelector("#sunshine").href = isDomain
     ? `https://sunshine.${location.hostname}`
     : `https://${location.hostname}:47990`;
+  const controlButtons = document.querySelectorAll("[data-action]");
+  const controlStatus = document.querySelector("#control-status");
+  controlButtons.forEach(button => button.addEventListener("click", async () => {
+    if (button.dataset.confirm && !confirm(button.dataset.confirm)) return;
+    controlButtons.forEach(item => item.disabled = true);
+    controlStatus.textContent = "Sending command…";
+    try {
+      const response = await fetch("/api/control", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Erebor-Control": "1" },
+        body: JSON.stringify({ action: button.dataset.action }),
+        signal: AbortSignal.timeout(20000)
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Command failed");
+      controlStatus.textContent = `${button.textContent}: command sent.`;
+    } catch (error) {
+      controlStatus.textContent = ["sleep", "power-off"].includes(button.dataset.action)
+        ? "Connection lost or command failed. Check whether erebor is asleep or powered off."
+        : error.message;
+    } finally {
+      controlButtons.forEach(item => item.disabled = false);
+    }
+  }));
 </script>
 </body>
 </html>

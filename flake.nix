@@ -48,6 +48,7 @@
           umbriel.nixosModules.default
           mango.nixosModules.mango
           ./modules/mango.nix
+          ./modules/dashboard-control.nix
           helium.nixosModules.default
           home-manager.nixosModules.home-manager
           {
