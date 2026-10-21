@@ -2670,28 +2670,41 @@ The pre-existing xremap failure reported no matching input devices; no device
 configuration was changed. Physical display/HDR, actual DM login, capture and
 interactive input remain unverified.
 
-## [PENDING] Activate Mango display-manager session — 2026-10-21
+## [PENDING] Complete Mango activation and verify display-manager login — 2026-10-21
 
-System activation requires sudo authentication, unavailable to this agent.
-User was asked to run sudo nixos-rebuild test --flake /etc/nixos#moria.
-The fully built system is:
+User activation at 04:56 installed system generation 189 and updated
+/run/current-system and the persistent system profile to:
 /nix/store/7l8jm3cjx7y9y067f5yksr2vhmyh2vih-nixos-system-erebor-26.05.20261013.a033e66.
-The running/persistent system remains generation 188:
-/nix/store/92n2mnai1g78z7y5nbf94qfkwacs59zg-nixos-system-erebor-26.05.20261013.a033e66.
+Activation reported status 4 because home-manager-janzon.service failed during
+installPackages with experimental Nix feature nix-command disabled. Noctalia
+also failed to connect to Wayland: earlier isolated Mango tests inherited the
+real D-Bus address, and Mango's cleanup cleared the real activation environment.
 
-Verified the built greeter session directory contains mango.desktop alongside
-niri.desktop and umbriel.desktop; Mango's entry points to its session wrapper.
-Verified built mango-portals.conf routes ScreenCast/Screenshot to wlr and
-Secret to oo7. Verified the new Noctalia unit's pre-start hook. greetd has
-X-RestartIfChanged=false, so test/switch leaves the existing process using its
-old session directory until greetd restarts.
+Recovered the active Umbriel environment from an existing session child and
+verified sockets: WAYLAND_DISPLAY=wayland-0, DISPLAY=:0,
+XDG_CURRENT_DESKTOP=umbriel, XDG_SESSION_TYPE=wayland,
+XDG_RUNTIME_DIR=/run/user/1000 and UMBRIEL_SOCKET pointing at its existing socket.
+Imported those values into D-Bus/systemd, removed stale MANGO_INSTANCE_SIGNATURE,
+and restarted Noctalia. Verified active/running with zero restart count.
+Future isolated compositor tests must remove DBUS_SESSION_BUS_ADDRESS as well
+as isolate XDG_RUNTIME_DIR, to prevent modifying the real activation environment.
 
-Mandatory next action: activate with sudo nixos-rebuild test --flake
-/etc/nixos#moria and verify services. After saving work, restart greetd with
-sudo systemctl restart greetd (ends the current graphical session), select
-Mango and verify display, keyboard/CapsLock, Noctalia, scratchpad and capture.
-After successful validation persist with sudo nixos-rebuild switch --flake
-/etc/nixos#moria. Remove the temporary user-profile mango package only after
-verifying the declarative package is available. Update this pending entry with
-actual activation/login results; do not claim a hardware session was tested.
-No reboot performed or required.
+Added NIX_CONFIG=experimental-features = nix-command flakes specifically to
+home-manager-janzon.service. Flake checks, NixOS dry-build and full system build
+passed, and the generated service contains the intended environment setting.
+Re-ran the exact Home Manager activation as the user with that NIX_CONFIG;
+it completed successfully. New fixed system awaiting privileged activation:
+/nix/store/x6d5l1i9pysza5k4czbz3li32hri4xpj-nixos-system-erebor-26.05.20261013.a033e66.
+
+Mandatory next action: sudo nixos-rebuild test --flake /etc/nixos#moria and
+verify home-manager-janzon.service plus user services. Root activation remains
+unavailable to the agent because sudo authentication is required.
+
+The activated greeter config includes Mango alongside Niri/Umbriel, but greetd
+has X-RestartIfChanged=false and its existing process retains the old session
+directory until restarted. After saving work, sudo systemctl restart greetd
+ends the graphical session; select Mango and verify display, keyboard/CapsLock,
+Noctalia, scratchpad and capture. After successful validation persist the fixed
+configuration with sudo nixos-rebuild switch --flake /etc/nixos#moria. Remove
+the temporary user-profile mango package only after verifying the declarative
+package. Actual Mango hardware login remains untested. No reboot performed.

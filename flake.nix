@@ -55,6 +55,9 @@
               mango = mango.packages.x86_64-linux.mango;
             };
             nixpkgs.overlays = [ millennium.overlays.default ];
+            # Home Manager uses the modern profile CLI during system activation.
+            systemd.services.home-manager-janzon.environment.NIX_CONFIG =
+              "experimental-features = nix-command flakes";
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.backupFileExtension = "backup";
