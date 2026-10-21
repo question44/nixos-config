@@ -1,5 +1,18 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [COMPLETED] Separate Mango tab and spatial focus shortcuts — 2026-10-21
+
+Restore Caps+W/S, Super+Up/Down and Super+K/J to direct focusdir up/down so
+grouped windows do not trap spatial navigation. Assign Super+Alt+Up/Down to
+groupfocus prev/next. Remove the contextual helper and update shortcut help
+and README. Flake check, NixOS dry-build, Home Manager build, config parser
+and shell syntax checks passed. Activated Home Manager generation
+/nix/store/hrvag8hvpwnfnfsahrphfc02hym4j5i7-home-manager-generation and reloaded
+Mango successfully. Live IPC verified spatial down from grouped client 7 to
+the window below (6), and independent tab selection from 7 to 9; restored
+original focus. Noctalia remains active. Physical shortcuts await user check.
+Persistent system activation still requires the sudo rebuild documented below.
+
 ## [PENDING] Restore deployed Mango tab navigation — 2026-10-21
 
 Live Mango still used the older Home Manager files after the boot-time

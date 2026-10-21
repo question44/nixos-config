@@ -19,9 +19,9 @@ Behavioral differences:
 - Scroller stacks and groups replace columns and tabbed columns. Column move/tag
   actions move the focused client. Consume/expel uses scroller_stack; tab toggling
   joins the right-hand neighbor's group or leaves the current group. Caps+W/S,
-  Super+Up/Down and Super+K/J select the previous/next tab when grouped; outside
-  a group they retain normal up/down window focus. Caps+A/D and Super+Left/Right
-  continue to move between columns.
+  Super+Up/Down and Super+K/J always focus windows up/down, including out of
+  groups. Super+Alt+Up/Down selects the previous/next tab within a group.
+  Caps+A/D and Super+Left/Right continue to move between columns.
 - Width presets are 1/3, 1/2, 2/3 and full width. Secondary extent uses 100-pixel
   height increments. Focus floating toggles to the last window.
 - Scratchpad uses the special workspace (tag 0) with the normal scroller layout.
