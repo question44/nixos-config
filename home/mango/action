@@ -9,34 +9,9 @@ case "$op" in
   close)
     app=$(focused | jq -r '.appid // ""')
     case "${app,,}" in
-      *discord*|*spotify*) dispatch minimized ;;
+      *discord*|*spotify*) dispatch tag_special_silent ;;
       *) dispatch killclient ;;
     esac ;;
-  navigate)
-    if focused | jq -e '.is_scratchpad' >/dev/null; then
-      exec "$0" scratch "$([[ $1 == left ]] && echo previous || echo next)"
-    fi
-    dispatch "focusdir,$1" ;;
-  scratch)
-    # Target a particular member so both directions cycle predictably.
-    clients=$(mmsg get all-clients | jq '.clients')
-    current=$(focused | jq '.id // -1')
-    id=$(jq -r --argjson current "$current" --arg dir "$1" '
-      [.[] | select(.is_scratchpad)] | sort_by(.id) | . as $list |
-      if length == 0 then empty else
-        (map(.id) | index($current)) as $idx |
-        if $idx == null then .[0].id else
-          .[(($idx + (if $dir == "previous" then -1 else 1 end)) + length) % length].id
-        end
-      end' <<< "$clients")
-    if [[ -n $id ]]; then
-      if [[ $current != "$id" ]] && focused | jq -e '.is_scratchpad and (.is_minimized | not)' >/dev/null; then
-        mmsg dispatch toggle_scratchpad "client,$current"
-      fi
-      if [[ $current != "$id" ]] || focused | jq -e '.is_minimized' >/dev/null; then
-        mmsg dispatch toggle_scratchpad "client,$id"
-      fi
-    fi ;;
   width)
     width=$(focused | jq -r '.scroller_proportion // 0.5')
     if [[ $1 == previous ]]; then
@@ -82,13 +57,8 @@ case "$op" in
     file="$directory/window-$(date +%Y%m%d-%H%M%S-%N).png"
     grim -g "$geometry" "$file"
     wl-copy --type image/png < "$file" ;;
-  submap)
-    command=$1; shift
-    args=$(IFS=,; echo "$*")
-    dispatch "${command}${args:+,$args}"
-    dispatch 'setkeymode,default' ;;
   help)
-    notify-send 'Mango shortcuts' 'CapsLock layer and Super navigation match Umbriel. Caps+0: scratchpad; Caps+Super+0: store. Super+0: scratchpad mode (A/D cycle, M store, R restore, Space toggle, Esc exit). Super+Shift+F5: reload. Migration details: /etc/nixos/home/mango/README.md' ;;
+    notify-send 'Mango shortcuts' 'CapsLock layer and Super navigation match Umbriel. Caps+0 or Super+0: show/hide tiled scratchpad. Caps+Super+0 or Super+Shift+0: move window in/out. Caps+A/D or Super+Left/Right: normal scroller navigation. Super+Shift+F5: reload. Migration details: /etc/nixos/home/mango/README.md' ;;
   unavailable)
     notify-send 'Mango port' "$1 has no equivalent in this Mango build; see /etc/nixos/home/mango/README.md" ;;
   *) echo "Unknown Mango action: $op" >&2; exit 2 ;;

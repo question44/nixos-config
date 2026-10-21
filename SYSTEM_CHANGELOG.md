@@ -2693,12 +2693,17 @@ Added NIX_CONFIG=experimental-features = nix-command flakes specifically to
 home-manager-janzon.service. Flake checks, NixOS dry-build and full system build
 passed, and the generated service contains the intended environment setting.
 Re-ran the exact Home Manager activation as the user with that NIX_CONFIG;
-it completed successfully. New fixed system awaiting privileged activation:
+it completed successfully. The user subsequently activated the fixed system
+with nixos-rebuild test; verified home-manager-janzon.service Result=success,
+Noctalia active/running with zero restarts, and no failed system or user units.
+Running test system:
 /nix/store/x6d5l1i9pysza5k4czbz3li32hri4xpj-nixos-system-erebor-26.05.20261013.a033e66.
 
-Mandatory next action: sudo nixos-rebuild test --flake /etc/nixos#moria and
-verify home-manager-janzon.service plus user services. Root activation remains
-unavailable to the agent because sudo authentication is required.
+Fixed test activation is verified. The persistent generation 189 still points
+to the previous system until a successful switch. Mandatory next action is
+Mango login validation, then persisting the latest configuration with switch.
+Root activation remains unavailable to the agent because sudo authentication
+is required.
 
 The activated greeter config includes Mango alongside Niri/Umbriel, but greetd
 has X-RestartIfChanged=false and its existing process retains the old session
@@ -2708,3 +2713,30 @@ Noctalia, scratchpad and capture. After successful validation persist the fixed
 configuration with sudo nixos-rebuild switch --flake /etc/nixos#moria. Remove
 the temporary user-profile mango package only after verifying the declarative
 package. Actual Mango hardware login remains untested. No reboot performed.
+
+## [COMPLETED] Use scroller tiling for Mango's scratchpad — 2026-10-21
+
+Replaced minimized-pool scratchpad shortcuts with Mango's special workspace,
+tag 0, explicitly configured with the scroller layout. Caps+0 and Super+0 toggle
+it; Caps+Super+0 and Super+Shift+0 move the focused client into/out of it.
+Removed the scratchpad key mode and special navigation adapter so ordinary
+Caps+A/D, Super+Left/Right, movement, width and stacking shortcuts apply.
+Caps+Q for Discord/Spotify now stores the client on the tiled scratchpad.
+README and shortcut hint describe the new behavior and restoration of legacy
+minimized windows. No existing windows were moved or closed.
+
+Flake check, NixOS dry-build and Home Manager build passed. An isolated
+headless compositor with three real Wayland clients verified that two clients
+on tag 0 remain tiled, occupy separate scroller columns, and accept regular
+left/right focus, width and reorder actions. Show/hide returns to tag 1, and
+the move shortcut restores a client to the prior workspace. Tests removed
+DBUS_SESSION_BUS_ADDRESS and used an isolated runtime/config directory; the
+real Umbriel session environment remained intact.
+
+Activated Home Manager generation
+/nix/store/hhmhc2f04c9kyw32b8y8pjvzdxapxl7n-home-manager-generation.
+Deployed Mango config passes its parser; Noctalia remains active. No Mango
+session is currently running, so the configuration applies on the next Mango
+login. A future sudo nixos-rebuild switch --flake /etc/nixos#moria is required
+to persist this change in the system's Home Manager activation; sudo is still
+unavailable to this agent. Physical keyboard behavior awaits user validation.

@@ -21,8 +21,15 @@ Behavioral differences:
   joins the right-hand neighbor's group or leaves the current group.
 - Width presets are 1/3, 1/2, 2/3 and full width. Secondary extent uses 100-pixel
   height increments. Focus floating toggles to the last window.
-- Scratchpad navigation cycles the minimized pool. Super+0 enters a mode; A/D or
-  arrows cycle, M stores, R restores, Space toggles and Escape exits.
+- Scratchpad uses the special workspace (tag 0) with the normal scroller layout.
+  Caps+0 or Super+0 shows/hides it and returns to the previous workspace.
+  Caps+Super+0 or Super+Shift+0 moves the focused window into it; the same
+  shortcut inside restores that window to the previous workspace. Regular
+  Caps+A/D, Super+Left/Right, window movement, sizing and stacking shortcuts
+  work there. Caps+Q sends Discord/Spotify to this tiled scratchpad.
+  The old dedicated scratchpad key mode is removed. Previously minimized
+  windows remain in the legacy pool; restore them with
+  `mmsg dispatch restore_minimized` before moving them to the tiled scratchpad.
 - Super+Shift+Escape enters shortcut passthrough mode; the same chord exits.
   This replaces Umbriel's application shortcut inhibition toggle.
 - The cheatsheet keys show a concise notification rather than an overlay.
@@ -34,7 +41,7 @@ Behavioral differences:
   HyperHDR's capture selection may need to be chosen again for Mango's wlr
   portal. Sunshine's existing Umbriel-specific scripts require separate session
   integration; this port does not change that service. Oo7 remains Secret Service.
-- A small local patch makes toggle_scratchpad honor an explicit IPC client
-  target, needed for bidirectional cycling. Its default behavior is unchanged.
+- The package retains its targeted legacy scratchpad IPC patch; the tiled
+  scratchpad uses upstream special-workspace dispatchers directly.
 
 No interactive hardware session has been verified until a user logs into Mango.
