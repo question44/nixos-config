@@ -1,5 +1,29 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [PENDING] Restore deployed Mango tab navigation — 2026-10-21
+
+Live Mango still used the older Home Manager files after the boot-time
+home-manager-janzon service relinked its old generation and failed during
+installPackages because nix-command was disabled. The installed helper lacked
+focus-vertical and all six vertical bindings still called focusdir. Source
+already includes the navigation and activation-environment fixes.
+Flake check, NixOS dry-build, full system build, Mango config parser and shell
+syntax checks pass. Restored Home Manager generation
+/nix/store/gg6vxqwd9l58rmr0bf8284hhsvjn4ncb-home-manager-generation
+with NIX_CONFIG enabling nix-command/flakes, then reloaded Mango successfully.
+Live helper verification selected grouped client 7, switched up to client 6,
+then down back to 7; restored the original focused client afterward. Group
+navigation stops at either end rather than wrapping. Noctalia remains active.
+Physical shortcut delivery still awaits user confirmation.
+
+Pending persistence: sudo nixos-rebuild switch --flake /etc/nixos#moria.
+The validated system is
+/nix/store/ybgzvyr8pknrg0l8qxw5fby99p4ymxvd-nixos-system-erebor-26.05.20261013.a033e66;
+its Home Manager unit includes the already committed NIX_CONFIG fix. The
+current system still uses the older Home Manager activation and its failed
+boot-time unit remains recorded. sudo -n requires authentication, so system
+activation was not performed. Without it, login can restore the older files.
+
 ## [COMPLETED] Swap host and Windows GPUs — 2026-10-19
 
 Intel UHD 770 now drives Linux and RTX 4090 is assigned to the Windows VM.
