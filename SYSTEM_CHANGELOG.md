@@ -1,5 +1,28 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [PENDING] Supply T3 browser runtime libraries — 2026-10-21
+
+Provide Chromium runtime libraries through LD_LIBRARY_PATH in the existing
+t3code user service. The bundled Chrome headless shell's ldd output confirmed
+the missing dependencies reported by preview_open. Keep the library search
+path scoped to T3 and its children, with fontconfig/freetype for text rendering.
+No browser profile or downloaded T3 executable is modified. Root activation
+is currently unavailable because sudo requires a password.
+
+Flake check, NixOS dry-build and full build passed. Using the exact declared
+library path, ldd reports no missing libraries for T3's downloaded Chromium
+154.0.8037.92, and that same binary launched headless and rendered a temporary
+test page successfully. The temporary browser profile was removed.
+Built system:
+/nix/store/ndapp324yz251i8n3kdbl0n091pi8k0m-nixos-system-erebor-26.05.20261013.a033e66.
+Generation 191 remains active and T3 has not been restarted. Root/ESP UUIDs
+and boot entries were inspected; no boot or storage changes were made.
+Mandatory next action: sudo nixos-rebuild switch --flake /etc/nixos#moria,
+then systemctl --user restart t3code.service if activation does not restart it.
+Restarting T3 briefly disconnects its web UI. Verify preview_open after the
+server reconnects, then mark this entry completed. The preceding dashboard
+controls change is also included in this build and still awaits activation.
+
 ## [PENDING] Add Caddy display, ambilight and power controls — 2026-10-21
 
 Add six dashboard buttons and a loopback user service behind Caddy. The API

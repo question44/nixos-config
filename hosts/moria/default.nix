@@ -311,6 +311,14 @@ in
     wantedBy = [ "default.target" ];
     environment = {
       HOME = "/home/janzon";
+      # T3 downloads an upstream Chromium binary. Its loader and dependency
+      # check need these libraries in the server's environment on NixOS.
+      LD_LIBRARY_PATH = lib.makeLibraryPath (with pkgs; [
+        glib nspr nss at-spi2-core dbus
+        libx11 libxcomposite libxdamage libxext libxfixes libxrandr
+        libgbm expat libxcb libxkbcommon systemdLibs alsa-lib
+        fontconfig freetype
+      ]);
     };
     serviceConfig = {
       WorkingDirectory = "/home/janzon/Projects";
