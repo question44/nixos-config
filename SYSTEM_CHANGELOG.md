@@ -1,5 +1,17 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [COMPLETED] Persist Mango shortcuts with Polkit activation — 2026-10-21
+
+User requested pkexec for the previously validated system rebuild. Successfully
+ran pkexec nixos-rebuild switch --flake /etc/nixos#moria. Generation 190 is now
+active and persistent:
+/nix/store/jfnn84flm7pgvnm3ga30zwnxqnf4dhbk-nixos-system-erebor-26.05.20261013.a033e66.
+Home Manager activation exited successfully and its unit now includes NIX_CONFIG.
+No system units are failed; Mango, xremap and Noctalia remain active. Verified
+deployed Caps+semicolon/apostrophe tab bindings and direct spatial up/down focus;
+Mango reload and config parser succeeded. Prior pending persistence instructions
+below are resolved by this activation. No reboot performed.
+
 ## [COMPLETED] Assign Caps punctuation keys to Mango tabs — 2026-10-21
 
 Map Caps+semicolon/apostrophe through the existing xremap desktop layer to
@@ -25,7 +37,7 @@ the window below (6), and independent tab selection from 7 to 9; restored
 original focus. Noctalia remains active. Physical shortcuts await user check.
 Persistent system activation still requires the sudo rebuild documented below.
 
-## [PENDING] Restore deployed Mango tab navigation — 2026-10-21
+## [COMPLETED] Restore deployed Mango tab navigation — 2026-10-21
 
 Live Mango still used the older Home Manager files after the boot-time
 home-manager-janzon service relinked its old generation and failed during
@@ -41,7 +53,9 @@ then down back to 7; restored the original focused client afterward. Group
 navigation stops at either end rather than wrapping. Noctalia remains active.
 Physical shortcut delivery still awaits user confirmation.
 
-Pending persistence: sudo nixos-rebuild switch --flake /etc/nixos#moria.
+Persistence subsequently completed with pkexec in generation 190 (entry above).
+At the time of this restoration, the pending command was
+sudo nixos-rebuild switch --flake /etc/nixos#moria.
 The validated system is
 /nix/store/ybgzvyr8pknrg0l8qxw5fby99p4ymxvd-nixos-system-erebor-26.05.20261013.a033e66;
 its Home Manager unit includes the already committed NIX_CONFIG fix. The
