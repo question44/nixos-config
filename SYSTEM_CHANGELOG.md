@@ -3053,3 +3053,16 @@ org.gnome.Calculator without installing it. No failed system or user units;
 Noctalia and desktop portal remain active. Root/ESP mounts unchanged, fstab
 unchanged, and generation 195 boot entry present. No reboot performed.
 Unrelated Crucial mount and changelog edits left uncommitted.
+
+
+## [COMPLETED] Install Discover as the Flatpak GUI — 2026-10-22
+
+Installed KDE Discover and set Home Manager MIME defaults for .flatpak,
+.flatpakref and .flatpakrepo files to org.kde.discover.desktop. Verified the
+package includes flatpak-backend. Flake check and nixos-rebuild build passed;
+candidate fstab matched the running system. Activated generation 196:
+/nix/store/wfimff15ahia19129widx0cmvi0s5w8x-nixos-system-erebor-26.05.20261013.a033e66.
+Verified all three MIME handlers, backend discovery, system Flathub remote,
+and a live Discover window. Installed view is empty as no Flatpak apps are
+installed. No failed system/user units; Noctalia and desktop portal active.
+Root/ESP mounts unchanged. No reboot. Unrelated changes left uncommitted.

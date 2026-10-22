@@ -617,6 +617,7 @@ in
     gnupg
     gnumake
     kdePackages.dolphin
+    kdePackages.discover
     kdePackages.konsole
     kdePackages.gwenview
     kdePackages.okular

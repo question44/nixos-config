@@ -238,6 +238,9 @@
               xdg.mimeApps = {
                 enable = true;
                 defaultApplications = {
+                  "application/vnd.flatpak" = [ "org.kde.discover.desktop" ];
+                  "application/vnd.flatpak.ref" = [ "org.kde.discover.desktop" ];
+                  "application/vnd.flatpak.repo" = [ "org.kde.discover.desktop" ];
                   "text/plain" = [ "dev.zed.Zed.desktop" ];
                   "application/xhtml+xml" = [ "helium.desktop" ];
                   "text/html" = [ "helium.desktop" ];
