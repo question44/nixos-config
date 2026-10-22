@@ -682,6 +682,20 @@ in
   ];
 
   programs.dconf.enable = true;
+  services.flatpak.enable = true;
+  systemd.services.flatpak-flathub = {
+    description = "Register the Flathub Flatpak repository";
+    wantedBy = [ "multi-user.target" ];
+    wants = [ "network-online.target" ];
+    after = [ "network-online.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    script = ''
+      ${pkgs.flatpak}/bin/flatpak remote-add --system --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+    '';
+  };
   services.xserver.enable = false;
 
   system.stateVersion = "26.05";

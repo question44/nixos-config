@@ -3037,3 +3037,19 @@ Visually verified a fresh picker renders JPEG and PNG thumbnails; the test
 returned a selected path without sharing it. Existing pickers need reopening.
 No failed user units; system generation remains 194. No system/boot activation
 or mount changes; unrelated working-tree changes remain untouched.
+
+
+## [COMPLETED] Enable Flatpak and Flathub — 2026-10-22
+
+Enabled NixOS Flatpak support and an idempotent system Flathub registration
+unit, retaining existing desktop portals. Flake check and nixos-rebuild build
+passed. Compared fstab with the running system: identical; unit changes were
+Flatpak integration, font support and previously validated Home Manager files.
+Activated system generation 195 with administrator authentication:
+/nix/store/8l71p97syczs486hm2zhdf19pm8qw34q-nixos-system-erebor-26.05.20261013.a033e66.
+Verified Flatpak 1.18.4, system Flathub remote at https://dl.flathub.org/repo/,
+successful registration service and remote-info metadata retrieval for
+org.gnome.Calculator without installing it. No failed system or user units;
+Noctalia and desktop portal remain active. Root/ESP mounts unchanged, fstab
+unchanged, and generation 195 boot entry present. No reboot performed.
+Unrelated Crucial mount and changelog edits left uncommitted.
