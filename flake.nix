@@ -111,6 +111,8 @@
                 executable = true;
               };
               home.stateVersion = "26.05";
+              # Phone Connect invokes gdbus through Noctalia's existing PATH.
+              home.file.".local/bin/gdbus".source = "${pkgs.glib.bin}/bin/gdbus";
               programs.umbriel = {
                 enable = true;
                 settings = ./home/umbriel/config.toml;

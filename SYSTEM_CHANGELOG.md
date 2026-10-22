@@ -2998,3 +2998,17 @@ Noctalia restarted from PID 1266791 to 1676920 and is active/running. Physical
 key delivery awaits user use. No failed user units. System generation remains
 194; canonical shortcut is included in the next system rebuild. Unrelated
 Crucial/VM and Sunshine changes remain untouched.
+
+
+## [COMPLETED] Expose gdbus to Noctalia Phone Connect — 2026-10-22
+
+Declared ~/.local/bin/gdbus through Home Manager using the existing glib.bin
+output, making it available on Noctalia's existing PATH. nix flake check and
+nixos-rebuild dry-build passed. Compared generated home files: the only
+addition was gdbus; package profile unchanged. Activated Home Manager generation
+/nix/store/zszh7hnbci7mr20qvvpm3zpfwa0qdcfx-home-manager-generation.
+Dispatched Phone Connect refresh without restarting the shell; visually verified
+the panel shows one connected Galaxy S26 Ultra and battery 82%.
+System generation remains 194; no failed user units. Root and ESP remain
+mounted, with no system or boot activation. Unrelated Crucial mount and
+changelog edits remain untouched.
