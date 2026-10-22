@@ -3024,3 +3024,16 @@ Verified kdialog 26.04.3 resolves on Noctalia's existing PATH and its file
 picker opens as an org.kde.kdialog window in Umbriel. The dialog was closed
 without selecting or sending a file. No failed user units. System generation
 194 and boot configuration unchanged. Unrelated working-tree changes preserved.
+
+
+## [COMPLETED] Restore image thumbnails in KDialog — 2026-10-22
+
+Dolphin already displayed Pictures thumbnails. KDialog lacked kio-extras in
+its Qt plugin path, leaving generic image icons. Updated its Home Manager
+launcher with kio-extras plugin and data paths. Flake check and system dry-build
+passed. The only changed deployed file was ~/.local/bin/kdialog. Activated
+/nix/store/7kb3jivbmsh68m0w13vanyzzzx4wgrnq-home-manager-generation.
+Visually verified a fresh picker renders JPEG and PNG thumbnails; the test
+returned a selected path without sharing it. Existing pickers need reopening.
+No failed user units; system generation remains 194. No system/boot activation
+or mount changes; unrelated working-tree changes remain untouched.

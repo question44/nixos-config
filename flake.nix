@@ -113,7 +113,12 @@
               home.stateVersion = "26.05";
               # Phone Connect invokes gdbus through Noctalia's existing PATH.
               home.file.".local/bin/gdbus".source = "${pkgs.glib.bin}/bin/gdbus";
-              home.file.".local/bin/kdialog".source = "${pkgs.kdePackages.kdialog}/bin/kdialog";
+              home.file.".local/bin/kdialog".source = pkgs.writeShellScript "kdialog" ''
+                # KDialog needs KIO's thumbnail worker and image providers too.
+                export QT_PLUGIN_PATH="${pkgs.kdePackages.kio-extras}/lib/qt-6/plugins''${QT_PLUGIN_PATH:+:$QT_PLUGIN_PATH}"
+                export XDG_DATA_DIRS="${pkgs.kdePackages.kio-extras}/share:''${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+                exec ${pkgs.kdePackages.kdialog}/bin/kdialog "$@"
+              '';
               programs.umbriel = {
                 enable = true;
                 settings = ./home/umbriel/config.toml;
