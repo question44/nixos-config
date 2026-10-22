@@ -2969,3 +2969,18 @@ graphical session is currently running. Runtime setup lasts this boot.
 Next: log into Mango and verify Moonlight; persist with sudo nixos-rebuild
 switch --flake /etc/nixos#moria, then unlink the runtime mango.conf drop-in
 and run systemctl --user daemon-reload. User's Crucial/VM work remains separate.
+
+
+## [COMPLETED] Restore HyperHDR after stale desktop portal — 2026-10-22
+
+HyperHDR was running but screen capture failed with "Unavailable cursor mode 1".
+The desktop portal advertised AvailableCursorModes=0 after starting before the
+current Umbriel session. Restarted the user xdg-desktop-portal service, then
+hyperhdr; the portal now advertises cursor modes=7 and uses the Umbriel backend.
+Verified PipeWire STREAMING at 3440×1440 / 30 fps with DMA-BUF acceleration,
+active visible SYSTEMGRABBER priority 245, LEDDEVICE enabled, WLED on and live
+in UDP mode, and web UI HTTP 200. No capture errors after recovery.
+Runtime recovery only: no Nix configuration or system generation change
+(system-194-link); no boot or mount changes. Existing Crucial/VM and Sunshine
+work remains untouched. If this recurs after changing desktop sessions, restart
+the desktop portal before HyperHDR so it refreshes backend capabilities.
