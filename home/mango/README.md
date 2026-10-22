@@ -46,8 +46,11 @@ Behavioral differences:
 - The wallpaper-only ambilight output is created at 3440×1440 / 30 Hz before
   Noctalia starts. Steam routing rules target sunshine when that output exists.
   HyperHDR's capture selection may need to be chosen again for Mango's wlr
-  portal. Sunshine's existing Umbriel-specific scripts require separate session
-  integration; this port does not change that service. Oo7 remains Secret Service.
+  portal. Sunshine supports both Mango and Umbriel and creates a named sunshine
+  output at Mango service startup. Client resolution and refresh rate apply at
+  stream connection. Mango keeps the output active between streams: disabling
+  and re-enabling a virtual output can abort Mango 0.18.2, and its destroy command
+  removes all virtual outputs including ambilight. Oo7 remains Secret Service.
 - The package retains its targeted legacy scratchpad IPC patch; the tiled
   scratchpad uses upstream special-workspace dispatchers directly.
 

@@ -2893,3 +2893,38 @@ the deployed config and verified Noctalia plus the original Umbriel environment
 remain healthy. No Mango session currently runs, so bindings take effect at the
 next Mango login. Persist the latest user configuration in the system with the
 previously pending sudo nixos-rebuild switch --flake /etc/nixos#moria.
+
+
+## [PENDING] Sunshine support for Mango — 2026-10-22
+
+Adapt Sunshine startup checks and virtual-output helper for Mango while keeping
+Umbriel behavior. Mango prepares a named sunshine output before service startup
+and adjusts its mode to the Moonlight client at connection. Keep the Mango output
+alive between streams: live disable/re-enable testing triggered a compositor
+ABRT in wlroots head_send_state via output_manager_apply_or_test and ended the
+graphical session at 18:53:43 CEST. The greeter recovered. Removed that cleanup
+path; repeated create/resize/reconnect/no-op cleanup passed in an isolated
+headless Mango with a separate runtime/config directory and no session bus.
+Ambilight remained enabled. No further live display tests.
+
+System before work: /nix/store/151cddvy8yvw1yp4x4m6lyacfjiyh6r7-nixos-system-erebor-26.05.20261013.a033e66.
+System/user failed-unit lists were empty; root and ESP mounted, existing boot
+entries inspected without changes. Sudo requires a password. Permanent system
+activation remains pending; do not claim Moonlight streaming verified.
+
+Final validation: nix flake check, nixos-rebuild dry-build, and the generated
+Sunshine user unit build passed. Isolated Mango verified the actual generated
+ExecCondition and ExecStartPre, named sunshine capture selection, and NVENC
+H.264/HEVC/AV1 initialization. Sunshine remained running with its HTTPS UI until
+test cleanup. Test state and credentials used a temporary XDG_CONFIG_HOME;
+existing Sunshine credentials were not changed. Moonlight end-to-end remains
+unverified. Both isolated test compositors and Sunshine were stopped.
+
+Loaded a temporary runtime drop-in at
+/run/user/1000/systemd/user/sunshine.service.d/mango.conf, using the built unit
+rooted by /run/user/1000/sunshine-mango-unit. Verified systemd uses the new
+condition, preparation and config. It takes effect at next Mango login; no
+graphical session is currently running. Runtime setup lasts this boot.
+Next: log into Mango and verify Moonlight; persist with sudo nixos-rebuild
+switch --flake /etc/nixos#moria, then unlink the runtime mango.conf drop-in
+and run systemctl --user daemon-reload. User's Crucial/VM work remains separate.
