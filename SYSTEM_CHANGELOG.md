@@ -1,6 +1,6 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
-## [PENDING] Add password-authenticated remote desktop over Tailscale — 2026-10-22
+## [COMPLETED] Add password-authenticated remote desktop over Tailscale — 2026-10-22
 
 Add XRDP with a separate XFCE X11 session for Android access before local
 login. Open TCP 3389 only on tailscale0, disallow root and empty-password
@@ -26,9 +26,15 @@ passed via loopback and the host's own Tailscale address. These local probes
 do not verify the Android network path or password login. Root and ESP UUIDs
 remain unchanged. No reboot was performed.
 
-Mandatory next action: verify an Android login over Tailscale to
-100.108.216.80 as janzon and reconnect to the session. Android login is the
-remaining user-facing validation; complete this entry once confirmed.
+The user confirmed the XFCE desktop opens successfully from Android.
+PAM logs confirm a janzon XRDP session opened at 19:05:46; loginctl shows
+remote session 11 while the local seat remains at the greeter. Both services
+remain active with no failed system units. Before-local-login access is
+therefore verified without automatic local login. Session startup emitted
+a dbus-update-activation-environment warning about the private bus lacking
+systemd activation; the desktop nevertheless opened successfully.
+Reconnect and a full reboot cycle were not exercised. Services are enabled
+at multi-user.target for subsequent boots.
 
 Active system before this change:
 /nix/store/151cddvy8yvw1yp4x4m6lyacfjiyh6r7-nixos-system-erebor-26.05.20261013.a033e66
