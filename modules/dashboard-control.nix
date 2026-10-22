@@ -4,6 +4,7 @@
     description = "Local Caddy dashboard controls";
     wantedBy = [ "default.target" ];
     unitConfig.ConditionUser = "janzon";
+    environment.DASHBOARD_WLED_URL = "http://192.168.1.118";
     path = [ pkgs.systemd pkgs.wlopm pkgs.niri config.programs.umbriel.package
       config.programs.mango.package ];
     serviceConfig = {

@@ -4,13 +4,37 @@ import json
 import os
 import socket
 import subprocess
+import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit
+from urllib.request import Request, urlopen
 
 
 HOSTS = {"moria", "erebor", "localhost", "127.0.0.1", "moria.local", "erebor.local",
          "moria.jzon.pl", "erebor.jzon.pl"}
 ACTIONS = {"display-on", "display-off", "ambilight-on", "ambilight-off", "sleep", "power-off"}
+AMBILIGHT_LOCK = threading.Lock()
+
+
+def wled_state(state):
+    url = os.environ["DASHBOARD_WLED_URL"].rstrip("/") + "/json/state"
+    request = Request(url, data=json.dumps(state).encode(),
+                      headers={"Content-Type": "application/json"})
+    with urlopen(request, timeout=5) as response:
+        result = json.load(response)
+    if not result.get("success"):
+        raise RuntimeError("WLED rejected the power command")
+
+
+def hyperhdr_leds(enabled):
+    request = {"command": "componentstate", "componentstate": {
+        "component": "LEDDEVICE", "state": enabled}, "tan": 1}
+    with socket.create_connection(("127.0.0.1", 19444), timeout=5) as sock:
+        sock.sendall((json.dumps(request) + "\n").encode())
+        with sock.makefile("rb") as stream:
+            response = json.loads(stream.readline(65536))
+    if not response.get("success"):
+        raise RuntimeError(response.get("error", "HyperHDR rejected the request"))
 
 
 def run(*args, env=None):
@@ -50,15 +74,15 @@ def action(name):
         else:
             raise RuntimeError("No supported desktop session is running")
     elif name.startswith("ambilight-"):
-        # Toggle LED output without losing the PipeWire capture selection.
-        request = {"command": "componentstate", "componentstate": {
-            "component": "LEDDEVICE", "state": name == "ambilight-on"}, "tan": 1}
-        with socket.create_connection(("127.0.0.1", 19444), timeout=5) as sock:
-            sock.sendall((json.dumps(request) + "\n").encode())
-            with sock.makefile("rb") as stream:
-                response = json.loads(stream.readline(65536))
-        if not response.get("success"):
-            raise RuntimeError(response.get("error", "HyperHDR rejected the request"))
+        # WLED can retain realtime output despite acknowledging power off.
+        # Override it until explicitly enabled, preserving PipeWire capture.
+        with AMBILIGHT_LOCK:
+            if name == "ambilight-on":
+                wled_state({"lor": 0, "on": True})
+                hyperhdr_leds(True)
+            else:
+                hyperhdr_leds(False)
+                wled_state({"on": False, "live": False, "lor": 2})
     elif name in {"sleep", "power-off"}:
         # login1 applies the existing wheel policy and respects inhibitors.
         method = "Suspend" if name == "sleep" else "PowerOff"

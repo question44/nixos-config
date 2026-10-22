@@ -1,5 +1,26 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [PENDING] Make dashboard ambilight off override WLED realtime — 2026-10-22
+
+The dashboard successfully disabled HyperHDR LEDDEVICE, but WLED retained
+UDP realtime output while reporting power off. Sending on=false, live=false
+and lor=2 released realtime mode, and the user confirmed the LEDs went dark.
+Update the dashboard to apply this override after disabling HyperHDR output;
+the on action clears lor to 0 before enabling output. Serialize these actions
+to prevent interleaving. Keep the WLED endpoint in the service environment.
+
+Seven tests and flake check passed; dry-build passed. The actual updated
+actions were tested against HyperHDR/WLED: on cleared the override; off left
+on=false, lor=2, live=false. LEDs were left off. No capture restart was used.
+Full build passed:
+/nix/store/j5fnm81vjs3bl96360lcm316n67zhbpa-nixos-system-erebor-26.05.20261013.a033e66.
+Activation pending. Mandatory next action: sudo nixos-rebuild switch --flake
+/etc/nixos#moria, then verify the dashboard off/on buttons and deployed
+dashboard-control environment. Current generation is 196; root/ESP UUIDs
+are unchanged and no failed system units were found. Sudo needs a password.
+No reboot or storage changes are required. Unrelated disk/changelog edits
+must remain outside this commit.
+
 ## [COMPLETED] Add password-authenticated remote desktop over Tailscale — 2026-10-22
 
 Add XRDP with a separate XFCE X11 session for Android access before local

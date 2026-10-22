@@ -59,6 +59,21 @@ class Requests(unittest.TestCase):
 
 
 class Dispatch(unittest.TestCase):
+    @patch.object(control, "wled_state")
+    @patch.object(control, "hyperhdr_leds")
+    def test_ambilight_releases_realtime_override_on_enable(self, leds, wled):
+        calls = unittest.mock.Mock()
+        calls.attach_mock(leds, "leds")
+        calls.attach_mock(wled, "wled")
+        control.action("ambilight-off")
+        control.action("ambilight-on")
+        self.assertEqual(calls.mock_calls, [
+            unittest.mock.call.leds(False),
+            unittest.mock.call.wled({"on": False, "live": False, "lor": 2}),
+            unittest.mock.call.wled({"lor": 0, "on": True}),
+            unittest.mock.call.leds(True),
+        ])
+
     @patch.object(control, "run")
     def test_power_uses_login1_without_forcing_inhibitors(self, run):
         for name, method in [("sleep", "Suspend"), ("power-off", "PowerOff")]:
