@@ -2984,3 +2984,17 @@ Runtime recovery only: no Nix configuration or system generation change
 (system-194-link); no boot or mount changes. Existing Crucial/VM and Sunshine
 work remains untouched. If this recurs after changing desktop sessions, restart
 the desktop portal before HyperHDR so it refreshes backend capabilities.
+
+
+## [COMPLETED] Add Noctalia restart shortcut in Umbriel — 2026-10-22
+
+Assigned unused Super+Shift+F6 to systemctl --user restart noctalia.service,
+with key repeat disabled. Umbriel config validation, nix flake check and
+nixos-rebuild dry-build passed. Built and activated Home Manager generation
+/nix/store/7ivz4wpk8jnj2n2pihkwxicqqiix5qwr-home-manager-generation after
+verifying the only changed deployed file was Umbriel config.toml; reloaded it
+through config-replace. Invoked the binding's exact action through Umbriel IPC:
+Noctalia restarted from PID 1266791 to 1676920 and is active/running. Physical
+key delivery awaits user use. No failed user units. System generation remains
+194; canonical shortcut is included in the next system rebuild. Unrelated
+Crucial/VM and Sunshine changes remain untouched.

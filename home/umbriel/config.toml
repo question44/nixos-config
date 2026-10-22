@@ -64,6 +64,7 @@ default_output = "sunshine"
 
 [keybinds]
 # Launchers and session controls
+"Super+Shift+F6" = { action = "spawn:systemctl --user restart noctalia.service", repeat = false }
 "Ctrl+Alt+Super+Insert" = { action = "spawn:/home/janzon/.local/bin/umbriel-hdr-toggle", repeat = false }
 "Ctrl+Alt+Super+Slash" = { action = "cheatsheet-toggle", repeat = false }
 "Ctrl+Alt+Super+Space" = { action = "spawn:vicinae toggle", repeat = false }
