@@ -113,6 +113,7 @@
               home.stateVersion = "26.05";
               # Phone Connect invokes gdbus through Noctalia's existing PATH.
               home.file.".local/bin/gdbus".source = "${pkgs.glib.bin}/bin/gdbus";
+              home.file.".local/bin/kdialog".source = "${pkgs.kdePackages.kdialog}/bin/kdialog";
               programs.umbriel = {
                 enable = true;
                 settings = ./home/umbriel/config.toml;

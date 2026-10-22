@@ -3012,3 +3012,15 @@ the panel shows one connected Galaxy S26 Ultra and battery 82%.
 System generation remains 194; no failed user units. Root and ESP remain
 mounted, with no system or boot activation. Unrelated Crucial mount and
 changelog edits remain untouched.
+
+
+## [COMPLETED] Add KDialog for Phone Connect file selection — 2026-10-22
+
+Declared ~/.local/bin/kdialog through Home Manager from kdePackages.kdialog.
+Flake check and system dry-build passed. Compared Home Manager generations:
+only new deployed file was kdialog, with the package profile unchanged.
+Activated /nix/store/p7gxpjd5m4gjniwrm0jnkwd8y0lvd4z6-home-manager-generation.
+Verified kdialog 26.04.3 resolves on Noctalia's existing PATH and its file
+picker opens as an org.kde.kdialog window in Umbriel. The dialog was closed
+without selecting or sending a file. No failed user units. System generation
+194 and boot configuration unchanged. Unrelated working-tree changes preserved.
