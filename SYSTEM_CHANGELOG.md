@@ -1,5 +1,40 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
+## [PENDING] Add password-authenticated remote desktop over Tailscale — 2026-10-22
+
+Add XRDP with a separate XFCE X11 session for Android access before local
+login. Open TCP 3389 only on tailscale0, disallow root and empty-password
+logins, and give the remote session its own D-Bus bus and X11 environment.
+The local Wayland login configuration is preserved. Credentials and generated
+TLS keys remain outside the repository and Nix store. Existing unrelated
+external-disk and changelog edits are not part of this change.
+
+Flake check, dry-build and full build passed. The built XFCE session and its
+window manager, panel, desktop and settings daemon ran successfully on an
+authenticated temporary Xvfb display with a temporary home and private D-Bus.
+Inspected the built PAM rules (no empty-password authentication), sesman
+configuration (no root login), and firewall script (3389 only on tailscale0).
+An initial process-name assertion needed adjustment for Nix wrapper names;
+the corrected live session check passed. Test processes and home were removed.
+
+Built system:
+/nix/store/jgczvsnlbjlg3ia1vknj7nb5fi5gz42l-nixos-system-erebor-26.05.20261013.a033e66.
+The user activated this build; generation 194 is active and persistent.
+Both xrdp and xrdp-sesman are enabled and running; TCP 3389 is listening,
+and there are no failed system units. RDP negotiation and TLS 1.3 handshakes
+passed via loopback and the host's own Tailscale address. These local probes
+do not verify the Android network path or password login. Root and ESP UUIDs
+remain unchanged. No reboot was performed.
+
+Mandatory next action: verify an Android login over Tailscale to
+100.108.216.80 as janzon and reconnect to the session. Android login is the
+remaining user-facing validation; complete this entry once confirmed.
+
+Active system before this change:
+/nix/store/151cddvy8yvw1yp4x4m6lyacfjiyh6r7-nixos-system-erebor-26.05.20261013.a033e66
+(persistent generation 193). No failed system units; root/ESP UUIDs match
+AGENTS.md. No reboot or storage change is planned.
+
 ## [PENDING] Supply T3 browser runtime libraries — 2026-10-21
 
 Provide Chromium runtime libraries through LD_LIBRARY_PATH in the existing

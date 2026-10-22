@@ -90,6 +90,7 @@ in
     ../../modules/mac-approval.nix
     ../../modules/spotify.nix
     ../../modules/sunshine.nix
+    ../../modules/remote-desktop.nix
     ../../modules/steam-theme.nix
     ./hardware-configuration.nix
     ./services/jellyfin.nix
