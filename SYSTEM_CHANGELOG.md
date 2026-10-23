@@ -13,6 +13,49 @@ whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
 
+## [COMPLETED] Install GRUB with current-wallpaper menu for next boot — 2026-10-23
+
+SYS-029. Replaced the declarative systemd-boot selection with EFI GRUB, as
+explicitly requested. Installed unmodified Pictures/redhead.png as static
+menu wallpaper, matching dark plum panel/cream text/copper highlight, 20px
+DejaVu Sans, five-second timeout, gfxmode=auto and explicit gfxpayload=keep.
+Theme uses proportional crop to avoid stretching. Original desktop wallpaper
+unchanged. No OS probing: explicit Windows and systemd-boot recovery entries
+search ESP UUID 38B5-8386. Existing Plymouth BGRT/SimpleDRM retained.
+
+Flake check and full build passed. Isolated UEFI GRUB/OVMF VM at 1920x1080
+verified theme rendering/font/contrast; fixed palette PNG bit depth and layer
+ordering before final build. Installed exact checked target
+`/nix/store/ib34cmziqz3n7djjfmq95s4a04nzbgah-nixos-system-erebor-26.05.20261021.da6dc0e`
+as selected generation 210 using profile selection and boot installation.
+GRUB syntax check passed; first Linux entry points to that target and installed
+kernel/initrd hashes match build. Installed theme files match repository assets.
+`/boot/EFI/NixOS-boot/grubx64.efi` installed successfully. Firmware entry 0000
+NixOS-boot is first in BootOrder, followed by all previous entries in unchanged
+relative order; every previous firmware entry and all pre-existing EFI and
+systemd-boot menu files passed preservation checks.
+
+Snapper unavailable; verified read-only snapshot
+`/btrfs-top/nixos-root-pre-grub-20261023`. Verified ESP archive, snapshot
+metadata, boot-file hashes and firmware listings are under root-only
+`/var/lib/system-recovery/grub-migration-20261023`. Root/ESP UUIDs match,
+Secure Boot disabled, no failed system units; ESP has 4.5 GiB free after install.
+Replaced deprecated pkgs.system with pkgs.stdenv.hostPlatform.system in
+Darkly and Vicinae package selections after user reported evaluation warning.
+Final flake check and rebuild pass without that warning and produce exactly
+the installed target above; no further boot installation needed.
+Live system remains generation 208 (`c7kdv0ai9w7fv9dhawd6p9b5db2i3gzw`);
+no live activation, greeter restart or reboot performed.
+
+Installation scope complete; physical GRUB boot/menu and graphics handoff
+acceptance remain open in SYS-029. gfxpayload preserves mode, not guaranteed
+pixels across NVIDIA takeover. Mandatory next check after user reboot: verify
+BootCurrent=0000/GRUB and generation 210, wallpaper/menu readability, Linux
+boot, Plymouth/login handoff and mounts/services. Recovery: GRUB systemd-boot
+recovery entry or firmware Linux Boot Manager 0004; its preserved default
+209 and generations 208/205 are available. Windows EFI/firmware entries retained;
+chainloading is configured but not boot-tested. No automatic reboot queued.
+
 ## [COMPLETED] Remove temporary Plymouth diagnostics for next boot — 2026-10-23
 
 SYS-027 visual acceptance passed on booted generation 208: user confirms

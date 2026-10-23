@@ -1,0 +1,58 @@
+title-text: ""
+desktop-image: "wallpaper.png"
+desktop-image-scale-method: "crop"
+desktop-image-h-align: "center"
+desktop-image-v-align: "center"
+desktop-color: "#160f1a"
+terminal-font: "DejaVu Sans Regular 20"
+terminal-box: "panel_*.png"
+terminal-left: "6%"
+terminal-top: "20%"
+terminal-width: "88%"
+terminal-height: "65%"
+
++ label {
+  left = 7%
+  top = 29%
+  width = 39%
+  height = 38
+  font = "DejaVu Sans Regular 20"
+  color = "#edc2a2"
+  text = "EREBOR"
+}
+
++ boot_menu {
+  left = 7%
+  top = 36%
+  width = 39%
+  height = 31%
+  item_font = "DejaVu Sans Regular 20"
+  item_color = "#e7dbd5"
+  selected_item_color = "#fff5e9"
+  selected_item_pixmap_style = "selected_*.png"
+  item_height = 48
+  item_padding = 12
+  item_spacing = 6
+  icon_width = 0
+  icon_height = 0
+  scrollbar = false
+}
+
++ label {
+  left = 7%
+  top = 70%
+  width = 39%
+  height = 26
+  font = "DejaVu Sans Regular 20"
+  color = "#bfa8b6"
+  id = "__timeout__"
+  text = "Booting in %d seconds"
+}
+
++ image {
+  left = 5%
+  top = 26%
+  width = 43%
+  height = 50%
+  file = "panel_c.png"
+}

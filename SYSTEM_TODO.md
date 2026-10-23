@@ -18,6 +18,25 @@ Earlier approvals remain bounded by their original scope and safety precondition
 
 ## Open checks
 
+<a id="sys-029"></a>
+
+### SYS-029 — Migrate to GRUB with wallpaper menu
+
+**Status:** OPEN · **Reviewed:** 2026-10-23
+
+Installed GRUB generation 210 as firmware default NixOS-boot (0000), with
+current wallpaper, matching plum/cream/copper menu, five-second timeout and
+EFI gfxpayload=keep. Flake/build/syntax/kernel/initrd/theme checks passed;
+UEFI VM preview verified rendering at 1920x1080. Existing EFI files, systemd-boot
+menu and prior firmware entries preserved; root snapshot/ESP archive verified.
+Live remains 208; no reboot performed. Next check after user reboot:
+BootCurrent=0000/GRUB, generation 210, physical menu readability, Linux boot,
+Plymouth/login handoff and mounts/services. Windows/recovery chainloads not
+boot-tested. Recovery: firmware Linux Boot Manager 0004 or GRUB recovery menu.
+**Done when:** user confirms physical GRUB menu and Linux boot/handoff, with
+post-boot generation/mount/service checks recorded.
+**Evidence:** [GRUB installation](SYSTEM_CHANGELOG.md#completed-install-grub-with-current-wallpaper-menu-for-next-boot--2026-10-23).
+
 <a id="sys-028"></a>
 
 ### SYS-028 — Resolve duplicate Noctalia startup

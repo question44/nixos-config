@@ -31,6 +31,11 @@ Unfinished work and verification checks belong in
 
 ## Reusable operational pitfalls
 
+- GRUB migration retains firmware **Linux Boot Manager** (0004), loading
+  `/EFI/systemd/systemd-bootx64.efi`, and its existing generation menu as a
+  recovery path. GRUB also offers a systemd-boot recovery chainload. Verified
+  preserved at installation on 2026-10-23; see SYS-029 for first-boot acceptance.
+
 - Windows VM disk now resides on Crucial UUID `604F-A363` at
   `/srv/external/crucial/windows11.qcow2`. The live local image was removed;
   NixOS recovery snapshots retain its blocks. Older domain XML must have its
