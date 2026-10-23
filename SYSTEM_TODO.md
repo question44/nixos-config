@@ -1,0 +1,311 @@
+# System tasks for `erebor`
+
+Current unfinished work belongs here. History and dated evidence belong in
+[SYSTEM_CHANGELOG.md](SYSTEM_CHANGELOG.md); recovery knowledge belongs in
+[SYSTEM_CONTEXT.md](SYSTEM_CONTEXT.md). Updated: 2026-10-23.
+
+- **OPEN:** a specific remaining task or unverified result is known.
+- **ACTIVE:** work is underway; include the current checkpoint, recovery path
+  and next safe step for disruptive operations.
+- **REVIEW:** migrated historical work; reconcile later evidence and current
+  intent before treating it as something to execute.
+- **DONE / CANCELLED:** closed with dated evidence or a reason; retain the ID.
+
+Each item has one stable ID. Do not renumber or reuse IDs. Link related records
+instead of copying their instructions. No review task authorizes a reboot,
+activation, storage change, secret archive or graphical-session interruption.
+Earlier approvals remain bounded by their original scope and safety preconditions.
+
+## Open checks
+
+<a id="sys-001"></a>
+
+### SYS-001 — Verify Fedora chainloading
+
+**Status:** OPEN · **Reviewed:** 2026-10-23
+
+Observed 2026-10-23: Fedora loader/menu entry exists; boot not tested.
+
+**Done when:** After saving work, boot Fedora from systemd-boot and confirm a usable Fedora session; confirm NixOS and Windows remain available.
+
+**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-001-1).
+
+<a id="sys-002"></a>
+
+### SYS-002 — Verify physical display wake
+
+**Status:** OPEN · **Reviewed:** 2026-10-23
+
+Observed 2026-10-23: generation 198 boots Linux 6.18.57 / NVIDIA 615.78.08 without NVML mismatch or recorded modeset failures.
+
+**Done when:** With remote recovery available and work saved, exercise dashboard display off/on and confirm a usable picture on the physical AW3423DWF. Record physical confirmation and kernel-log results.
+
+**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-002-1). See also the [related record](SYSTEM_CHANGELOG.md#record-sys-002-2).
+
+<a id="sys-003"></a>
+
+### SYS-003 — Verify T3 browser preview
+
+**Status:** OPEN · **Reviewed:** 2026-10-23
+
+Observed 2026-10-23: T3 is active with the declared library path; preview was not exercised.
+
+**Done when:** Open a browser preview through T3 and confirm it renders successfully. Record the result; deployed libraries alone do not verify preview.
+
+**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-003-1).
+
+<a id="sys-004"></a>
+
+### SYS-004 — Verify dashboard sleep and shutdown
+
+**Status:** OPEN · **Reviewed:** 2026-10-23
+
+Observed 2026-10-23: deployment, seven tests, HTTPS ambilight actions and cross-origin rejection pass. Display wake is SYS-002.
+
+**Done when:** When the user is ready for interruption, confirm dashboard sleep/resume and shutdown followed by successful startup. Record each separately; leave untested actions open.
+
+**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-004-1).
+
+## Historical work to reconcile
+
+These items are not newly verified failures. Review may close them without any
+system change. The archive contains later records that may supersede them.
+
+<a id="sys-005"></a>
+
+### SYS-005 — Review HyperHDR capture target
+
+**Status:** REVIEW · **Reviewed:** 2026-10-23
+
+Observed 2026-10-23: saved portal selection is physical DP-1. Earlier work requested wallpaper-only ambilight; latest troubleshooting concerned reaction to display content.
+
+**Done when:** Confirm the desired capture behavior before changing it. Verify either display-content response or wallpaper-only isolation, record the chosen behavior, and close or cancel the old request accordingly.
+
+**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-005-1).
+
+<a id="sys-006"></a>
+
+### SYS-006 — Reconcile historical Intel passthrough checkpoint
+
+**Status:** REVIEW · **Reviewed:** 2026-10-23
+
+Historical checkpoint describes Intel guest acceleration. Later GPU assignments changed; it is not a current activation instruction.
+
+**Done when:** Compare current host/domain configuration with subsequent GPU changes. Close as superseded if replaced, otherwise identify and verify the specific missing acceptance check. Do not reapply old VFIO instructions.
+
+**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-006-1).
+
+<a id="sys-007"></a>
+
+### SYS-007 — Reconcile original Windows VM setup checkpoint
+
+**Status:** REVIEW · **Reviewed:** 2026-10-23
+
+Guest installation and later acceleration work are recorded elsewhere in the changelog.
+
+**Done when:** Reconcile later VM setup/GPU records with the original acceptance criteria; close resolved or superseded work and retain only a specific remaining check.
+
+**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-007-1).
+
+<a id="sys-008"></a>
+
+### SYS-008 — Review failed historical Btrfs compaction
+
+**Status:** REVIEW · **Reviewed:** 2026-10-23
+
+The recorded bounded balance attempts failed with ENOSPC; this does not show that compaction is needed now.
+
+**Done when:** Inspect current space and subsequent remediation records. Close the failed attempt with its outcome if no work remains; otherwise propose a current, bounded remediation. Do not retry balance from the old checkpoint.
+
+**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-008-1).
+
+<a id="sys-009"></a>
+
+### SYS-009 — Reconcile eza activation
+
+**Status:** REVIEW · **Reviewed:** 2026-10-23
+
+Historical build attempts failed with ENOSPC; later package/alias changes may supersede them.
+
+**Done when:** Check current declarative/deployed eza and aliases and later records. Close if present and verified, or state the precise missing work before implementing anything.
+
+**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-009-1).
+
+<a id="sys-011"></a>
+
+### SYS-011 — Verify Niri startup placement
+
+**Status:** REVIEW · **Reviewed:** 2026-10-23
+
+Historical config validation/activation passed; fresh-session behavior was not confirmed.
+
+**Done when:** At a planned Niri login, check the initial workspace and ordinary app placement against current configuration, or close as superseded if that behavior was removed.
+
+**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-011-1).
+
+<a id="sys-012"></a>
+
+### SYS-012 — Review Discord shortcut and tab indicator checks
+
+**Status:** REVIEW · **Reviewed:** 2026-10-23
+
+Historical direct Discord launch passed; physical key delivery and indicator appearance were unverified.
+
+**Done when:** Inspect current bindings, then confirm Right Ctrl+D opens Discord and the intended tab indicator is visible in the applicable session; close superseded parts explicitly.
+
+**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-012-1).
+
+<a id="sys-013"></a>
+
+### SYS-013 — Reconcile session chooser verification
+
+**Status:** REVIEW · **Reviewed:** 2026-10-23
+
+Umbriel is now running, but the old entry required chooser verification for both sessions.
+
+**Done when:** Inspect current session definitions and later login evidence; confirm Niri and Umbriel are available at a planned login or close as superseded by the current chooser design.
+
+**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-013-1).
+
+<a id="sys-014"></a>
+
+### SYS-014 — Review Tailscale backup workflow status
+
+**Status:** REVIEW · **Reviewed:** 2026-10-23
+
+Only an old requested-work record exists here; completion is not established.
+
+**Done when:** Inspect tracked workflow and validation evidence, then close if verified or define remaining work. Preserve the original secret-handling constraints; do not create archives or expose keys during review.
+
+**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-014-1).
+
+<a id="sys-015"></a>
+
+### SYS-015 — Reconcile xremap device and mapping checks
+
+**Status:** REVIEW · **Reviewed:** 2026-10-23
+
+Historical notes report missing device access/devices; later records show successful xremap use.
+
+**Done when:** Inspect current service/device access and later shortcut results, then verify the current mappings or close superseded device-reconnect instructions. Do not reboot merely to satisfy the old checkpoint.
+
+**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-015-1). See also the [related record](SYSTEM_CHANGELOG.md#record-sys-015-2).
+
+<a id="sys-016"></a>
+
+### SYS-016 — Review lingering and Oo7 login verification
+
+**Status:** REVIEW · **Reviewed:** 2026-10-23
+
+Historical activation checks passed; deliberate logout/login and keyring unlock were still unconfirmed.
+
+**Done when:** Compare current PAM/linger configuration and later login evidence; verify the intended login/keyring behavior during a planned session transition or close superseded requirements. Do not read keyring secrets.
+
+**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-016-1).
+
+<a id="sys-017"></a>
+
+### SYS-017 — Reconcile bridge persistence and client playback
+
+**Status:** REVIEW · **Reviewed:** 2026-10-23
+
+Historical host/guest LAN probes passed. A later UEFI checkpoint states bridge persistence was resolved.
+
+**Done when:** Close the old activation step using later evidence; verify whether playback from a separate physical LAN client remains relevant and untested, and record that result separately.
+
+**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-017-1).
+
+<a id="sys-018"></a>
+
+### SYS-018 — Close historical firmware-reboot checkpoint
+
+**Status:** REVIEW · **Reviewed:** 2026-10-23
+
+The record contains a 2026-10-20 pre-reboot checkpoint; current NixOS has since booted generation 198.
+
+**Done when:** Check available evidence or user confirmation of the firmware visit and close the historical operation as completed or outcome unknown. Do not schedule another firmware reboot or rely on pruned generation 172.
+
+**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-018-1).
+
+<a id="sys-019"></a>
+
+### SYS-019 — Reconcile lsof activation
+
+**Status:** REVIEW · **Reviewed:** 2026-10-23
+
+Historical build passed; installed-command verification was pending.
+
+**Done when:** Check the current declared package and installed lsof command, and close with observed evidence or a specific remaining task.
+
+**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-019-1).
+
+<a id="sys-020"></a>
+
+### SYS-020 — Reconcile Zen Browser deployment
+
+**Status:** REVIEW · **Reviewed:** 2026-10-23
+
+Historical user-profile installation existed; declarative deployment and duplicate cleanup were pending.
+
+**Done when:** Verify the current declarative/deployed browser and profile ownership. Close deployment with evidence; identify any redundant user-profile entry before considering removal.
+
+**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-020-1).
+
+<a id="sys-021"></a>
+
+### SYS-021 — Reconcile Mango login and persistence
+
+**Status:** REVIEW · **Reviewed:** 2026-10-23
+
+Later completed Mango records show activation and live use, so the old test-generation instructions may be stale.
+
+**Done when:** Reconcile later persistent activation and hardware-login evidence. Close resolved steps and retain only any specific missing chooser or input check; do not restart greetd as a review step.
+
+**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-021-1).
+
+<a id="sys-022"></a>
+
+### SYS-022 — Review Crucial mount and VM relocation progress
+
+**Status:** REVIEW · **Reviewed:** 2026-10-23
+
+The requested mount/relocation has a pending checkpoint and existing source edits; current disk/domain state was not audited.
+
+**Done when:** Read current mount/domain state and copy-verification evidence. Establish exactly which steps remain and retain recovery/source data until destination and guest startup are verified. No copy, deletion or domain change is authorized by this tracking migration.
+
+**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-022-1).
+
+<a id="sys-023"></a>
+
+### SYS-023 — Review Mango Moonlight acceptance check
+
+**Status:** REVIEW · **Reviewed:** 2026-10-23
+
+Isolated compositor/NVENC tests passed; end-to-end Moonlight and persistent deployment were unverified in the old record.
+
+**Done when:** Inspect current deployed unit and any obsolete runtime drop-in; reconcile later activation evidence and verify Moonlight in a planned Mango session. Do not end the current session during review.
+
+**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-023-1).
+
+## Closed tasks
+
+<a id="sys-010"></a>
+
+### SYS-010 — Umbriel background workspace startup check
+
+**Status:** CANCELLED · **Closed:** 2026-10-23
+
+Superseded by the completed 2026-10-20 replacement of background-apps with native scratchpad.
+
+**Closure:** No action. The former startup-helper verification no longer applies; do not restore the removed helper.
+
+**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-010-1).
+
+## Adding or closing a task
+
+Use the next unused SYS number (currently SYS-024). Record status, review date,
+what remains, a concrete completion condition, and a link to evidence. For active
+work, record the next safe step and any applicable recovery checkpoint. Required
+acceptance checks block completion of that task; optional follow-ups get their
+own ID. On closure, add the date and observed result, user confirmation, or
+superseding change. Never infer successful activation from a build alone.

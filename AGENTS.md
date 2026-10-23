@@ -44,12 +44,41 @@ working Fedora and Windows installations, and verify every material change.
 - After activation or reboot, verify the affected services, generation,
   mounts, bootability, and user-facing behavior. Record the result before
   declaring the change complete.
-- Use `SYSTEM_CHANGELOG.md` for completed changes and pending operations;
-  prefix active work with **[PENDING]** and update that same entry to
-  **[COMPLETED]** with verification results. Keep `SYSTEM_CONTEXT.md` concise
-  and limited to current non-declarative facts, recovery information, and
-  verified operational pitfalls. `INSTALLATION_LOG.md` is the historical
-  installation record and should not be used for routine maintenance history.
+- Follow the record ownership and closure rules below.
+
+## System records and task tracking
+
+- Nix files define intended configuration. Avoid duplicating package, service,
+  mount and version inventories in operational documents.
+- `SYSTEM_CHANGELOG.md` records dated changes: what changed and why, activation
+  outcome/generation when applicable, validation evidence, and explicit limits.
+  Put new entries at the top. Record versions as dated evidence, not live state.
+- `SYSTEM_TODO.md` is the single list of unfinished work. Give each task a stable
+  `SYS-NNN` ID, status, review date, concrete completion condition and evidence
+  links. Use OPEN for known work, ACTIVE for work underway, REVIEW for uncertain
+  historical work, and DONE/CANCELLED with dated evidence/reason for closure.
+  Keep IDs after closure; consolidate duplicate tasks by linking their records.
+- `SYSTEM_CONTEXT.md` holds only current non-declarative facts, recovery knowledge
+  and verified pitfalls. Remove superseded facts; link tasks rather than copying
+  their status. Check live state before using any historical recovery path.
+- Complete an implementation record once its stated scope is activated and
+  required verification passes. A build alone does not prove activation.
+  Track optional follow-ups and separate acceptance checks as linked tasks;
+  explicitly required acceptance checks still block their own task's completion.
+  Distinguish observed results, user confirmation, and untested behavior.
+- Use `[PENDING]` changelog entries only for active material operations. Link the
+  task; before disruptive operations record exact live generation, prechecks,
+  recovery path, risks and next safe step, then read back the checkpoint. After
+  verification, update the same entry with the outcome and resolve the task.
+  Close failed/cancelled attempts with their actual result; do not imply success.
+- Historical commands, approvals and checkpoints are evidence, not a current
+  action queue. Resolve obsolete next-step instructions; preserve their dated
+  context where useful. Never blindly replay an old reboot, activation or disk
+  operation. `[RECORDED]` legacy entries have uncertain outcomes and link to a
+  REVIEW task; reconcile newer evidence before doing system work.
+- Keep entries concise. Routine inspections belong in a related task's evidence
+  when they resolve a question, not a new changelog entry. Commit related records
+  with the configuration change and leave unrelated working-tree edits alone.
 
 ## System design boundaries
 

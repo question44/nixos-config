@@ -1,15 +1,18 @@
 # System context for NixOS `erebor` (flake target `moria`)
 
-Last inspected: 2026-10-16. NixOS 26.05 is installed and currently booted
-from the `nixos-root` subvolume. Initial NixOS boot and desktop checks passed,
-and Fedora was subsequently verified intact from its firmware entry.
+Verify live state before acting; this file is not a system inventory. Initial
+NixOS boot and desktop checks passed, and Fedora was historically verified
+intact from its firmware entry. That does not verify the later systemd-boot
+chainload entry; its outstanding check is tracked in SYSTEM_TODO.md.
 
 This document becomes the NixOS-side operational memory after the parallel
 installation. Verify live state before acting and do not record passwords,
 tokens, private keys, browser profiles, Wi-Fi credentials, or other secrets.
 Keep it concise: retain only important information relevant now, and remove an
 entry when it becomes obsolete, superseded, or no longer applies. Historical
-changes belong in `SYSTEM_CHANGELOG.md`, not here.
+changes belong in [SYSTEM_CHANGELOG.md](SYSTEM_CHANGELOG.md), not here.
+Unfinished work and verification checks belong in
+[SYSTEM_TODO.md](SYSTEM_TODO.md); do not duplicate task status here.
 
 ## What belongs here
 

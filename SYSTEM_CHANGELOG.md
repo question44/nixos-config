@@ -1,6 +1,199 @@
 # NixOS system change log for `erebor` (flake target `moria`)
 
-## [PENDING] Make dashboard ambilight off override WLED realtime — 2026-10-22
+This file records dated changes and their evidence. Current unfinished work lives
+in [SYSTEM_TODO.md](SYSTEM_TODO.md); recovery knowledge lives in
+[SYSTEM_CONTEXT.md](SYSTEM_CONTEXT.md). Nix files define intended configuration.
+
+**Reading historical records:** versions, generations, permissions, recovery paths,
+and “next action” commands describe their recorded date. Recheck live state before
+acting. A historical checkpoint is not an instruction or fresh authorization.
+`[COMPLETED]` means the stated change was implemented and verified to the scope
+recorded; explicit limitations still apply. `[RECORDED]` preserves an older attempt
+whose final outcome is uncertain; its linked task holds the current disposition.
+New active operations use `[PENDING]` only while work is actually in progress.
+
+## [COMPLETED] Retire installation plan and separate installation log — 2026-10-23
+
+Removed INSTALL_PLAN.md and INSTALLATION_LOG.md after confirming the original
+installation, first-boot acceptance, snapshot reference and ESP backup checksum
+are already recorded in this changelog. Removed the obsolete log requirement
+from AGENTS.md. The deleted documents remain recoverable from Git history;
+ongoing history, tasks and recovery knowledge use SYSTEM_CHANGELOG.md,
+SYSTEM_TODO.md and SYSTEM_CONTEXT.md respectively.
+
+Validation: checked remaining repository references and diff whitespace.
+Documentation only; no system configuration or runtime state changed.
+
+## [COMPLETED] Separate change history from unfinished work — 2026-10-23
+
+Added SYSTEM_TODO.md with stable task IDs, concrete completion conditions,
+evidence dates, and explicit review status for uncertain historical work.
+Migrated all 25 old pending headings to linked historical records; consolidated
+kernel/recovery and xremap follow-ups. Closed the obsolete Umbriel background
+workspace check using the later scratchpad replacement record. Marked verified
+Fedora-entry, kernel/driver, T3-library and dashboard deployments completed while
+retaining their outstanding user-facing checks separately. Updated AGENTS.md and
+SYSTEM_CONTEXT.md to define record ownership, operation checkpoints and closure.
+
+Validation: checked migrated-task coverage, unique IDs, relative Markdown links,
+historical evidence retention and git diff whitespace. Documentation-only change;
+no rebuild, activation, reboot, firmware, storage or session change performed.
+
+## [COMPLETED] Retain only five NixOS system generations — 2026-10-23
+
+User explicitly authorized pruning NixOS system generations, retaining only
+the five newest. Scope is restricted to `/nix/var/nix/profiles/system` and
+its corresponding NixOS systemd-boot entries; do not prune user profiles,
+Nix store paths, Fedora, Windows, the ESP itself, or UEFI firmware entries.
+Pre-checks: current/default system generation is 198; root UUID is
+`5be9be17-20c9-4a47-ba2d-6adf1ceb4c55`, ESP UUID is `38B5-8386`, and no
+failed system units were present. Snapper is not installed/configured, so a
+Snapper snapshot is not applicable. Recovery before deletion is generation
+198 or another retained generation from the systemd-boot menu. Mandatory next
+action: enumerate the root-owned system profile, delete only generations
+older than the newest five, then verify the retained profile and boot entries.
+Verification: system profile symlinks now retain exactly generations 194, 195,
+196, 197, and 198, with generation 198 current/default. Fedora and Windows
+entries remain available. systemd-boot still lists stale NixOS entry files for
+generations 156–193; the profile deletion does not remove them itself.
+The current-system activation reconciled systemd-boot. Final verification
+confirms that both the system profile and NixOS menu contain only 194–198;
+Fedora and Windows remain available and no failed units are present.
+
+Validation on 2026-10-23 after reboot: system profile symlinks and bootctl
+both contain exactly 194–198. Generation 198 is booted, active, and default.
+Fedora and Windows boot-menu entries remain present. Root and ESP UUIDs
+match the safety instructions; both system and user failed-unit lists are empty.
+The earlier mandatory deletion/reconciliation steps are resolved.
+
+
+<a id="record-sys-001-1"></a>
+
+## [COMPLETED] Add Fedora to systemd-boot menu — 2026-10-23
+
+> Historical record; current disposition: [SYS-001](SYSTEM_TODO.md#sys-001).
+> Instructions and checkpoints below apply to their recorded date, not the current system.
+
+
+Configured a declarative systemd-boot chainload entry for Fedora's existing
+signed shim at `/EFI/fedora/shimx64.efi` on the ESP UUID `38B5-8386`. The
+file and existing UEFI Fedora entry `Boot0002` were verified before the
+change. No Fedora, Windows, ESP, or firmware boot-order files were modified.
+The root UUID `5be9be17-20c9-4a47-ba2d-6adf1ceb4c55` and ESP mount were
+verified, and no failed system units were present. Snapper is not installed,
+so a Snapper snapshot is not applicable. Activation succeeded on generation
+198; `bootctl` verifies the `Fedora` entry and existing Windows entry on the
+ESP. Mandatory next action: reboot and confirm that the `Fedora` entry starts
+Fedora successfully while NixOS and Windows entries remain available.
+
+Validation on 2026-10-23: generation 198 is now booted. bootctl lists
+fedora.conf targeting the existing /EFI/fedora/shimx64.efi, and both that
+shim and Windows bootmgfw.efi exist. Clarification: activation created an ESP
+loader entry file; the statement above about no ESP files being modified
+applies to preparation before activation, not the resulting loader entry.
+Successful Fedora chainloading remains unverified. Mandatory next action:
+user-initiated Fedora boot and confirmation; no reboot was run for this audit.
+
+
+<a id="record-sys-002-1"></a>
+
+## [COMPLETED] Update kernel and NVIDIA integration — 2026-10-23
+
+> Historical record; current disposition: [SYS-002](SYSTEM_TODO.md#sys-002).
+> Instructions and checkpoints below apply to their recorded date, not the current system.
+
+
+Updated only the `nixpkgs` flake lock from revision `a033e66` (2026-10-13)
+to `da6dc0e` (2026-10-21), then selected NVIDIA 615.78.08, the current
+new-feature Linux release, with `boot.kernelPackages.nvidiaPackages.mkDriver`.
+The prepared system closure is
+`/nix/store/fm1ia6jrmjbnih7s5k23wa4msglsxspq-nixos-system-erebor-26.05.20261021.da6dc0e`.
+Validation passed: `nix flake check --no-build`, `nixos-rebuild dry-build`,
+and `nixos-rebuild build --flake /etc/nixos#moria`. The next generation has
+Linux 6.18.57 and `nvidia-kernel-modules-615.78.08-6.18.57`. Activation
+succeeded on generation 198; the currently running generation is still 196
+on Linux 6.18.56 / NVIDIA 595.71.05. As expected before reboot, the new
+NVIDIA 615.78 userspace reports an NVML driver/library mismatch against the
+old loaded kernel module. Root UUID
+`5be9be17-20c9-4a47-ba2d-6adf1ceb4c55` and ESP UUID `38B5-8386` were
+verified; existing generations remain available as rollback entries. Snapper
+is not installed/configured, so no Snapper snapshot is applicable. Mandatory
+next action: reboot, then verify the running kernel, NVIDIA module/driver,
+display wake, mounts, boot entry, and failed units before marking complete.
+The recent NVIDIA display-wake incident remains a specific post-reboot
+validation risk.
+
+Post-reboot validation on 2026-10-23 supersedes the pre-reboot running-state
+and reboot instructions above. /run/booted-system, /run/current-system, and
+the default profile all resolve to generation 198:
+/nix/store/y69cmflagl0s0br6120545q27l3i0php-nixos-system-erebor-26.05.20261021.da6dc0e.
+uname reports Linux 6.18.57; /proc/driver/nvidia/version and nvidia-smi both
+report 615.78.08 on the RTX 4090, with no NVML mismatch. No NVIDIA Xid,
+flip-timeout, plane-fence failure, or atomic modeset errors were found in
+this boot's kernel journal. Root and ESP UUIDs match; bootctl marks 198
+selected/default and retains 194–197. No system or user units are failed.
+Umbriel reports DP-1 enabled/powered at 3440x1440, 164.9 Hz, HDR on.
+Implementation and boot validation are complete. Physical display wake remains
+unverified and is tracked separately in SYS-002; it does not leave the kernel
+and driver deployment pending.
+
+
+<a id="record-sys-002-2"></a>
+
+## [RECORDED] Recover NVIDIA display wake failure — 2026-10-23
+
+> Historical record; current disposition: [SYS-002](SYSTEM_TODO.md#sys-002).
+> Instructions and checkpoints below apply to their recorded date, not the current system.
+
+
+Post-reboot verification: normal login1 reboot was accepted and the host
+returned on generation 196. Root and ESP UUIDs match the checkpoint;
+greetd is active and the login screen session is running. No flip-timeout,
+plane-fence semaphore, atomic modeset, or NVRM Xid errors were found in the
+new boot's kernel journal at initial inspection. One Podman container
+healthcheck transient unit is failed; this is separate from display recovery.
+Physical display confirmation and post-login dashboard wake verification
+remain pending. Do not treat this reboot as a confirmed long-term fix.
+
+Display-on dashboard requests failed with Umbriel IPC exit status 1. Later
+requests returned success while the physical AW3423DWF still showed No signal.
+Kernel logs show NVIDIA 595.71.05 flip timeouts, plane fence semaphore failure,
+and atomic modeset error -11. Monitor power cycling and a temporary 60 Hz
+mode did not recover the picture; the original 164.9 Hz mode was restored.
+The user approved ending/restarting the desktop session. The old Umbriel
+session ended; direct service restart inherited its stale WAYLAND_DISPLAY
+and failed to start. The launcher then cleaned the environment and greetd
+returned to Noctalia Greeter, which also exhibits the NVIDIA modeset errors.
+The user reports the virtual console is unusable. Remote commands still work.
+
+User explicitly authorized normal reboot on 2026-10-23; requesting login1
+Reboot(false) after reading back this checkpoint. Current/default system:
+generation 196, /nix/store/wfimff15ahia19129widx0cmvi0s5w8x-nixos-system-erebor-26.05.20261013.a033e66,
+running kernel 6.18.56. No configuration or lock updates were activated.
+Verified root UUID 5be9be17-20c9-4a47-ba2d-6adf1ceb4c55 and ESP UUID
+38B5-8386, both mounted read-write; no failed system units. Generation 196
+boot entry and referenced kernel/initrd exist; generation 195 entry remains
+available for recovery. Snapper is not installed/configured, so a Snapper
+snapshot is not applicable to this runtime-only recovery. login1 CanReboot
+returns yes and no shutdown inhibitors were listed. No firmware or boot
+entry changes are needed. Risks: reboot interrupts all remaining workloads
+and remote access; display recovery is not guaranteed. Mandatory next action:
+request the authorized normal login1 reboot, then verify
+boot generation, mounts, graphics logs, physical login screen and dashboard
+wake behavior before marking recovery complete.
+
+Validation on 2026-10-23: the host has subsequently booted generation 198
+with Linux 6.18.57 / NVIDIA 615.78.08. Both failed-unit lists are empty and
+the current boot has none of the recorded NVIDIA modeset failure signatures.
+Umbriel reports DP-1 powered with the original 164.9 Hz mode and HDR enabled.
+These software checks do not establish physical wake recovery. Earlier
+reboot instructions in this entry are historical and have been superseded;
+mandatory next action is physical display/wake confirmation, not another reboot.
+Display power was not cycled during this audit because it previously caused
+loss of local display access.
+
+
+## [COMPLETED] Make dashboard ambilight off override WLED realtime — 2026-10-22
 
 The dashboard successfully disabled HyperHDR LEDDEVICE, but WLED retained
 UDP realtime output while reporting power off. Sending on=false, live=false
@@ -20,6 +213,18 @@ dashboard-control environment. Current generation is 196; root/ESP UUIDs
 are unchanged and no failed system units were found. Sudo needs a password.
 No reboot or storage changes are required. Unrelated disk/changelog edits
 must remain outside this commit.
+
+Post-activation validation on 2026-10-23: the running generation 198
+user unit deploys the updated control.py and DASHBOARD_WLED_URL. Both
+Caddy and dashboard-control are active. All seven dashboard tests pass.
+POSTs through https://erebor.jzon.pl/api/control return 200: off produces
+on=false, lor=2, live=false; on produces on=true, lor=0, live=true and
+50 fps. Cross-origin POST returns 403. SYSTEMGRABBER remains active and
+visible at priority 245; LEDs were restored on. Activation instructions
+above are resolved. Separately, this session found WLED left at lor=2 while
+HyperHDR was enabled; clearing lor restored realtime updates. HyperHDR's
+saved portal selection currently captures physical DP-1, not ambilight.
+
 
 ## [COMPLETED] Add password-authenticated remote desktop over Tailscale — 2026-10-22
 
@@ -62,7 +267,13 @@ Active system before this change:
 (persistent generation 193). No failed system units; root/ESP UUIDs match
 AGENTS.md. No reboot or storage change is planned.
 
-## [PENDING] Supply T3 browser runtime libraries — 2026-10-21
+<a id="record-sys-003-1"></a>
+
+## [COMPLETED] Supply T3 browser runtime libraries — 2026-10-21
+
+> Historical record; current disposition: [SYS-003](SYSTEM_TODO.md#sys-003).
+> Instructions and checkpoints below apply to their recorded date, not the current system.
+
 
 Provide Chromium runtime libraries through LD_LIBRARY_PATH in the existing
 t3code user service. The bundled Chrome headless shell's ldd output confirmed
@@ -85,7 +296,21 @@ Restarting T3 briefly disconnects its web UI. Verify preview_open after the
 server reconnects, then mark this entry completed. The preceding dashboard
 controls change is also included in this build and still awaits activation.
 
-## [PENDING] Add Caddy display, ambilight and power controls — 2026-10-21
+Validation on 2026-10-23: activation is no longer pending. Generation 198
+has the declared LD_LIBRARY_PATH in t3code.service, the service is active,
+and its running process environment contains that path. Every listed library
+directory exists. The earlier generation-191 state and activation/restart
+instructions are historical. preview_open was not exercised in this audit. Runtime-library deployment is
+complete; end-to-end preview verification is tracked separately in SYS-003.
+
+
+<a id="record-sys-004-1"></a>
+
+## [COMPLETED] Add Caddy display, ambilight and power controls — 2026-10-21
+
+> Historical record; current disposition: [SYS-004](SYSTEM_TODO.md#sys-004).
+> Instructions and checkpoints below apply to their recorded date, not the current system.
+
 
 Add six dashboard buttons and a loopback user service behind Caddy. The API
 accepts only same-origin JSON requests with an explicit control header; Caddy
@@ -119,6 +344,18 @@ verify dashboard-control.service in the janzon user manager and caddy.service,
 then verify the controls through the normal dashboard URL. Mark this entry
 completed after activation and user-facing verification. The sleep and power
 buttons require a user-initiated test when saved work allows it.
+
+Validation on 2026-10-23: generation 198 deploys the dashboard-control
+service and Caddy routes, and both services are active. All seven current
+dashboard tests pass. Normal dashboard HTTPS API ambilight off/on requests
+return 200 and produce the expected WLED states; a cross-origin request
+returns 403. LEDs were restored on with screen capture still active.
+The activation instructions above are resolved. Current session is Umbriel;
+physical display wake remains pending under the NVIDIA recovery entry.
+Sleep and power-off remain untested and require a user-initiated test when
+saved work allows it. Dashboard deployment is complete; remaining acceptance checks are tracked
+separately in SYS-002 and SYS-004.
+
 
 ## [COMPLETED] Add Mango tag layout shortcuts — 2026-10-21
 
@@ -264,7 +501,13 @@ and `nixos-rebuild dry-build --flake /etc/nixos#moria` passed. Activated with
 deployed utility resolved from the new Home Manager generation, and its
 smart-to-off runtime transition was verified via Noctalia IPC.
 
-## [PENDING] Route HyperHDR through Umbriel's wallpaper-only virtual output — 2026-10-19
+<a id="record-sys-005-1"></a>
+
+## [RECORDED] Route HyperHDR through Umbriel's wallpaper-only virtual output — 2026-10-19
+
+> Historical record; current disposition: [SYS-005](SYSTEM_TODO.md#sys-005).
+> Instructions and checkpoints below apply to their recorded date, not the current system.
+
 
 Activated a declarative Umbriel `ambilight` virtual output at 3440x1440@30,
 placed beside DP-1 without moving the physical monitor, and configured
@@ -394,7 +637,13 @@ socket exchange including message decoding, file-update detection, backup
 contents/permissions, and mismatch rejection. No live password change was run.
 No Nix configuration or running generation changed; no rebuild is required.
 
-## [PENDING] Assign Intel UHD 770 to Windows — 2026-10-18
+<a id="record-sys-006-1"></a>
+
+## [RECORDED] Assign Intel UHD 770 to Windows — 2026-10-18
+
+> Historical record; current disposition: [SYS-006](SYSTEM_TODO.md#sys-006).
+> Instructions and checkpoints below apply to their recorded date, not the current system.
+
 
 Post-IOMMU baseline: generation 159, Intel 8086:a780 at 0000:00:02.0 alone in
 IOMMU group 0, no host processes hold /dev/dri/card0 or renderD128. NVIDIA
@@ -491,7 +740,13 @@ Windows guest-ping succeeded after boot; its SPICE console is again on
 127.0.0.1:5900 and DHCP lease is 192.168.122.2.
 IOMMU boot stage is verified; GPU binding and guest acceleration remain pending.
 
-## [PENDING] Windows 11 VM with Intel GPU passthrough — 2026-10-18
+<a id="record-sys-007-1"></a>
+
+## [RECORDED] Windows 11 VM with Intel GPU passthrough — 2026-10-18
+
+> Historical record; current disposition: [SYS-007](SYSTEM_TODO.md#sys-007).
+> Instructions and checkpoints below apply to their recorded date, not the current system.
+
 
 User requested setup and selected a fresh Windows 11 guest in a Linux window.
 Add modules/windows-vm.nix and its host import: libvirt/KVM, virt-manager,
@@ -570,7 +825,13 @@ and ESP UUIDs, and the generation 158 boot entry. Active and persistent system:
 `/nix/store/mphhdbrmlhiklpg178cjd5c7bhicmyr4-nixos-system-erebor-26.05.20261013.a033e66`.
 No reboot required.
 
-## [PENDING] Bounded Btrfs data compaction — 2026-10-18
+<a id="record-sys-008-1"></a>
+
+## [RECORDED] Bounded Btrfs data compaction — 2026-10-18
+
+> Historical record; current disposition: [SYS-008](SYSTEM_TODO.md#sys-008).
+> Instructions and checkpoints below apply to their recorded date, not the current system.
+
 
 User explicitly authorized `sudo btrfs balance start -dusage=10,limit=2 /`.
 Limit relocation to two data block groups at most 10% occupied; do not change
@@ -607,7 +868,13 @@ available, so unallocated device capacity remains 1 MiB and the allocation
 problem is unresolved. Root/ESP UUIDs and active system generation are
 unchanged; no balance remains running. No occupied-block compaction was done.
 
-## [PENDING] Install eza and Fish listing aliases — 2026-10-18
+<a id="record-sys-009-1"></a>
+
+## [RECORDED] Install eza and Fish listing aliases — 2026-10-18
+
+> Historical record; current disposition: [SYS-009](SYSTEM_TODO.md#sys-009).
+> Instructions and checkpoints below apply to their recorded date, not the current system.
+
 
 Add eza to Home Manager packages and aliases ls, ll, la, lla, and lt, with
 directories first, automatic icons, and a two-level tree. Validate and activate
@@ -873,7 +1140,13 @@ The deployed configuration includes the rule, and `niri msg action
 load-config-file` succeeded. `niri msg windows` confirms Ghostty is running
 with app ID `com.mitchellh.ghostty`, matching the rule.
 
-## [PENDING] Start Umbriel on the ordinary workspace — 2026-10-16
+<a id="record-sys-010-1"></a>
+
+## [CANCELLED] Start Umbriel on the ordinary workspace — 2026-10-16
+
+> Historical record; current disposition: [SYS-010](SYSTEM_TODO.md#sys-010).
+> Instructions and checkpoints below apply to their recorded date, not the current system.
+
 
 Enable Umbriel's leading empty workspace and add a startup helper that moves
 the persistent `background-apps` workspace after ordinary workspaces, then
@@ -885,7 +1158,13 @@ The deployed config validates. No Umbriel socket is available for live
 verification; verify the startup workspace order and app launch placement in a
 fresh Umbriel session.
 
-## [PENDING] Start Niri on the ordinary workspace — 2026-10-16
+<a id="record-sys-011-1"></a>
+
+## [RECORDED] Start Niri on the ordinary workspace — 2026-10-16
+
+> Historical record; current disposition: [SYS-011](SYSTEM_TODO.md#sys-011).
+> Instructions and checkpoints below apply to their recorded date, not the current system.
+
 
 Run the background workspace reorder helper with a startup-only option that
 focuses Niri workspace 1 after placing `background-apps` last. The existing
@@ -897,7 +1176,13 @@ the deployed config validates. `niri msg action load-config-file` could not
 connect because no Niri socket is available. Verify the startup workspace and
 app launch placement in a fresh Niri session.
 
-## [PENDING] Bind Right Ctrl+D to Discord and widen Niri tab indicators — 2026-10-16
+<a id="record-sys-012-1"></a>
+
+## [RECORDED] Bind Right Ctrl+D to Discord and widen Niri tab indicators — 2026-10-16
+
+> Historical record; current disposition: [SYS-012](SYSTEM_TODO.md#sys-012).
+> Instructions and checkpoints below apply to their recorded date, not the current system.
+
 
 Map Right Ctrl+D to `KEY_PROG4` in xremap and bind `XF86Launch4` to spawn
 Discord in Niri and Umbriel. Increase Niri's tab-indicator width to 8 logical
@@ -909,11 +1194,6 @@ spawning `discord` through Niri opened its window. xremap cannot currently find
 any configured keyboard device and its service is failed, so Right Ctrl+D is
 not yet verified. Reconnect a configured keyboard, confirm xremap is active,
 then verify the shortcut and tab indicator.
-
-Record completed NixOS configuration changes and material pending operations
-here. Prefix active work **[PENDING]**; change that entry to **[COMPLETED]**,
-**[BLOCKED]**, or **[CANCELLED]** with its final result. Do not record
-secrets, routine read-only inspections, or one-off command failures.
 
 ## [COMPLETED] Make KDE applications follow Noctalia theme changes — 2026-10-16
 
@@ -946,7 +1226,13 @@ is Home Manager-managed and `ghostty +show-config` reports the Noctalia theme
 and opacity 0.8. Active generation is
 `bn2kyy49nl5yyp82vrhcc6hnbq44gza1-nixos-system-erebor-26.05.20261013.a033e66`.
 
-## [PENDING] Add Umbriel as a second Wayland session — 2026-10-16
+<a id="record-sys-013-1"></a>
+
+## [RECORDED] Add Umbriel as a second Wayland session — 2026-10-16
+
+> Historical record; current disposition: [SYS-013](SYSTEM_TODO.md#sys-013).
+> Instructions and checkpoints below apply to their recorded date, not the current system.
+
 
 Added the Umbriel NixOS and Home Manager modules and a tuigreet session menu
 for Niri and Umbriel. Ported Niri's application shortcuts, CapsLock/xremap
@@ -1450,7 +1736,13 @@ Verified all nine directories, the managed `~/.config/user-dirs.dirs` mappings
 (including `XDG_PROJECTS_DIR`), an active `home-manager-janzon.service`, and
 no failed system units.
 
-## [PENDING] Add encrypted Tailscale state backup workflow — 2026-10-15T09:35:00Z
+<a id="record-sys-014-1"></a>
+
+## [RECORDED] Add encrypted Tailscale state backup workflow — 2026-10-15T09:35:00Z
+
+> Historical record; current disposition: [SYS-014](SYSTEM_TODO.md#sys-014).
+> Instructions and checkpoints below apply to their recorded date, not the current system.
+
 
 At the user's explicit request, make a password-encrypted archive of
 `/var/lib/tailscale` suitable for Git tracking, despite the repository's
@@ -1559,7 +1851,13 @@ Home Manager deployed the config and its Niri validation passed. Reloaded the
 running compositor with `niri msg action load-config-file`; Noctalia's user
 service remains active.
 
-## [PENDING] Install xremap with the Fedora configuration — 2026-10-15T02:22:00Z
+<a id="record-sys-015-1"></a>
+
+## [RECORDED] Install xremap with the Fedora configuration — 2026-10-15T02:22:00Z
+
+> Historical record; current disposition: [SYS-015](SYSTEM_TODO.md#sys-015).
+> Instructions and checkpoints below apply to their recorded date, not the current system.
+
 
 Copy Fedora's active xremap mapping and three device filters (both IQUNIX
 keyboards and the Logitech G502 X LS), grant the `janzon` account the same
@@ -1594,7 +1892,13 @@ terminated after confirming its exact stale scope. Verified the replacement
 `noctalia.service` is active, the transient scope is absent, and zero system
 units are failed.
 
-## [PENDING] Keep the user manager alive across Niri logouts and restore Oo7 unlock — 2026-10-15T02:15:13Z
+<a id="record-sys-016-1"></a>
+
+## [RECORDED] Keep the user manager alive across Niri logouts and restore Oo7 unlock — 2026-10-15T02:15:13Z
+
+> Historical record; current disposition: [SYS-016](SYSTEM_TODO.md#sys-016).
+> Instructions and checkpoints below apply to their recorded date, not the current system.
+
 
 Previous boots showed a Niri/greetd login race: greetd accepted the next login
 while the non-lingering `janzon` systemd user manager was still shutting down
@@ -1949,7 +2253,13 @@ load-config-file` and validated successfully; Niri was not restarted.
 
 # [REVERTED] Double Caps+Q quit chord — 2026-10-16
 
-# [PENDING] Restore xremap keyboard devices — 2026-10-16
+<a id="record-sys-015-2"></a>
+
+## [RECORDED] Restore xremap keyboard devices — 2026-10-16
+
+> Historical record; current disposition: [SYS-015](SYSTEM_TODO.md#sys-015).
+> Instructions and checkpoints below apply to their recorded date, not the current system.
+
 
 Caps+Q is restored to its original direct Niri shortcut mapping. During xremap
 restart, the kernel disconnected the USB hub branch containing the configured
@@ -2261,7 +2571,13 @@ perform a normal switch before rebooting to retain it in the boot generation.
 Moonlight must restart to repeat decoder detection; streaming and compositor
 frame delivery after this driver fix have not been verified.
 
-## [PENDING] Bridge Windows VM onto the wired LAN — 2026-10-19
+<a id="record-sys-017-1"></a>
+
+## [RECORDED] Bridge Windows VM onto the wired LAN — 2026-10-19
+
+> Historical record; current disposition: [SYS-017](SYSTEM_TODO.md#sys-017).
+> Instructions and checkpoints below apply to their recorded date, not the current system.
+
 
 User authorized direct LAN networking. Define NetworkManager br0 and its
 enp4s0 port, move existing LAN host firewall allowances to br0, and use br0
@@ -2328,7 +2644,13 @@ next host rebuild; existing VM resources are already persistent in libvirt.
 Recovery XML: /home/janzon/.local/state/windows-vm/pre-all-cpus-20261019/windows11.xml.
 
 
-## [PENDING] User-requested reboot into UEFI settings — 2026-10-20
+<a id="record-sys-018-1"></a>
+
+## [RECORDED] User-requested reboot into UEFI settings — 2026-10-20
+
+> Historical record; current disposition: [SYS-018](SYSTEM_TODO.md#sys-018).
+> Instructions and checkpoints below apply to their recorded date, not the current system.
+
 
 UEFI firmware setup supported according to bootctl. Running, booted, and
 persistent system agree: generation 172, store path
@@ -2656,7 +2978,13 @@ persistent activation; Snapper is not configured. Foreign EFI file hashes
 and firmware entries matched across the CUDA switch. Generation 185 remains
 available for recovery to the non-CUDA service. No reboot required.
 
-## [PENDING] Install lsof — 2026-10-20
+<a id="record-sys-019-1"></a>
+
+## [RECORDED] Install lsof — 2026-10-20
+
+> Historical record; current disposition: [SYS-019](SYSTEM_TODO.md#sys-019).
+> Instructions and checkpoints below apply to their recorded date, not the current system.
+
 
 Add lsof to the declarative system packages. Previous active/persistent
 system is generation 187. Flake checks and the full build passed. lsof
@@ -2793,7 +3121,13 @@ use. zen --version reports Mozilla Zen 1.23.3b; zen.desktop is available via
 the profile's application directory, included in XDG_DATA_DIRS. Existing
 browser defaults were not changed. No interactive browsing test performed.
 
-## [PENDING] Activate declarative Zen Browser package — 2026-10-20
+<a id="record-sys-020-1"></a>
+
+## [RECORDED] Activate declarative Zen Browser package — 2026-10-20
+
+> Historical record; current disposition: [SYS-020](SYSTEM_TODO.md#sys-020).
+> Instructions and checkpoints below apply to their recorded date, not the current system.
+
 
 System activation requires sudo authentication, unavailable to this session.
 Zen is already usable through the user profile. A future
@@ -2866,7 +3200,13 @@ The pre-existing xremap failure reported no matching input devices; no device
 configuration was changed. Physical display/HDR, actual DM login, capture and
 interactive input remain unverified.
 
-## [PENDING] Complete Mango activation and verify display-manager login — 2026-10-21
+<a id="record-sys-021-1"></a>
+
+## [RECORDED] Complete Mango activation and verify display-manager login — 2026-10-21
+
+> Historical record; current disposition: [SYS-021](SYSTEM_TODO.md#sys-021).
+> Instructions and checkpoints below apply to their recorded date, not the current system.
+
 
 User activation at 04:56 installed system generation 189 and updated
 /run/current-system and the persistent system profile to:
@@ -2957,7 +3297,34 @@ next Mango login. Persist the latest user configuration in the system with the
 previously pending sudo nixos-rebuild switch --flake /etc/nixos#moria.
 
 
-## [PENDING] Sunshine support for Mango — 2026-10-22
+<a id="record-sys-022-1"></a>
+
+## [RECORDED] 2026-10-22 — Crucial writable mount and Windows VM relocation
+
+> Historical record; current disposition: [SYS-022](SYSTEM_TODO.md#sys-022).
+> Instructions and checkpoints below apply to their recorded date, not the current system.
+
+
+Requested permanent writable access to Crucial UUID 604F-A363 and offline
+relocation of windows11 if space permits. Initial check: Crucial is already
+rw with about 465 GiB free; guest is shut off; source disk is
+/var/lib/libvirt/images/windows11.qcow2 (128868941824 bytes logical).
+Current system: /nix/store/ndapp324yz251i8n3kdbl0n091pi8k0m-nixos-system-erebor-26.05.20261013.a033e66.
+Change only Crucial mount ro to rw; preserve existing exFAT data and other mounts.
+Recovery: keep source disk and original domain XML until destination verification
+and guest startup pass; restore original XML to revert. Existing Btrfs recovery
+snapshots remain untouched. No formatting, partitioning, or snapshot deletion.
+Next: validate configuration, activate, copy and verify offline disk, update
+domain path, verify guest, then remove original only after successful checks.
+
+
+<a id="record-sys-023-1"></a>
+
+## [RECORDED] Sunshine support for Mango — 2026-10-22
+
+> Historical record; current disposition: [SYS-023](SYSTEM_TODO.md#sys-023).
+> Instructions and checkpoints below apply to their recorded date, not the current system.
+
 
 Adapt Sunshine startup checks and virtual-output helper for Mango while keeping
 Umbriel behavior. Mango prepares a named sunshine output before service startup
