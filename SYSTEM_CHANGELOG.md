@@ -154,6 +154,15 @@ Implementation and boot validation are complete. Physical display wake remains
 unverified and is tracked separately in SYS-002; it does not leave the kernel
 and driver deployment pending.
 
+Commit verification on 2026-10-23: the lock diff changes only the nixpkgs
+input, and the driver diff pins 615.78.08 with its source hashes. Reconfirmed
+booted/current generation 198, Linux 6.18.57, loaded NVIDIA 615.78.08 and
+successful nvidia-smi with no failed system units. Flake evaluation and NixOS
+dry-build passed during the preceding Git-alias change with this same lock
+and driver configuration. No further activation or reboot was needed.
+The commit includes only flake.lock, modules/nvidia.nix and this record;
+Fedora boot-entry and Crucial mount edits remain separate. SYS-002 still
+tracks physical display-wake verification.
 
 <a id="record-sys-002-2"></a>
 
