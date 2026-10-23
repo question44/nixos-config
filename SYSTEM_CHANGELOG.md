@@ -12,6 +12,23 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Add common Git shortcuts to Fish — 2026-10-23
+
+Added 41 Oh My Zsh-style Git shell aliases through Home Manager in flake.nix,
+including gst, ga, gaa, gapa, gd/gdca, gcmsg, gsw/gswc, glog, gp and stash
+shortcuts. Reference: https://github.com/ohmyzsh/ohmyzsh/blob/master/plugins/git/git.plugin.zsh.
+
+Validation: flake check --no-build, NixOS dry-build, Home Manager activation
+package build and Fish syntax check passed. Compared against the system's
+actually deployed Home Manager generation (the separate user profile was
+older): only .config/fish/config.fish content changes, with identical package
+paths. Activated /nix/store/vvp21qjk9pcpqny1hfrk88iszkfrfrww-home-manager-generation
+successfully without a system rebuild. A fresh interactive Fish resolves the
+aliases; gst --short, ga --dry-run and glog -1 succeed in /etc/nixos.
+Existing Fish sessions can load them with source ~/.config/fish/config.fish.
+System generation remains 198; unrelated kernel, Fedora-entry and mount edits
+were not activated or included in this commit.
+
 ## [COMPLETED] Retire installation plan and separate installation log — 2026-10-23
 
 Removed INSTALL_PLAN.md and INSTALLATION_LOG.md after confirming the original
