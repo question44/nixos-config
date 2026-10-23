@@ -111,6 +111,14 @@
                 executable = true;
               };
               home.stateVersion = "26.05";
+              home.pointerCursor = {
+                enable = true;
+                package = pkgs.capitaine-cursors;
+                name = "capitaine-cursors";
+                size = 24;
+                gtk.enable = true;
+                x11.enable = true;
+              };
               # Phone Connect invokes gdbus through Noctalia's existing PATH.
               home.file.".local/bin/gdbus".source = "${pkgs.glib.bin}/bin/gdbus";
               home.file.".local/bin/kdialog".source = pkgs.writeShellScript "kdialog" ''

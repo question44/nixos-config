@@ -12,6 +12,18 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Set Capitaine cursor theme — 2026-10-23
+
+Installed Capitaine through Home Manager and selected size 24 for GTK, X11
+and Umbriel. Flake check, dry-build, full build and Umbriel config validation
+passed. Test activation and persistent switch succeeded as generation 202
+(`/nix/store/4rqabzx7ppni3chxjjiizsxcc0cfaz3z-nixos-system-erebor-26.05.20261021.da6dc0e`).
+Verified deployed GTK settings, default-theme inheritance, cursor asset,
+Home Manager success and Umbriel input reload; no failed system/user units.
+Root/ESP UUIDs remain correct and generation 202 is the default boot entry.
+No reboot performed. Existing applications may need restarting to pick up
+the theme; visual appearance has not been confirmed by the user.
+
 ## [COMPLETED] Enable Nix commands and flakes by default — 2026-10-23
 
 Enabled nix.settings.experimental-features system-wide with nix-command and

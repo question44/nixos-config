@@ -14,6 +14,10 @@ QT_QPA_PLATFORMTHEME = "kde"
 layout = "pl"
 options = "lv3:ralt_switch"
 
+[input.cursor]
+theme = "capitaine-cursors"
+size = 24
+
 [workspaces]
 back_and_forth = true
 empty_above = true
