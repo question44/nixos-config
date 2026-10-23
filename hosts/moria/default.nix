@@ -629,7 +629,6 @@ in
     haruna
     moonlight-qt
     stremio-linux-shell
-    nomacs
     ddcutil
     kdePackages.breeze
     candy-icons

@@ -13,6 +13,19 @@ whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
 
+## [COMPLETED] Replace nomacs with Gwenview as default image viewer — 2026-10-23
+
+Removed nomacs from system packages and its theme activation hook. Set
+Gwenview as default for 25 image MIME types, including prior nomacs formats
+and Gwenview-advertised image types. Existing personal nomacs settings remain.
+Flake checks and full builds passed for both removal and final associations;
+test activation and persistent switches succeeded (removal: generation 204;
+final: generation 205, `sd31ngbzkdl2x6hl90c5bhda38vav2nd`). Verified every image
+default using xdg-mime, absent nomacs executable/desktop entry and references
+in deployed mimeapps.list, successful Home Manager and no failed system/user
+units. Root/ESP UUIDs remain correct; generation 205 is the default boot entry.
+No reboot performed; opening an image in the GUI was not exercised.
+
 ## [COMPLETED] Increase Capitaine cursor size — 2026-10-23
 
 Raised cursor size from 24 to 32 in Home Manager and Umbriel. Isolated flake

@@ -249,12 +249,6 @@
                   --group Icons \
                   --key Theme "candy-icons"
               '';
-              home.activation.nomacsSystemTheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-                $DRY_RUN_CMD ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 \
-                  --file "$HOME/.config/nomacs/Image Lounge.conf" \
-                  --group General \
-                  --key themeName312 "System Theme"
-              '';
               home.activation.starshipNoctaliaConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
                 base="$HOME/.config/noctalia/starship-base.toml"
                 palette="$HOME/.cache/noctalia/starship-palette.toml"
@@ -299,23 +293,31 @@
                   "x-scheme-handler/about" = [ "helium.desktop" ];
                   "x-scheme-handler/http" = [ "helium.desktop" ];
                   "x-scheme-handler/https" = [ "helium.desktop" ];
-                  "image/avif" = [ "org.nomacs.ImageLounge.desktop" ];
-                  "image/bmp" = [ "org.nomacs.ImageLounge.desktop" ];
-                  "image/gif" = [ "org.nomacs.ImageLounge.desktop" ];
-                  "image/heic" = [ "org.nomacs.ImageLounge.desktop" ];
-                  "image/heif" = [ "org.nomacs.ImageLounge.desktop" ];
-                  "image/jpeg" = [ "org.nomacs.ImageLounge.desktop" ];
-                  "image/jxl" = [ "org.nomacs.ImageLounge.desktop" ];
-                  "image/png" = [ "org.nomacs.ImageLounge.desktop" ];
-                  "image/tiff" = [ "org.nomacs.ImageLounge.desktop" ];
-                  "image/webp" = [ "org.nomacs.ImageLounge.desktop" ];
-                  "image/x-eps" = [ "org.nomacs.ImageLounge.desktop" ];
-                  "image/x-ico" = [ "org.nomacs.ImageLounge.desktop" ];
-                  "image/x-portable-bitmap" = [ "org.nomacs.ImageLounge.desktop" ];
-                  "image/x-portable-graymap" = [ "org.nomacs.ImageLounge.desktop" ];
-                  "image/x-portable-pixmap" = [ "org.nomacs.ImageLounge.desktop" ];
-                  "image/x-xbitmap" = [ "org.nomacs.ImageLounge.desktop" ];
-                  "image/x-xpixmap" = [ "org.nomacs.ImageLounge.desktop" ];
+                  "image/avif" = [ "org.kde.gwenview.desktop" ];
+                  "image/bmp" = [ "org.kde.gwenview.desktop" ];
+                  "image/gif" = [ "org.kde.gwenview.desktop" ];
+                  "image/heic" = [ "org.kde.gwenview.desktop" ];
+                  "image/heif" = [ "org.kde.gwenview.desktop" ];
+                  "image/jpeg" = [ "org.kde.gwenview.desktop" ];
+                  "image/jxl" = [ "org.kde.gwenview.desktop" ];
+                  "image/openraster" = [ "org.kde.gwenview.desktop" ];
+                  "image/png" = [ "org.kde.gwenview.desktop" ];
+                  "image/svg+xml" = [ "org.kde.gwenview.desktop" ];
+                  "image/svg+xml-compressed" = [ "org.kde.gwenview.desktop" ];
+                  "image/tiff" = [ "org.kde.gwenview.desktop" ];
+                  "image/webp" = [ "org.kde.gwenview.desktop" ];
+                  "image/x-eps" = [ "org.kde.gwenview.desktop" ];
+                  "image/x-icns" = [ "org.kde.gwenview.desktop" ];
+                  "image/x-ico" = [ "org.kde.gwenview.desktop" ];
+                  "image/x-portable-bitmap" = [ "org.kde.gwenview.desktop" ];
+                  "image/x-portable-graymap" = [ "org.kde.gwenview.desktop" ];
+                  "image/x-portable-pixmap" = [ "org.kde.gwenview.desktop" ];
+                  "image/x-psd" = [ "org.kde.gwenview.desktop" ];
+                  "image/x-tga" = [ "org.kde.gwenview.desktop" ];
+                  "image/x-webp" = [ "org.kde.gwenview.desktop" ];
+                  "image/x-xbitmap" = [ "org.kde.gwenview.desktop" ];
+                  "image/x-xcf" = [ "org.kde.gwenview.desktop" ];
+                  "image/x-xpixmap" = [ "org.kde.gwenview.desktop" ];
                 };
               };
               home.file.".local/share/applications/ut2004.desktop".text = ''
