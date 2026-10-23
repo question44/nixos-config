@@ -18,6 +18,18 @@ Earlier approvals remain bounded by their original scope and safety precondition
 
 ## Open checks
 
+<a id="sys-032"></a>
+
+### SYS-032 — Add HyperHDR to dashboard index
+
+**Status:** DONE · **Closed:** 2026-10-24
+
+Added and deployed HyperHDR service card in generation 213. Flake/full build,
+test activation and switch passed. Browser verified card/link and click through
+to HyperHDR Web Configuration, including dashboard reload after switch.
+Caddy healthy, no failed units; root/ESP UUIDs unchanged. No reboot.
+**Evidence:** [Dashboard card](SYSTEM_CHANGELOG.md#completed-add-hyperhdr-dashboard-card--2026-10-24).
+
 <a id="sys-031"></a>
 
 ### SYS-031 — Expose HyperHDR through Caddy

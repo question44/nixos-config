@@ -13,6 +13,18 @@ whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
 
+## [COMPLETED] Add HyperHDR dashboard card — 2026-10-24
+
+SYS-032. Added HyperHDR to the dashboard index with the existing lighting
+icon, HTTPS subdomain link and port 8090 fallback for local/IP access.
+Flake check/full build passed. Test activation and persistent switch succeeded
+as generation 213, live/selected target:
+`/nix/store/8xdd0crkimpr4sp42z3sr9pawk52ck4a-nixos-system-erebor-26.05.20261021.da6dc0e`.
+Browser verified rendered card, correct https://hyperhdr.erebor.jzon.pl link,
+and click navigation to HyperHDR Web Configuration. Card remains present after
+switch/reload with the PWA worker active. Caddy active, no failed system/user
+units, root/ESP UUIDs unchanged. No reboot or lighting changes performed.
+
 ## [COMPLETED] Add HyperHDR to Caddy — 2026-10-24
 
 SYS-031. Added hyperhdr.localhost/hyperhdr HTTP aliases and

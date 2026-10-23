@@ -38,6 +38,7 @@ const services = [
   { id: 'syncthing', label: 'Sync', description: 'Syncthing devices and folders', icon: 'sync', url: serviceUrl('sync', 8384) },
   { id: 'qbittorrent', label: 'Torrent', description: 'qBittorrent downloads', icon: 'torrent', url: serviceUrl('torrent', 8082) },
   { id: 't3code', label: 'Code', description: 'T3 Code collaborative workspace', icon: 'code', url: serviceUrl('code', 8080) },
+  { id: 'hyperhdr', label: 'HyperHDR', description: 'Ambilight capture and LED settings', icon: 'light', url: serviceUrl('hyperhdr', 8090) },
   { id: 'sunshine', label: 'Sunshine', description: 'Game streaming and Moonlight pairing', icon: 'light', url: domain ? `https://sunshine.${location.hostname}` : `https://${location.hostname}:47990` },
   { id: 'cockpit', label: 'System', description: 'Cockpit server administration', icon: 'system', url: 'https://sys.erebor.jzon.pl' },
 ];
