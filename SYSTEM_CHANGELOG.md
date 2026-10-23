@@ -13,6 +13,40 @@ whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
 
+## [COMPLETED] Install BGRT logo and faster greeter startup for next boot — 2026-10-23
+
+SYS-027. Switched Breeze to BGRT to reuse the valid firmware boot logo
+(BGRT status=1); built theme sets UseFirmwareBackground=true. Retained
+SimpleDRM and temporary debug logging. User confirmed the generation 207
+splash was brief, followed by a black gap. Its journal shows Plymouth exit
+at +10.97s and greeter first frame at +18.57s. Changed greetd Type=idle to
+Type=exec to avoid systemd's possible five-second idle dispatch wait.
+PAM, session commands and Plymouth quit ordering unchanged; a remaining
+compositor/monitor transition delay is possible and unmeasured until reboot.
+
+Flake check and nixos-rebuild build passed. Installed exact checked target
+`/nix/store/c7kdv0ai9w7fv9dhawd6p9b5db2i3gzw-nixos-system-erebor-26.05.20261021.da6dc0e`
+through system-profile selection and switch-to-configuration boot as default
+generation 208. Verified built BGRT configuration and greetd Type=exec;
+installed boot entry points to that target, with kernel/initrd bytes matching
+the checked build. Live system remains generation 207
+(`33pm8qsha1985gfmmkc8m1r4a1vzwa07`); no live activation, greeter restart or
+reboot performed. No failed system/user units; expected root/ESP UUIDs mounted.
+
+Snapper unavailable; created and verified read-only recovery snapshot
+`/btrfs-top/nixos-root-pre-plymouth-bgrt-20261023`. ESP archive, snapshot
+metadata, generation 207 debug log, protected EFI checksums and firmware
+listings saved under root-only `/var/lib/system-recovery/plymouth-bgrt-20261023`.
+ESP archive comparison, protected EFI hash verification and firmware
+before/after comparison passed. Generations 207 and 205 remain available
+for recovery; boot menu retains five-second timeout.
+
+Installation scope complete; SYS-027 visual acceptance remains open.
+Mandatory next check after user's reboot: confirm generation 208, vendor logo,
+Plymouth/NVIDIA handoff, greeter startup/first-frame timing and mounts/services.
+Compare against generation 207's 7.6-second gap; retain diagnostics until
+acceptance, then remove the temporary debug parameter. No reboot is queued.
+
 ## [COMPLETED] Install Plymouth SimpleDRM diagnostics for next boot — 2026-10-23
 
 Enabled `UseSimpledrm=1` and temporary `plymouth.debug` for SYS-027 after

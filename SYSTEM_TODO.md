@@ -56,14 +56,20 @@ failures. User confirms splash was briefly visible on generation 207.
 Visibility is established; acceptable handoff remains unconfirmed. Journal
 shows Plymouth quit at +10.97s, while greeter first frames appeared at
 +18.57s/+18.65s: roughly 7.6 seconds without Plymouth before login rendering.
-This timing is a candidate explanation for a remaining black gap, not a
-user-confirmed visual observation. Retain debug parameter until handoff
-acceptance, then remove it.
-**Done when:** boot splash visibility is corrected and user confirms Breeze
-appears with an acceptable display handoff.
-Recovery: generation 206 (before SimpleDRM experiment) or 205 (no Plymouth);
-verified read-only pre-SimpleDRM snapshot recorded below.
-**Evidence:** [SimpleDRM installation](SYSTEM_CHANGELOG.md#completed-install-plymouth-simpledrm-diagnostics-for-next-boot--2026-10-23),
+User subsequently confirmed a black interval before login. Installed BGRT
+firmware-logo theme and greetd Type=exec as default generation 208; live
+system remains 207. This avoids Type=idle's possible five-second dispatch
+wait. Build, boot-entry/kernel/initrd and protected EFI/firmware checks passed.
+No live greeter restart or reboot performed. Next check after user reboot:
+verify 208, firmware logo/splash and handoff, mounts/services and greeter
+first-frame timing. Compare with the generation 207 gap; remove temporary
+debug logging after acceptance.
+**Done when:** user confirms visible firmware-logo splash and acceptable display
+handoff, with healthy boot and temporary diagnostics removed.
+Recovery: generation 207 (Breeze/SimpleDRM) or 205 (no Plymouth), plus verified
+read-only pre-BGRT snapshot referenced below.
+**Evidence:** [BGRT/greeter installation](SYSTEM_CHANGELOG.md#completed-install-bgrt-logo-and-faster-greeter-startup-for-next-boot--2026-10-23),
+[SimpleDRM installation](SYSTEM_CHANGELOG.md#completed-install-plymouth-simpledrm-diagnostics-for-next-boot--2026-10-23),
 [original Plymouth installation](SYSTEM_CHANGELOG.md#completed-configure-plymouth-breeze-for-next-boot--2026-10-23).
 
 <a id="sys-026"></a>

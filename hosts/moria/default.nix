@@ -127,7 +127,7 @@ in
   boot.kernelModules = [ "uinput" ];
   boot.plymouth = {
     enable = true;
-    theme = "breeze";
+    theme = "bgrt";
     extraConfig = "UseSimpledrm=1";
   };
   boot.consoleLogLevel = 0;
@@ -381,6 +381,9 @@ in
     capabilities = "cap_ipc_lock=ep";
     source = "${pkgs.oo7-server}/libexec/oo7-daemon";
   };
+  # A graphical greeter does not need Type=idle's console-output delay.
+  systemd.services.greetd.serviceConfig.Type = lib.mkForce "exec";
+
   services.displayManager.noctalia-greeter = {
     enable = true;
     passwordless-sync-users = [ "janzon" ];
