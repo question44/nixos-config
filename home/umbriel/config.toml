@@ -16,7 +16,7 @@ options = "lv3:ralt_switch"
 
 [input.cursor]
 theme = "capitaine-cursors"
-size = 24
+size = 32
 
 [workspaces]
 back_and_forth = true

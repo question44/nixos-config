@@ -115,7 +115,7 @@
                 enable = true;
                 package = pkgs.capitaine-cursors;
                 name = "capitaine-cursors";
-                size = 24;
+                size = 32;
                 gtk.enable = true;
                 x11.enable = true;
               };

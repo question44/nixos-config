@@ -13,6 +13,16 @@ whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
 
+## [COMPLETED] Increase Capitaine cursor size — 2026-10-23
+
+Raised cursor size from 24 to 32 in Home Manager and Umbriel. Isolated flake
+check, full system build and compositor validation passed. Concurrent system
+activation included this change: verified current/default generation 203
+(`/nix/store/anf91bq1l3bvh64pj38apgqbbk4p921v-nixos-system-erebor-26.05.20261021.da6dc0e`)
+matches the working configuration. Deployed GTK 3/4 and Umbriel settings use
+32, compositor reload succeeded, and system/user failed-unit lists are empty.
+No reboot or session restart. Visual size preference awaits user observation.
+
 ## [COMPLETED] Set Capitaine cursor theme — 2026-10-23
 
 Installed Capitaine through Home Manager and selected size 24 for GTK, X11
