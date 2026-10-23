@@ -125,6 +125,13 @@ in
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = "/boot";
   boot.kernelModules = [ "uinput" ];
+  boot.plymouth = {
+    enable = true;
+    theme = "breeze";
+  };
+  boot.consoleLogLevel = 0;
+  boot.initrd.verbose = false;
+  boot.kernelParams = [ "quiet" ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 

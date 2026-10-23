@@ -24,4 +24,10 @@ lib.mkIf (!config.virtualisation.windowsGpuPassthrough.enable) {
   };
 
   boot.kernelParams = [ "nvidia_drm.modeset=1" ];
+  # Make the host display available to the graphical boot splash.
+  boot.initrd.kernelModules = lib.optionals config.boot.plymouth.enable [
+    "nvidia"
+    "nvidia_modeset"
+    "nvidia_drm"
+  ];
 }

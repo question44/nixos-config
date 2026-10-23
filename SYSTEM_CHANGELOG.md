@@ -13,6 +13,30 @@ whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
 
+## [COMPLETED] Configure Plymouth Breeze for next boot — 2026-10-23
+
+Enabled the NixOS Breeze splash with quiet kernel/initrd and early host NVIDIA
+graphics. Flake check and full build passed; built theme is Breeze and kernel
+parameters include quiet, splash and loglevel=0. Installed exact checked target
+`/nix/store/77kr8jfvqs5j6xsxp7dhcp3a5pbmqc3x-nixos-system-erebor-26.05.20261021.da6dc0e`
+using system-profile selection and switch-to-configuration boot. Default boot
+entry is generation 206; its kernel/initrd bytes match the built files. Menu
+retains its five-second timeout and generation 205 recovery entry. Current
+live system remains generation 205; no reboot or live Plymouth start performed.
+
+Before installation, created and verified read-only recovery snapshot
+`/btrfs-top/nixos-root-pre-plymouth-20261023` (Snapper unavailable). ESP archive,
+firmware listings, snapshot metadata and protected EFI checksum evidence are
+under root-only `/var/lib/system-recovery/plymouth-20261023`. Protected EFI
+hash checks and before/after firmware comparison passed; root/ESP UUIDs remain
+`5be9be17-20c9-4a47-ba2d-6adf1ceb4c55` and `38B5-8386`. No failed system/user units.
+
+Configuration is installed for next boot; splash visibility, NVIDIA handoff
+and boot health await a separately authorized reboot, tracked by SYS-027.
+Recovery: select generation 205 in systemd-boot. Esc toggles splash details;
+adding plymouth.enable=0 when editing a boot entry disables Plymouth. Recheck
+live generation, mounts/services and pending operations before any reboot.
+
 ## [COMPLETED] Replace nomacs with Gwenview as default image viewer — 2026-10-23
 
 Removed nomacs from system packages and its theme activation hook. Set

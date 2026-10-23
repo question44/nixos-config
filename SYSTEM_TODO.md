@@ -18,6 +18,20 @@ Earlier approvals remain bounded by their original scope and safety precondition
 
 ## Open checks
 
+<a id="sys-027"></a>
+
+### SYS-027 — Verify Plymouth boot splash
+
+**Status:** OPEN · **Reviewed:** 2026-10-23
+
+Breeze, quiet boot and early NVIDIA graphics installed as default generation
+206. Configuration build and boot-entry/kernel/initrd checks passed; live
+session remains generation 205. No reboot performed.
+**Done when:** after a separately authorized reboot, Breeze appears, desktop
+handoff succeeds, mounts/services are healthy and boot evidence is recorded.
+Recovery: generation 205 entry and verified read-only pre-Plymouth snapshot.
+**Evidence:** [Plymouth installation](SYSTEM_CHANGELOG.md#completed-configure-plymouth-breeze-for-next-boot--2026-10-23).
+
 <a id="sys-026"></a>
 
 ### SYS-026 — Make YubiKey touch prompts noticeable
@@ -345,7 +359,7 @@ Superseded by the completed 2026-10-20 replacement of background-apps with nativ
 
 ## Adding or closing a task
 
-Use the next unused SYS number (currently SYS-027). Record status, review date,
+Use the next unused SYS number (currently SYS-028). Record status, review date,
 what remains, a concrete completion condition, and a link to evidence. For active
 work, record the next safe step and any applicable recovery checkpoint. Required
 acceptance checks block completion of that task; optional follow-ups get their
