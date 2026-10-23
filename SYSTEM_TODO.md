@@ -18,6 +18,22 @@ Earlier approvals remain bounded by their original scope and safety precondition
 
 ## Open checks
 
+<a id="sys-030"></a>
+
+### SYS-030 — Make the service dashboard installable as a PWA
+
+**Status:** ACTIVE · **Reviewed:** 2026-10-23
+
+Manifest, icons, install prompt and network-first offline shell implemented.
+Flake check, dry/full builds and localhost browser checks passed, including
+offline navigation and network-only API behavior. Test activation and live
+HTTPS manifest/icons/worker checks passed. Persistent rebuild switch is
+waiting for desktop authentication; selected profile remains generation 210.
+No reboot requested. Read-only pre-switch recovery snapshot verified.
+**Done when:** validated build persisted and HTTPS manifest, service worker,
+icons and dashboard behavior verified. Device installation is user-driven.
+**Evidence:** [PWA implementation](SYSTEM_CHANGELOG.md#pending-enable-service-dashboard-pwa--2026-10-23).
+
 <a id="sys-029"></a>
 
 ### SYS-029 — Migrate to GRUB with wallpaper menu

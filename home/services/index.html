@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>erebor services</title>
+<meta name="theme-color" content="#131315">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="erebor">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 <style>
   :root { color-scheme: light dark; --bg:#131315; --fg:#ececec; --mut:#9a9a9a; --card:#1c1c20; --bd:#2c2c32; --ac:#7aa7d9; }
   @media (prefers-color-scheme: light) { :root { --bg:#fafafa; --fg:#1a1a1a; --mut:#666; --card:#fff; --bd:#e2e2e2; --ac:#3b6ea5; } }
@@ -31,6 +37,8 @@
 <main>
   <h1>erebor</h1>
   <p class="sub">Services available on the tailnet and local network.</p>
+  <p id="offline-status" role="status" hidden>Offline — reconnect to use services and controls.</p>
+  <button id="install-app" type="button" hidden>Install erebor</button>
   <div class="grid">
     <a id="jellyfin" href="http://moria:8096">
       <div class="name">media</div>
@@ -77,7 +85,7 @@
     </div></div>
   </div>
   <p id="control-status" role="status" aria-live="polite"></p>
-  <footer>Served by Caddy on the local network.</footer>
+  <footer>Served by Caddy on the local network. Install from your browser menu; on iPhone or iPad, use Share → Add to Home Screen.</footer>
 </main>
 <script>
   const isDomain = location.hostname.endsWith(".jzon.pl");
@@ -94,9 +102,19 @@
     : `https://${location.hostname}:47990`;
   const controlButtons = document.querySelectorAll("[data-action]");
   const controlStatus = document.querySelector("#control-status");
+  let controlBusy = false;
+  function updateConnection() {
+    document.querySelector("#offline-status").hidden = navigator.onLine;
+    controlButtons.forEach(button => button.disabled = controlBusy || !navigator.onLine);
+  }
+  window.addEventListener("online", updateConnection);
+  window.addEventListener("offline", updateConnection);
+  updateConnection();
   controlButtons.forEach(button => button.addEventListener("click", async () => {
+    if (controlBusy || !navigator.onLine) return;
     if (button.dataset.confirm && !confirm(button.dataset.confirm)) return;
-    controlButtons.forEach(item => item.disabled = true);
+    controlBusy = true;
+    updateConnection();
     controlStatus.textContent = "Sending command…";
     try {
       const response = await fetch("/api/control", {
@@ -113,9 +131,32 @@
         ? "Connection lost or command failed. Check whether erebor is asleep or powered off."
         : error.message;
     } finally {
-      controlButtons.forEach(item => item.disabled = false);
+      controlBusy = false;
+      updateConnection();
     }
   }));
+  const installButton = document.querySelector("#install-app");
+  let installPrompt;
+  window.addEventListener("beforeinstallprompt", event => {
+    event.preventDefault();
+    installPrompt = event;
+    installButton.hidden = false;
+  });
+  installButton.addEventListener("click", async () => {
+    if (!installPrompt) return;
+    const prompt = installPrompt;
+    installPrompt = null;
+    installButton.hidden = true;
+    await prompt.prompt();
+  });
+  window.addEventListener("appinstalled", () => {
+    installPrompt = null;
+    installButton.hidden = true;
+  });
+  if ("serviceWorker" in navigator && window.isSecureContext) {
+    navigator.serviceWorker.register("/sw.js", { updateViaCache: "none" })
+      .catch(error => console.error("Offline support unavailable:", error));
+  }
 </script>
 </body>
 </html>

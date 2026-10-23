@@ -13,6 +13,38 @@ whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
 
+## [PENDING] Enable service dashboard PWA — 2026-10-23
+
+SYS-030. Added standalone manifest, mountain icons, install UI and offline
+dashboard shell. Service worker caches only an explicit shell allowlist;
+API requests and linked services stay network-only. Offline controls disabled.
+
+Flake check, dry/full builds and localhost browser checks passed. Browser
+verified active service worker, icon dimensions, offline reload after server
+shutdown, offline/online control state and uncached API failure. Built target:
+`/nix/store/r0varf019qv24xy4gmwaj8czjwm1q154-nixos-system-erebor-26.05.20261021.da6dc0e`.
+Closure change is dashboard assets/Caddy configuration only. Before activation,
+current and selected system are generation 210 target
+`/nix/store/ib34cmziqz3n7djjfmq95s4a04nzbgah-nixos-system-erebor-26.05.20261021.da6dc0e`;
+Caddy active, no failed system/user units, root/ESP UUIDs match policy.
+Test activation succeeded via desktop authentication. Live erebor HTTPS
+manifest MIME type, both PNG icons, active controlling worker and shell cache
+verified; moria HTTPS worker returns 200 using loopback routing (its public
+address was unreachable from this host). Caddy active, no failed system units.
+Next action: persist with normal rebuild switch, then check generation and
+services. Boot configuration is unchanged; normal switch updates the generation
+menu. Snapper unavailable; created read-only recovery snapshot
+`/btrfs-top/nixos-root-pre-dashboard-pwa-20261023` on the verified root UUID.
+Recovery remains previous system profile plus preserved systemd-boot EFI
+loader/GRUB recovery chainload. Rollback live with previous target's
+`switch-to-configuration test`. No reboot. Device installation untested.
+
+Persistent `nixos-rebuild switch --flake /etc/nixos#moria` launched through
+pkexec, awaiting desktop authentication at handoff; selected profile still
+generation 210. Snapshot creation succeeded and `btrfs property get` verified
+`ro=true`; privileged metadata inspection prompt was dismissed. Live test
+activation is verified, persistence is not yet complete (SYS-030 remains ACTIVE).
+
 ## [COMPLETED] Install GRUB with current-wallpaper menu for next boot — 2026-10-23
 
 SYS-029. Replaced the declarative systemd-boot selection with EFI GRUB, as
