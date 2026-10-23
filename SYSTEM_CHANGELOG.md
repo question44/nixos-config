@@ -13,69 +13,35 @@ whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
 
-## [PENDING] Enable service dashboard PWA — 2026-10-23
+## [COMPLETED] Enable service dashboard PWA and Material UI — 2026-10-24
 
-SYS-030. Added standalone manifest, mountain icons, install UI and offline
-dashboard shell. Service worker caches only an explicit shell allowlist;
-API requests and linked services stay network-only. Offline controls disabled.
+SYS-030. Added installable standalone PWA manifest, mountain icons and install
+UI. Rebuilt dashboard with Material UI 9.5.0 (npm latest stable when checked),
+React 19.3.1 and Vite 8.3.5, locked dependencies and a fixed-hash Nix npm build.
+Caddy serves locally bundled assets. Six icon quick actions precede service
+cards; Material confirmation dialogs retain sleep/power-off confirmation.
+API headers/body, service links and offline disabling preserved. Generated
+service worker versions its shell cache from build contents; caches the bundle,
+manifest and icons, while API and linked services remain network-only.
 
-Flake check, dry/full builds and localhost browser checks passed. Browser
-verified active service worker, icon dimensions, offline reload after server
-shutdown, offline/online control state and uncached API failure. Built target:
-`/nix/store/r0varf019qv24xy4gmwaj8czjwm1q154-nixos-system-erebor-26.05.20261021.da6dc0e`.
-Closure change is dashboard assets/Caddy configuration only. Before activation,
-current and selected system are generation 210 target
-`/nix/store/ib34cmziqz3n7djjfmq95s4a04nzbgah-nixos-system-erebor-26.05.20261021.da6dc0e`;
-Caddy active, no failed system/user units, root/ESP UUIDs match policy.
-Test activation succeeded via desktop authentication. Live erebor HTTPS
-manifest MIME type, both PNG icons, active controlling worker and shell cache
-verified; moria HTTPS worker returns 200 using loopback routing (its public
-address was unreachable from this host). Caddy active, no failed system units.
-Next action: persist with normal rebuild switch, then check generation and
-services. Boot configuration is unchanged; normal switch updates the generation
-menu. Snapper unavailable; created read-only recovery snapshot
-`/btrfs-top/nixos-root-pre-dashboard-pwa-20261023` on the verified root UUID.
-Recovery remains previous system profile plus preserved systemd-boot EFI
-loader/GRUB recovery chainload. Rollback live with previous target's
-`switch-to-configuration test`. No reboot. Device installation untested.
-
-Initial persistent switch remained at desktop authentication and was cancelled
-before applying; selected profile still generation 210. Snapshot creation
-succeeded and `btrfs property get` verified `ro=true`; privileged metadata
-inspection prompt was dismissed.
-
-Follow-up: moved controls above services as six icon quick actions, responsive
-six/three-column layout. Existing confirmations, actions and offline disabling
-preserved. Flake check, dry/full builds and desktop/mobile browser layout checks
-passed (390px viewport, no horizontal overflow). New checked target:
-`/nix/store/xbd5jxmlmfck9farywwpiq8qpwciqajj-nixos-system-erebor-26.05.20261021.da6dc0e`.
-Next: test activation, verify HTTPS quick actions and Caddy, select the checked
-target in the system profile and switch for persistence. Recovery remains as
-above, boot configuration unchanged; routine generation menu update only.
-At 2026-10-24 handoff, the new activation command is waiting in sudo's
-configured Mac Touch ID authentication (forwarded socket exists). Layout is
-verified locally; live dashboard still serves the earlier PWA build. No control
-commands were sent during layout verification. SYS-030 remains ACTIVE.
-
-2026-10-24: superseded the unactivated quick-actions target with requested
-Material UI 9.5.0 (npm latest stable), React 19.3.1 and Vite 8.3.5, exact
-lockfile and fixed-hash Nix npm build. Caddy serves the built dashboard, with
-no runtime CDN dependencies. Added Material cards, quick actions and confirmation
-dialogs; preserved API contract, links and offline controls. Worker shell/version
-generated from build assets, including the hashed JavaScript bundle.
-Flake check, dry/full build and browser checks passed: mobile overflow, headings,
-mocked control JSON/header/status, cancelling power confirmation without a
-request, offline-disabled actions and offline reload with bundled assets after
-stopping server. No real control commands sent. Prior stalled sudo cancelled.
-Checked target is now
+Flake check, dry/full builds passed. Browser checks covered desktop/mobile
+layout, mocked control requests and status, confirmation cancellation without
+sending a request, disabled offline controls, and offline reload after stopping
+the local server. No real control commands sent. Initial authentication attempts
+stalled and were cancelled; a subsequent authentication check timed out. Later
+live inspection found the exact validated build activated and persisted as
+selected generation 211:
 `/nix/store/8px1hmdb4ikr4qggwdaaxjsy1pasjsvj-nixos-system-erebor-26.05.20261021.da6dc0e`.
-Next: authenticate test activation; compare served HTML/worker with built
-package and check Caddy; only then persist this target and switch. Current live
-remains original PWA test target, selected generation 210. Caddy active, no
-failed system/user units, root/ESP UUIDs verified, recovery snapshot still ro.
-At handoff the exact target's combined test/compare/persist command remains
-waiting for Mac Touch ID via pkexec; it has not activated. Source and lockfile
-are verified and committed; SYS-030 remains ACTIVE pending authentication.
+
+Post-activation checks: current and selected targets match; Caddy active, no
+failed system/user units; root/ESP UUIDs unchanged. Served HTTPS HTML and worker
+match the built package byte-for-byte. Browser verified Material components,
+actions above services, 390px layout without overflow, correct HTTPS links,
+active controlling worker, cached JS/icons/manifest and 200 icon responses.
+Read-only recovery snapshot remains
+`/btrfs-top/nixos-root-pre-dashboard-pwa-20261023` (ro=true verified).
+No reboot or physical device installation tested. GRUB first-boot acceptance
+remains tracked separately by SYS-029. SYS-030 complete.
 
 ## [COMPLETED] Install GRUB with current-wallpaper menu for next boot — 2026-10-23
 

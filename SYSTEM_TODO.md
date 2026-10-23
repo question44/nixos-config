@@ -22,22 +22,15 @@ Earlier approvals remain bounded by their original scope and safety precondition
 
 ### SYS-030 — Make the service dashboard installable as a PWA
 
-**Status:** ACTIVE · **Reviewed:** 2026-10-24
+**Status:** DONE · **Closed:** 2026-10-24
 
-Manifest, icons, install prompt and network-first offline shell implemented.
-Flake check, dry/full builds and localhost browser checks passed, including
-offline navigation and network-only API behavior. Test activation and live
-HTTPS manifest/icons/worker checks passed for the initial PWA test activation.
-Latest requested revision uses Material UI 9.5.0, locally bundled through a
-fixed-hash Nix npm build, with six quick actions above services. Desktop/mobile,
-mocked API/confirmation and offline reload checks pass; flake/dry/full builds
-pass. Exact checked target's test/verify/persist command is waiting for Mac
-Touch ID through pkexec; prior stalled sudo cancelled. Selected profile remains
-generation 210; live still initial PWA. No reboot requested. Read-only
-pre-switch recovery snapshot verified.
-**Done when:** validated build persisted and HTTPS manifest, service worker,
-icons and dashboard behavior verified. Device installation is user-driven.
-**Evidence:** [PWA implementation](SYSTEM_CHANGELOG.md#pending-enable-service-dashboard-pwa--2026-10-23).
+Material UI 9.5.0 dashboard with top quick actions and installable PWA is
+activated and persisted as generation 211. Flake/dry/full builds, mocked control
+and offline checks passed. Live HTTPS HTML/worker match built assets; browser
+verified responsive Material UI, manifest/icons, service links and controlling
+worker with cached bundle. Caddy healthy; no failed system/user units. Physical
+device installation is user-driven and was not performed. No reboot required.
+**Evidence:** [PWA and Material UI deployment](SYSTEM_CHANGELOG.md#completed-enable-service-dashboard-pwa-and-material-ui--2026-10-24).
 
 <a id="sys-029"></a>
 
