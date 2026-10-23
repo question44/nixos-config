@@ -43,9 +43,17 @@ the cause. NVIDIA modeset and fbdev are both enabled; early modules are
 already configured. Installed SimpleDRM plus temporary Plymouth diagnostics
 as default generation 207 on 2026-10-23; live system remains 206. Build,
 boot-entry and installed kernel/initrd checks passed. No reboot performed.
-Next check after user reboot: verify generation 207, visible splash/handoff,
-mounts/services and `/var/log/plymouth-debug.log`. Remove debug parameter after
-acceptance; if still black, use trace to choose the next isolated experiment.
+Post-reboot check on 2026-10-23, boot ID
+`48642c40-35fb-4ce2-9517-6c2d7edfac7f`: booted/current system match generation
+207; SimpleDRM configuration and debug parameter are active, root/ESP UUIDs
+match. Debug trace shows SimpleDRM 1920x1080 splash animation/scanout at
++4.30–4.32s. NVIDIA first had no usable heads at +6.37s, then retry succeeded:
+1920x1080 and 3440x1440 scanout by +6.72s. Plymouth quit at +10.97s before
+greetd; user session started. XKB keymap lookup failed in initrd, but rendering
+continued; this is separate from visual acceptance. Initial failed Jellyfin
+healthcheck recovered on its next run (exit 0, healthy); user units had no
+failures. User visual confirmation remains pending. Retain debug parameter
+until splash/handoff acceptance, then remove it.
 **Done when:** boot splash visibility is corrected and user confirms Breeze
 appears with an acceptable display handoff.
 Recovery: generation 206 (before SimpleDRM experiment) or 205 (no Plymouth);

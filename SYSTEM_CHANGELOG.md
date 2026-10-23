@@ -39,6 +39,16 @@ the user's reboot: confirm booted generation 207, splash visibility, display
 handoff, mounts/services and `/var/log/plymouth-debug.log`; remove temporary
 diagnostics after acceptance. No automatic reboot is queued.
 
+Post-reboot validation on 2026-10-23 (boot ID
+`48642c40-35fb-4ce2-9517-6c2d7edfac7f`): generation 207 is booted/current;
+SimpleDRM and debug settings active, expected root/ESP UUIDs mounted. Debug
+log confirms SimpleDRM splash scanout at +4.32s and successful NVIDIA scanout
+on 1920x1080 and 3440x1440 outputs by +6.72s, after an initial no-heads retry.
+Plymouth exited before greetd at +10.97s and user session started. Initrd XKB
+lookup errors did not prevent renderer startup. Initial Jellyfin healthcheck
+failure recovered automatically (healthy, exit 0); no failed user units.
+Visual acceptance remains pending in SYS-027; debug logging retained.
+
 ## [COMPLETED] Configure Plymouth Breeze for next boot — 2026-10-23
 
 Enabled the NixOS Breeze splash with quiet kernel/initrd and early host NVIDIA
