@@ -12,6 +12,7 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+
 ## [COMPLETED] Set Capitaine cursor theme — 2026-10-23
 
 Installed Capitaine through Home Manager and selected size 24 for GTK, X11
@@ -23,6 +24,40 @@ Home Manager success and Umbriel input reload; no failed system/user units.
 Root/ESP UUIDs remain correct and generation 202 is the default boot entry.
 No reboot performed. Existing applications may need restarting to pick up
 the theme; visual appearance has not been confirmed by the user.
+
+## [COMPLETED] Retire broken Fedora installation — 2026-10-23
+
+SYS-025. User explicitly approved removing Fedora leftovers and its last
+root snapshot after reviewing the targets and irreversible loss of that copy.
+Removed Fedora root ID 256, nested machines ID 259 and unused Fedora containers
+ID 262; Btrfs subvolume sync confirmed all three fully reclaimed. Removed
+EFI/fedora, EFI/moria, Fedora menu entry and firmware entries 0000/0002/0003/0009;
+emptied Fedora ext4 boot UUID `50ee1c03-3280-4973-a746-b48c675d773f` without
+repartitioning or formatting, and removed empty /mnt/fedora-{root,home}.
+Shared srv, active NixOS containers, Windows, active swap and partitions remain.
+
+Flake check, build, test activation and persistent switch passed; cleanup
+activated generation 201 (`wm51h9kq739558mk5zypnyvav9m195df`). The removed
+Fedora extraEntries setting had been an uncommitted edit; tracked configuration
+already omits it. During verification a separate cursor-theme change activated
+generation 202 (`4rqabzx7ppni3chxjjiizsxcc0cfaz3z`), now current/default;
+Fedora menu remains absent. Protected Windows/NixOS/fallback EFI hashes passed
+(excluding the intentionally removed Fedora extra-files copy), remaining
+firmware order/default preserved, mounts intact, Jellyfin/Nextcloud/libvirtd
+active and no failed units. Main filesystem free space rose from about
+5.2 GiB to 63.5 GiB net; ESP usage fell from 285 MiB to 167 MiB.
+No reboot or post-cleanup Windows boot test performed.
+
+Recovery: important read-only NixOS snapshot
+`/btrfs-top/nixos-root-pre-fedora-retirement-20261023`, ID 656, UUID
+`6836b6ee-1163-db45-83aa-7ff1fb276076`, verified ro=true. Snapper has no
+configuration, so a direct Btrfs recovery snapshot was used. Root-only
+`/var/lib/system-recovery/fedora-retirement-20261023` contains boot archives,
+protected hashes and before/after firmware/subvolume evidence. Both archives
+were compared to source before deletion. SHA-256: EFI tar
+`f98c09a27157fd478b8b5c9c883a4f8b7c9dc286350ea1f108a88b7f205a46f6`;
+ext4 boot tar `4e63121ba40cfcc1866a1f0ebcfa1f6ddcc3479fc6ad64f3902284609eac05f1`.
+The deleted Fedora root snapshot was intentionally not backed up.
 
 ## [COMPLETED] Enable Nix commands and flakes by default — 2026-10-23
 

@@ -18,6 +18,19 @@ Earlier approvals remain bounded by their original scope and safety precondition
 
 ## Open checks
 
+<a id="sys-025"></a>
+
+### SYS-025 — Retire broken Fedora installation
+
+**Status:** DONE · **Closed:** 2026-10-23
+
+Removed Fedora-only boot files/firmware entries, root snapshot and unused
+containers; verified protected EFI hashes, shared data mounts and services.
+Btrfs completed reclamation; approximately 63.5 GiB free. Boot archives and
+NixOS recovery snapshot retained; partitions unchanged. No reboot performed.
+
+**Evidence:** [retirement record](SYSTEM_CHANGELOG.md#completed-retire-broken-fedora-installation--2026-10-23).
+
 <a id="sys-024"></a>
 
 ### SYS-024 — Activate KDE Connect LAN firewall rules
@@ -28,7 +41,7 @@ Activated persistent generation 199. Verified deployed firewall service and live
 IPv4/IPv6 TCP/UDP 1714–1764 rules on br0, boot entry/default and system profile,
 no failed units, and phone paired/reachable; user confirmed access. Configuration
 commit d9edff3. Fedora menu entry removed by isolated activation was restored and
-verified; future activations must preserve existing extraEntries configuration.
+verified. Fedora was later intentionally retired under SYS-025.
 
 **Evidence:** [completed change](SYSTEM_CHANGELOG.md#completed-persist-kde-connect-lan-firewall-rules--2026-10-23).
 
@@ -36,13 +49,16 @@ verified; future activations must preserve existing extraEntries configuration.
 
 ### SYS-001 — Verify Fedora chainloading
 
-**Status:** OPEN · **Reviewed:** 2026-10-23
+**Status:** CANCELLED · **Closed:** 2026-10-23
 
-Observed 2026-10-23: Fedora loader/menu entry exists; boot not tested.
+User reported two failed Fedora boots. Read-only inspection found root/home
+subvolumes missing; historical Btrfs output confirms they existed on Oct 18
+at 02:13 Warsaw time and a complete directory listing shows them absent on
+Oct 22 at 17:33. Exact deletion time/cause remains unknown. User chose to
+retire Fedora, including the remaining root snapshot, under SYS-025.
 
-**Done when:** After saving work, boot Fedora from systemd-boot and confirm a usable Fedora session; confirm NixOS and Windows remain available.
-
-**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-001-1).
+**Evidence:** [retirement record](SYSTEM_CHANGELOG.md#completed-retire-broken-fedora-installation--2026-10-23);
+[historical record](SYSTEM_CHANGELOG.md#record-sys-001-1).
 
 <a id="sys-002"></a>
 
@@ -317,7 +333,7 @@ Superseded by the completed 2026-10-20 replacement of background-apps with nativ
 
 ## Adding or closing a task
 
-Use the next unused SYS number (currently SYS-025). Record status, review date,
+Use the next unused SYS number (currently SYS-026). Record status, review date,
 what remains, a concrete completion condition, and a link to evidence. For active
 work, record the next safe step and any applicable recovery checkpoint. Required
 acceptance checks block completion of that task; optional follow-ups get their

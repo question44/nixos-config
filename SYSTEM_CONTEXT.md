@@ -1,9 +1,9 @@
 # System context for NixOS `erebor` (flake target `moria`)
 
-Verify live state before acting; this file is not a system inventory. Initial
-NixOS boot and desktop checks passed, and Fedora was historically verified
-intact from its firmware entry. That does not verify the later systemd-boot
-chainload entry; its outstanding check is tracked in SYSTEM_TODO.md.
+Verify live state before acting; this file is not a system inventory. Fedora
+was retired on 2026-10-23 at the user's explicit request after its active
+root/home subvolumes were found missing. Shared service data remains in use
+by NixOS. See SYS-025 and its dated change record.
 
 This document becomes the NixOS-side operational memory after the parallel
 installation. Verify live state before acting and do not record passwords,
@@ -31,11 +31,13 @@ Unfinished work and verification checks belong in
 
 ## Reusable operational pitfalls
 
-- systemd-boot activation removes a manually present fedora.conf if the built
-  configuration omits its extraEntries setting. Preserve that configuration
-  when preparing isolated builds and verify menu entries after activation.
-  Generation 200 includes the existing working-tree setting and preserves the
-  Fedora entry; see SYS-001 and the 2026-10-23 activation records.
+- Fedora boot files and original firmware entry descriptions were archived
+  under root-only `/var/lib/system-recovery/fedora-retirement-20261023`.
+  These archives do not contain the deleted Fedora root snapshot. The
+  pre-retirement NixOS recovery snapshot is
+  `/btrfs-top/nixos-root-pre-fedora-retirement-20261023` (ID 656, ro=true).
+  Rolling back to generation 200 may restore an obsolete Fedora menu entry;
+  the current declarative configuration intentionally omits that entry.
 - Interactive sudo supports YubiKey authentication through a PTY; noninteractive
   sudo can report that a password is required even when a YubiKey is available.
 - A newly added kernel module is not found by default modprobe after a NixOS
