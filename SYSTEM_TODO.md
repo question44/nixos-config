@@ -22,25 +22,15 @@ Earlier approvals remain bounded by their original scope and safety precondition
 
 ### SYS-024 — Activate KDE Connect LAN firewall rules
 
-**Status:** OPEN · **Reviewed:** 2026-10-23
+**Status:** DONE · **Closed:** 2026-10-23
 
-TCP/UDP 1714–1764 on br0 are configured. User confirmed access works after
-firewall reload; CLI independently reports the phone paired and reachable.
-Configuration and records are committed separately from the unrelated Fedora
-edit. Full flake check and isolated system build passed. Live generation is 198;
-sudo authentication is still required to activate the persistent generation.
+Activated persistent generation 199. Verified deployed firewall service and live
+IPv4/IPv6 TCP/UDP 1714–1764 rules on br0, boot entry/default and system profile,
+no failed units, and phone paired/reachable; user confirmed access. Configuration
+commit d9edff3. Fedora menu entry removed by isolated activation was restored and
+verified; future activations must preserve existing extraEntries configuration.
 
-Built system:
-`/nix/store/xkdi7nn5faf6rl89ps03qsl40rsw17fj-nixos-system-erebor-26.05.20261021.da6dc0e`.
-It excludes the unrelated Fedora working-tree edit; kernel/initrd/parameters
-match the running generation. Activate with authenticated
-`nixos-rebuild switch --store-path` pointing to that system.
-
-**Done when:** Activate the persistent generation and verify live firewall rules,
-deployed service, generation, failed units and phone reachability; update records.
-
-**Evidence:** [prepared change](SYSTEM_CHANGELOG.md#prepared-persist-kde-connect-lan-firewall-rules--2026-10-23).
-
+**Evidence:** [completed change](SYSTEM_CHANGELOG.md#completed-persist-kde-connect-lan-firewall-rules--2026-10-23).
 
 <a id="sys-001"></a>
 

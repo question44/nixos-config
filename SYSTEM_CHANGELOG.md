@@ -12,24 +12,24 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
-## [PREPARED] Persist KDE Connect LAN firewall rules — 2026-10-23
+## [COMPLETED] Persist KDE Connect LAN firewall rules — 2026-10-23
 
-Added TCP and UDP 1714–1764 on br0 only. User confirmed the firewall reload
-fixed access; kdeconnect-cli independently reports Galaxy S26 Ultra paired and
-reachable at 192.168.1.110 over LAN. No failed system units were observed.
+Added TCP and UDP 1714–1764 on br0 only (configuration commit d9edff3).
+Full flake check, dry-build and isolated full system build passed. Activated
+`/nix/store/xkdi7nn5faf6rl89ps03qsl40rsw17fj-nixos-system-erebor-26.05.20261021.da6dc0e`
+as generation 199 with YubiKey authentication and explicit Nix experimental
+features. Verified deployed firewall.service, live IPv4 and IPv6 TCP/UDP range
+rules, matching system profile and generation-199 boot entry/default, unchanged
+root/boot mounts, no failed system units, and phone paired/reachable over LAN.
+User also confirmed access. No reboot performed or needed for this change.
+[SYS-024](SYSTEM_TODO.md#sys-024) is complete.
 
-Full flake check, dry-build, and an isolated full system build passed. The
-isolated source contains the committed baseline plus only the firewall change,
-excluding the unrelated working-tree Fedora entry. Built system:
-`/nix/store/xkdi7nn5faf6rl89ps03qsl40rsw17fj-nixos-system-erebor-26.05.20261021.da6dc0e`.
-Bootspec kernel, initrd and parameters match live generation 198.
-
-Sudo still requires authentication, so no system generation was activated.
-Configuration is saved for future rebuilds; persistence in the boot generation
-remains open under [SYS-024](SYSTEM_TODO.md#sys-024). Commit includes only the
-firewall configuration and related records. Next step: authenticated
-`nixos-rebuild switch --store-path` for the built system, then verify deployment,
-firewall rules, generation, failed units and phone reachability. No reboot needed.
+The isolated build excluded the pre-existing uncommitted Fedora extraEntries
+setting. Activation consequently removed fedora.conf; restored its exact
+previous content and verified /boot/EFI/fedora/shimx64.efi exists. Fedora boot
+remains untested under SYS-001. Preserve the existing working-tree extraEntries
+setting in future activations; do not replay generation 199's bootloader setup
+without preserving that entry. Unrelated configuration edits remain uncommitted.
 
 ## [COMPLETED] Persist writable Crucial mount — 2026-10-23
 
