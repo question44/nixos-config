@@ -27,9 +27,11 @@ Earlier approvals remain bounded by their original scope and safety precondition
 Manifest, icons, install prompt and network-first offline shell implemented.
 Flake check, dry/full builds and localhost browser checks passed, including
 offline navigation and network-only API behavior. Test activation and live
-HTTPS manifest/icons/worker checks passed. Persistent rebuild switch is
-waiting for desktop authentication; selected profile remains generation 210.
-No reboot requested. Read-only pre-switch recovery snapshot verified.
+HTTPS manifest/icons/worker checks passed. Quick actions follow-up places six
+icon buttons above service links; desktop/mobile browser checks and builds pass.
+Exact checked target's test/verify/persist command is waiting for Mac Touch ID
+through sudo; selected profile remains generation 210. No reboot requested.
+Read-only pre-switch recovery snapshot verified.
 **Done when:** validated build persisted and HTTPS manifest, service worker,
 icons and dashboard behavior verified. Device installation is user-driven.
 **Evidence:** [PWA implementation](SYSTEM_CHANGELOG.md#pending-enable-service-dashboard-pwa--2026-10-23).

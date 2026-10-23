@@ -25,11 +25,19 @@
   .desc { color:var(--mut); font-size:.85rem; margin-top:.15rem; }
   footer { margin-top:3rem; color:var(--mut); font-size:.8rem; border-top:1px solid var(--bd); padding-top:1rem; }
   h2 { font-size:1.1rem; margin:2rem 0 .75rem; }
-  .control { padding:1rem 1.15rem; background:var(--card); border:1px solid var(--bd); border-radius:.6rem; }
-  .buttons { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.6rem; }
   button { font:inherit; color:var(--fg); background:var(--bg); border:1px solid var(--bd); border-radius:.4rem; padding:.4rem .8rem; cursor:pointer; }
   button:hover, button:focus-visible { border-color:var(--ac); }
-  button:disabled { opacity:.5; cursor:wait; }
+  button:disabled { opacity:.5; cursor:not-allowed; }
+  .quick-actions { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:.6rem; }
+  .quick-action { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.6rem; min-height:6.25rem; padding:.8rem .4rem; border-radius:.9rem; background:var(--card); font-size:.8rem; font-weight:600; line-height:1.3; transition:background .15s,border-color .15s; }
+  .quick-action svg { width:1.5rem; height:1.5rem; fill:none; stroke:var(--ac); stroke-width:1.75; stroke-linecap:round; stroke-linejoin:round; }
+  .quick-action:hover { background:var(--bd); }
+  .quick-action:focus-visible { outline:2px solid var(--ac); outline-offset:3px; }
+  .quick-action.off svg { stroke:var(--mut); }
+  .quick-action.power svg { stroke:#c77878; }
+  #control-status:empty { display:none; }
+  @media (max-width:600px) { .quick-actions { grid-template-columns:repeat(3,minmax(0,1fr)); } body { padding-top:1.5rem; } }
+
   #control-status { min-height:1.6em; color:var(--mut); font-size:.9rem; }
 </style>
 </head>
@@ -39,6 +47,19 @@
   <p class="sub">Services available on the tailnet and local network.</p>
   <p id="offline-status" role="status" hidden>Offline — reconnect to use services and controls.</p>
   <button id="install-app" type="button" hidden>Install erebor</button>
+  <section aria-labelledby="quick-actions-title">
+    <h2 id="quick-actions-title">Quick actions</h2>
+    <div class="quick-actions">
+      <button class="quick-action" data-action="display-on"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8m-4-4v4"/></svg><span>Display on</span></button>
+      <button class="quick-action off" data-action="display-off"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8m-4-4v4"/></svg><span>Display off</span></button>
+      <button class="quick-action" data-action="ambilight-on"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg><span>Ambilight on</span></button>
+      <button class="quick-action off" data-action="ambilight-off"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg><span>Ambilight off</span></button>
+      <button class="quick-action" data-action="sleep" data-confirm="Put erebor to sleep? Remote services will disconnect until it wakes."><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 13A9 9 0 0 1 11 3.5 9 9 0 1 0 20.5 13Z"/></svg><span>Sleep</span></button>
+      <button class="quick-action power" data-action="power-off" data-confirm="Power off erebor? Save your work first. Remote services will stop."><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v9m-6.4-6.4a9 9 0 1 0 12.8 0"/></svg><span>Power off</span></button>
+    </div>
+    <p id="control-status" role="status" aria-live="polite"></p>
+  </section>
+  <h2>Services</h2>
   <div class="grid">
     <a id="jellyfin" href="http://moria:8096">
       <div class="name">media</div>
@@ -69,22 +90,6 @@
       <div class="desc">Cockpit server administration</div>
     </a>
   </div>
-  <h2>Controls</h2>
-  <div class="grid">
-    <div class="control"><div class="name">Display</div><div class="buttons">
-      <button data-action="display-on">Turn on display</button>
-      <button data-action="display-off">Turn off display</button>
-    </div></div>
-    <div class="control"><div class="name">Ambilight</div><div class="buttons">
-      <button data-action="ambilight-on">Turn on ambilight</button>
-      <button data-action="ambilight-off">Turn off ambilight</button>
-    </div></div>
-    <div class="control"><div class="name">System</div><div class="buttons">
-      <button data-action="sleep" data-confirm="Put erebor to sleep? Remote services will disconnect until it wakes.">Sleep</button>
-      <button data-action="power-off" data-confirm="Power off erebor? Save your work first. Remote services will stop.">Power off</button>
-    </div></div>
-  </div>
-  <p id="control-status" role="status" aria-live="polite"></p>
   <footer>Served by Caddy on the local network. Install from your browser menu; on iPhone or iPad, use Share → Add to Home Screen.</footer>
 </main>
 <script>

@@ -39,11 +39,23 @@ Recovery remains previous system profile plus preserved systemd-boot EFI
 loader/GRUB recovery chainload. Rollback live with previous target's
 `switch-to-configuration test`. No reboot. Device installation untested.
 
-Persistent `nixos-rebuild switch --flake /etc/nixos#moria` launched through
-pkexec, awaiting desktop authentication at handoff; selected profile still
-generation 210. Snapshot creation succeeded and `btrfs property get` verified
-`ro=true`; privileged metadata inspection prompt was dismissed. Live test
-activation is verified, persistence is not yet complete (SYS-030 remains ACTIVE).
+Initial persistent switch remained at desktop authentication and was cancelled
+before applying; selected profile still generation 210. Snapshot creation
+succeeded and `btrfs property get` verified `ro=true`; privileged metadata
+inspection prompt was dismissed.
+
+Follow-up: moved controls above services as six icon quick actions, responsive
+six/three-column layout. Existing confirmations, actions and offline disabling
+preserved. Flake check, dry/full builds and desktop/mobile browser layout checks
+passed (390px viewport, no horizontal overflow). New checked target:
+`/nix/store/xbd5jxmlmfck9farywwpiq8qpwciqajj-nixos-system-erebor-26.05.20261021.da6dc0e`.
+Next: test activation, verify HTTPS quick actions and Caddy, select the checked
+target in the system profile and switch for persistence. Recovery remains as
+above, boot configuration unchanged; routine generation menu update only.
+At 2026-10-24 handoff, the new activation command is waiting in sudo's
+configured Mac Touch ID authentication (forwarded socket exists). Layout is
+verified locally; live dashboard still serves the earlier PWA build. No control
+commands were sent during layout verification. SYS-030 remains ACTIVE.
 
 ## [COMPLETED] Install GRUB with current-wallpaper menu for next boot — 2026-10-23
 
