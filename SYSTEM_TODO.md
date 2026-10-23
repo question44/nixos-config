@@ -18,6 +18,30 @@ Earlier approvals remain bounded by their original scope and safety precondition
 
 ## Open checks
 
+<a id="sys-024"></a>
+
+### SYS-024 — Activate KDE Connect LAN firewall rules
+
+**Status:** OPEN · **Reviewed:** 2026-10-23
+
+TCP/UDP 1714–1764 on br0 are configured. User confirmed access works after
+firewall reload; CLI independently reports the phone paired and reachable.
+Configuration and records are committed separately from the unrelated Fedora
+edit. Full flake check and isolated system build passed. Live generation is 198;
+sudo authentication is still required to activate the persistent generation.
+
+Built system:
+`/nix/store/xkdi7nn5faf6rl89ps03qsl40rsw17fj-nixos-system-erebor-26.05.20261021.da6dc0e`.
+It excludes the unrelated Fedora working-tree edit; kernel/initrd/parameters
+match the running generation. Activate with authenticated
+`nixos-rebuild switch --store-path` pointing to that system.
+
+**Done when:** Activate the persistent generation and verify live firewall rules,
+deployed service, generation, failed units and phone reachability; update records.
+
+**Evidence:** [prepared change](SYSTEM_CHANGELOG.md#prepared-persist-kde-connect-lan-firewall-rules--2026-10-23).
+
+
 <a id="sys-001"></a>
 
 ### SYS-001 — Verify Fedora chainloading
@@ -303,7 +327,7 @@ Superseded by the completed 2026-10-20 replacement of background-apps with nativ
 
 ## Adding or closing a task
 
-Use the next unused SYS number (currently SYS-024). Record status, review date,
+Use the next unused SYS number (currently SYS-025). Record status, review date,
 what remains, a concrete completion condition, and a link to evidence. For active
 work, record the next safe step and any applicable recovery checkpoint. Required
 acceptance checks block completion of that task; optional follow-ups get their

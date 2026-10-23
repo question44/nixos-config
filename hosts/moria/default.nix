@@ -140,6 +140,8 @@ in
   networking.firewall.allowedTCPPorts = [ 22 ];
   networking.firewall.interfaces.br0.allowedTCPPorts = [ 80 8080 8095 8096 8384 8082 22000 ];
   networking.firewall.interfaces.br0.allowedUDPPorts = [ 22000 ];
+  networking.firewall.interfaces.br0.allowedTCPPortRanges = [ { from = 1714; to = 1764; } ];
+  networking.firewall.interfaces.br0.allowedUDPPortRanges = [ { from = 1714; to = 1764; } ];
   networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 80 443 22000 ];
   networking.firewall.interfaces.tailscale0.allowedUDPPorts = [ 22000 ];
   services.tailscale.enable = true;

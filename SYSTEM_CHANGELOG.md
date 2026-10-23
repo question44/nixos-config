@@ -12,6 +12,25 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [PREPARED] Persist KDE Connect LAN firewall rules — 2026-10-23
+
+Added TCP and UDP 1714–1764 on br0 only. User confirmed the firewall reload
+fixed access; kdeconnect-cli independently reports Galaxy S26 Ultra paired and
+reachable at 192.168.1.110 over LAN. No failed system units were observed.
+
+Full flake check, dry-build, and an isolated full system build passed. The
+isolated source contains the committed baseline plus only the firewall change,
+excluding the unrelated working-tree Fedora entry. Built system:
+`/nix/store/xkdi7nn5faf6rl89ps03qsl40rsw17fj-nixos-system-erebor-26.05.20261021.da6dc0e`.
+Bootspec kernel, initrd and parameters match live generation 198.
+
+Sudo still requires authentication, so no system generation was activated.
+Configuration is saved for future rebuilds; persistence in the boot generation
+remains open under [SYS-024](SYSTEM_TODO.md#sys-024). Commit includes only the
+firewall configuration and related records. Next step: authenticated
+`nixos-rebuild switch --store-path` for the built system, then verify deployment,
+firewall rules, generation, failed units and phone reachability. No reboot needed.
+
 ## [COMPLETED] Persist writable Crucial mount — 2026-10-23
 
 Changed only the Crucial exFAT mount option from ro to rw for UUID 604F-A363,
