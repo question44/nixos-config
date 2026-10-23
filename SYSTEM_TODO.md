@@ -24,13 +24,34 @@ Earlier approvals remain bounded by their original scope and safety precondition
 
 **Status:** OPEN · **Reviewed:** 2026-10-23
 
-Breeze, quiet boot and early NVIDIA graphics installed as default generation
-206. Configuration build and boot-entry/kernel/initrd checks passed; live
-session remains generation 205. No reboot performed.
-**Done when:** after a separately authorized reboot, Breeze appears, desktop
-handoff succeeds, mounts/services are healthy and boot evidence is recorded.
-Recovery: generation 205 entry and verified read-only pre-Plymouth snapshot.
-**Evidence:** [Plymouth installation](SYSTEM_CHANGELOG.md#completed-configure-plymouth-breeze-for-next-boot--2026-10-23).
+Post-boot validation on 2026-10-23: boot ID
+`64fd6cb43a944fa390111a6ee5f38c4b`; booted and current system match generation
+206 (`77kr8jfvqs5j6xsxp7dhcp3a5pbmqc3x`). Live Plymouth configuration selects
+Breeze; kernel command line includes quiet/splash/loglevel=0. Boot journal
+shows Plymouth started at +4.22s, NVIDIA DRM initialized at +6.31s, and
+Plymouth quit successfully at +10.78s immediately before greetd started.
+Start/quit/quit-wait units report success with exit status 0. Login and desktop
+session started; root/ESP UUIDs match the expected filesystems and neither
+system nor user manager reports failed units. Other boot log errors exist;
+these checks do not establish an error-free boot. No configuration changes,
+activation or reboot performed during validation.
+User reports on 2026-10-23 that startup remained black but the shutdown
+splash was visible. Startup visual acceptance therefore failed despite the
+successful service lifecycle. Suspected early graphics/device discovery or
+handoff timing; no Plymouth renderer debug trace is available to establish
+the cause. NVIDIA modeset and fbdev are both enabled; early modules are
+already configured. Installed SimpleDRM plus temporary Plymouth diagnostics
+as default generation 207 on 2026-10-23; live system remains 206. Build,
+boot-entry and installed kernel/initrd checks passed. No reboot performed.
+Next check after user reboot: verify generation 207, visible splash/handoff,
+mounts/services and `/var/log/plymouth-debug.log`. Remove debug parameter after
+acceptance; if still black, use trace to choose the next isolated experiment.
+**Done when:** boot splash visibility is corrected and user confirms Breeze
+appears with an acceptable display handoff.
+Recovery: generation 206 (before SimpleDRM experiment) or 205 (no Plymouth);
+verified read-only pre-SimpleDRM snapshot recorded below.
+**Evidence:** [SimpleDRM installation](SYSTEM_CHANGELOG.md#completed-install-plymouth-simpledrm-diagnostics-for-next-boot--2026-10-23),
+[original Plymouth installation](SYSTEM_CHANGELOG.md#completed-configure-plymouth-breeze-for-next-boot--2026-10-23).
 
 <a id="sys-026"></a>
 

@@ -128,10 +128,12 @@ in
   boot.plymouth = {
     enable = true;
     theme = "breeze";
+    extraConfig = "UseSimpledrm=1";
   };
   boot.consoleLogLevel = 0;
   boot.initrd.verbose = false;
-  boot.kernelParams = [ "quiet" ];
+  # Temporary Plymouth diagnostics for SYS-027; remove after visual validation.
+  boot.kernelParams = [ "quiet" "plymouth.debug" ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 

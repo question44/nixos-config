@@ -13,6 +13,32 @@ whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
 
+## [COMPLETED] Install Plymouth SimpleDRM diagnostics for next boot — 2026-10-23
+
+Enabled `UseSimpledrm=1` and temporary `plymouth.debug` for SYS-027 after
+user reported black startup but visible shutdown splash. No ordering change.
+Flake check and nixos-rebuild build passed. Installed exact checked target
+`/nix/store/33pm8qsha1985gfmmkc8m1r4a1vzwa07-nixos-system-erebor-26.05.20261021.da6dc0e`
+through system-profile selection and switch-to-configuration boot as default
+generation 207. Built configuration contains UseSimpledrm=1; boot entry has
+plymouth.debug, and installed kernel/initrd bytes match the checked build.
+Live system remains generation 206 (`77kr8jfvqs5j6xsxp7dhcp3a5pbmqc3x`);
+no live activation or reboot performed. No failed system/user units.
+
+Snapper unavailable; created and verified read-only root snapshot
+`/btrfs-top/nixos-root-pre-plymouth-simpledrm-20261023`. Verified ESP archive,
+snapshot metadata, protected EFI hashes and before/after firmware listings
+are under root-only `/var/lib/system-recovery/plymouth-simpledrm-20261023`.
+Protected EFI checksums and firmware comparison passed. Root/ESP UUIDs match
+expected filesystems; recovery entries 206 and 205 remain, with menu timeout
+five seconds. Select 206 to undo this experiment or 205 to boot without Plymouth.
+
+Installation scope complete; visual boot acceptance remains open in SYS-027.
+Risk: SimpleDRM/NVIDIA handoff may still show black. Mandatory next check after
+the user's reboot: confirm booted generation 207, splash visibility, display
+handoff, mounts/services and `/var/log/plymouth-debug.log`; remove temporary
+diagnostics after acceptance. No automatic reboot is queued.
+
 ## [COMPLETED] Configure Plymouth Breeze for next boot — 2026-10-23
 
 Enabled the NixOS Breeze splash with quiet kernel/initrd and early host NVIDIA
