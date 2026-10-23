@@ -321,15 +321,19 @@ Later completed Mango records show activation and live use, so the old test-gene
 
 <a id="sys-022"></a>
 
-### SYS-022 — Review Crucial mount and VM relocation progress
+### SYS-022 — Finish Crucial Windows VM relocation
 
-**Status:** REVIEW · **Reviewed:** 2026-10-23
+**Status:** DONE · **Closed:** 2026-10-23
 
-Observed 2026-10-23: Crucial UUID 604F-A363 is mounted read-write and installed fstab specifies rw; the declarative mount change is verified. VM relocation and copy-verification evidence have not been audited.
+Verified identical offline image contents and healthy qcow2 metadata, switched
+only vda to Crucial UUID 604F-A363, verified Windows desktop/guest agent/network
+and no disk errors, shut down cleanly and removed live local original.
+VM remains off. Recovery XML/NVRAM/TPM and read-only root snapshot ID 657
+retained. Other snapshots still hold 110.37 GiB of shared original disk blocks;
+removing those is outside this relocation. Main filesystem has about 63 GiB free.
 
-**Done when:** Read current mount/domain state and copy-verification evidence. Establish exactly which steps remain and retain recovery/source data until destination and guest startup are verified. No copy, deletion or domain change is authorized by this tracking migration.
-
-**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-022-1).
+**Evidence:** [completed relocation](SYSTEM_CHANGELOG.md#completed-finish-windows-vm-relocation-to-crucial--2026-10-23);
+[historical record](SYSTEM_CHANGELOG.md#record-sys-022-1).
 
 <a id="sys-023"></a>
 

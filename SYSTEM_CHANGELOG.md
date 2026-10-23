@@ -50,6 +50,38 @@ in deployed mimeapps.list, successful Home Manager and no failed system/user
 units. Root/ESP UUIDs remain correct; generation 205 is the default boot entry.
 No reboot performed; opening an image in the GUI was not exercised.
 
+## [COMPLETED] Finish Windows VM relocation to Crucial — 2026-10-23
+
+SYS-022. User authorized completing the existing copy's relocation and removal
+of the live original after verification. With windows11 shut off, qemu-img
+compare of both 120 GiB qcow2 images returned "Images are identical" (exit 0).
+Destination qcow2 checks before boot and after shutdown found no errors.
+Changed only vda source to `/srv/external/crucial/windows11.qcow2` on verified
+read-write exFAT UUID `604F-A363`; validated normalized XML equality for all
+other settings. Domain XML/NVRAM/TPM retained under root-only
+`/var/lib/windows-vm-recovery/crucial-relocation-20261023`.
+
+Started Windows from Crucial and verified active/persistent path, guest-ping,
+Windows OS/filesystem queries, LAN 192.168.1.120, Explorer session 1 via
+read-only PowerShell (exit 0), visible desktop screenshot and no block errors.
+Clean guest-agent shutdown completed. Rechecked shut-off state, destination
+UUID and persistent path before unlinking only the live local original
+`/var/lib/libvirt/images/windows11.qcow2`. VM remains shut off as before.
+No failed host units. No GPU, partition, mount configuration or host reboot
+changes made. Current flake check/dry-build passed; no Nix source edits or
+host activation needed for the persistent libvirt disk change.
+
+Important read-only pre-move root snapshot ID 657, UUID
+`187eeff9-5699-2e4f-bf87-8e5efccd54a5`, verified ro=true; Snapper has no
+configuration, so direct Btrfs snapshot used. Its original disk copy remains
+at `/btrfs-top/nixos-root-pre-vm-crucial-20261023/var/lib/libvirt/images/windows11.qcow2`.
+Btrfs filesystem du reports 110.37 GiB total, 0 exclusive, 110.37 GiB shared:
+other recovery snapshots also retain this image. Main filesystem remains
+about 63 GiB free; live-file removal does not reclaim those shared blocks.
+Snapshot deletion was not authorized by this relocation and was not performed.
+WINDOWS_VM.md now documents the current disk and the stale-path pitfall in
+older saved XML. No outstanding acceptance check for this relocation.
+
 ## [COMPLETED] Increase Capitaine cursor size — 2026-10-23
 
 Raised cursor size from 24 to 32 in Home Manager and Umbriel. Isolated flake

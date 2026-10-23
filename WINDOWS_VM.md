@@ -25,6 +25,25 @@ The guest has 20 virtual CPUs, 20 GiB RAM, a sparse 120 GiB qcow2
 disk, Secure Boot, TPM 2.0, VirtIO storage/network, and a local SPICE display.
 It uses a fresh virtual disk, never a physical Windows disk or partition.
 
+## Disk location and recovery
+
+The existing VM uses `/srv/external/crucial/windows11.qcow2` on Crucial
+filesystem UUID `604F-A363`. Keep Crucial connected and mounted read-write
+before starting Windows. Offline content comparison, qcow2 checks and a
+Windows desktop boot passed on 2026-10-23; the live original under
+`/var/lib/libvirt/images/` was removed after a clean guest shutdown.
+
+Original domain XML, NVRAM and TPM state are saved under root-only
+`/var/lib/windows-vm-recovery/crucial-relocation-20261023`. The original disk
+still exists inside read-only NixOS recovery snapshots, including
+`/btrfs-top/nixos-root-pre-vm-crucial-20261023/var/lib/libvirt/images/windows11.qcow2`.
+These snapshots retain its disk space despite deletion of the live original.
+
+Older saved domain XML references the removed local path. With Windows off,
+update its disk source to the current Crucial image before using such XML,
+or restore the matching original disk and firmware/TPM state together.
+Do not start an older disk against newer state without reviewing that rollback.
+
 ## CPU and memory
 
 The persistent libvirt domain assigns each vCPU 0-19 to the corresponding
@@ -101,8 +120,9 @@ Use the configured guest streaming software for the accelerated desktop.
 
 `windows11` is created, with Windows Setup started from
 `/home/janzon/Downloads/windows-vm/windws.is` (Polish x64 ISO, verified against
-Microsoft's SHA-256 table). The fresh virtual disk is
-`/var/lib/libvirt/images/windows11.qcow2`. Do not rerun windows-vm-create.
+Microsoft's SHA-256 table). The virtual disk now lives at
+`/srv/external/crucial/windows11.qcow2`; see disk recovery above. Do not rerun
+windows-vm-create.
 
 Local console: `virt-viewer --connect qemu:///system windows11`.
 From another computer with Virt Viewer and SSH access to this host:

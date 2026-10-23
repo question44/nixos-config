@@ -31,6 +31,12 @@ Unfinished work and verification checks belong in
 
 ## Reusable operational pitfalls
 
+- Windows VM disk now resides on Crucial UUID `604F-A363` at
+  `/srv/external/crucial/windows11.qcow2`. The live local image was removed;
+  NixOS recovery snapshots retain its blocks. Older domain XML must have its
+  source path updated before reuse, or be paired with a restored original
+  disk/NVRAM/TPM. See [Windows VM recovery](WINDOWS_VM.md#disk-location-and-recovery).
+
 - Fedora boot files and original firmware entry descriptions were archived
   under root-only `/var/lib/system-recovery/fedora-retirement-20261023`.
   These archives do not contain the deleted Fedora root snapshot. The
