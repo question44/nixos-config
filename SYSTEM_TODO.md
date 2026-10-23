@@ -18,6 +18,19 @@ Earlier approvals remain bounded by their original scope and safety precondition
 
 ## Open checks
 
+<a id="sys-031"></a>
+
+### SYS-031 — Expose HyperHDR through Caddy
+
+**Status:** OPEN · **Reviewed:** 2026-10-24
+
+Configuration and full build ready. Flake/dry-build/Caddy adapt passed;
+upstream UI HTTP 200 and WebSocket 101 verified. Authentication prevented
+activation; cancelled unanswered pkexec prompt. Generation 211 remains active.
+**Done when:** authenticated test activation, proxy UI/TLS/WebSocket checks,
+and persistent switch pass, with results recorded and committed.
+**Evidence:** [HyperHDR proxy](SYSTEM_CHANGELOG.md#awaiting-activation-add-hyperhdr-to-caddy--2026-10-24).
+
 <a id="sys-030"></a>
 
 ### SYS-030 — Make the service dashboard installable as a PWA

@@ -519,6 +519,11 @@ in
           reverse_proxy 127.0.0.1:18096
         }
 
+        @hyperhdr host hyperhdr.localhost hyperhdr
+        handle @hyperhdr {
+          reverse_proxy 127.0.0.1:8090
+        }
+
         @nextcloud host nextcloud.localhost nextcloud
         handle @nextcloud {
           reverse_proxy 127.0.0.1:18089
@@ -619,6 +624,11 @@ in
             header_up Referer https://torrent.moria.jzon.pl/
             header_up -Authorization
           }
+        }
+
+        @hyperhdr host hyperhdr.moria.jzon.pl hyperhdr.erebor.jzon.pl
+        handle @hyperhdr {
+          reverse_proxy 127.0.0.1:8090
         }
 
         @sunshine host sunshine.moria.jzon.pl sunshine.erebor.jzon.pl
