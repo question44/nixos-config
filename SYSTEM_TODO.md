@@ -18,59 +18,39 @@ Earlier approvals remain bounded by their original scope and safety precondition
 
 ## Open checks
 
+<a id="sys-028"></a>
+
+### SYS-028 — Resolve duplicate Noctalia startup
+
+**Status:** OPEN · **Reviewed:** 2026-10-23
+
+Generation 208 post-boot check: user `noctalia.service` failed with
+start-limit-hit; journal repeatedly says `noctalia is already running`.
+A separate `/run/current-system/sw/bin/noctalia` process is running (PID 3970
+at inspection). No shell processes restarted during Plymouth verification.
+**Done when:** establish the intended single startup owner, remove competing
+launch declaratively and verify shell functionality and service health.
+**Evidence:** [generation 208 post-boot check](SYSTEM_CHANGELOG.md#completed-install-bgrt-logo-and-faster-greeter-startup-for-next-boot--2026-10-23).
+
 <a id="sys-027"></a>
 
 ### SYS-027 — Verify Plymouth boot splash
 
-**Status:** OPEN · **Reviewed:** 2026-10-23
+**Status:** DONE · **Closed:** 2026-10-23
 
-Post-boot validation on 2026-10-23: boot ID
-`64fd6cb43a944fa390111a6ee5f38c4b`; booted and current system match generation
-206 (`77kr8jfvqs5j6xsxp7dhcp3a5pbmqc3x`). Live Plymouth configuration selects
-Breeze; kernel command line includes quiet/splash/loglevel=0. Boot journal
-shows Plymouth started at +4.22s, NVIDIA DRM initialized at +6.31s, and
-Plymouth quit successfully at +10.78s immediately before greetd started.
-Start/quit/quit-wait units report success with exit status 0. Login and desktop
-session started; root/ESP UUIDs match the expected filesystems and neither
-system nor user manager reports failed units. Other boot log errors exist;
-these checks do not establish an error-free boot. No configuration changes,
-activation or reboot performed during validation.
-User reports on 2026-10-23 that startup remained black but the shutdown
-splash was visible. Startup visual acceptance therefore failed despite the
-successful service lifecycle. Suspected early graphics/device discovery or
-handoff timing; no Plymouth renderer debug trace is available to establish
-the cause. NVIDIA modeset and fbdev are both enabled; early modules are
-already configured. Installed SimpleDRM plus temporary Plymouth diagnostics
-as default generation 207 on 2026-10-23; live system remains 206. Build,
-boot-entry and installed kernel/initrd checks passed. No reboot performed.
-Post-reboot check on 2026-10-23, boot ID
-`48642c40-35fb-4ce2-9517-6c2d7edfac7f`: booted/current system match generation
-207; SimpleDRM configuration and debug parameter are active, root/ESP UUIDs
-match. Debug trace shows SimpleDRM 1920x1080 splash animation/scanout at
-+4.30–4.32s. NVIDIA first had no usable heads at +6.37s, then retry succeeded:
-1920x1080 and 3440x1440 scanout by +6.72s. Plymouth quit at +10.97s before
-greetd; user session started. XKB keymap lookup failed in initrd, but rendering
-continued; this is separate from visual acceptance. Initial failed Jellyfin
-healthcheck recovered on its next run (exit 0, healthy); user units had no
-failures. User confirms splash was briefly visible on generation 207.
-Visibility is established; acceptable handoff remains unconfirmed. Journal
-shows Plymouth quit at +10.97s, while greeter first frames appeared at
-+18.57s/+18.65s: roughly 7.6 seconds without Plymouth before login rendering.
-User subsequently confirmed a black interval before login. Installed BGRT
-firmware-logo theme and greetd Type=exec as default generation 208; live
-system remains 207. This avoids Type=idle's possible five-second dispatch
-wait. Build, boot-entry/kernel/initrd and protected EFI/firmware checks passed.
-No live greeter restart or reboot performed. Next check after user reboot:
-verify 208, firmware logo/splash and handoff, mounts/services and greeter
-first-frame timing. Compare with the generation 207 gap; remove temporary
-debug logging after acceptance.
-**Done when:** user confirms visible firmware-logo splash and acceptable display
-handoff, with healthy boot and temporary diagnostics removed.
-Recovery: generation 207 (Breeze/SimpleDRM) or 205 (no Plymouth), plus verified
-read-only pre-BGRT snapshot referenced below.
-**Evidence:** [BGRT/greeter installation](SYSTEM_CHANGELOG.md#completed-install-bgrt-logo-and-faster-greeter-startup-for-next-boot--2026-10-23),
-[SimpleDRM installation](SYSTEM_CHANGELOG.md#completed-install-plymouth-simpledrm-diagnostics-for-next-boot--2026-10-23),
-[original Plymouth installation](SYSTEM_CHANGELOG.md#completed-configure-plymouth-breeze-for-next-boot--2026-10-23).
+Generation 208 booted/current verified with BGRT/SimpleDRM and greetd
+Type=exec. User confirms firmware logo visible and gap shorter or gone.
+Plymouth exit +11.158s to greeter first frame +12.848s: 1.69s gap, compared
+with 7.60s on generation 207. Root/ESP UUIDs match and no failed system units.
+Separate Noctalia duplicate startup tracked by SYS-028.
+Temporary debug flag removed and installed as default generation 209; boot
+entry checked, same kernel/initrd/theme as visually verified 208. Current
+boot remains 208 with diagnostics until next normal reboot. No extra reboot
+or live greeter restart performed. Recovery: 208 (BGRT with debug) or 205
+(no Plymouth), plus verified recovery snapshots in the records below.
+**Evidence:** [diagnostic cleanup](SYSTEM_CHANGELOG.md#completed-remove-temporary-plymouth-diagnostics-for-next-boot--2026-10-23),
+[BGRT/greeter installation and boot verification](SYSTEM_CHANGELOG.md#completed-install-bgrt-logo-and-faster-greeter-startup-for-next-boot--2026-10-23),
+[SimpleDRM diagnostics](SYSTEM_CHANGELOG.md#completed-install-plymouth-simpledrm-diagnostics-for-next-boot--2026-10-23).
 
 <a id="sys-026"></a>
 

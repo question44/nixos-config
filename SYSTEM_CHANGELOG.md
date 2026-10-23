@@ -13,6 +13,29 @@ whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
 
+## [COMPLETED] Remove temporary Plymouth diagnostics for next boot — 2026-10-23
+
+SYS-027 visual acceptance passed on booted generation 208: user confirms
+firmware logo visible and gap shorter or gone; greeter first-frame gap fell
+from 7.60s to 1.69s. Removed only `plymouth.debug`, keeping BGRT, SimpleDRM
+and greetd Type=exec. Flake check and full build passed; installed exact target
+`/nix/store/c7wkmp5l6iwbir8lf6djh7ncz2c3p86q-nixos-system-erebor-26.05.20261021.da6dc0e`
+as default generation 209 through profile selection and boot installation.
+Verified no debug argument in the installed boot entry; kernel, initrd and
+Plymouth configuration are identical to visually verified running 208.
+Live system remains 208, with this boot's debug argument until next normal
+reboot. No live greeter restart or reboot performed; no extra reboot required
+for the completed visual acceptance. User-service duplicate startup remains
+separately tracked by SYS-028; no failed system units.
+
+Snapper unavailable; created and verified read-only root snapshot
+`/btrfs-top/nixos-root-pre-plymouth-cleanup-20261023`. ESP backup and archived
+generation 208 debug log, snapshot metadata, protected EFI checksums and
+firmware listings are under `/var/lib/system-recovery/plymouth-cleanup-20261023`.
+ESP comparison, protected EFI verification and firmware comparison passed;
+root/ESP UUIDs match. Recovery entries 208 and 205 retained. Commit records
+and configuration; no pending disruptive action or automatic reboot.
+
 ## [COMPLETED] Install BGRT logo and faster greeter startup for next boot — 2026-10-23
 
 SYS-027. Switched Breeze to BGRT to reuse the valid firmware boot logo
@@ -46,6 +69,16 @@ Mandatory next check after user's reboot: confirm generation 208, vendor logo,
 Plymouth/NVIDIA handoff, greeter startup/first-frame timing and mounts/services.
 Compare against generation 207's 7.6-second gap; retain diagnostics until
 acceptance, then remove the temporary debug parameter. No reboot is queued.
+
+Post-reboot verification on 2026-10-23, boot ID
+`2e850c38-ddb6-4026-ab55-86d289315a3d`: generation 208 booted/current,
+BGRT/SimpleDRM active and greetd Type=exec. Plymouth quit at +11.158s;
+greeter first frames at +12.848s/+12.922s. Primary-display gap decreased from
+7.60s to 1.69s (about 5.9s shorter). User confirms manufacturer logo visible
+and gap shorter or gone. Root/ESP UUIDs match, no failed system units. User
+Noctalia service hit restart limit reporting another instance already running;
+a separate Noctalia process is running. Track duplicate startup as SYS-028;
+it does not invalidate the observed splash/login improvement.
 
 ## [COMPLETED] Install Plymouth SimpleDRM diagnostics for next boot — 2026-10-23
 

@@ -132,8 +132,7 @@ in
   };
   boot.consoleLogLevel = 0;
   boot.initrd.verbose = false;
-  # Temporary Plymouth diagnostics for SYS-027; remove after visual validation.
-  boot.kernelParams = [ "quiet" "plymouth.debug" ];
+  boot.kernelParams = [ "quiet" ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
