@@ -126,6 +126,8 @@ in
   boot.loader.efi.efiSysMountPoint = "/boot";
   boot.kernelModules = [ "uinput" ];
 
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
   networking.hostName = "erebor";
   networking.networkmanager.enable = true;
   networking.hosts = {

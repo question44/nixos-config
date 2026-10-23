@@ -32,16 +32,12 @@ Unfinished work and verification checks belong in
 ## Reusable operational pitfalls
 
 - systemd-boot activation removes a manually present fedora.conf if the built
-  configuration omits its extraEntries setting. Preserve the existing Fedora
-  extraEntries configuration when preparing isolated builds, and verify menu
-  entries after activation. Generation 199 omitted it; its Fedora entry was
-  manually restored. Do not replay that generation's bootloader setup without
-  preserving the entry. See SYS-001 and the 2026-10-23 KDE Connect changelog.
-
-- The installed Nix CLI has `nix-command` disabled by default. Run flake
-  commands as `nix --extra-experimental-features 'nix-command flakes' flake
-  <subcommand>` (for example, `flake check`) unless the feature is enabled in
-  the environment.
+  configuration omits its extraEntries setting. Preserve that configuration
+  when preparing isolated builds and verify menu entries after activation.
+  Generation 200 includes the existing working-tree setting and preserves the
+  Fedora entry; see SYS-001 and the 2026-10-23 activation records.
+- Interactive sudo supports YubiKey authentication through a PTY; noninteractive
+  sudo can report that a password is required even when a YubiKey is available.
 - A newly added kernel module is not found by default modprobe after a NixOS
   test activation because it searches `/run/booted-system/kernel-modules`.
   For a module built against the running kernel, load it with

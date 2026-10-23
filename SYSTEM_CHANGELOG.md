@@ -12,6 +12,23 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Enable Nix commands and flakes by default — 2026-10-23
+
+Enabled nix.settings.experimental-features system-wide with nix-command and
+flakes. Previously only Home Manager's service supplied a local NIX_CONFIG;
+ordinary commands and sudo repeatedly failed before evaluating the flake.
+Full flake check and NixOS build passed. Activated generation 200 with YubiKey
+sudo authentication; nix-daemon restarted successfully. Verified ordinary
+`nix config show`, `nix eval` and flake-based evaluation succeed without extra
+feature flags, system/current profile and boot default match generation 200,
+root/boot mounts remain intact, and no system units failed. KDE Connect phone
+remains reachable. No reboot performed.
+
+Activation retained the existing Fedora extraEntries setting and verified its
+menu entry remains present. That pre-existing configuration edit is excluded
+from this focused commit. Generation 200 supersedes the generation-199
+bootloader pitfall recorded below; future builds must still preserve the entry.
+
 ## [COMPLETED] Persist KDE Connect LAN firewall rules — 2026-10-23
 
 Added TCP and UDP 1714–1764 on br0 only (configuration commit d9edff3).
