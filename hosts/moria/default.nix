@@ -178,7 +178,7 @@ in
   fileSystems."/srv/external/crucial" = {
     device = "/dev/disk/by-uuid/604F-A363";
     fsType = "exfat";
-    options = [ "ro" "nofail" "x-systemd.automount" "x-systemd.device-timeout=10s" "uid=1000" "gid=1000" "fmask=0002" "dmask=0002" ];
+    options = [ "rw" "nofail" "x-systemd.automount" "x-systemd.device-timeout=10s" "uid=1000" "gid=1000" "fmask=0002" "dmask=0002" ];
   };
   fileSystems."/srv/external/seagate" = {
     device = "/dev/disk/by-uuid/7ACF-F05A";

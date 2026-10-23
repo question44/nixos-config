@@ -269,7 +269,7 @@ Later completed Mango records show activation and live use, so the old test-gene
 
 **Status:** REVIEW · **Reviewed:** 2026-10-23
 
-The requested mount/relocation has a pending checkpoint and existing source edits; current disk/domain state was not audited.
+Observed 2026-10-23: Crucial UUID 604F-A363 is mounted read-write and installed fstab specifies rw; the declarative mount change is verified. VM relocation and copy-verification evidence have not been audited.
 
 **Done when:** Read current mount/domain state and copy-verification evidence. Establish exactly which steps remain and retain recovery/source data until destination and guest startup are verified. No copy, deletion or domain change is authorized by this tracking migration.
 

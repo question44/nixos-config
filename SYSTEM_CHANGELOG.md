@@ -12,6 +12,18 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Persist writable Crucial mount — 2026-10-23
+
+Changed only the Crucial exFAT mount option from ro to rw for UUID 604F-A363,
+keeping the existing automount, ownership and permission options. Verified
+findmnt reports that UUID mounted read-write at /srv/external/crucial, and the
+installed fstab already specifies rw. Current system remains generation 198;
+no failed system units. The same configuration passed flake evaluation and
+NixOS dry-build during the preceding alias change. This commit records the
+existing configuration; no remount, activation or write test was performed.
+VM relocation remains a separate unverified follow-up under SYS-022. Fedora
+boot-entry edits are excluded from this commit.
+
 ## [COMPLETED] Add common Git shortcuts to Fish — 2026-10-23
 
 Added 41 Oh My Zsh-style Git shell aliases through Home Manager in flake.nix,
