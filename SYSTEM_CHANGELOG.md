@@ -13,7 +13,7 @@ whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
 
-## [AWAITING ACTIVATION] Add HyperHDR to Caddy — 2026-10-24
+## [COMPLETED] Add HyperHDR to Caddy — 2026-10-24
 
 SYS-031. Added hyperhdr.localhost/hyperhdr HTTP aliases and
 hyperhdr.{erebor,moria}.jzon.pl HTTPS routes to 127.0.0.1:8090 using
@@ -21,11 +21,16 @@ existing wildcard certificates. Flake check, dry-build, full build and Caddy
 adapt passed. Upstream UI returned 200 and WebSocket handshake returned 101.
 Built target: /nix/store/ffmjc84p2rmkks0ildkjh6ab729x2dsh-nixos-system-erebor-26.05.20261021.da6dc0e.
 
-Activation did not run: sudo required a password; desktop pkexec authentication
-remained unanswered and was cancelled. Live and selected generation remain 211.
-Root/ESP UUIDs match instructions; no failed system units. No reboot performed.
-Next: authenticated nixos-rebuild test, verify proxy HTTPS/WebSocket behavior,
-then persist with switch and close SYS-031. Proxy behavior remains unverified.
+Initial unanswered authentication was cancelled. On the user's subsequent
+Apply request, test activation succeeded. Local aliases return HTTP 200;
+both HTTPS names return 200 with verified certificates and WebSocket 101
+through loopback Caddy. Tailnet https://hyperhdr.erebor.jzon.pl returns 200.
+Caddy/HyperHDR active; no failed system/user units. Subsequent persistent
+switch succeeded as generation 212; live and selected store targets both match
+the checked build above. HTTPS tailnet UI still returns 200 after switch.
+Root/ESP UUIDs unchanged and GRUB configuration present. No reboot performed.
+SYS-031 complete. Both hostname routes verified locally; remote moria DNS
+resolves to another tailnet address, so end-to-end access was checked via erebor.
 
 ## [COMPLETED] Enable service dashboard PWA and Material UI — 2026-10-24
 

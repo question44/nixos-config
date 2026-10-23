@@ -22,14 +22,14 @@ Earlier approvals remain bounded by their original scope and safety precondition
 
 ### SYS-031 — Expose HyperHDR through Caddy
 
-**Status:** OPEN · **Reviewed:** 2026-10-24
+**Status:** DONE · **Closed:** 2026-10-24
 
-Configuration and full build ready. Flake/dry-build/Caddy adapt passed;
-upstream UI HTTP 200 and WebSocket 101 verified. Authentication prevented
-activation; cancelled unanswered pkexec prompt. Generation 211 remains active.
-**Done when:** authenticated test activation, proxy UI/TLS/WebSocket checks,
-and persistent switch pass, with results recorded and committed.
-**Evidence:** [HyperHDR proxy](SYSTEM_CHANGELOG.md#awaiting-activation-add-hyperhdr-to-caddy--2026-10-24).
+Activated and persisted as generation 212. Flake/dry/full builds and Caddy
+adapt passed. Both HTTPS routes return UI 200 and WebSocket 101 with verified
+certificates through local Caddy; local aliases and erebor tailnet URL return
+200. Live/selected targets match; Caddy/HyperHDR active; no failed system/user
+units. Root/ESP UUIDs unchanged; no reboot performed.
+**Evidence:** [HyperHDR proxy](SYSTEM_CHANGELOG.md#completed-add-hyperhdr-to-caddy--2026-10-24).
 
 <a id="sys-030"></a>
 
