@@ -1,6 +1,7 @@
 { config, darkly, lib, pkgs, vicinae, ... }:
 
 let
+  dashboard = pkgs.callPackage ../../packages/dashboard.nix { };
   hyperhdr = pkgs.callPackage ../../packages/hyperhdr.nix { };
   hyperhdrPortalCheck = pkgs.writeShellScript "hyperhdr-portal-check" ''
     if ${pkgs.systemd}/bin/busctl --user get-property \
@@ -543,7 +544,7 @@ in
 
         handle {
           import dashboard_controls
-          root * ${../../home/services}
+          root * ${dashboard}
           file_server
         }
       }
@@ -575,7 +576,7 @@ in
         import ovh_tls
         import dashboard_controls
         encode gzip
-        root * ${../../home/services}
+        root * ${dashboard}
         file_server
       }
 

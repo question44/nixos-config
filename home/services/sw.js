@@ -1,7 +1,6 @@
 // Cache only the dashboard shell. API requests and other services stay network-only.
-const CACHE = "erebor-shell-v1";
-const SHELL = ["/", "/manifest.webmanifest", "/icons/icon.svg",
-  "/icons/icon-192.png", "/icons/icon-512.png", "/icons/apple-touch-icon.png"];
+const CACHE = "erebor-shell-__CACHE_VERSION__";
+const SHELL = __SHELL_ASSETS__;
 
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL))

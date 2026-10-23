@@ -57,6 +57,26 @@ configured Mac Touch ID authentication (forwarded socket exists). Layout is
 verified locally; live dashboard still serves the earlier PWA build. No control
 commands were sent during layout verification. SYS-030 remains ACTIVE.
 
+2026-10-24: superseded the unactivated quick-actions target with requested
+Material UI 9.5.0 (npm latest stable), React 19.3.1 and Vite 8.3.5, exact
+lockfile and fixed-hash Nix npm build. Caddy serves the built dashboard, with
+no runtime CDN dependencies. Added Material cards, quick actions and confirmation
+dialogs; preserved API contract, links and offline controls. Worker shell/version
+generated from build assets, including the hashed JavaScript bundle.
+Flake check, dry/full build and browser checks passed: mobile overflow, headings,
+mocked control JSON/header/status, cancelling power confirmation without a
+request, offline-disabled actions and offline reload with bundled assets after
+stopping server. No real control commands sent. Prior stalled sudo cancelled.
+Checked target is now
+`/nix/store/8px1hmdb4ikr4qggwdaaxjsy1pasjsvj-nixos-system-erebor-26.05.20261021.da6dc0e`.
+Next: authenticate test activation; compare served HTML/worker with built
+package and check Caddy; only then persist this target and switch. Current live
+remains original PWA test target, selected generation 210. Caddy active, no
+failed system/user units, root/ESP UUIDs verified, recovery snapshot still ro.
+At handoff the exact target's combined test/compare/persist command remains
+waiting for Mac Touch ID via pkexec; it has not activated. Source and lockfile
+are verified and committed; SYS-030 remains ACTIVE pending authentication.
+
 ## [COMPLETED] Install GRUB with current-wallpaper menu for next boot — 2026-10-23
 
 SYS-029. Replaced the declarative systemd-boot selection with EFI GRUB, as

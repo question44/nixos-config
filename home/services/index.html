@@ -1,167 +1,19 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>erebor services</title>
-<meta name="theme-color" content="#131315">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="erebor">
-<link rel="manifest" href="/manifest.webmanifest">
-<link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
-<style>
-  :root { color-scheme: light dark; --bg:#131315; --fg:#ececec; --mut:#9a9a9a; --card:#1c1c20; --bd:#2c2c32; --ac:#7aa7d9; }
-  @media (prefers-color-scheme: light) { :root { --bg:#fafafa; --fg:#1a1a1a; --mut:#666; --card:#fff; --bd:#e2e2e2; --ac:#3b6ea5; } }
-  * { box-sizing:border-box; }
-  body { margin:0; padding:3rem 1.25rem; background:var(--bg); color:var(--fg); font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif; }
-  main { max-width:44rem; margin:0 auto; }
-  h1 { font-size:1.6rem; margin:0 0 .25rem; letter-spacing:-.02em; }
-  .sub { color:var(--mut); font-size:.9rem; margin:0 0 2.5rem; }
-  .grid { display:grid; gap:.75rem; grid-template-columns:repeat(auto-fill,minmax(15rem,1fr)); }
-  a { display:block; padding:1rem 1.15rem; background:var(--card); border:1px solid var(--bd); border-radius:.6rem; text-decoration:none; color:inherit; transition:border-color .15s,transform .15s; }
-  a:hover { border-color:var(--ac); transform:translateY(-1px); }
-  .name { font-weight:600; color:var(--ac); }
-  .desc { color:var(--mut); font-size:.85rem; margin-top:.15rem; }
-  footer { margin-top:3rem; color:var(--mut); font-size:.8rem; border-top:1px solid var(--bd); padding-top:1rem; }
-  h2 { font-size:1.1rem; margin:2rem 0 .75rem; }
-  button { font:inherit; color:var(--fg); background:var(--bg); border:1px solid var(--bd); border-radius:.4rem; padding:.4rem .8rem; cursor:pointer; }
-  button:hover, button:focus-visible { border-color:var(--ac); }
-  button:disabled { opacity:.5; cursor:not-allowed; }
-  .quick-actions { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:.6rem; }
-  .quick-action { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.6rem; min-height:6.25rem; padding:.8rem .4rem; border-radius:.9rem; background:var(--card); font-size:.8rem; font-weight:600; line-height:1.3; transition:background .15s,border-color .15s; }
-  .quick-action svg { width:1.5rem; height:1.5rem; fill:none; stroke:var(--ac); stroke-width:1.75; stroke-linecap:round; stroke-linejoin:round; }
-  .quick-action:hover { background:var(--bd); }
-  .quick-action:focus-visible { outline:2px solid var(--ac); outline-offset:3px; }
-  .quick-action.off svg { stroke:var(--mut); }
-  .quick-action.power svg { stroke:#c77878; }
-  #control-status:empty { display:none; }
-  @media (max-width:600px) { .quick-actions { grid-template-columns:repeat(3,minmax(0,1fr)); } body { padding-top:1.5rem; } }
-
-  #control-status { min-height:1.6em; color:var(--mut); font-size:.9rem; }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#141218">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="erebor">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <title>erebor services</title>
 </head>
 <body>
-<main>
-  <h1>erebor</h1>
-  <p class="sub">Services available on the tailnet and local network.</p>
-  <p id="offline-status" role="status" hidden>Offline — reconnect to use services and controls.</p>
-  <button id="install-app" type="button" hidden>Install erebor</button>
-  <section aria-labelledby="quick-actions-title">
-    <h2 id="quick-actions-title">Quick actions</h2>
-    <div class="quick-actions">
-      <button class="quick-action" data-action="display-on"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8m-4-4v4"/></svg><span>Display on</span></button>
-      <button class="quick-action off" data-action="display-off"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8m-4-4v4"/></svg><span>Display off</span></button>
-      <button class="quick-action" data-action="ambilight-on"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg><span>Ambilight on</span></button>
-      <button class="quick-action off" data-action="ambilight-off"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg><span>Ambilight off</span></button>
-      <button class="quick-action" data-action="sleep" data-confirm="Put erebor to sleep? Remote services will disconnect until it wakes."><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 13A9 9 0 0 1 11 3.5 9 9 0 1 0 20.5 13Z"/></svg><span>Sleep</span></button>
-      <button class="quick-action power" data-action="power-off" data-confirm="Power off erebor? Save your work first. Remote services will stop."><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v9m-6.4-6.4a9 9 0 1 0 12.8 0"/></svg><span>Power off</span></button>
-    </div>
-    <p id="control-status" role="status" aria-live="polite"></p>
-  </section>
-  <h2>Services</h2>
-  <div class="grid">
-    <a id="jellyfin" href="http://moria:8096">
-      <div class="name">media</div>
-      <div class="desc">Jellyfin media library</div>
-    </a>
-    <a id="nextcloud" href="http://moria:8095">
-      <div class="name">cloud</div>
-      <div class="desc">Nextcloud files and calendar</div>
-    </a>
-    <a id="syncthing" href="http://moria:8384">
-      <div class="name">sync</div>
-      <div class="desc">Syncthing device and folder status</div>
-    </a>
-    <a id="qbittorrent" href="http://moria:8082">
-      <div class="name">torrent</div>
-      <div class="desc">qBittorrent Web UI</div>
-    </a>
-    <a id="t3code" href="http://moria:8080">
-      <div class="name">code</div>
-      <div class="desc">T3 Code &middot; collaborative coding workspace</div>
-    </a>
-    <a id="sunshine" href="https://sunshine.erebor.jzon.pl">
-      <div class="name">sunshine</div>
-      <div class="desc">Game streaming and Moonlight pairing</div>
-    </a>
-    <a id="cockpit" href="https://sys.erebor.jzon.pl">
-      <div class="name">system</div>
-      <div class="desc">Cockpit server administration</div>
-    </a>
-  </div>
-  <footer>Served by Caddy on the local network. Install from your browser menu; on iPhone or iPad, use Share → Add to Home Screen.</footer>
-</main>
-<script>
-  const isDomain = location.hostname.endsWith(".jzon.pl");
-  const serviceUrl = (name, port) => isDomain
-    ? `https://${name}.${location.hostname}`
-    : `http://${location.hostname}:${port}`;
-  document.querySelector("#jellyfin").href = serviceUrl("media", 8096);
-  document.querySelector("#nextcloud").href = serviceUrl("cloud", 8095);
-  document.querySelector("#syncthing").href = serviceUrl("sync", 8384);
-  document.querySelector("#qbittorrent").href = serviceUrl("torrent", 8082);
-  document.querySelector("#t3code").href = serviceUrl("code", 8080);
-  document.querySelector("#sunshine").href = isDomain
-    ? `https://sunshine.${location.hostname}`
-    : `https://${location.hostname}:47990`;
-  const controlButtons = document.querySelectorAll("[data-action]");
-  const controlStatus = document.querySelector("#control-status");
-  let controlBusy = false;
-  function updateConnection() {
-    document.querySelector("#offline-status").hidden = navigator.onLine;
-    controlButtons.forEach(button => button.disabled = controlBusy || !navigator.onLine);
-  }
-  window.addEventListener("online", updateConnection);
-  window.addEventListener("offline", updateConnection);
-  updateConnection();
-  controlButtons.forEach(button => button.addEventListener("click", async () => {
-    if (controlBusy || !navigator.onLine) return;
-    if (button.dataset.confirm && !confirm(button.dataset.confirm)) return;
-    controlBusy = true;
-    updateConnection();
-    controlStatus.textContent = "Sending command…";
-    try {
-      const response = await fetch("/api/control", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Erebor-Control": "1" },
-        body: JSON.stringify({ action: button.dataset.action }),
-        signal: AbortSignal.timeout(20000)
-      });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "Command failed");
-      controlStatus.textContent = `${button.textContent}: command sent.`;
-    } catch (error) {
-      controlStatus.textContent = ["sleep", "power-off"].includes(button.dataset.action)
-        ? "Connection lost or command failed. Check whether erebor is asleep or powered off."
-        : error.message;
-    } finally {
-      controlBusy = false;
-      updateConnection();
-    }
-  }));
-  const installButton = document.querySelector("#install-app");
-  let installPrompt;
-  window.addEventListener("beforeinstallprompt", event => {
-    event.preventDefault();
-    installPrompt = event;
-    installButton.hidden = false;
-  });
-  installButton.addEventListener("click", async () => {
-    if (!installPrompt) return;
-    const prompt = installPrompt;
-    installPrompt = null;
-    installButton.hidden = true;
-    await prompt.prompt();
-  });
-  window.addEventListener("appinstalled", () => {
-    installPrompt = null;
-    installButton.hidden = true;
-  });
-  if ("serviceWorker" in navigator && window.isSecureContext) {
-    navigator.serviceWorker.register("/sw.js", { updateViaCache: "none" })
-      .catch(error => console.error("Offline support unavailable:", error));
-  }
-</script>
+  <div id="root"></div>
+  <noscript>This dashboard needs JavaScript for its services and controls.</noscript>
+  <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>
