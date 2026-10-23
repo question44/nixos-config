@@ -23,6 +23,28 @@ matches the working configuration. Deployed GTK 3/4 and Umbriel settings use
 32, compositor reload succeeded, and system/user failed-unit lists are empty.
 No reboot or session restart. Visual size preference awaits user observation.
 
+## [COMPLETED] Add YubiKey touch notification and sound — 2026-10-23
+
+SYS-026. Added graphical-session user service yubikey-touch-notify. It watches
+pam-u2f's existing authpending file open/close events, shows a critical
+persistent “Touch your YubiKey” notification, plays a short freedesktop sound,
+and closes the notification when the wait ends. It also cleans up on service
+stop. PAM authentication rules and credential files are unchanged; notifier
+runs without privileges, with NoNewPrivileges and filesystem protections.
+
+Flake check/full build passed; test activation used target
+`ymw9f4xig0saryv0hf2wgvdil1bgl3ks`. Persistent switch activated generation 203,
+`anf91bq1l3bvh64pj38apgqbbk4p921v`, including the concurrent cursor-size update;
+that unrelated source edit is excluded from this commit. Rechecked the final
+flake successfully. Current system/profile and boot default match generation
+203, and the service is enabled and running. No failed system or user units.
+Simulated open/close and actual sudo touch both created and dismissed the
+notification; deployed-service journal records notification 1125 opening at
+20:05:11 and closing at 20:05:13 Warsaw time, with sudo returning 0. User
+explicitly confirmed seeing the prompt and hearing the sound during the real
+preview sudo test. No reboot or logout needed. Generation 202 remains available
+for rollback; pre-retirement read-only NixOS snapshot ID 656 also remains.
+
 ## [COMPLETED] Set Capitaine cursor theme — 2026-10-23
 
 Installed Capitaine through Home Manager and selected size 24 for GTK, X11

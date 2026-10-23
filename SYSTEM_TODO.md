@@ -18,6 +18,18 @@ Earlier approvals remain bounded by their original scope and safety precondition
 
 ## Open checks
 
+<a id="sys-026"></a>
+
+### SYS-026 — Make YubiKey touch prompts noticeable
+
+**Status:** DONE · **Closed:** 2026-10-23
+
+Activated persistent generation 203; user notifier enabled/running. Simulated
+and real sudo touch requests show and dismiss the notification; user confirmed
+notification and sound. Authentication rules unchanged; no failed units.
+
+**Evidence:** [completed notifier](SYSTEM_CHANGELOG.md#completed-add-yubikey-touch-notification-and-sound--2026-10-23).
+
 <a id="sys-025"></a>
 
 ### SYS-025 — Retire broken Fedora installation
@@ -333,7 +345,7 @@ Superseded by the completed 2026-10-20 replacement of background-apps with nativ
 
 ## Adding or closing a task
 
-Use the next unused SYS number (currently SYS-026). Record status, review date,
+Use the next unused SYS number (currently SYS-027). Record status, review date,
 what remains, a concrete completion condition, and a link to evidence. For active
 work, record the next safe step and any applicable recovery checkpoint. Required
 acceptance checks block completion of that task; optional follow-ups get their

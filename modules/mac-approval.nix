@@ -1,6 +1,8 @@
 { pkgs, ... }:
 
 {
+  imports = [ ./yubikey-touch-notify.nix ];
+
   # Key material is provisioned locally, outside Git and the Nix store.
   # Never trust a key file writable by the account gaining privileges.
   security.pam.rssh = {
