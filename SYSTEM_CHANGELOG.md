@@ -13,6 +13,34 @@ whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
 
+## [COMPLETED] Show live display and Ambilight status — 2026-10-25
+
+SYS-036. Activated the status feature preserved in SYS-037's extracted
+`apps/erebor-dashboard` submodule (`86dc07f`). Read-only GET /api/control/status
+returns independent display/Ambilight state and explanations, with no-store.
+Display reads compositor-reported power, excluding ambilight/sunshine capture
+outputs; missing/unsupported reporting yields Unknown. Ambilight combines WLED
+power/brightness/realtime override with HyperHDR LED/master-output state, with
+Mixed for inconsistent components and Unknown for missing readings. This reports
+software/device state, not independent measurement of panel power or LED light.
+Angular polls every 10 seconds while visible, refreshes after controls, and
+clears stale status on failures, offline transitions and visibility changes.
+
+Twenty-nine shared API/status tests plus nine host-helper tests passed. Browser
+with real HTTP and mocked hardware checked initial state, post-command readback,
+periodic refresh, mixed/partial failure, failed request clearing stale data,
+offline/online recovery and 320–1000px layout. Parent flake check, dry-build and
+full build passed. Test activation, live HTTPS checks, switch and repeat checks
+passed as generation 218, live and selected target:
+`/nix/store/mqh95gywc83lc2wypadv7mhj7v5n5gbk-nixos-system-erebor-26.05.20261021.da6dc0e`.
+On both erebor/moria domains the browser UI matched the API, periodic reads were
+observed, and offline PWA reload including configuration showed Offline rather
+than cached live states, then recovered on reconnect. Observed Display Off (two
+physical outputs) and Ambilight Off; no actual control commands were sent.
+Caddy/control service active, no failed system/user units; boot environment and
+protected EFI hashes, firmware entries/order and filesystem UUIDs unchanged.
+No reboot. Parent source extraction is now activated as part of this deployment.
+
 ## [COMPLETED] Extract dashboard into private submodule and Nix packages — 2026-10-25
 
 SYS-037. Created and pushed private `question44/erebor-dashboard` at `86dc07f`;

@@ -29,23 +29,25 @@ Published private `question44/erebor-dashboard`, pinned at `86dc07f` under
 an overlay and an opt-in NixOS module. Host settings and privileged Windows
 helper remain here. Standalone/parent checks, remote package build, 29 API tests,
 9 host-helper tests, browser checks and full NixOS build passed. This task covers
-source/package extraction; no activation was requested or performed. SYS-036
-retains its outstanding activation/live checks.
+source/package extraction; no activation was requested or performed. Subsequent
+status feature deployment is recorded separately under SYS-036.
 **Evidence:** [Dashboard extraction](SYSTEM_CHANGELOG.md#completed-extract-dashboard-into-private-submodule-and-nix-packages--2026-10-25).
 
 <a id="sys-036"></a>
 
 ### SYS-036 — Show live display and Ambilight status
 
-**Status:** ACTIVE · **Reviewed:** 2026-10-25
+**Status:** DONE · **Closed:** 2026-10-25
 
-Add read-only status API and dashboard indicators refreshed periodically and
-after controls. Use reported display power and WLED/HyperHDR state, exclude
-capture outputs, distinguish mixed/unavailable states, clear stale offline data.
-Complete after backend/browser checks, Nix builds, activation and live read-only
-verification. Do not toggle real displays/lights or reboot during validation.
-Sources/tests now live in `apps/erebor-dashboard` (SYS-037). The extraction
-verified backend, browser and Nix builds; activation/live checks remain open.
+Live Display/Ambilight status deployed as generation 218 from extracted dashboard
+submodule `86dc07f`. Read-only API uses desktop power and WLED/HyperHDR readings;
+UI polls every 10 seconds and after controls, distinguishes mixed/unknown,
+and clears stale offline data. Twenty-nine shared API/status tests plus nine
+host-helper tests, mocked HTTP/browser state transitions, flake/dry/full builds,
+test activation and switch passed. Live browser verified both domains, matching
+API/UI states, periodic refresh, offline reload/config and reconnect before and
+after switch. Current readings were both Off. No real control commands issued.
+**Evidence:** [Live device status](SYSTEM_CHANGELOG.md#completed-show-live-display-and-ambilight-status--2026-10-25).
 
 <a id="sys-035"></a>
 

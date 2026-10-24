@@ -31,6 +31,12 @@ Unfinished work and verification checks belong in
 
 ## Reusable operational pitfalls
 
+- For deployments using the private dashboard submodule, run
+  `nixos-rebuild test/switch --sudo --flake /etc/nixos#moria` as janzon so Nix
+  evaluates with the user's Git/SSH access and sudo handles activation. A full
+  root invocation tried to fetch GitHub without trusted-host/user SSH state;
+  no root SSH trust changes were made. Verified during SYS-036 deployment.
+
 - The private dashboard submodule needs GitHub SSH access when Nix fetches a
   clean Git source. Evaluate/build as the SSH-authenticated user; for deployment,
   `nixos-rebuild test --sudo --flake /etc/nixos#moria` reserves sudo for activation.
