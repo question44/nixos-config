@@ -1,0 +1,86 @@
+{
+  "title": "erebor",
+  "description": "Services available on the tailnet and local network.",
+  "domainSuffix": ".jzon.pl",
+  "actions": [
+    "display-on",
+    "display-off",
+    "ambilight-on",
+    "ambilight-off",
+    "sleep",
+    "reboot-windows",
+    "power-off"
+  ],
+  "services": [
+    {
+      "id": "jellyfin",
+      "label": "Media",
+      "description": "Jellyfin media library",
+      "icon": "media",
+      "subdomain": "media",
+      "port": 8096,
+      "scheme": "http"
+    },
+    {
+      "id": "nextcloud",
+      "label": "Cloud",
+      "description": "Nextcloud files and calendar",
+      "icon": "cloud",
+      "subdomain": "cloud",
+      "port": 8095,
+      "scheme": "http"
+    },
+    {
+      "id": "syncthing",
+      "label": "Sync",
+      "description": "Syncthing devices and folders",
+      "icon": "sync",
+      "subdomain": "sync",
+      "port": 8384,
+      "scheme": "http"
+    },
+    {
+      "id": "qbittorrent",
+      "label": "Torrent",
+      "description": "qBittorrent downloads",
+      "icon": "torrent",
+      "subdomain": "torrent",
+      "port": 8082,
+      "scheme": "http"
+    },
+    {
+      "id": "t3code",
+      "label": "Code",
+      "description": "T3 Code collaborative workspace",
+      "icon": "code",
+      "subdomain": "code",
+      "port": 8080,
+      "scheme": "http"
+    },
+    {
+      "id": "hyperhdr",
+      "label": "HyperHDR",
+      "description": "Ambilight capture and LED settings",
+      "icon": "light",
+      "subdomain": "hyperhdr",
+      "port": 8090,
+      "scheme": "http"
+    },
+    {
+      "id": "sunshine",
+      "label": "Sunshine",
+      "description": "Game streaming and Moonlight pairing",
+      "icon": "light",
+      "subdomain": "sunshine",
+      "port": 47990,
+      "scheme": "https"
+    },
+    {
+      "id": "cockpit",
+      "label": "System",
+      "description": "Cockpit server administration",
+      "icon": "system",
+      "url": "https://sys.erebor.jzon.pl"
+    }
+  ]
+}

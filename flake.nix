@@ -2,6 +2,11 @@
   description = "Minimal NixOS installation for moria";
 
   inputs = {
+    self.submodules = true;
+    dashboard = {
+      url = "path:./apps/erebor-dashboard";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     noctalia.url = "github:noctalia-dev/noctalia-shell";
     noctalia-greeter = {
@@ -36,7 +41,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, noctalia, noctalia-greeter, umbriel, mango, millennium, helium, zen-browser, darkly, vicinae, home-manager, ... }:
+  outputs = { self, nixpkgs, dashboard, noctalia, noctalia-greeter, umbriel, mango, millennium, helium, zen-browser, darkly, vicinae, home-manager, ... }:
     {
       nixosConfigurations.moria = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
@@ -48,6 +53,7 @@
           umbriel.nixosModules.default
           mango.nixosModules.mango
           ./modules/mango.nix
+          dashboard.nixosModules.default
           ./modules/dashboard-control.nix
           helium.nixosModules.default
           home-manager.nixosModules.home-manager

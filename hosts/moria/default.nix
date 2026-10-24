@@ -1,7 +1,7 @@
 { config, darkly, lib, pkgs, vicinae, ... }:
 
 let
-  dashboard = pkgs.callPackage ../../packages/dashboard.nix { };
+  dashboard = config.services.erebor-dashboard.package;
   hyperhdr = pkgs.callPackage ../../packages/hyperhdr.nix { };
   hyperhdrPortalCheck = pkgs.writeShellScript "hyperhdr-portal-check" ''
     if ${pkgs.systemd}/bin/busctl --user get-property \

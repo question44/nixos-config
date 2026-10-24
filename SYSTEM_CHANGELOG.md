@@ -13,6 +13,38 @@ whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
 
+## [COMPLETED] Extract dashboard into private submodule and Nix packages — 2026-10-25
+
+SYS-037. Created and pushed private `question44/erebor-dashboard` at `86dc07f`;
+registered it as `apps/erebor-dashboard`. Parent flake includes submodules and
+uses a relative path input following its existing nixpkgs. Shared outputs expose
+frontend/control packages, an overlay and an optional NixOS module. Dashboard
+branding, links, allowed hosts, actions, desktop packages and WLED address are
+configured by the parent. Existing Caddy network restrictions and privileged
+Windows helper/Polkit rule remain in the host repository. Shared controls default
+to no permitted actions. README documents private SSH access, package/module use
+and submodule updates. Preserved the concurrent SYS-036 status work and tests in
+the extracted source; its activation acceptance remains open.
+
+Validation: standalone flake check built frontend and control with 29 mocked API
+and status tests; 9 host Windows-helper tests passed. Direct private GitHub SSH
+package build and a fresh recursive clone/parent flake check succeeded.
+Parent flake check, nixos-rebuild dry-build and full
+build passed, producing
+`/nix/store/mqh95gywc83lc2wypadv7mhj7v5n5gbk-nixos-system-erebor-26.05.20261021.da6dc0e`.
+Chromium checked eight local service links, seven mocked actions, status updates,
+confirmation/cancel, 320/600/1000px layouts and offline reload including config.
+No actual power, display, lighting or boot commands were issued. x86_64-linux
+was built; aarch64-linux is declared but untested. Original ignored frontend
+build artifacts were preserved at
+`/tmp/dashboard-pre-extraction-20261025/frontend-build-artifacts`.
+
+Source/package scope only: no activation. Live system remains generation 217,
+`/nix/store/dvwf74v5i17pwi7sz0j7a38j9bkw25w8-nixos-system-erebor-26.05.20261021.da6dc0e`;
+Caddy and the existing control service were active with no failed units during
+inspection. A future deployment needs normal sudo authentication and live
+verification; interactive sudo was not attempted for this source-only task.
+
 ## [COMPLETED] Migrate dashboard control API to FastAPI — 2026-10-25
 
 SYS-035. Replaced stdlib HTTP server with FastAPI/Pydantic and loopback Uvicorn,

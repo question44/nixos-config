@@ -1,7 +1,4 @@
 { config, pkgs, ... }:
-let
-  apiPython = pkgs.python3.withPackages (ps: [ ps.fastapi ps.uvicorn ]);
-in
 {
   # Only this fixed operation can write the GRUB one-time selection.
   systemd.services.dashboard-reboot-windows = {
@@ -32,23 +29,18 @@ in
     });
   '';
 
-  systemd.user.services.dashboard-control = {
-    description = "Local Caddy dashboard controls";
-    wantedBy = [ "default.target" ];
-    unitConfig.ConditionUser = "janzon";
-    environment.DASHBOARD_WLED_URL = "http://192.168.1.118";
-    path = [ pkgs.systemd pkgs.wlopm pkgs.niri config.programs.umbriel.package
-      config.programs.mango.package ];
-    serviceConfig = {
-      ExecStart = "${apiPython}/bin/python3 ${./dashboard-control/control.py}";
-      Restart = "on-failure";
-      NoNewPrivileges = true;
-      PrivateTmp = true;
-      ProtectSystem = "strict";
-      ProtectHome = "read-only";
-      RestrictAddressFamilies = [ "AF_UNIX" "AF_INET" ];
-      LockPersonality = true;
-      UMask = "0077";
+  services.erebor-dashboard = {
+    enable = true;
+    settings = builtins.fromJSON (builtins.readFile ../home/dashboard-settings.json);
+    control = {
+      enable = true;
+      user = "janzon";
+      allowedHosts = [ "moria" "erebor" "localhost" "127.0.0.1" "moria.local" "erebor.local"
+        "moria.jzon.pl" "erebor.jzon.pl" ];
+      enabledActions = [ "display-on" "display-off" "ambilight-on" "ambilight-off"
+        "sleep" "power-off" "reboot-windows" ];
+      wledUrl = "http://192.168.1.118";
+      extraPackages = [ pkgs.niri config.programs.umbriel.package config.programs.mango.package ];
     };
   };
 }

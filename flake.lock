@@ -20,6 +20,22 @@
         "type": "github"
       }
     },
+    "dashboard": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "path": "./apps/erebor-dashboard",
+        "type": "path"
+      },
+      "original": {
+        "path": "./apps/erebor-dashboard",
+        "type": "path"
+      },
+      "parent": []
+    },
     "flake-parts": {
       "inputs": {
         "nixpkgs-lib": "nixpkgs-lib"
@@ -333,6 +349,7 @@
     "root": {
       "inputs": {
         "darkly": "darkly",
+        "dashboard": "dashboard",
         "helium": "helium",
         "home-manager": "home-manager",
         "mango": "mango",

@@ -31,6 +31,12 @@ Unfinished work and verification checks belong in
 
 ## Reusable operational pitfalls
 
+- The private dashboard submodule needs GitHub SSH access when Nix fetches a
+  clean Git source. Evaluate/build as the SSH-authenticated user; for deployment,
+  `nixos-rebuild test --sudo --flake /etc/nixos#moria` reserves sudo for activation.
+  The installed rebuild command supports `--sudo`; do not copy SSH keys to root
+  or into the Nix store. See SYS-037 for the tested clone/build evidence.
+
 - GRUB migration retains firmware **Linux Boot Manager** (0004), loading
   `/EFI/systemd/systemd-bootx64.efi`, and its existing generation menu as a
   recovery path. GRUB also offers a systemd-boot recovery chainload. Verified

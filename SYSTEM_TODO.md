@@ -18,6 +18,35 @@ Earlier approvals remain bounded by their original scope and safety precondition
 
 ## Open checks
 
+<a id="sys-037"></a>
+
+### SYS-037 — Extract dashboard into a reusable private Git submodule
+
+**Status:** DONE · **Closed:** 2026-10-25
+
+Published private `question44/erebor-dashboard`, pinned at `86dc07f` under
+`apps/erebor-dashboard`. Shared flake exports static frontend/control packages,
+an overlay and an opt-in NixOS module. Host settings and privileged Windows
+helper remain here. Standalone/parent checks, remote package build, 29 API tests,
+9 host-helper tests, browser checks and full NixOS build passed. This task covers
+source/package extraction; no activation was requested or performed. SYS-036
+retains its outstanding activation/live checks.
+**Evidence:** [Dashboard extraction](SYSTEM_CHANGELOG.md#completed-extract-dashboard-into-private-submodule-and-nix-packages--2026-10-25).
+
+<a id="sys-036"></a>
+
+### SYS-036 — Show live display and Ambilight status
+
+**Status:** ACTIVE · **Reviewed:** 2026-10-25
+
+Add read-only status API and dashboard indicators refreshed periodically and
+after controls. Use reported display power and WLED/HyperHDR state, exclude
+capture outputs, distinguish mixed/unavailable states, clear stale offline data.
+Complete after backend/browser checks, Nix builds, activation and live read-only
+verification. Do not toggle real displays/lights or reboot during validation.
+Sources/tests now live in `apps/erebor-dashboard` (SYS-037). The extraction
+verified backend, browser and Nix builds; activation/live checks remain open.
+
 <a id="sys-035"></a>
 
 ### SYS-035 — Migrate control API to FastAPI

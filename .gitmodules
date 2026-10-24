@@ -1,0 +1,3 @@
+[submodule "apps/erebor-dashboard"]
+	path = apps/erebor-dashboard
+	url = git@github.com:question44/erebor-dashboard.git
