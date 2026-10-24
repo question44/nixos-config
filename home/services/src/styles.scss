@@ -12,13 +12,13 @@ html {
 body { margin: 0; }
 main { max-width: 900px; margin: auto; padding: 48px 24px; }
 header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-h1 { font-size: 3rem; font-weight: 650; letter-spacing: -.04em; margin: 0; }
+h1 { font-size: clamp(2rem, 8vw, 3rem); font-weight: 650; letter-spacing: -.04em; margin: 0; }
 h2 { font-size: 1.25rem; font-weight: 600; margin: 0 0 16px; }
 .intro { color: var(--secondary); margin: 8px 0 32px; }
 .install { margin-bottom: 24px; }
-.actions { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+.actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; }
 .action.mat-mdc-button { height: auto; min-height: 104px; min-width: 0; padding: 16px 4px; border-radius: 24px; background: var(--paper); color: var(--primary); }
-.action-content { display: flex; flex-direction: column; align-items: center; gap: 10px; font-size: .8rem; font-weight: 600; letter-spacing: normal; }
+.action-content { display: flex; flex-direction: column; align-items: center; gap: 10px; font-size: .8rem; font-weight: 600; letter-spacing: normal; white-space: normal; line-height: 1.35; }
 .action-content erebor-icon { width: 26px; height: 26px; }
 .action.mat-mdc-button { @include mat.button-overrides((text-label-text-color: var(--primary))); }
 .action.off { @include mat.button-overrides((text-label-text-color: var(--secondary))); }

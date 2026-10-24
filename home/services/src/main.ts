@@ -20,6 +20,7 @@ const paths: Record<string, string> = {
   torrent: 'M12 3v12 M7 10l5 5 5-5 M4 16v5h16v-5',
   code: 'm8 6-6 6 6 6 M16 6l6 6-6 6 M14 3l-4 18',
   system: 'M4 4h16v12H4z M8 20h8 M12 16v4 M8 8l3 2-3 2 M13 12h3',
+  windows: 'M3 5l8-1v8H3z M13 3.7l8-1v9.3h-8z M3 14h8v8l-8-1z M13 14h8v9.3l-8-1z',
   arrow: 'M7 17 17 7 M7 7h10v10',
 };
 const actions: Action[] = [
@@ -28,6 +29,7 @@ const actions: Action[] = [
   { id: 'ambilight-on', label: 'Ambilight on', icon: 'light' },
   { id: 'ambilight-off', label: 'Ambilight off', icon: 'light', off: true },
   { id: 'sleep', label: 'Sleep', icon: 'sleep', confirm: 'Put erebor to sleep? Remote services will disconnect until it wakes.' },
+  { id: 'reboot-windows', label: 'Reboot to Windows', icon: 'windows', danger: true, confirm: 'Reboot erebor into Windows? Save your work first. All NixOS services will disconnect. This selects Windows for the next boot only.' },
   { id: 'power-off', label: 'Power off', icon: 'power', danger: true, confirm: 'Power off erebor? Save your work first. Remote services will stop.' },
 ];
 const domain = location.hostname.endsWith('.jzon.pl');
@@ -117,14 +119,14 @@ class Dashboard {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-Erebor-Control': '1' },
         body: JSON.stringify({ action: action.id }),
-        signal: AbortSignal.timeout(20000),
+        signal: AbortSignal.timeout(action.id === 'reboot-windows' ? 70000 : 20000),
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Command failed');
       this.status.set({ severity: 'success', text: `${action.label}: command sent.` });
     } catch (error) {
       this.status.set({ severity: 'error', text: action.confirm
-        ? 'Connection lost or command failed. Check whether erebor is asleep or powered off.'
+        ? 'Connection lost or command failed. Check whether erebor is asleep, powered off, or rebooting.'
         : error instanceof Error ? error.message : 'Command failed' });
     } finally {
       this.busy.set(false);

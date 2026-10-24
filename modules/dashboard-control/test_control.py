@@ -33,7 +33,7 @@ class Requests(unittest.TestCase):
         return status
 
     @patch.object(control, "action")
-    def test_six_allowed_actions(self, action):
+    def test_allowed_actions(self, action):
         for name in control.ACTIONS:
             self.assertEqual(self.request(name), 200)
             action.assert_called_with(name)
@@ -79,6 +79,12 @@ class Dispatch(unittest.TestCase):
         for name, method in [("sleep", "Suspend"), ("power-off", "PowerOff")]:
             control.action(name)
             self.assertEqual(run.call_args.args[-3:], (method, "b", "false"))
+
+    @patch.object(control, "run")
+    def test_windows_reboot_uses_only_fixed_privileged_service(self, run):
+        control.action("reboot-windows")
+        run.assert_called_once_with("systemctl", "--system", "--no-ask-password", "start",
+                                    "dashboard-reboot-windows.service", timeout=65)
 
     @patch.object(control, "session_environment", return_value={"XDG_CURRENT_DESKTOP": "mango"})
     @patch.object(control, "run")

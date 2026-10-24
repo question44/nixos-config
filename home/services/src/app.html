@@ -40,7 +40,7 @@
   </section>
   <footer>Install from your browser menu. On iPhone or iPad, use Share → Add to Home Screen.</footer>
   <ng-template #confirmDialog>
-    <h2 mat-dialog-title id="confirm-title">{{ confirmation()?.label }} erebor?</h2>
+    <h2 mat-dialog-title id="confirm-title">{{ confirmation()?.label }}?</h2>
     <mat-dialog-content id="confirm-description">{{ confirmation()?.confirm }}</mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button [mat-dialog-close]="false" cdkFocusInitial>Cancel</button>

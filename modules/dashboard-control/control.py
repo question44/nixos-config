@@ -12,7 +12,7 @@ from urllib.request import Request, urlopen
 
 HOSTS = {"moria", "erebor", "localhost", "127.0.0.1", "moria.local", "erebor.local",
          "moria.jzon.pl", "erebor.jzon.pl"}
-ACTIONS = {"display-on", "display-off", "ambilight-on", "ambilight-off", "sleep", "power-off"}
+ACTIONS = {"display-on", "display-off", "ambilight-on", "ambilight-off", "sleep", "power-off", "reboot-windows"}
 AMBILIGHT_LOCK = threading.Lock()
 
 
@@ -37,8 +37,8 @@ def hyperhdr_leds(enabled):
         raise RuntimeError(response.get("error", "HyperHDR rejected the request"))
 
 
-def run(*args, env=None):
-    return subprocess.run(args, env=env, check=True, capture_output=True, text=True, timeout=12).stdout
+def run(*args, env=None, timeout=12):
+    return subprocess.run(args, env=env, check=True, capture_output=True, text=True, timeout=timeout).stdout
 
 
 def session_environment():
@@ -83,6 +83,9 @@ def action(name):
             else:
                 hyperhdr_leds(False)
                 wled_state({"on": False, "live": False, "lor": 2})
+    elif name == "reboot-windows":
+        run("systemctl", "--system", "--no-ask-password", "start",
+            "dashboard-reboot-windows.service", timeout=65)
     elif name in {"sleep", "power-off"}:
         # login1 applies the existing wheel policy and respects inhibitors.
         method = "Suspend" if name == "sleep" else "PowerOff"

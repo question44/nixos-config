@@ -18,6 +18,21 @@ Earlier approvals remain bounded by their original scope and safety precondition
 
 ## Open checks
 
+<a id="sys-034"></a>
+
+### SYS-034 — Add Reboot to Windows dashboard control
+
+**Status:** DONE · **Closed:** 2026-10-25
+
+Confirmed Reboot to Windows button deployed as generation 215. Uses the existing
+Windows GRUB entry for one boot, honours inhibitors, and clears selection if
+reboot fails. Seventeen backend tests, real GRUB temp-file rollback check,
+browser mock/cancel checks at 320–1000px, flake/dry/full builds and live UI checks
+passed. Helper prerequisites and control-service Polkit permission verified
+read-only. No reboot or real boot selection was executed; actual Windows boot
+remains untested. GRUB environment, protected EFI files and firmware unchanged.
+**Evidence:** [Windows reboot control](SYSTEM_CHANGELOG.md#completed-add-windows-reboot-dashboard-button--2026-10-25).
+
 <a id="sys-033"></a>
 
 ### SYS-033 — Migrate service dashboard to Angular

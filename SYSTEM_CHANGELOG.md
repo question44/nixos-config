@@ -13,6 +13,33 @@ whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
 
+## [COMPLETED] Add Windows reboot dashboard button — 2026-10-25
+
+SYS-034. Added Reboot to Windows quick action with save-work/next-boot-only
+confirmation. A fixed root oneshot service checks root/ESP UUIDs, Windows and
+recovery EFI loaders, the existing GRUB Windows entry and one-time handling,
+and refuses any already-pending selection. Sets only `next_entry`, verifies and
+syncs it, then calls login1 RebootWithFlags with inhibitor checking. Failed reboot
+requests clear the one-time selection. Polkit permits janzon only the fixed
+service start; API remains behind the existing same-origin/private-network
+boundary. Service has no automatic start dependency and only grubenv writable.
+
+Seventeen backend tests passed, including request validation, wrong filesystems,
+missing loaders, pending selection, dispatch and rollback. Real grub-editenv
+on a temporary file verified preservation of saved_entry and rollback after a
+mocked reboot refusal. Browser checks verified seven controls, Cancel focus,
+cancel sends nothing, confirm sends only mocked Windows action, responsive
+320–1000px layout, and existing install/offline behavior. Flake/dry/full builds
+passed. Test activation, live HTTPS browser checks, switch and repeat checks
+passed as generation 215:
+`/nix/store/lz7r7i05kklkapsn9rh13fj4f4x8qps3-nixos-system-erebor-26.05.20261021.da6dc0e`.
+Read-only helper preconditions passed; root pkcheck verified authorization for
+the actual user control-service PID without starting the reboot service.
+Caddy/control service healthy, no failed system/user units. Helper never ran a
+reboot; actual Windows boot is untested. Live grubenv and protected Windows/
+systemd-boot EFI hashes, firmware entries/order and root/ESP UUIDs unchanged.
+Snapper is not configured; no material bootloader change or reboot performed.
+
 ## [COMPLETED] Migrate service dashboard to Angular — 2026-10-24
 
 SYS-033. Replaced React/Material UI with standalone Angular 22.2.3 and Angular
