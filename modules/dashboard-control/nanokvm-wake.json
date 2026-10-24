@@ -1,4 +1,18 @@
 {
   "login": "jmmzon@gmail.com",
-  "origins": ["https://erebor.jzon.pl", "https://moria.jzon.pl"]
+  "origins": ["https://erebor.jzon.pl", "https://moria.jzon.pl"],
+  "osPeers": [
+    {
+      "state": "nixos",
+      "nodeId": "njyEcfXocY11CNTRL",
+      "ip": "100.108.216.80",
+      "tailscaleOS": "linux"
+    },
+    {
+      "state": "windows",
+      "nodeId": "nmhJmLRd5911CNTRL",
+      "ip": "100.107.56.38",
+      "tailscaleOS": "windows"
+    }
+  ]
 }

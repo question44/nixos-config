@@ -13,6 +13,60 @@ whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
 
+## [COMPLETED] Gate service navigation by detected OS — 2026-10-25
+
+SYS-042 extension. Service cards now share the host-action OS availability rule:
+only confirmed awake NixOS enables them. Windows/unknown/checking/unavailable,
+sleep and off disable Material links, remove href attributes, exclude them from
+keyboard navigation and dim their appearance. Positive NixOS detection restores
+links automatically. Dashboard submodule `71b9f94` committed and pushed.
+
+Standalone/parent flake checks, dry/full builds and browser checks passed.
+Verified href removal, disabled/click/keyboard behavior for unavailable states,
+restoration on NixOS, existing control/confirmation guards, cached PWA with the
+host unavailable, offline reload and 320–1000px layouts. Test activation and
+switch passed as generation 223:
+`/nix/store/0mn9klxvdrizzbfl538abc2qwkliik9r-nixos-system-erebor-26.05.20261021.da6dc0e`.
+Live HTTPS before switch verified actual NixOS detection/polling plus simulated
+Windows/unknown disabled links and recovery; post-switch verified actual NixOS
+status, enabled links/controls, disabled wake and offline reload. Caddy/control
+active; no failed units; root/ESP UUIDs unchanged. No real host control commands
+or reboot issued. Native Windows acceptance remains SYS-043. Recovery: prior
+verified generation 222; NanoKVM helper/config unchanged by this extension.
+
+## [COMPLETED] Detect running OS and gate unsupported dashboard actions — 2026-10-25
+
+SYS-042; live Windows acceptance remains SYS-043. NanoKVM verifies pinned native
+NixOS/Windows Tailscale node IDs, addresses and OS metadata, then requests fresh
+TSMP replies through tailscaled’s local Unix socket. Exactly one responding OS
+is shown beside power; missing/conflicting replies show unknown. User confirmed
+the native Windows identity and that the new display works. The separate Windows
+VM identity is excluded. CLI-based probes initially exceeded device timeouts;
+the deployed socket client avoids that startup overhead and passed live checks.
+Helper/config source hashes match the remote files; prior copies retained at
+`/opt/erebor-wake/pre-os-detection-20261025/` for recovery.
+
+All host API actions require positively detected awake NixOS in the UI,
+confirmation and send handlers. Windows/unknown/checking/unavailable/sleep/off
+disable them. Wake remains independently governed by the power LED. The cached
+PWA can show Windows while the NixOS web server is unavailable.
+Dashboard submodule `9dae50f` committed and pushed to the existing private origin.
+
+Standalone and parent flake checks, dry/full builds, 18 GPIO/identity/probe/HTTP
+tests and browser checks passed. Browser coverage includes NixOS/Windows/unknown,
+all power states, no stale OS on failed reads, disabled controls, forced click
+and confirmation-time OS-change guards, a supported mocked NixOS action,
+cached-shell Windows with unavailable host, offline reload and 320–1000px layout.
+Test activation and switch succeeded as generation 222:
+`/nix/store/y1cs4mlni31d5jqsmapn8f0xffn747zg-nixos-system-erebor-26.05.20261021.da6dc0e`.
+Live HTTPS before switch verified actual NixOS detection/polling, mocked
+Windows/unknown gating, NixOS controls and offline reload on both virtual hosts;
+moria was mapped to this host as in SYS-039. Post-switch erebor checks verified
+actual OS/API/header agreement, enabled NixOS controls, disabled wake and offline
+reload. Caddy/control active, no failed units, root/ESP UUIDs unchanged, preserved
+Windows/systemd-boot EFI files present. No reboot or physical ATX/control action
+was issued. Real Windows boot detection remains untested (SYS-043).
+
 ## [COMPLETED] Show header power LED and gate wake by detected state — 2026-10-25
 
 SYS-041. Moved existing NanoKVM status beside the host name as a colored LED,

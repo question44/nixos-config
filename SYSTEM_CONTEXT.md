@@ -38,6 +38,8 @@ Unfinished work and verification checks belong in
   submodule and host config after firmware recovery if necessary; see SYS-039
   and the submodule README. Power LED signals describe motherboard state,
   not OS responsiveness; hardware acceptance is tracked in SYS-040.
+  OS probes use tailscaled’s local Unix socket: launching the Go CLI per probe
+  caused load and timeouts on this device; retain the socket-based implementation.
 
 - For deployments using the private dashboard submodule, run
   `nixos-rebuild test/switch --sudo --flake /etc/nixos#moria` as janzon so Nix

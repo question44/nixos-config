@@ -18,6 +18,34 @@ Earlier approvals remain bounded by their original scope and safety precondition
 
 ## Open checks
 
+<a id="sys-043"></a>
+
+### SYS-043 — Verify dashboard OS detection during a native Windows boot
+
+**Status:** OPEN · **Review:** 2026-10-25
+
+Completion: during a normal user-requested Windows boot, open the previously
+cached PWA and verify `Awake · Windows`, disabled NixOS actions/service links, and return
+to `Awake · NixOS` after a normal NixOS boot. Do not reboot solely for this check.
+Native Windows Tailscale identity confirmed by user; detection/gating and cached
+shell behavior are covered by mocked tests. Live Windows boot remains untested.
+**Evidence:** [SYS-042 deployment](SYSTEM_CHANGELOG.md#completed-detect-running-os-and-gate-unsupported-dashboard-actions--2026-10-25).
+
+<a id="sys-042"></a>
+
+### SYS-042 — Detect the running OS in the dashboard
+
+**Status:** DONE · **Closed:** 2026-10-25
+
+Pinned native OS identities probed independently through NanoKVM; header reports
+NixOS/Windows/unknown. Host actions and service navigation require confirmed awake
+NixOS, including confirmation/send and keyboard guards; Wake uses power state.
+Generation 223 deployed with flake/dry/full builds, 18 unit tests, mocked browser
+state/gating/cache checks and live NixOS HTTPS/offline verification.
+Real Windows acceptance is SYS-043.
+**Evidence:** [OS detection and action gating](SYSTEM_CHANGELOG.md#completed-detect-running-os-and-gate-unsupported-dashboard-actions--2026-10-25),
+[service navigation gating](SYSTEM_CHANGELOG.md#completed-gate-service-navigation-by-detected-os--2026-10-25).
+
 <a id="sys-041"></a>
 
 ### SYS-041 — Show host power LED beside the dashboard title
