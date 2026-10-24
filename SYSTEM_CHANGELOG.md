@@ -13,6 +13,24 @@ whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
 
+## [COMPLETED] Integrate device status and actions — 2026-10-25
+
+SYS-038. Display and Ambilight each have one card containing live state,
+explanation and on/off controls, highlighting the reported on/off state.
+Only configured device actions appear; system actions remain below. Preserved
+polling, post-command refresh, mixed/unknown states and offline handling.
+Dashboard submodule `db83588` committed and pushed.
+
+Standalone and parent flake checks, parent dry-build and full build passed.
+Mocked HTTP/browser checks verified grouping, state highlighting, command
+readback, periodic refresh, partial/failing status, offline recovery and
+320–1000px layouts. Test activation and switch succeeded as generation 219:
+`/nix/store/v6rziw4iikandznk04lb6pdgxa1xi3k5-nixos-system-erebor-26.05.20261021.da6dc0e`.
+Live HTTPS checks on both domains passed before and after switch, including
+API/UI agreement, periodic polling and PWA offline reload/reconnect. Caddy and
+control service active, no failed units; root/ESP UUIDs unchanged. No reboot
+or real device control commands during verification.
+
 ## [COMPLETED] Show live display and Ambilight status — 2026-10-25
 
 SYS-036. Activated the status feature preserved in SYS-037's extracted

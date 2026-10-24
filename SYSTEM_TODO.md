@@ -18,6 +18,18 @@ Earlier approvals remain bounded by their original scope and safety precondition
 
 ## Open checks
 
+<a id="sys-038"></a>
+
+### SYS-038 — Integrate display and Ambilight status with their controls
+
+**Status:** DONE · **Closed:** 2026-10-25
+
+Grouped live status and on/off actions in device cards, with reported-state
+highlighting and configured-action filtering. Deployed as generation 219.
+Flake checks, dry/full builds, mocked browser interaction and live HTTPS/PWA
+verification passed. No real device control commands issued for verification.
+**Evidence:** [Integrated device controls](SYSTEM_CHANGELOG.md#completed-integrate-device-status-and-actions--2026-10-25).
+
 <a id="sys-037"></a>
 
 ### SYS-037 — Extract dashboard into a reusable private Git submodule
