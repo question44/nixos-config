@@ -36,7 +36,8 @@ passed as generation 218, live and selected target:
 On both erebor/moria domains the browser UI matched the API, periodic reads were
 observed, and offline PWA reload including configuration showed Offline rather
 than cached live states, then recovered on reconnect. Observed Display Off (two
-physical outputs) and Ambilight Off; no actual control commands were sent.
+physical outputs), initially Ambilight Off and later On with an active live
+stream. Validation issued no actual control commands.
 Caddy/control service active, no failed system/user units; boot environment and
 protected EFI hashes, firmware entries/order and filesystem UUIDs unchanged.
 No reboot. Parent source extraction is now activated as part of this deployment.

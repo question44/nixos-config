@@ -46,7 +46,8 @@ and clears stale offline data. Twenty-nine shared API/status tests plus nine
 host-helper tests, mocked HTTP/browser state transitions, flake/dry/full builds,
 test activation and switch passed. Live browser verified both domains, matching
 API/UI states, periodic refresh, offline reload/config and reconnect before and
-after switch. Current readings were both Off. No real control commands issued.
+after switch. Readings included Display Off and Ambilight Off, then On with a
+live stream. Validation issued no real control commands.
 **Evidence:** [Live device status](SYSTEM_CHANGELOG.md#completed-show-live-display-and-ambilight-status--2026-10-25).
 
 <a id="sys-035"></a>
