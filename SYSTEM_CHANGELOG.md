@@ -13,6 +13,34 @@ whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
 
+## [COMPLETED] Confirm NixOS without waiting for NanoKVM power sampling — 2026-10-25
+
+SYS-044. Added no-store `GET /api/control/os`, identifying NixOS from the host
+OS release without device queries. The browser probes it alongside NanoKVM;
+a fresh positive response immediately enables the NixOS header, controls and
+service links, and prevents Wake. The tooltip distinguishes API confirmation
+from the ongoing LED reading. Failed/non-NixOS responses fall back to NanoKVM;
+offline/visibility changes clear confirmation and cancelled replies are ignored.
+The existing four-second GPIO sampling, independent Windows detection and ATX
+guards are unchanged. Submodule `6225bab` committed and pushed.
+
+Thirty API tests, standalone/parent flake checks, dry/full builds and browser
+checks passed. Measured initial live navigation-to-availability at 6562ms on
+generation 223, versus 226ms after test activation and 194ms after switch;
+identity endpoint round trip measured 2ms on this connection. Mocked slow-KVM
+test confirmed NixOS availability in 112ms before a 6.5s independent response.
+Verified failed periodic refresh removes direct confirmation, Windows/unknown
+fallback and action/service gating, cancelled late responses, offline/reconnect,
+confirmation/send guards, service navigation and responsive cached-PWA behavior.
+Live HTTPS before and after switch verified actual OS/header/API agreement,
+uncached identity, mocked Windows fallback/gating, restoration and offline PWA.
+
+Test activation and switch passed as generation 224:
+`/nix/store/j8nch6f22l79x7aj2vws2pv1cppql68c-nixos-system-erebor-26.05.20261021.da6dc0e`.
+Caddy/control active, no failed units; root/ESP UUIDs unchanged. No reboot or
+real host-control action issued. Recovery: generation 223. Native Windows boot
+acceptance remains SYS-043; these timings describe this local connection.
+
 ## [COMPLETED] Gate service navigation by detected OS — 2026-10-25
 
 SYS-042 extension. Service cards now share the host-action OS availability rule:

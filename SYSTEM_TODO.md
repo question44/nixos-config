@@ -18,6 +18,18 @@ Earlier approvals remain bounded by their original scope and safety precondition
 
 ## Open checks
 
+<a id="sys-044"></a>
+
+### SYS-044 — Speed up confirmed NixOS dashboard availability
+
+**Status:** DONE · **Closed:** 2026-10-25
+
+Direct uncached host OS confirmation runs alongside NanoKVM. Live NixOS header,
+controls and services available in 194–226ms versus 6562ms before, on the tested
+connection. Generation 224 activated; 30 API tests, flake/dry/full builds,
+latency/fallback/cancellation/gating browser checks and live HTTPS/PWA passed.
+**Evidence:** [Fast NixOS confirmation](SYSTEM_CHANGELOG.md#completed-confirm-nixos-without-waiting-for-nanokvm-power-sampling--2026-10-25).
+
 <a id="sys-043"></a>
 
 ### SYS-043 — Verify dashboard OS detection during a native Windows boot
