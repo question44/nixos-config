@@ -18,6 +18,34 @@ Earlier approvals remain bounded by their original scope and safety precondition
 
 ## Open checks
 
+<a id="sys-039"></a>
+
+### SYS-039 — Wake the dashboard host through NanoKVM ATX
+
+**Status:** DONE · **Closed:** 2026-10-25
+
+Direct HTTPS Wake up and independently polled power LED status deployed as
+generation 220, with NanoKVM loopback helper behind owner-restricted Tailscale
+Serve. Wake up is disabled while awake. Flake/dry/full builds, eleven GPIO/HTTP
+tests, mocked browser checks and live HTTPS/offline checks passed before and
+after switch. Real sleep/off wake acceptance is tracked separately as SYS-040.
+**Evidence:** [NanoKVM wake and power status](SYSTEM_CHANGELOG.md#completed-add-nanokvm-atx-wake-and-power-status--2026-10-25).
+
+<a id="sys-040"></a>
+
+### SYS-040 — Verify NanoKVM ATX wake from real sleep
+
+**Status:** OPEN · **Review:** 2026-10-25
+
+Completion: with user ready for a brief interruption, suspend the host and use
+the cached PWA Wake up button over Tailscale; verify the sleep LED is blinking
+or off, exactly one short ATX press, and dashboard/control service recovery.
+Also verify host-off start when convenient, without changing boot selection.
+User confirmed ATX wiring and independent NanoKVM power. GPIO/power-on safety
+is covered by SYS-039 software tests; real sleep/off wake remains untested.
+**Evidence:** [Deployment and verification](SYSTEM_CHANGELOG.md#completed-add-nanokvm-atx-wake-and-power-status--2026-10-25).
+
+
 <a id="sys-038"></a>
 
 ### SYS-038 — Integrate display and Ambilight status with their controls

@@ -13,6 +13,42 @@ whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
 
+## [COMPLETED] Add NanoKVM ATX wake and power status — 2026-10-25
+
+SYS-039; physical acceptance SYS-040. Added direct HTTPS Wake up action and
+independent LED-based awake/asleep/off status. Wake up is disabled while awake;
+unreachable NanoKVM is shown as unavailable. The cached PWA falls back within
+2.5s when the host is unreachable and waits for API recovery after waking.
+Dashboard submodule committed locally as `978d1c3`.
+
+On NanoKVM PCIe `kvm-37ff`, deployed the helper under `/opt/erebor-wake`,
+`/etc/init.d/S99erebor-wake`, and private Tailscale Serve HTTPS on port 8443
+forwarding to loopback 18091. Host-specific config source:
+`modules/dashboard-control/nanokvm-wake.json`. Only the owner's Tailscale
+identity may access it; wake additionally requires an exact dashboard origin,
+JSON and a custom header. Fixed 200ms press, four-second steady-on LED guard,
+30s cooldown, request lock, fail-closed GPIO reads, and graceful termination.
+No NanoKVM passwords or tokens are stored in frontend configuration.
+
+Standalone/parent flake checks, parent dry-build/full build and eleven mocked
+GPIO/HTTP tests passed. Browser checks covered all LED states, awake button
+disabling, wake request/result handling, cooldown/errors, offline reload,
+cached shell with unreachable host, and 320–1000px layouts. Live test activation
+and switch passed as generation 220:
+`/nix/store/3paabx0ayp0gzsjc6iqmgjl9zji5vvbm-nixos-system-erebor-26.05.20261021.da6dc0e`.
+Before and after switch, HTTPS browser checks verified real cross-origin
+NanoKVM identity/health/status, awake button disabling, rejection of incomplete
+wake requests and offline reload. `erebor.jzon.pl` was tested directly;
+`moria.jzon.pl` virtual host was mapped to the current host for verification
+because its normal DNS points to the old offline Tailscale address.
+
+Caddy/control active, no failed units, root/ESP UUIDs unchanged. Remote source
+hashes matched the committed helper/init script; helper restart and Serve
+persistence configuration verified. No reboot, suspend or physical ATX press
+was issued. Real sleep LED pattern and sleep/off wake remain untested (SYS-040).
+Recovery: previous generation; disable NanoKVM proxy with
+`tailscale serve --https=8443 off` and stop its init script.
+
 ## [COMPLETED] Integrate device status and actions — 2026-10-25
 
 SYS-038. Display and Ambilight each have one card containing live state,

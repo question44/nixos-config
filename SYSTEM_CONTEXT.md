@@ -31,6 +31,14 @@ Unfinished work and verification checks belong in
 
 ## Reusable operational pitfalls
 
+- NanoKVM `kvm-37ff` hosts the dashboard wake helper outside `/kvmapp`, in
+  `/opt/erebor-wake`, started by `/etc/init.d/S99erebor-wake`. This remote
+  installation is manual state, not activated by the NixOS flake. Its private
+  Tailscale Serve config persists independently. Redeploy from the dashboard
+  submodule and host config after firmware recovery if necessary; see SYS-039
+  and the submodule README. Power LED signals describe motherboard state,
+  not OS responsiveness; hardware acceptance is tracked in SYS-040.
+
 - For deployments using the private dashboard submodule, run
   `nixos-rebuild test/switch --sudo --flake /etc/nixos#moria` as janzon so Nix
   evaluates with the user's Git/SSH access and sudo handles activation. A full
