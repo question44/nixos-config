@@ -13,6 +13,27 @@ whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
 
+## [COMPLETED] Migrate service dashboard to Angular — 2026-10-24
+
+SYS-033. Replaced React/Material UI with standalone Angular 22.2.3 and Angular
+Material 22.2.4, strict TypeScript/templates and Angular CLI production build.
+Retained eight service links, six quick controls, confirmations, light/dark
+layout, install prompt and the existing versioned offline shell worker. Cockpit
+remains a service link; embedding is outside this migration. Disabled CLI
+analytics and patched the embedded Sass compiler's loader for the Nix build.
+
+Flake check, nixos-rebuild dry-build, full system build and Caddy adapt passed.
+Chromium verified rendering, links, responsive layout, dark mode, install prompt
+callback, initial Cancel focus, confirmation/cancellation, mocked control API
+headers/results/errors, cached offline reload and disabled offline controls.
+No actual control commands were issued. Local and Nix-built JS/CSS match.
+Test activation followed by live HTTPS checks on erebor/moria domains passed;
+persistent switch and repeat HTTPS checks passed as generation 214:
+`/nix/store/8x9jz6ny0v4nq6jyskldl2y9jwrpqfkq-nixos-system-erebor-26.05.20261021.da6dc0e`.
+Live HTML/worker match built output; worker controls the page after reload.
+Caddy active, no failed system/user units, root/ESP UUIDs and firmware boot order
+unchanged. No reboot. Physical device installation was not performed.
+
 ## [COMPLETED] Add HyperHDR dashboard card — 2026-10-24
 
 SYS-032. Added HyperHDR to the dashboard index with the existing lighting

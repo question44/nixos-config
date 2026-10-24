@@ -18,6 +18,21 @@ Earlier approvals remain bounded by their original scope and safety precondition
 
 ## Open checks
 
+<a id="sys-033"></a>
+
+### SYS-033 — Migrate service dashboard to Angular
+
+**Status:** DONE · **Closed:** 2026-10-24
+
+Angular/Angular Material dashboard activated and persisted in generation 214.
+Flake/dry/full builds, Caddy adapt and Chromium checks passed: eight service
+links, six controls with mocked API requests/results, destructive confirmations,
+Cancel focus, install callback, responsive layout, dark mode and offline reload.
+Live HTTPS on both domains verified before and after switch, including worker
+control after reload; no actual power/lighting commands sent. Caddy healthy,
+no failed units. Physical installation remains user-driven and was not tested.
+**Evidence:** [Angular migration](SYSTEM_CHANGELOG.md#completed-migrate-service-dashboard-to-angular--2026-10-24).
+
 <a id="sys-032"></a>
 
 ### SYS-032 — Add HyperHDR to dashboard index
