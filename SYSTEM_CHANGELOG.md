@@ -13,6 +13,33 @@ whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
 
+## [COMPLETED] Migrate dashboard control API to FastAPI — 2026-10-25
+
+SYS-035. Replaced stdlib HTTP server with FastAPI/Pydantic and loopback Uvicorn,
+using dependencies from the locked Nixpkgs (FastAPI 0.136.3, Uvicorn 0.40.0 as
+built). Retained /api/control, all action implementations, the root Windows
+helper, same-origin/header checks, private-network Caddy boundary, 256-byte
+request limit and no-store JSON responses. Middleware checks the boundary
+before body parsing and counts streamed bytes, rejecting size mismatches.
+Typed commands reject extra fields; invalid input keeps 400/error responses,
+and unsupported methods now return 405. Synchronous action execution uses the
+framework thread pool. Added generated schema and Swagger UI at
+/api/control/openapi.json and /api/control/docs through the existing proxy.
+
+Twenty-four backend tests passed, including all action dispatch, malformed
+JSON/types, origin/header rejection, duplicate Origin, declared/streamed body
+limits, response contract and Windows helper safety tests. Chromium exercised
+all seven Angular controls through real Uvicorn HTTP with dispatch mocked;
+no actual commands were issued. Flake check, dry-build and full build passed.
+Test activation and persistent switch passed as generation 217:
+`/nix/store/dvwf74v5i17pwi7sz0j7a38j9bkw25w8-nixos-system-erebor-26.05.20261021.da6dc0e`.
+Before/after switch, live HTTPS on both domains returned schema/docs 200,
+valid-origin invalid-action 400, cross-origin 403 and GET control 405; no
+executable action sent. Browser verified dashboard links, confirmation cancel
+and controlling PWA worker. Listener remains 127.0.0.1:18090; Caddy/control
+service healthy, no failed system/user units. Boot environment/protected EFI
+hashes, firmware entries/order and filesystem UUIDs unchanged. No reboot.
+
 ## [COMPLETED] Add Windows reboot dashboard button — 2026-10-25
 
 SYS-034. Added Reboot to Windows quick action with save-work/next-boot-only

@@ -1,4 +1,7 @@
 { config, pkgs, ... }:
+let
+  apiPython = pkgs.python3.withPackages (ps: [ ps.fastapi ps.uvicorn ]);
+in
 {
   # Only this fixed operation can write the GRUB one-time selection.
   systemd.services.dashboard-reboot-windows = {
@@ -37,7 +40,7 @@
     path = [ pkgs.systemd pkgs.wlopm pkgs.niri config.programs.umbriel.package
       config.programs.mango.package ];
     serviceConfig = {
-      ExecStart = "${pkgs.python3}/bin/python3 ${./dashboard-control/control.py}";
+      ExecStart = "${apiPython}/bin/python3 ${./dashboard-control/control.py}";
       Restart = "on-failure";
       NoNewPrivileges = true;
       PrivateTmp = true;

@@ -1,24 +1,36 @@
 """Loopback-only dashboard actions; Caddy supplies the private-network boundary."""
 
+import ipaddress
 import json
 import os
 import socket
 import subprocess
 import threading
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from typing import Annotated, Literal, get_args
 from urllib.parse import urlsplit
-from urllib.request import Request, urlopen
+from urllib.request import Request as URLRequest, urlopen
+
+from fastapi import FastAPI, Header, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.openapi.utils import get_openapi
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, ConfigDict
+from starlette.datastructures import Headers, MutableHeaders
+from starlette.exceptions import HTTPException
+from starlette.types import ASGIApp, Message, Receive, Scope, Send
+import uvicorn
 
 
 HOSTS = {"moria", "erebor", "localhost", "127.0.0.1", "moria.local", "erebor.local",
          "moria.jzon.pl", "erebor.jzon.pl"}
-ACTIONS = {"display-on", "display-off", "ambilight-on", "ambilight-off", "sleep", "power-off", "reboot-windows"}
+ActionName = Literal["display-on", "display-off", "ambilight-on", "ambilight-off", "sleep", "power-off", "reboot-windows"]
+ACTIONS = set(get_args(ActionName))
 AMBILIGHT_LOCK = threading.Lock()
 
 
 def wled_state(state):
     url = os.environ["DASHBOARD_WLED_URL"].rstrip("/") + "/json/state"
-    request = Request(url, data=json.dumps(state).encode(),
+    request = URLRequest(url, data=json.dumps(state).encode(),
                       headers={"Content-Type": "application/json"})
     with urlopen(request, timeout=5) as response:
         result = json.load(response)
@@ -96,53 +108,127 @@ def action(name):
         raise ValueError("Unknown action")
 
 
-class Handler(BaseHTTPRequestHandler):
-    def reply(self, status, **payload):
-        body = json.dumps(payload).encode()
-        self.send_response(status)
-        self.send_header("Content-Type", "application/json")
-        self.send_header("Cache-Control", "no-store")
-        self.send_header("Content-Length", str(len(body)))
-        self.end_headers()
-        self.wfile.write(body)
+class ControlCommand(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    action: ActionName
 
-    def do_POST(self):
-        origin = urlsplit(self.headers.get("Origin", ""))
-        host = self.headers.get("Host", "")
+
+class ControlResult(BaseModel):
+    message: str
+
+
+class ControlError(BaseModel):
+    error: str
+
+
+def same_origin(headers: Headers) -> bool:
+    try:
+        origin = urlsplit(headers.get("origin", ""))
+        hostname = origin.hostname or ""
         try:
-            import ipaddress
-            address = ipaddress.ip_address(origin.hostname or "")
+            address = ipaddress.ip_address(hostname)
             trusted = address.is_private and not address.is_unspecified and not address.is_multicast
-            trusted |= address in ipaddress.ip_network("100.64.0.0/10") if address.version == 4 else False
+            if address.version == 4:
+                trusted |= address in ipaddress.ip_network("100.64.0.0/10")
         except ValueError:
-            trusted = origin.hostname in HOSTS
-        if (not trusted or origin.scheme not in {"http", "https"} or origin.netloc != host
-                or origin.path or origin.query or origin.fragment
-                or self.headers.get("X-Erebor-Control") != "1"
-                or self.headers.get("Content-Type") != "application/json"):
-            self.reply(403, error="Same-origin dashboard requests only")
-            return
-        if self.path != "/api/control":
-            self.reply(404, error="Unknown endpoint")
-            return
-        try:
-            length = int(self.headers.get("Content-Length", "0"))
-            if not 0 < length <= 256:
-                raise ValueError("Invalid request size")
-            name = json.loads(self.rfile.read(length)).get("action")
-            if name not in ACTIONS:
-                raise ValueError("Unknown action")
-        except (ValueError, TypeError, AttributeError):
-            self.reply(400, error="Invalid action")
-            return
-        try:
-            action(name)
-        except (OSError, ValueError, RuntimeError, subprocess.SubprocessError) as exc:
-            print(f"{name} failed: {exc}", flush=True)
-            self.reply(503, error="Action failed. Check the desktop session and control service log.")
-            return
-        self.reply(200, message="Command sent")
+            trusted = hostname in HOSTS
+        return bool(trusted and origin.scheme in {"http", "https"}
+                    and origin.netloc == headers.get("host", "")
+                    and not (origin.path or origin.query or origin.fragment)
+                    and headers.get("x-erebor-control") == "1"
+                    and headers.get("content-type") == "application/json"
+                    and all(len(headers.getlist(name)) == 1 for name in
+                            ["host", "origin", "x-erebor-control", "content-type"]))
+    except ValueError:
+        return False
 
+
+class DashboardBoundary:
+    """Apply the existing browser boundary before FastAPI parses any body."""
+
+    def __init__(self, app: ASGIApp):
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send):
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        async def no_store(message: Message):
+            if message["type"] == "http.response.start":
+                MutableHeaders(scope=message)["Cache-Control"] = "no-store"
+            await send(message)
+
+        if scope["method"] == "POST":
+            headers = Headers(scope=scope)
+            if not same_origin(headers):
+                await JSONResponse({"error": "Same-origin dashboard requests only"}, 403)(scope, receive, no_store)
+                return
+            if scope["path"] != "/api/control" or scope.get("query_string"):
+                await JSONResponse({"error": "Unknown endpoint"}, 404)(scope, receive, no_store)
+                return
+            try:
+                length = int(headers.get("content-length", "0"))
+                if not 0 < length <= 256 or len(headers.getlist("content-length")) != 1:
+                    raise ValueError("Invalid request size")
+            except ValueError:
+                await JSONResponse({"error": "Invalid action"}, 400)(scope, receive, no_store)
+                return
+            received = 0
+            original_receive = receive
+
+            async def bounded_receive():
+                nonlocal received
+                message = await original_receive()
+                if message["type"] == "http.request":
+                    received += len(message.get("body", b""))
+                    if received > 256 or (not message.get("more_body", False) and received != length):
+                        raise HTTPException(400, "Invalid action")
+                return message
+
+            receive = bounded_receive
+        await self.app(scope, receive, no_store)
+
+
+app = FastAPI(title="erebor control API", version="1.0.0", redirect_slashes=False,
+              docs_url="/api/control/docs", redoc_url=None,
+              openapi_url="/api/control/openapi.json")
+app.add_middleware(DashboardBoundary)
+
+
+@app.exception_handler(RequestValidationError)
+async def invalid_command(request: Request, exc: RequestValidationError):
+    return JSONResponse({"error": "Invalid action"}, 400)
+
+
+@app.exception_handler(HTTPException)
+async def http_error(request: Request, exc: HTTPException):
+    return JSONResponse({"error": "Invalid action" if exc.status_code == 400 else str(exc.detail)},
+                        exc.status_code, headers=exc.headers)
+
+
+@app.post("/api/control", response_model=ControlResult,
+          responses={code: {"model": ControlError} for code in [400, 403, 503]})
+def execute_control(command: ControlCommand,
+                    x_erebor_control: Annotated[Literal["1"], Header(alias="X-Erebor-Control")]):
+    # FastAPI runs this synchronous handler in its thread pool.
+    try:
+        action(command.action)
+    except (OSError, ValueError, RuntimeError, subprocess.SubprocessError) as exc:
+        print(f"{command.action} failed: {exc}", flush=True)
+        return JSONResponse({"error": "Action failed. Check the desktop session and control service log."}, 503)
+    return ControlResult(message="Command sent")
+
+
+def control_openapi():
+    if app.openapi_schema is None:
+        app.openapi_schema = get_openapi(title=app.title, version=app.version, routes=app.routes)
+        # Validation keeps the existing 400 response contract rather than 422.
+        app.openapi_schema["paths"]["/api/control"]["post"]["responses"].pop("422", None)
+    return app.openapi_schema
+
+
+app.openapi = control_openapi
 
 if __name__ == "__main__":
-    ThreadingHTTPServer(("127.0.0.1", 18090), Handler).serve_forever()
+    uvicorn.run(app, host="127.0.0.1", port=18090, proxy_headers=False, server_header=False)
