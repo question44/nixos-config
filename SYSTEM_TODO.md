@@ -18,6 +18,18 @@ Earlier approvals remain bounded by their original scope and safety precondition
 
 ## Open checks
 
+<a id="sys-041"></a>
+
+### SYS-041 — Show host power LED beside the dashboard title
+
+**Status:** DONE · **Closed:** 2026-10-25
+
+Colored LED and readable status moved beside host name; duplicate System card
+removed. Wake up enables only for confirmed asleep/off. Flake/dry/full builds,
+responsive/status/offline browser checks and live HTTPS validation before and
+after generation 221 activation passed. No real ATX/sleep commands issued.
+**Evidence:** [Header LED and wake gating](SYSTEM_CHANGELOG.md#completed-show-header-power-led-and-gate-wake-by-detected-state--2026-10-25).
+
 <a id="sys-039"></a>
 
 ### SYS-039 — Wake the dashboard host through NanoKVM ATX

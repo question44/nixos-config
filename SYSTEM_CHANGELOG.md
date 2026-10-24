@@ -13,6 +13,29 @@ whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
 
+## [COMPLETED] Show header power LED and gate wake by detected state — 2026-10-25
+
+SYS-041. Moved existing NanoKVM status beside the host name as a colored LED,
+readable label and detail tooltip; removed the duplicate System card. Green
+awake, amber asleep, red off, gray unknown/unavailable. Wake up now enables only
+for confirmed asleep/off; checking, awake, unknown and unavailable disable it.
+Backend ATX checks are unchanged. Dashboard submodule `0fdb404` committed and
+pushed to the existing private origin, including the previously local wake
+revision so clean parent flake fetches can resolve the referenced submodule.
+
+Standalone/parent flake checks, dry-build/full build and mocked browser checks
+passed: all power states and corresponding wake availability, header placement,
+absence of duplicate card, 320–1000px layouts, wake response/error handling and
+offline/unreachable-host reload. Inspected the rendered LED layout. Test
+activation and switch passed as generation 221:
+`/nix/store/d1r8bnjf3yki6bwglcbawcdzr1944hv8-nixos-system-erebor-26.05.20261021.da6dc0e`.
+Live HTTPS browser checks before and after switch verified the header state,
+disabled wake while awake, NanoKVM cross-origin health, rejection of incomplete
+wake requests and offline reload. Tested erebor directly and moria's virtual
+host mapped to this host, as noted in SYS-039. Caddy/control active; no failed
+units; root/ESP UUIDs unchanged. No physical ATX or sleep commands issued;
+physical acceptance remains SYS-040.
+
 ## [COMPLETED] Add NanoKVM ATX wake and power status — 2026-10-25
 
 SYS-039; physical acceptance SYS-040. Added direct HTTPS Wake up action and
