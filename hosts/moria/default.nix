@@ -149,6 +149,9 @@ in
       }
     '';
   };
+  # Test the current mainline kernel's newer Nouveau display support while
+  # keeping the NixOS 26.05 userspace pin unchanged.
+  boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.kernelModules = [ "uinput" ];
   boot.plymouth = {
     enable = true;

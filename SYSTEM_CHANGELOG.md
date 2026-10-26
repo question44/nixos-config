@@ -12,6 +12,42 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Test Linux 7.3 for Nouveau DP-1 high refresh — 2026-10-26
+
+SYS-047. The Dell AW3423DWF's configured 3440×1440@164.899994 mode is absent
+from its active Nouveau mode list on Linux 6.18.57, which instead exposes
+59.973 and 99.982 Hz and is running at 99.982 Hz. Request: test the current
+mainline Linux 7.3 package already provided by the pinned Nixpkgs channel,
+without moving the full system to unstable.
+
+Checkpoint: generation 225 is current and healthy, on kernel 6.18.57; no
+failed units; root is Btrfs UUID `5be9be17-20c9-4a47-ba2d-6adf1ceb4c55` and the
+ESP is UUID `38B5-8386`. Snapper is not installed, so no snapshot applies.
+The sole configuration change selects `pkgs.linuxPackages_latest` (Linux 7.3).
+No Fedora, Windows, boot selection, EFI entry, partition, or filesystem change
+is planned. Recovery: select GRUB generation 225. Next safe steps: flake/dry/
+full builds, test and switch activation, then reboot and inspect DP-1 modes.
+
+`nix flake check`, dry build and full build passed. Test activation completed
+with graphical-session, Sunshine and xremap active and no failed units. The
+Linux 7.3 generation was then switched persistently as generation 226; GRUB
+contains its `linux-7.3` entry and preserves generation 225.
+
+Reboot checkpoint read back: generation 226 targets
+`/nix/store/ikp60smy77vgz9gq90k8q2xd60vwl9pc-nixos-system-erebor-26.05.20261025.1f607aa`
+on Linux 7.3. Root and ESP UUIDs are unchanged; no failed units. Snapper is
+not installed. Risk: Nouveau may still only expose 100 Hz and the graphical
+session must be checked after boot. Mandatory next action: reboot into
+generation 226, inspect DP-1's available/current modes and service health;
+select generation 225 from GRUB if the session fails.
+
+Reboot succeeded at 22:49 CET into Linux 7.3.0 and generation 226. The RTX
+4090 remains driven by Nouveau; graphical-session, Sunshine and xremap are
+active with no failed units. DP-1 still exposes only 3440×1440 at 59.973 Hz
+and 99.982 Hz, with 99.982 Hz current. Therefore Linux 7.3 does not restore
+the AW3423DWF's configured 164.899994 Hz mode under Nouveau/NVK. Generation
+225 (Linux 6.18.57) remains available in GRUB; it has the same 100 Hz limit.
+
 ## [COMPLETED] Update NixOS pin and move the RTX 4090 to NVK/Nouveau — 2026-10-26
 
 SYS-045. Requested change: update the NixOS channel pin and replace the

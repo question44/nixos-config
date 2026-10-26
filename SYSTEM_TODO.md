@@ -42,6 +42,22 @@ or other CUDA/NVENC workload under NVK, then record performance and a preferred
 open-driver-compatible encoder path. The host driver/Vulkan and service startup
 are verified by SYS-045; this task does not authorize reverting the driver.
 
+<a id="sys-047"></a>
+
+### SYS-047 — Test Linux 7.3 for the RTX 4090's DP-1 165 Hz mode
+
+**Status:** DONE · **Closed:** 2026-10-26
+
+Build and boot a reversible Linux 7.3 generation with the existing
+Nouveau/NVK userspace, then verify whether the Dell AW3423DWF exposes and uses
+3440×1440 at 164.9 Hz. Current evidence: generation 225 is healthy on Linux
+6.18.57 but DP-1 only exposes 59.973 and 99.982 Hz, currently 99.982 Hz.
+Flake/dry/full builds and test activation passed; generation 226 was switched
+with Linux 7.3 and its GRUB entry verified. Generation 226 booted successfully:
+Nouveau, the graphical session, Sunshine and xremap are healthy, but the DP-1
+mode list remains 59.973/99.982 Hz and 99.982 Hz remains active. The newer
+kernel does not enable 165 Hz; generation 225 remains in GRUB for rollback.
+
 ## Open checks
 
 <a id="sys-044"></a>
