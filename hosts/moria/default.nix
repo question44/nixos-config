@@ -99,7 +99,7 @@ in
     ./services/qbittorrent.nix
     ./services/nextcloud.nix
     ../../modules/desktop.nix
-    ../../modules/nvidia.nix
+    ../../modules/nvk.nix
     ../../modules/windows-vm.nix
     ../../modules/looking-glass.nix
   ];
@@ -109,12 +109,6 @@ in
 
   nixpkgs.config.allowUnfreePredicate = pkg:
     builtins.elem (lib.getName pkg) [
-      "nvidia-x11"
-      "nvidia-kernel-modules"
-      "nvidia-settings"
-      "cuda_cccl"
-      "cuda_cudart"
-      "cuda_nvcc"
       "spotify"
       "discord"
       "stremio-linux-shell"

@@ -1,10 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  sunshine = pkgs.sunshine.override {
-    cudaSupport = true;
-    cudaPackages = pkgs.cudaPackages;
-  };
+  sunshine = pkgs.sunshine;
   sunshineConfig = (pkgs.formats.keyValue { }).generate "sunshine.conf" config.services.sunshine.settings;
   output = pkgs.writeShellApplication {
     name = "sunshine-output";
@@ -24,7 +21,9 @@ in
     settings = {
       sunshine_name = "erebor";
       capture = "wlr";
-      encoder = "nvenc";
+      # NVK/Nouveau has no NVENC userspace implementation.  Keep Sunshine
+      # functional with its CPU encoder until Vulkan Video encoding is usable.
+      encoder = "software";
       output_name = "sunshine";
       upnp = "disabled";
       origin_web_ui_allowed = "lan";
@@ -65,8 +64,6 @@ in
   };
 
   # Capture needs a live supported compositor and its Wayland socket.
-  # FFmpeg loads CUDA/NVENC at runtime from the active host driver.
-  systemd.user.services.sunshine.environment.LD_LIBRARY_PATH = "/run/opengl-driver/lib";
   systemd.user.services.sunshine.serviceConfig = {
     ExecCondition = pkgs.writeShellScript "sunshine-session-ready" ''
       test -S "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" || exit 1

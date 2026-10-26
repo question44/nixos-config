@@ -16,6 +16,32 @@ instead of copying their instructions. No review task authorizes a reboot,
 activation, storage change, secret archive or graphical-session interruption.
 Earlier approvals remain bounded by their original scope and safety preconditions.
 
+<a id="sys-045"></a>
+
+### SYS-045 — Move RTX 4090 host graphics to NVK/Nouveau
+
+**Status:** DONE · **Closed:** 2026-10-26
+
+Update the `nixos-26.05` pin and replace the proprietary NVIDIA driver with
+Nouveau/NVK for the Ada RTX 4090. The latest available `nixos-26.05` pin
+(`1f607aa`, 2026-10-25) still selected Linux 6.18.57. Generation 225 was built,
+test-activated, switched, and booted. The RTX 4090 uses Nouveau, and Vulkan
+reports `NVK AD102` (Mesa 26.1.8, Vulkan 1.4.354); graphical-session, Sunshine,
+and xremap targets are active with no failed units. GRUB retains generation 224
+for rollback; Fedora, Windows, UUIDs, partitions and EFI entries were unchanged.
+Sunshine now uses CPU encoding because NVENC/CUDA is unavailable with NVK.
+
+<a id="sys-046"></a>
+
+### SYS-046 — Verify workloads formerly relying on NVIDIA CUDA/NVENC
+
+**Status:** OPEN · **Review:** 2026-10-26
+
+Completion: exercise an actual Sunshine stream and any user-configured Jellyfin
+or other CUDA/NVENC workload under NVK, then record performance and a preferred
+open-driver-compatible encoder path. The host driver/Vulkan and service startup
+are verified by SYS-045; this task does not authorize reverting the driver.
+
 ## Open checks
 
 <a id="sys-044"></a>

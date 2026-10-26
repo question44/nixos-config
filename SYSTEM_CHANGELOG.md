@@ -12,6 +12,39 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Update NixOS pin and move the RTX 4090 to NVK/Nouveau — 2026-10-26
+
+SYS-045. Requested change: update the NixOS channel pin and replace the
+proprietary NVIDIA 615.78.08 stack with Nouveau/NVK for the Ada RTX 4090. The
+new pin is `nixos-26.05` revision `1f607aa` (2026-10-25), whose selected kernel
+remains Linux 6.18.57; there is no newer kernel in that channel revision.
+Configuration enables Nouveau GSP (`nouveau.config=NvGspRm=1`), keeps
+redistributable firmware enabled, blacklists proprietary NVIDIA modules, and
+uses Sunshine's CPU encoder because NVENC/CUDA is unavailable with NVK.
+
+Initial checkpoint before build/activation: generation 224 was current; root is Btrfs
+UUID `5be9be17-20c9-4a47-ba2d-6adf1ceb4c55` and ESP is UUID `38B5-8386`; no
+failed units. Snapper is not installed, so no snapshot is applicable.
+`nix flake check` and `nixos-rebuild dry-build --flake .#moria` passed. Recovery
+is selecting generation 224 from GRUB. Full build and `nixos-rebuild test`
+passed; generation 225 was switched successfully, with Sunshine and xremap
+active and no failed units.
+
+Reboot checkpoint read back: current generation was 225
+(`/nix/store/cvjqkhxlsvy49whj8ii0ldblaxnmxcf9-nixos-system-erebor-26.05.20261025.1f607aa`);
+root and ESP UUIDs were unchanged. At that checkpoint, graphical output, Vulkan,
+and Sunshine's non-NVENC streaming remained unverified. Recovery if the reboot
+failed was selecting generation 224 from GRUB.
+
+Reboot succeeded at 22:37 CET into generation 225. `lspci` reports the RTX 4090
+kernel driver as Nouveau; kernel logs confirm AD102 GSP firmware 570.144,
+24,564 MiB VRAM and the Nouveau framebuffer. `vulkaninfo --summary` reports
+`NVIDIA GeForce RTX 4090 (NVK AD102)`, Mesa 26.1.8 and Vulkan API 1.4.354.
+The user graphical-session target, Sunshine and xremap are active; no failed
+units remain. An initial Jellyfin health-check fired before its normal startup
+completed but subsequently cleared; Jellyfin remained active. Actual Sunshine
+streaming and any CUDA/NVENC-based workload remain acceptance work in SYS-046.
+
 
 ## [COMPLETED] Confirm NixOS without waiting for NanoKVM power sampling — 2026-10-25
 
