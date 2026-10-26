@@ -99,7 +99,7 @@ in
     ./services/qbittorrent.nix
     ./services/nextcloud.nix
     ../../modules/desktop.nix
-    ../../modules/nvk.nix
+    ../../modules/nvidia.nix
     ../../modules/windows-vm.nix
     ../../modules/looking-glass.nix
   ];
@@ -109,6 +109,12 @@ in
 
   nixpkgs.config.allowUnfreePredicate = pkg:
     builtins.elem (lib.getName pkg) [
+      "nvidia-x11"
+      "nvidia-kernel-modules"
+      "nvidia-settings"
+      "cuda_cccl"
+      "cuda_cudart"
+      "cuda_nvcc"
       "spotify"
       "discord"
       "stremio-linux-shell"
@@ -149,9 +155,6 @@ in
       }
     '';
   };
-  # Test the current mainline kernel's newer Nouveau display support while
-  # keeping the NixOS 26.05 userspace pin unchanged.
-  boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.kernelModules = [ "uinput" ];
   boot.plymouth = {
     enable = true;

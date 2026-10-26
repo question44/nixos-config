@@ -12,6 +12,40 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Restore proprietary NVIDIA graphics and 165 Hz mode — 2026-10-26
+
+SYS-048. Linux 7.3/Nouveau completed successfully but still exposed only
+3440×1440 at 59.973/99.982 Hz. At user request, restore the known-good
+proprietary NVIDIA 615.78.08 module, CUDA/NVENC Sunshine support, and the
+stable kernel package (Linux 6.18.57) that previously built with this driver.
+
+Checkpoint: generation 226 is current on Linux 7.3; Nouveau, the graphical
+session, Sunshine and xremap are healthy, and no units have failed. Root is
+Btrfs UUID `5be9be17-20c9-4a47-ba2d-6adf1ceb4c55`, ESP is UUID `38B5-8386`;
+Snapper is not installed. No Fedora, Windows, EFI entry, partition or filesystem
+change is planned. Recovery is selecting generation 226 in GRUB. Next safe
+steps: flake/dry/full builds, test and switch activation, then reboot and
+verify NVIDIA, the DP-1 164.9 Hz mode, Vulkan and services.
+
+`nix flake check`, dry build and full build passed. Test activation completed
+with graphical-session, Sunshine and xremap active and no failed units. Polkit
+successfully switched generation 227; its GRUB entry uses Linux 6.18.57 and
+`nvidia_drm.modeset=1`, while generation 226 remains available.
+
+Reboot checkpoint read back: generation 227 targeted
+`/nix/store/7qcrk2i3j37p1jhzi7l6j1l6hwh3cpm1-nixos-system-erebor-26.05.20261025.1f607aa`.
+Root and ESP UUIDs are unchanged; Snapper is not installed and no units have
+failed. At that checkpoint, the proprietary driver and 165 Hz mode needed
+boot-time validation; recovery was selecting generation 226 in GRUB.
+
+Reboot succeeded at 22:56 CET into generation 227 on Linux 6.18.57. The RTX
+4090 uses the NVIDIA kernel driver and `nvidia-smi` reports 615.78.08.
+`vulkaninfo` reports the NVIDIA proprietary Vulkan driver. DP-1 exposes and is
+running at 3440×1440@164.900 Hz. Graphical-session, Sunshine and xremap are
+active with no failed units. Jellyfin's initial transient health check cleared
+after normal startup; the service is active and advertises CUDA/NVENC codecs.
+Generation 226 remains the GRUB rollback option.
+
 ## [COMPLETED] Test Linux 7.3 for Nouveau DP-1 high refresh — 2026-10-26
 
 SYS-047. The Dell AW3423DWF's configured 3440×1440@164.899994 mode is absent

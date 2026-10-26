@@ -58,6 +58,19 @@ Nouveau, the graphical session, Sunshine and xremap are healthy, but the DP-1
 mode list remains 59.973/99.982 Hz and 99.982 Hz remains active. The newer
 kernel does not enable 165 Hz; generation 225 remains in GRUB for rollback.
 
+<a id="sys-048"></a>
+
+### SYS-048 — Restore proprietary NVIDIA graphics for the 165 Hz display mode
+
+**Status:** DONE · **Closed:** 2026-10-26
+
+Restore the previously verified NVIDIA 615.78.08 stack, NVENC Sunshine support,
+and the stable 6.18.57 kernel after Linux 7.3/Nouveau did not expose DP-1's
+165 Hz mode. Flake/dry/full builds and test activation passed; generation 227
+booted successfully with NVIDIA 615.78.08. DP-1 is 3440×1440 at 164.9 Hz;
+Vulkan uses NVIDIA, and graphical-session, Sunshine and xremap are active with
+no failed units. Generation 226 remains available in GRUB for rollback.
+
 ## Open checks
 
 <a id="sys-044"></a>
