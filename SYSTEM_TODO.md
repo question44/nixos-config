@@ -16,6 +16,22 @@ instead of copying their instructions. No review task authorizes a reboot,
 activation, storage change, secret archive or graphical-session interruption.
 Earlier approvals remain bounded by their original scope and safety preconditions.
 
+<a id="sys-049"></a>
+
+### SYS-049 — Local GPU chat with reduced refusals and web search
+
+**Status:** DONE · **Closed:** 2026-10-27
+
+Generation 228 persistently activates Ollama/CUDA, Huihui Qwen3.5 27B
+abliterated, Open WebUI and SearXNG. Flake/dry/full builds passed; 32768 context
+runs 100% on GPU (~17.8 GiB total VRAM use, ~50 tokens/s). A 28932-token prompt
+correctly recalled an initial marker. Search returned 10 live results, the UI
+welcome page and health passed, and no units failed. User creates their own
+UI account for first use; authenticated UI chat/search and UVM loading after
+a future reboot were not acceptance-tested.
+
+**Evidence:** [implementation record](SYSTEM_CHANGELOG.md#completed-local-gpu-chat-and-web-search--2026-10-27).
+
 <a id="sys-045"></a>
 
 ### SYS-045 — Move RTX 4090 host graphics to NVK/Nouveau

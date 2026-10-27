@@ -98,6 +98,7 @@ in
     ./services/syncthing.nix
     ./services/qbittorrent.nix
     ./services/nextcloud.nix
+    ./services/ollama.nix
     ../../modules/desktop.nix
     ../../modules/nvidia.nix
     ../../modules/windows-vm.nix
@@ -115,6 +116,8 @@ in
       "cuda_cccl"
       "cuda_cudart"
       "cuda_nvcc"
+      "libcublas"
+      "open-webui"
       "spotify"
       "discord"
       "stremio-linux-shell"

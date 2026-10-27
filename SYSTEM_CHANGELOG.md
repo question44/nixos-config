@@ -12,6 +12,42 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Local GPU chat and web search — 2026-10-27
+
+SYS-049. User requested a local model fitting the RTX 4090 with useful context,
+reduced refusals and web search. Configure Ollama/CUDA, Huihui Qwen3.5 27B
+abliterated Q4_K_M, Open WebUI and SearXNG, all on loopback. Start at 32768
+tokens, q8_0 cache and one concurrent request. Host-generated SearXNG secret
+stays outside Git and the Nix store.
+
+Prechecks: generation 227, NVIDIA 4090 24564 MiB (205 MiB in use), 28 GiB
+available RAM, 46 GiB free filesystem space and no failed system units.
+Root/srv UUID is `5be9be17-20c9-4a47-ba2d-6adf1ceb4c55`; ESP UUID is
+`38B5-8386`. No storage, bootloader, driver or initrd changes are planned.
+Flake check, dry and full build passed. CUDA compilation is limited to Ada
+SM 89. Initial inference fell back to CPU because the initrd-loaded driver
+had not loaded UVM; loading `nvidia_uvm` and restarting Ollama restored CUDA.
+Declare that module for stage 2 so subsequent boots also support CUDA.
+
+Test activation succeeded. Model `e9ff39f1ea00` downloaded and ran at 32768
+context entirely on GPU. Short coding response: 49.9 tokens/s, total GPU use
+18212 MiB. A 28932-token prompt recalled its initial marker correctly without
+truncation, with GPU use 18220 MiB. SearXNG's default engines hit rate limits
+or CAPTCHAs; configure verified Bing, returning 10 live results without errors.
+Open WebUI health and browser welcome/sign-in page passed; first account
+creation and authenticated UI chat remain user first-use actions.
+
+Final test and persistent activation succeeded as generation 228,
+`/nix/store/iiarnjr4rmdyi35pybcx97mvxnpd98nb-nixos-system-erebor-26.05.20261025.1f607aa`.
+All three services are active, Open WebUI health passes and its stored search
+configuration enables SearXNG at the intended local URL. All listeners are
+loopback-only. No system units failed and root/srv/ESP UUIDs are unchanged.
+Generation 227 remains available for recovery. No reboot was performed;
+automatic UVM loading after a future reboot is declared but not boot-tested.
+Authenticated chat/search inside the UI remains untested until the user
+creates their own local account. Backend inference/search and UI startup were
+verified independently; this does not claim that first-use acceptance.
+
 ## [COMPLETED] Restore proprietary NVIDIA graphics and 165 Hz mode — 2026-10-26
 
 SYS-048. Linux 7.3/Nouveau completed successfully but still exposed only
