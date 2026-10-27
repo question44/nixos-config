@@ -30,6 +30,7 @@ in
     host = "127.0.0.1";
     port = 3000;
     environment = {
+      WEBUI_URL = "https://ai.erebor.jzon.pl";
       OLLAMA_BASE_URL = "http://127.0.0.1:11434";
       DEFAULT_MODELS = "huihui_ai/qwen3.5-abliterated:27b";
       ENABLE_WEB_SEARCH = "True";

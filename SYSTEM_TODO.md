@@ -16,6 +16,20 @@ instead of copying their instructions. No review task authorizes a reboot,
 activation, storage change, secret archive or graphical-session interruption.
 Earlier approvals remain bounded by their original scope and safety preconditions.
 
+<a id="sys-050"></a>
+
+### SYS-050 — Expose local AI chat through Caddy
+
+**Status:** DONE · **Closed:** 2026-10-27
+
+Generation 229 exposes Open WebUI through existing wildcard HTTPS routes.
+Builds and test/persistent activation passed. Main URL serves the UI and
+health, browser sign-in renders and WebSocket upgrade returns HTTP 101.
+Services are healthy. The optional Moria alias route works with local resolve;
+its existing DNS points to a different host, so use the Erebor address.
+
+**Evidence:** [implementation record](SYSTEM_CHANGELOG.md#completed-ai-chat-through-caddy--2026-10-27).
+
 <a id="sys-049"></a>
 
 ### SYS-049 — Local GPU chat with reduced refusals and web search

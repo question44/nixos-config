@@ -12,6 +12,24 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] AI chat through Caddy — 2026-10-27
+
+SYS-050. Add Open WebUI to the existing wildcard HTTPS reverse proxy and
+configure its public URL. Prechecks: generation 228, no failed units and
+unchanged root/srv/ESP UUIDs. Main AI hostname resolves to Tailscale IP
+100.108.216.80. No boot, storage or firewall configuration was changed.
+
+Flake check, dry/full builds, test activation and persistent activation passed.
+Generation 229 is
+`/nix/store/nq6ijf3z53fvn201nzr15as2p2l7paxm-nixos-system-erebor-26.05.20261025.1f607aa`.
+The main HTTPS URL serves the UI (HTTP 200), health returns true, the browser
+shows the sign-in page and WebSocket upgrade returns HTTP 101 through Caddy.
+Caddy/Open WebUI/Ollama/SearXNG are active; no units failed and mount UUIDs
+are unchanged. Open WebUI retains account authentication and loopback binding.
+The Moria alias passes HTTPS health with a local resolve override, but its DNS
+points to a different Tailscale host (100.98.112.118); no DNS changes were made.
+Authenticated chat remains a user first-use check as recorded in SYS-049.
+
 ## [COMPLETED] Local GPU chat and web search — 2026-10-27
 
 SYS-049. User requested a local model fitting the RTX 4090 with useful context,

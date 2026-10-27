@@ -597,6 +597,11 @@ in
           reverse_proxy 127.0.0.1:3773
         }
 
+        @ai host ai.moria.jzon.pl ai.erebor.jzon.pl
+        handle @ai {
+          reverse_proxy 127.0.0.1:3000
+        }
+
         @cloud host cloud.moria.jzon.pl cloud.erebor.jzon.pl
         handle @cloud {
           @carddav path /.well-known/carddav
