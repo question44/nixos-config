@@ -6,10 +6,10 @@
     volumes = [
       "/srv/qbittorrent/config:/config"
       "/srv/torrents:/downloads"
-      "/srv/external/crucial:/downloads/crucial:ro"
-      "/srv/external/seagate:/downloads/seagate:ro"
-      "/srv/external/expansion:/downloads/expansion:ro"
-      "/srv/external/bigdaddy:/downloads/bigdaddy:ro"
+      "/srv/external/crucial:/downloads/crucial:rw"
+      "/srv/external/seagate:/downloads/seagate:rw"
+      "/srv/external/expansion:/downloads/expansion:rw"
+      "/srv/external/bigdaddy:/downloads/bigdaddy:rw"
     ];
     environment = {
       PUID = "1000";

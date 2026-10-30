@@ -229,20 +229,20 @@ in
   fileSystems."/srv/external/seagate" = {
     device = "/dev/disk/by-uuid/7ACF-F05A";
     fsType = "exfat";
-    options = [ "ro" "nofail" "x-systemd.automount" "x-systemd.device-timeout=10s" "uid=1000" "gid=1000" "fmask=0002" "dmask=0002" ];
+    options = [ "rw" "nofail" "x-systemd.automount" "x-systemd.device-timeout=10s" "uid=1000" "gid=1000" "fmask=0002" "dmask=0002" ];
   };
   fileSystems."/srv/external/expansion" = {
     device = "/dev/disk/by-uuid/7FF9-F492";
     fsType = "exfat";
-    options = [ "ro" "nofail" "x-systemd.automount" "x-systemd.device-timeout=30s" "uid=1000" "gid=1000" "fmask=0002" "dmask=0002" ];
+    options = [ "rw" "nofail" "x-systemd.automount" "x-systemd.device-timeout=30s" "uid=1000" "gid=1000" "fmask=0002" "dmask=0002" ];
   };
   fileSystems."/srv/external/bigdaddy" = {
     device = "/dev/mapper/bigdaddy";
     fsType = "ext4";
-    options = [ "ro" "nofail" "x-systemd.automount" "x-systemd.device-timeout=30s" ];
+    options = [ "rw" "nofail" "x-systemd.automount" "x-systemd.device-timeout=30s" ];
   };
   environment.etc."crypttab".text = ''
-    bigdaddy UUID=35aa0d36-fe4f-45ce-8843-2c0387d1475a /etc/cryptsetup-keys.d/bigdaddy.key luks,readonly,noauto,nofail,x-systemd.device-timeout=30s
+    bigdaddy UUID=35aa0d36-fe4f-45ce-8843-2c0387d1475a /etc/cryptsetup-keys.d/bigdaddy.key luks,noauto,nofail,x-systemd.device-timeout=30s
   '';
 
   programs.fish.enable = true;

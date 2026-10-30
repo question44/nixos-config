@@ -12,6 +12,58 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] qBittorrent external disk write access — 2026-10-30
+
+SYS-052. User requested write access to all four external disks. Container
+bindings are now rw; Seagate, Expansion and BigDaddy host mounts are rw,
+and BigDaddy crypttab no longer requests readonly. BigDaddy filesystem root
+ownership changed non-recursively from root:root to UID/GID 1000:1000 (0755).
+Other containers retain readonly bindings. Download defaults are unchanged.
+
+Flake check and full build passed using the installed package pins. Before
+activation: generation 229, no failed units, correct filesystem UUIDs and
+recovery boot entries verified. Snapper is absent; created and verified ro=true
+Btrfs root snapshot `/btrfs-top/nixos-root-pre-qbit-write-20261030`.
+It protects system configuration, not external data. BigDaddy refresh retained
+readonly, so stopped qBittorrent/Jellyfin/Nextcloud briefly and reopened the
+mapping through the updated crypttab. Initial activation reported Jellyfin's
+startup health probe; its subsequent health check and repeated test activation
+passed. No filesystem repair or recursive permission changes were performed.
+
+Persistent activation succeeded as generation 230:
+`/nix/store/m5pv1n6dkm99i5hflg8zlj6lfn8yh0wc-nixos-system-erebor-26.05.20261025.1f607aa`.
+All four disks passed actual temporary-file create/read/delete inside
+qBittorrent as UID/GID 1000:1000. BigDaddy mapping reports read/write; all
+host mounts are rw with expected UUIDs. qBittorrent UI and Jellyfin health
+return HTTP 200; Nextcloud reports installed, maintenance=false and no database
+upgrade needed. No failed system/user units. EFI entries unchanged; GRUB has
+230, recovery 229, Windows and systemd-boot recovery. No reboot performed;
+boot persistence is configured but not reboot-tested.
+
+The separate SYS-051 package-update edits were restored after activation and
+remain uncommitted. Package cleanup still awaits authorization.
+
+## [PREPARED] System package update — 2026-10-30
+
+SYS-051. Refreshed flake inputs on their configured release branches, including
+nixos-26.05 revision `6f06d204d8f2d8761d9da78778745974a3216381`.
+Removed the obsolete Zen 1.23.3b checksum override for upstream 1.24b.
+`nix flake check` and `nixos-rebuild dry-build` passed after these changes.
+Full build not started: dry build needs 8.3 GiB download / 26.3 GiB unpacked,
+plus local build space; only 19 GiB is free. Inspected unreferenced Nix store
+paths (approximately 27 GiB NAR size, not a guarantee of reclaimable space).
+Cleanup awaits user authorization. Sudo hardware authentication was unavailable
+and the password prompt was cancelled. No activation or reboot occurred.
+
+At preparation time, live and persistent system was generation 229,
+`/nix/store/nq6ijf3z53fvn201nzr15as2p2l7paxm-nixos-system-erebor-26.05.20261025.1f607aa`.
+No failed system or user units. Root UUID and ESP mount match configuration;
+GRUB retains generation 229 and 227 entries. Snapper is not configured;
+existing Btrfs recovery snapshots remain present. Before activation, recheck
+state and create/verify the applicable recovery checkpoint. No boot files,
+firmware settings, generations or snapshots were changed. Prepared edits remain
+uncommitted pending build and activation verification.
+
 ## [COMPLETED] AI chat through Caddy — 2026-10-27
 
 SYS-050. Add Open WebUI to the existing wildcard HTTPS reverse proxy and

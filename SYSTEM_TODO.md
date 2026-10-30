@@ -16,6 +16,37 @@ instead of copying their instructions. No review task authorizes a reboot,
 activation, storage change, secret archive or graphical-session interruption.
 Earlier approvals remain bounded by their original scope and safety preconditions.
 
+<a id="sys-052"></a>
+
+### SYS-052 — qBittorrent external disk write access
+
+**Status:** DONE · **Closed:** 2026-10-30
+
+Generation 230 persistently enables write access to all four disks. Actual
+create/read/delete tests passed inside qBittorrent as UID 1000; services,
+mount UUIDs, EFI entries and GRUB recovery verified. No reboot performed.
+See the [implementation record](SYSTEM_CHANGELOG.md#completed-qbittorrent-external-disk-write-access--2026-10-30).
+
+<a id="sys-051"></a>
+
+### SYS-051 — Update system packages
+
+**Status:** OPEN · **Review:** 2026-10-30
+
+Package inputs refreshed on the existing release branches; removed the Zen
+1.23.3b checksum override for the new 1.24b input. Flake check and dry build
+passed. Full build and activation await adequate disk space and sudo
+authentication. Dry build requires 26.3 GiB unpacked downloads plus build
+space, versus 19 GiB free. Unreferenced store paths total approximately
+27 GiB NAR size; actual reclamation may be limited by Btrfs snapshots.
+Cleanup approval requested; no store contents, generations or snapshots deleted.
+
+Completion: recover sufficient space, full build, recovery checkpoint,
+test/switch activation, service and boot-entry verification, and commit.
+Generation 230 is active after SYS-052 using the previous package pins. No reboot performed.
+
+**Evidence:** [preparation record](SYSTEM_CHANGELOG.md#prepared-system-package-update--2026-10-30).
+
 <a id="sys-050"></a>
 
 ### SYS-050 — Expose local AI chat through Caddy
