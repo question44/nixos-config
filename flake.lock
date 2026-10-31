@@ -359,7 +359,8 @@
         "noctalia-greeter": "noctalia-greeter",
         "umbriel": "umbriel",
         "vicinae": "vicinae",
-        "zen-browser": "zen-browser"
+        "zen-browser": "zen-browser",
+        "moonshine": "moonshine"
       }
     },
     "scenefx": {
@@ -515,6 +516,27 @@
       "original": {
         "owner": "youwen5",
         "repo": "zen-browser-flake",
+        "type": "github"
+      }
+    },
+    "moonshine": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793257078,
+        "narHash": "sha256-rOzdU+lt6Rmiuuds7XGBokNvsr+pgOB97ZbWcEIWjiE=",
+        "owner": "hgaiser",
+        "repo": "moonshine",
+        "rev": "79554f853135cbac44502b58093a4eb0f0f5e6f1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hgaiser",
+        "repo": "moonshine",
+        "rev": "79554f853135cbac44502b58093a4eb0f0f5e6f1",
         "type": "github"
       }
     }

@@ -7,6 +7,10 @@
       url = "path:./apps/erebor-dashboard";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    moonshine = {
+      url = "github:hgaiser/moonshine/79554f853135cbac44502b58093a4eb0f0f5e6f1";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     noctalia.url = "github:noctalia-dev/noctalia-shell";
     noctalia-greeter = {
@@ -41,12 +45,14 @@
     };
   };
 
-  outputs = { self, nixpkgs, dashboard, noctalia, noctalia-greeter, umbriel, mango, millennium, helium, zen-browser, darkly, vicinae, home-manager, ... }:
+  outputs = { self, nixpkgs, moonshine, dashboard, noctalia, noctalia-greeter, umbriel, mango, millennium, helium, zen-browser, darkly, vicinae, home-manager, ... }:
     {
       nixosConfigurations.moria = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = { inherit darkly vicinae; };
         modules = [
+          moonshine.nixosModules.default
+          ./modules/moonshine.nix
           ./hosts/moria/default.nix
           noctalia-greeter.nixosModules.default
           noctalia.nixosModules.default

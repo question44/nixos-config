@@ -16,6 +16,20 @@ instead of copying their instructions. No review task authorizes a reboot,
 activation, storage change, secret archive or graphical-session interruption.
 Earlier approvals remain bounded by their original scope and safety preconditions.
 
+<a id="sys-053"></a>
+
+### SYS-053 — Install headless Moonshine; retain disabled Sunshine
+
+**Status:** DONE · **Closed:** 2026-10-31
+
+Generation 231 installs latest upstream 79554f8 (0.16.1), runs Moonshine as a
+headless-capable system service, and retains disabled/masked Sunshine.
+Flake/dry/full builds, test/switch activation, full GPU/input/ports healthcheck
+and pairing-page HTTP 200 passed. Actual client pairing/streaming and logged-out
+operation were not tested. No reboot performed.
+
+**Evidence:** [implementation record](SYSTEM_CHANGELOG.md#completed-headless-moonshine-installation--2026-10-31).
+
 <a id="sys-052"></a>
 
 ### SYS-052 — qBittorrent external disk write access

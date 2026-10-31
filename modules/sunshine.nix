@@ -16,7 +16,7 @@ in
   environment.systemPackages = [ output ];
 
   services.sunshine = {
-    enable = true;
+    enable = false; # Temporarily replaced by Moonshine; configuration retained.
     package = sunshine;
     openFirewall = true;
     # Compositor capture does not require the privileged KMS wrapper.
@@ -66,6 +66,7 @@ in
 
   # Capture needs a live supported compositor and its Wayland socket.
   # FFmpeg loads CUDA/NVENC at runtime from the active host driver.
+  systemd.user.services.sunshine.enable = config.services.sunshine.enable;
   systemd.user.services.sunshine.environment.LD_LIBRARY_PATH = "/run/opengl-driver/lib";
   systemd.user.services.sunshine.serviceConfig = {
     ExecCondition = pkgs.writeShellScript "sunshine-session-ready" ''

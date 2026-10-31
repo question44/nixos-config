@@ -12,6 +12,36 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Headless Moonshine installation — 2026-10-31
+
+SYS-053. Installed latest upstream Moonshine commit 79554f8 (version 0.16.1)
+with its NixOS module, headless Steam Big Picture, user lingering and input
+permissions. Sunshine is declaratively disabled, masked and stopped; its
+configuration and private credentials remain available for restoration.
+Added moonshine group membership for streaming sleep inhibition.
+
+Flake checks, dry build and full builds passed against installed package
+pins in `/tmp/moonshine-system-build`, excluding the separate SYS-051 update.
+Generation 230 was the recovery baseline; no failed units, expected root/ESP
+UUIDs and EFI entries verified. Snapper absent; created and verified readonly
+snapshot `/btrfs-top/nixos-root-pre-moonshine-20261031` before activation.
+Test activation passed. With daemon stopped, a fresh user process passed all
+Moonshine health checks: Vulkan RTX 4090, H.264/HEVC/AV1 including 10-bit,
+DMA-BUF, WSI layer, Xwayland, sleep inhibition, ports, uinput/uhid and headless
+controller permissions. Restarted daemon; pairing page returns HTTP 200.
+
+Persistent switch succeeded as generation 231:
+`/nix/store/29ip1vzh55lk6db7bxrf77f0cddy78yw-nixos-system-erebor-26.05.20261025.1f607aa`.
+Moonshine active/enabled; Sunshine inactive/masked; no failed system/user
+units. Root/ESP UUIDs and EFI boot order unchanged; GRUB includes 231 and
+recovery 230 plus Windows. No reboot performed. Client pairing, an actual
+stream and operation while logged out remain untested; service dependencies
+and lingering provide the headless startup configuration. Pairing URL:
+http://localhost:47989/pin; LAN host 192.168.1.106.
+
+SYS-051 working-tree package-update edits remain untouched and uncommitted;
+this implementation commit uses the installed pins plus the Moonshine input.
+
 ## [COMPLETED] qBittorrent external disk write access — 2026-10-30
 
 SYS-052. User requested write access to all four external disks. Container
