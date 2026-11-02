@@ -77,13 +77,7 @@
             home-manager.users.janzon = { lib, pkgs, ... }:
               let
                 zenPackages = zen-browser.packages.${pkgs.stdenv.hostPlatform.system};
-                zenBrowser = zenPackages.default.override {
-                  # The flake's Zen 1.23.3b checksum differs from the release asset.
-                  # This digest matches the official GitHub release asset metadata.
-                  zen-browser-unwrapped = zenPackages.zen-browser-unwrapped.override {
-                    hash = "sha256-uyBF0+IWVNQP6EElAJLurf0sH8gx7vtQkiJ3PIvcoUk=";
-                  };
-                };
+                zenBrowser = zenPackages.default;
                 rcmdPython = pkgs.python3.withPackages (ps: [ ps.pygobject3 ]);
                 rcmd = pkgs.writeShellScript "rcmd" ''
                   export GI_TYPELIB_PATH="${pkgs.glib.out}/lib/girepository-1.0"
