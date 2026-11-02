@@ -12,6 +12,16 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Umbriel keybinding syntax repair — 2026-11-02
+
+Migrated parameterized keybinding actions from colon to space syntax required by
+installed Umbriel revision a37ae93. Restored Caps+A/D as native left/right focus
+actions. Configuration validation reports zero diagnostics (previously 68
+warnings); loaded live using `umbriel config-replace`. Direct focus IPC verified.
+Physical shortcut confirmation remains with the user. Source configuration is
+active live; Home Manager deployment remains pending sudo authentication, so
+the deployed store symlink still contains the old syntax until rebuild activation.
+
 ## [COMPLETED] Five-second outlet refresh — 2026-11-02
 
 Outlet telemetry now has its own five-second frontend timer; other hub checks
