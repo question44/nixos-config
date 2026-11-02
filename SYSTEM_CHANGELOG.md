@@ -12,6 +12,24 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Proton VPN desktop installation — 2026-11-02
+
+SYS-054. Added the Proton VPN desktop package. Flake check, dry build and
+full build passed in `/tmp/moonshine-system-build`, retaining installed pins
+and Zen override to leave SYS-051 separate. Closure comparison adds Proton
+VPN 4.15.3 and dependencies without upgrading existing packages.
+Baseline: generation 231, `/nix/store/29ip1vzh55lk6db7bxrf77f0cddy78yw-nixos-system-erebor-26.05.20261025.1f607aa`.
+Root/ESP UUIDs match instructions; no failed system units. Verified readonly
+snapshot `/btrfs-top/nixos-root-pre-protonvpn-20261102` (ID 643).
+Recovery: generation 231 remains available, plus systemd-boot EFI recovery.
+Test and persistent switch succeeded as generation 232:
+`/nix/store/0053clayvfhj5sy8qnlc8qhwh708l3n4-nixos-system-erebor-26.05.20261025.1f607aa`.
+App reports 4.15.3; launched in the graphical session with a visible Proton
+VPN window and tray. NetworkManager active, no failed system/user units;
+root/ESP UUIDs and EFI boot order unchanged. GRUB retains 231, Windows and
+systemd-boot recovery. No reboot. Login and VPN connection untested; app
+reports split-tunneling backend unavailable. SYS-051 remains separate.
+
 ## [COMPLETED] Headless Moonshine installation — 2026-10-31
 
 SYS-053. Installed latest upstream Moonshine commit 79554f8 (version 0.16.1)

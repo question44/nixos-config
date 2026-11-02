@@ -16,6 +16,16 @@ instead of copying their instructions. No review task authorizes a reboot,
 activation, storage change, secret archive or graphical-session interruption.
 Earlier approvals remain bounded by their original scope and safety preconditions.
 
+<a id="sys-054"></a>
+
+### SYS-054 — Install Proton VPN desktop
+
+**Status:** DONE · **Closed:** 2026-11-02
+
+Activated as generation 232; visible graphical window, version and system
+health verified. Login and VPN connection remain untested.
+**Evidence:** [installation record](SYSTEM_CHANGELOG.md#completed-proton-vpn-desktop-installation--2026-11-02).
+
 <a id="sys-053"></a>
 
 ### SYS-053 — Install headless Moonshine; retain disabled Sunshine

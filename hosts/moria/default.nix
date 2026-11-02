@@ -675,6 +675,7 @@ in
   '';
   environment.systemPackages = with pkgs; [
     lsof
+    proton-vpn
     oo7
     nodejs
     gh
