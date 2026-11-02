@@ -24,22 +24,21 @@
 
   services.caddy.extraConfig = ''
     (browser_desktop) {
-      @desktop_path path /desktop /desktop/*
-      handle @desktop_path {
+      @desktop_host host desktop.erebor.jzon.pl desktop.moria.jzon.pl
+      handle @desktop_host {
         @tailnet remote_ip 127.0.0.1 ::1 100.64.0.0/10 fd7a:115c:a1e0::/48
         handle @tailnet {
-          redir /desktop /desktop/ 308
-          handle /desktop/websockify {
-            @same_origin header_regexp Origin ^https://(erebor|moria)[.]jzon[.]pl$
+          redir / /vnc.html?autoconnect=1&resize=scale 302
+          handle /websockify {
+            @same_origin header_regexp Origin ^https://desktop[.](erebor|moria)[.]jzon[.]pl$
             handle @same_origin {
               reverse_proxy 127.0.0.1:15901
             }
             respond "Invalid desktop WebSocket origin." 403
           }
-          handle_path /desktop/* {
+          handle {
             header Content-Security-Policy "frame-ancestors 'self'"
             root * ${pkgs.novnc}/share/webapps/novnc
-            rewrite / /vnc.html
             file_server
           }
         }

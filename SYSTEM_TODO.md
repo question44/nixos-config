@@ -16,6 +16,16 @@ instead of copying their instructions. No review task authorizes a reboot,
 activation, storage change, secret archive or graphical-session interruption.
 Earlier approvals remain bounded by their original scope and safety preconditions.
 
+<a id="sys-056"></a>
+
+### SYS-056 — Match desktop access to the service subdomain convention
+
+**Status:** DONE · **Closed:** 2026-11-02
+
+Generation 234 persisted. New subdomain automatically connects to live desktop;
+old path redirects. LAN/foreign Origin rejected; no failed system/user units.
+**Evidence:** [subdomain record](SYSTEM_CHANGELOG.md#completed-desktop-browser-subdomain--2026-11-02).
+
 <a id="sys-055"></a>
 
 ### SYS-055 — Browser control of the current Noctalia desktop

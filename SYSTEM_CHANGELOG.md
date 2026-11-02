@@ -12,6 +12,20 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Desktop browser subdomain — 2026-11-02
+
+SYS-056. Browser control now uses `https://desktop.erebor.jzon.pl/`, matching
+the other service subdomains. Root redirects to noVNC with automatic connection
+and scaling; the old dashboard `/desktop/` entry redirects to the new host.
+Tailnet-only access, same-origin WebSockets and localhost backend retained.
+
+Flake check, dry/full build, Caddy parsing, test and persistent switch passed.
+Activated generation 234; browser connected with a live 3440x1440 framebuffer.
+Old path returns 308, LAN and foreign Origin return 403. After switch, Caddy
+and browser-desktop active; no failed system/user units. Readonly recovery
+snapshot `/btrfs-top/nixos-root-pre-desktop-subdomain-20261102` verified ro=true;
+generation 233 retained. No reboot.
+
 ## [COMPLETED] Browser control of the current Noctalia desktop — 2026-11-02
 
 SYS-055. Activated persistently as generation 233:

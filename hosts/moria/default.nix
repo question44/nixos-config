@@ -584,7 +584,8 @@ in
       moria.jzon.pl, erebor.jzon.pl {
         import ovh_tls
         import dashboard_controls
-        import browser_desktop
+        @legacy_desktop path /desktop /desktop/*
+        redir @legacy_desktop https://desktop.erebor.jzon.pl/ 308
         encode gzip
         root * ${dashboard}
         file_server
@@ -592,6 +593,7 @@ in
 
       *.moria.jzon.pl, *.erebor.jzon.pl {
         import ovh_tls
+        import browser_desktop
         encode gzip
 
         @code host code.moria.jzon.pl code.erebor.jzon.pl
