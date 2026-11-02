@@ -16,6 +16,19 @@ instead of copying their instructions. No review task authorizes a reboot,
 activation, storage change, secret archive or graphical-session interruption.
 Earlier approvals remain bounded by their original scope and safety preconditions.
 
+<a id="sys-058"></a>
+
+### SYS-058 — Password-protect browser desktop
+
+**Status:** OPEN · **Review:** 2026-11-02
+
+Generation 236 denies desktop access pending local password setup (503).
+Corrected helper built after reproducing/fixing missing stdin newline; latest
+activation awaits user sudo authentication. Finish prepared activation, run
+sudo desktop-password locally, then verify real login and update records.
+No passwords in chat/Nix; tailnet/origin restrictions retained.
+**Evidence:** [prepared password gate](SYSTEM_CHANGELOG.md#prepared-desktop-password-protection--2026-11-02).
+
 <a id="sys-057"></a>
 
 ### SYS-057 — Add browser desktop to service index

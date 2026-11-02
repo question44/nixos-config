@@ -12,6 +12,28 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [PREPARED] Desktop password protection — 2026-11-02
+
+SYS-058. Password gate and local setup helper activated persistently as
+ generation 236. Runtime credentials live under root-owned `/var/lib/desktop-auth`,
+outside the repository/Nix store. Before setup, desktop returns 503; LAN returns
+403. No failed system/user units; backend/Caddy active. Recovery snapshots
+`/btrfs-top/nixos-root-pre-desktop-password-20261102` and generation 235 retained.
+
+The first helper failed before saving because Caddy stdin requires a newline.
+Corrected helper adds it, handles hashing failures without traceback, and checks
+HTTPS login before reporting success (restoring prior config on failure).
+Flake check, dry/full build and Python syntax passed. Isolated auth integration:
+missing/wrong credentials 401, correct fixture 200. Prepared closure:
+`/nix/store/lk2pv5dxfq5lphrar1gxfyryb0b2r9km-nixos-system-erebor-26.05.20261029.6f06d20`.
+Corrected helper activation did not start because sudo authentication remained
+pending; cancelled that wait. Current persistent/live generation remains 236,
+with desktop locked (503). Local GUI setup was inaccessible; user must finish
+from their own terminal. `/tmp/desktop-password-fix-activate.sh` is prepared for
+test, gate verification, readonly snapshot and persistent switch; then run
+`sudo desktop-password`. Real password entry/login acceptance remain pending.
+No reboot; no password/hash was included in chat, repository or Nix store.
+
 ## [COMPLETED] Desktop service index entry — 2026-11-02
 
 SYS-057. Added Desktop to the dashboard, linking to desktop.erebor.jzon.pl.
