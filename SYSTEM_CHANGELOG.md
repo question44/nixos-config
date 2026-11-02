@@ -12,6 +12,29 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Query the Tapo outlet directly from NanoKVM — 2026-11-02
+
+Installed a standalone read-only `tapo-query` on NanoKVM `kvm-37ff`
+(`192.168.1.122`), querying P110M `192.168.1.100` directly over LAN with TPAP.
+Source and locked Nix/Rust packaging are in `/home/janzon/Projects/tapo-query`,
+commit `cd2b4d1`; its README documents rebuild/deployment. Binary resides in
+`/opt/tapo-query`, linked at `/usr/bin/tapo-query`. Existing desktop keyring
+credentials were transferred privately over SSH to root-owned
+`/etc/tapo-query/credentials.json` (0600, directory 0700), outside source and
+the Nix store. NanoKVM stores this file as plaintext protected by permissions.
+
+Verified two authenticated NanoKVM readings (outlet on, about 90 W), CLI help,
+credential permissions and rejection of an unsafe permissions fixture. A reading
+took 0.85 s with 6940 KiB peak RSS. Nix flake checks and the cross-build passed;
+the binary has no dynamic loader. Binary SHA256:
+`46d1c572986f7e4cb8b6e34f575ad6afc68a494df84a6f4f7924306c605d284f`.
+The first build required a Nix loader; static linkage corrected that before
+successful verification. No NixOS activation, reboot or NanoKVM service change.
+The existing wake helper remains separate. Normal reboot persistence follows
+the installed filesystem layout; no reboot was performed. Firmware recovery
+may require redeployment. Removal: delete the command/link and its dedicated
+credentials file/directory on NanoKVM.
+
 ## [PREPARED] Desktop password protection — 2026-11-02
 
 SYS-058. Password gate and local setup helper activated persistently as

@@ -31,6 +31,14 @@ Unfinished work and verification checks belong in
 
 ## Reusable operational pitfalls
 
+- NanoKVM's manual Tapo reader is `/opt/tapo-query/tapo-query`, linked into
+  `/usr/bin`. Its root-only runtime credentials are under `/etc/tapo-query`,
+  separate from the desktop Oo7 keyring. Rebuild/redeploy from
+  `/home/janzon/Projects/tapo-query/deploy-nanokvm.py` in an unlocked desktop
+  session after NanoKVM firmware recovery or credential rotation. The Nix
+  cross-build must use static linkage; a Nix dynamic loader is unavailable on
+  NanoKVM. See the dated NanoKVM Tapo entry in `SYSTEM_CHANGELOG.md`.
+
 - NanoKVM `kvm-37ff` hosts the dashboard wake helper outside `/kvmapp`, in
   `/opt/erebor-wake`, started by `/etc/init.d/S99erebor-wake`. This remote
   installation is manual state, not activated by the NixOS flake. Its private
