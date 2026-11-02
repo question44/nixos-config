@@ -12,6 +12,16 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Desktop service index entry — 2026-11-02
+
+SYS-057. Added Desktop to the dashboard, linking to desktop.erebor.jzon.pl.
+Flake check, dry/full build, test and persistent switch passed as generation 235.
+Browser verified the card label, description and exact target. No failed
+system/user units after activation. Readonly snapshot
+`/btrfs-top/nixos-root-pre-desktop-index-20261102` verified ro=true; generation
+234 retained. No reboot. Password protection was discussed as a capability;
+no credentials were requested or configured, and tailnet restrictions remain.
+
 ## [COMPLETED] Desktop browser subdomain — 2026-11-02
 
 SYS-056. Browser control now uses `https://desktop.erebor.jzon.pl/`, matching

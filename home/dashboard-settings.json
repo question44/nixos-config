@@ -60,6 +60,13 @@
       "scheme": "http"
     },
     {
+      "id": "desktop",
+      "label": "Desktop",
+      "description": "View and control the current desktop",
+      "icon": "display",
+      "url": "https://desktop.erebor.jzon.pl"
+    },
+    {
       "id": "hyperhdr",
       "label": "HyperHDR",
       "description": "Ambilight capture and LED settings",

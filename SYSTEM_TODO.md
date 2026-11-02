@@ -16,6 +16,16 @@ instead of copying their instructions. No review task authorizes a reboot,
 activation, storage change, secret archive or graphical-session interruption.
 Earlier approvals remain bounded by their original scope and safety preconditions.
 
+<a id="sys-057"></a>
+
+### SYS-057 — Add browser desktop to service index
+
+**Status:** DONE · **Closed:** 2026-11-02
+
+Desktop card and exact target verified in browser; persisted as generation 235.
+Password protection was discussed but not enabled.
+**Evidence:** [index record](SYSTEM_CHANGELOG.md#completed-desktop-service-index-entry--2026-11-02).
+
 <a id="sys-056"></a>
 
 ### SYS-056 — Match desktop access to the service subdomain convention
