@@ -12,6 +12,31 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [PREPARED] Full configuration activation — 2026-11-02
+
+SYS-051. Full build and flake checks passed for the complete configuration:
+`/nix/store/xd9rg2a792sgpaywa0q9d6llfnphwbhd-nixos-system-erebor-26.05.20261029.6f06d20`.
+Added a narrow fpdf2 2.8.9 override excluding its failing
+`test_image_with_explicit_dimensions` PDF checksum fixture; all other checks
+remain enabled (1780 passed in the original build). The resulting package
+was available from cache.nixos.org. Initial unrestricted build exhausted
+memory and interrupted T3/Noctalia; both recovered. Retry with
+`--max-jobs 1 --cores 2` completed successfully.
+
+Test activation was attempted but sudo authentication did not complete;
+cancelled the waiting sudo process before activation. No switch or reboot.
+Generation 232 remains active and persistent:
+`/nix/store/0053clayvfhj5sy8qnlc8qhwh708l3n4-nixos-system-erebor-26.05.20261025.1f607aa`.
+No failed system units. Networking, Moonshine, Ollama, Open WebUI, containers,
+audio, Noctalia, Vicinae and Oo7 active; Open WebUI/Ollama HTTP 200.
+Root/ESP UUIDs verified; EFI boot order and other OS entries unchanged.
+Verified readonly recovery snapshot
+`/btrfs-top/nixos-root-pre-full-config-20261102` (ID 644); generation 232 and
+systemd-boot EFI loader remain available. Closure comparison reviewed:
+new kernel 6.18.59, NVIDIA stays 615.78.08. Remaining: authenticated test and
+switch, post-activation checks and record closure. Kernel boot acceptance
+requires a later separately authorized reboot.
+
 ## [COMPLETED] Proton VPN desktop installation — 2026-11-02
 
 SYS-054. Added the Proton VPN desktop package. Flake check, dry build and

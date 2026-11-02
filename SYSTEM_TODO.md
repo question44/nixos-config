@@ -55,21 +55,17 @@ See the [implementation record](SYSTEM_CHANGELOG.md#completed-qbittorrent-extern
 
 ### SYS-051 — Update system packages
 
-**Status:** OPEN · **Review:** 2026-10-30
+**Status:** OPEN · **Review:** 2026-11-02
 
-Package inputs refreshed on the existing release branches; removed the Zen
-1.23.3b checksum override for the new 1.24b input. Flake check and dry build
-passed. Full build and activation await adequate disk space and sudo
-authentication. Dry build requires 26.3 GiB unpacked downloads plus build
-space, versus 19 GiB free. Unreferenced store paths total approximately
-27 GiB NAR size; actual reclamation may be limited by Btrfs snapshots.
-Cleanup approval requested; no store contents, generations or snapshots deleted.
+Full configuration build and flake checks passed, including the narrow
+fpdf2 fixture-test override. Test activation blocked on sudo authentication;
+waiting authentication cancelled before activation. Generation 232 remains
+active. No reboot performed. Readonly recovery snapshot verified:
+`/btrfs-top/nixos-root-pre-full-config-20261102`.
 
-Completion: recover sufficient space, full build, recovery checkpoint,
-test/switch activation, service and boot-entry verification, and commit.
-Generation 230 is active after SYS-052 using the previous package pins. No reboot performed.
-
-**Evidence:** [preparation record](SYSTEM_CHANGELOG.md#prepared-system-package-update--2026-10-30).
+**Done when:** Authenticated test/switch activation passes, affected services,
+desktop and boot entries verified, results committed and pushed.
+**Evidence:** [build and activation attempt](SYSTEM_CHANGELOG.md#prepared-full-configuration-activation--2026-11-02).
 
 <a id="sys-050"></a>
 
