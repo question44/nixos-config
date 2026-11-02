@@ -38,6 +38,10 @@ Unfinished work and verification checks belong in
   session after NanoKVM firmware recovery or credential rotation. The Nix
   cross-build must use static linkage; a Nix dynamic loader is unavailable on
   NanoKVM. See the dated NanoKVM Tapo entry in `SYSTEM_CHANGELOG.md`.
+  The dashboard helper exposes the reader through owner-authenticated `/outlet`
+  when `outletEnabled` is true in `/opt/erebor-wake/config.json`. Restore both
+  helper and private config after firmware recovery; frontend `outletUrl` alone
+  does not install or enable the NanoKVM endpoint.
 
 - NanoKVM `kvm-37ff` hosts the dashboard wake helper outside `/kvmapp`, in
   `/opt/erebor-wake`, started by `/etc/init.d/S99erebor-wake`. This remote

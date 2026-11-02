@@ -3,6 +3,7 @@
   "description": "Services available on the tailnet and local network.",
   "domainSuffix": ".jzon.pl",
   "wakeUrl": "https://kvm-37ff.tail517bdc.ts.net:8443/wake",
+  "outletUrl": "https://kvm-37ff.tail517bdc.ts.net:8443/outlet",
   "actions": [
     "wake",
     "display-on",

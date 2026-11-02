@@ -16,6 +16,18 @@ instead of copying their instructions. No review task authorizes a reboot,
 activation, storage change, secret archive or graphical-session interruption.
 Earlier approvals remain bounded by their original scope and safety preconditions.
 
+<a id="sys-059"></a>
+
+### SYS-059 — Show NanoKVM outlet readings in the hub
+
+**Status:** DONE · **Closed:** 2026-11-02
+
+Generation 237 persistently activated after test activation. Live browser shows
+watts/day/month energy through NanoKVM; 390 px layout has no overflow. A simulated
+endpoint failure clears readings and recovery fetch restores them. Owner-only
+access, CORS, no-store, units, cache and failure behavior verified; all checks pass.
+**Evidence:** [Hub integration](SYSTEM_CHANGELOG.md#completed-nanokvm-outlet-hub-integration--2026-11-02).
+
 <a id="sys-058"></a>
 
 ### SYS-058 — Password-protect browser desktop

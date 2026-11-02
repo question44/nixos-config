@@ -12,6 +12,26 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] NanoKVM outlet hub integration — 2026-11-02
+
+SYS-059. NanoKVM helper now serves owner-authenticated `/outlet` telemetry,
+enabled in its private config. Live HTTPS/origin/no-store checks pass; credentials
+stay on NanoKVM. Prior helper/config backed up as
+`/opt/erebor-wake/*.before-outlet-20261102`. Read-only panel built with ten-second
+visible-page refresh, unavailable states, and watts/day/month kWh conversion.
+22 helper tests, submodule/root flake checks and NixOS dry-build pass.
+
+Test activation and browser verification passed, then persistently switched to
+generation 237. Caddy active, no failed system units. The actual hub displayed
+fresh NanoKVM watts/day/month readings, refreshed repeatedly, and fit a 390 px
+viewport without overflow. A browser-only simulated HTTP failure removed old
+readings and showed unavailable; restoring transport restored live readings.
+Unauthenticated live NanoKVM requests return 403. Helper changes committed in
+dashboard submodule `0b14cf4`. Root/ESP mounts checked before activation; no reboot
+or physical outlet/ATX operation performed. Readings while physically asleep were
+not exercised; the browser endpoint is independent of the desktop host.
+Recovery: generation 236; restore NanoKVM helper/config backups and restart it.
+
 ## [COMPLETED] Query the Tapo outlet directly from NanoKVM — 2026-11-02
 
 Installed a standalone read-only `tapo-query` on NanoKVM `kvm-37ff`
