@@ -16,6 +16,17 @@ instead of copying their instructions. No review task authorizes a reboot,
 activation, storage change, secret archive or graphical-session interruption.
 Earlier approvals remain bounded by their original scope and safety preconditions.
 
+<a id="sys-055"></a>
+
+### SYS-055 — Browser control of the current Noctalia desktop
+
+**Status:** DONE · **Closed:** 2026-11-02
+
+Generation 233 activated; live browser framebuffer and remote keyboard input
+verified. Tailnet HTTP 200, LAN/foreign Origin 403, localhost-only backend,
+and no failed system/user units. No audio streaming; graphical session required.
+**Evidence:** [browser desktop](SYSTEM_CHANGELOG.md#completed-browser-control-of-the-current-noctalia-desktop--2026-11-02).
+
 <a id="sys-054"></a>
 
 ### SYS-054 — Install Proton VPN desktop
@@ -58,9 +69,9 @@ See the [implementation record](SYSTEM_CHANGELOG.md#completed-qbittorrent-extern
 **Status:** OPEN · **Review:** 2026-11-02
 
 Full configuration build and flake checks passed, including the narrow
-fpdf2 fixture-test override. Test activation blocked on sudo authentication;
-waiting authentication cancelled before activation. Generation 232 remains
-active. No reboot performed. Readonly recovery snapshot verified:
+fpdf2 fixture-test override. Subsequently activated as generation 233 during
+SYS-055; system/user failed-unit checks passed. Broader service/boot-entry
+acceptance and push remain. No reboot performed. Recovery snapshot:
 `/btrfs-top/nixos-root-pre-full-config-20261102`.
 
 **Done when:** Authenticated test/switch activation passes, affected services,

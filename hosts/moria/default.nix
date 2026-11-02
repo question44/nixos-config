@@ -92,6 +92,7 @@ in
     ../../modules/spotify.nix
     ../../modules/sunshine.nix
     ../../modules/remote-desktop.nix
+    ../../modules/browser-desktop.nix
     ../../modules/steam-theme.nix
     ./hardware-configuration.nix
     ./services/jellyfin.nix
@@ -583,6 +584,7 @@ in
       moria.jzon.pl, erebor.jzon.pl {
         import ovh_tls
         import dashboard_controls
+        import browser_desktop
         encode gzip
         root * ${dashboard}
         file_server
