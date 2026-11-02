@@ -12,6 +12,22 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Five-second outlet refresh — 2026-11-02
+
+Outlet telemetry now has its own five-second frontend timer; other hub checks
+retain their existing cadence. NanoKVM cache expires four seconds after query
+start, so it does not stretch five-second polling into repeated cached readings.
+Helper redeployed and restarted; source submodule commit `54d8bf2`.
+
+Package/root flake checks, all 22 helper tests, NixOS dry-build and build passed.
+Test activation verified in the actual hub browser: five requests with four
+consecutive intervals of exactly 5 s and valid live readings. Persistently
+activated generation 238; no failed system units. Prechecks: generation 237,
+root/ESP mounts and failed units checked. No reboot or outlet switching.
+Builds used `path:/etc/nixos` to include the local submodule revision without
+requiring it to be published remotely. Recovery: generation 237 and NanoKVM
+`/opt/erebor-wake/wake.py.before-five-second`.
+
 ## [COMPLETED] NanoKVM outlet hub integration — 2026-11-02
 
 SYS-059. NanoKVM helper now serves owner-authenticated `/outlet` telemetry,

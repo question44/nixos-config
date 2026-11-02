@@ -31,6 +31,11 @@ Unfinished work and verification checks belong in
 
 ## Reusable operational pitfalls
 
+- With unpublished local dashboard submodule commits, build the full local tree
+  using `--flake path:/etc/nixos#moria`; the Git flake URL with `submodules=1`
+  can try to fetch the submodule commit from its remote and fail before it is
+  published. This does not change the pinned dependency versions.
+
 - NanoKVM's manual Tapo reader is `/opt/tapo-query/tapo-query`, linked into
   `/usr/bin`. Its root-only runtime credentials are under `/etc/tapo-query`,
   separate from the desktop Oo7 keyring. Rebuild/redeploy from
