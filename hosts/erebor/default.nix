@@ -177,12 +177,12 @@ in
       "syncthing" "syncthing.localhost"
     ];
   };
-  networking.firewall.allowedTCPPorts = [ 22 ];
-  networking.firewall.interfaces.br0.allowedTCPPorts = [ 80 8095 8096 8384 8082 22000 ];
+  # SSH is reachable from the LAN and the tailnet only.
+  networking.firewall.interfaces.br0.allowedTCPPorts = [ 22 80 8095 8096 8384 8082 22000 ];
   networking.firewall.interfaces.br0.allowedUDPPorts = [ 22000 ];
   networking.firewall.interfaces.br0.allowedTCPPortRanges = [ { from = 1714; to = 1764; } ];
   networking.firewall.interfaces.br0.allowedUDPPortRanges = [ { from = 1714; to = 1764; } ];
-  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 80 443 22000 ];
+  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 22 80 443 22000 ];
   networking.firewall.interfaces.tailscale0.allowedUDPPorts = [ 22000 ];
   services.tailscale.enable = true;
   services.cockpit = {
@@ -392,7 +392,24 @@ in
   };
 
   services.dbus.enable = true;
-  services.openssh.enable = true;
+  services.openssh = {
+    enable = true;
+    # Ports are opened per interface above, not globally.
+    openFirewall = false;
+    # Keys alone, or a TOTP code plus the Unix password through PAM.
+    settings = {
+      PasswordAuthentication = false;
+      KbdInteractiveAuthentication = true;
+      AuthenticationMethods = "publickey keyboard-interactive";
+    };
+  };
+  # Each user provisions ~/.google_authenticator by running google-authenticator.
+  security.pam.services.sshd = {
+    googleAuthenticator.enable = true;
+    # The openssh module ties unixAuth to PasswordAuthentication; without it
+    # the stack is pam_deny alone and the TOTP rule is omitted.
+    unixAuth = lib.mkForce true;
+  };
   services.udisks2.enable = true;
   services.dbus.packages = [ pkgs.oo7-server ];
   services.gnome.gnome-keyring.enable = false;
@@ -679,6 +696,7 @@ in
   '';
   environment.systemPackages = with pkgs; [
     lsof
+    google-authenticator
     proton-vpn
     oo7
     nodejs

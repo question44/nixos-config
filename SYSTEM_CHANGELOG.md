@@ -12,6 +12,27 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] SSH TOTP second factor and LAN/tailnet-only port 22 — 2026-11-03
+
+At the user's request: SSH now accepts a key alone, or keyboard-interactive PAM
+requiring a Unix password plus a Google Authenticator TOTP code
+(`AuthenticationMethods publickey keyboard-interactive`, plain
+`PasswordAuthentication` off). The openssh module ties `unixAuth` to
+`PasswordAuthentication`, which left sshd's auth stack as `pam_deny` only and
+omitted the TOTP rule; `unixAuth` is forced on so the built stack is
+unix-early → google_authenticator (required, no nullok) → unix → deny.
+`services.openssh.openFirewall` defaulted to a global port 22 accept;
+disabled, and 22 is now allowed only on `br0` and `tailscale0`.
+`google-authenticator` installed system-wide.
+
+Flake check and build passed; pkexec test then switch succeeded, generation
+246. Verified: generated firewall accepts dport 22 only on br0/tailscale0;
+live sshd_config has the methods above; sshd offers
+`publickey,keyboard-interactive`; sshd and firewall active, no failed units.
+Limits: `~/.google_authenticator` not yet provisioned, so password+TOTP login
+is refused until janzon runs `google-authenticator`; an end-to-end password+code
+login and a remote key login were not tested.
+
 ## [COMPLETED] Remove Mango, rename flake target to erebor, review fixes — 2026-11-03
 
 At the user's request: removed MangoWM (flake input, NixOS/HM modules, patched
