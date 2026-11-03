@@ -12,6 +12,21 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Noctalia Chromium-based theme for Helium — 2026-11-03
+
+Enabled community template `chromium-based`, replacing the old Brave selections
+as recommended upstream. Declared the mutable Chromium policy file through
+systemd tmpfiles (`f`, owned by janzon) so rebuilds preserve the rendered color.
+Noctalia config validation passed with nine existing warnings; flake checks and
+system build passed. Pkexec test and switch succeeded, generation 244.
+Reloaded Noctalia and applied templates: detected Helium's policy directory,
+rendered `BrowserThemeColor` as `#181216`, and refresh hook returned success.
+Installed Helium binary contains `/etc/chromium/policies` and BrowserThemeColor.
+Policy survived switch; Home Manager active, no failed system units. Actual
+browser toolbar appearance is not visually verified; `helium://policy` supports
+manual policy reload if needed. Existing GTK4 and Neovim template warnings are
+unrelated. No reboot.
+
 ## [COMPLETED] Uninstall ungoogled Chromium — 2026-11-03
 
 Removed the system package and its Secret Service wrapper at the user's explicit

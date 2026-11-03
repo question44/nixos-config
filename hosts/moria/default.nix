@@ -465,6 +465,16 @@ in
     recommendedServices.enable = true;
   };
 
+  # Noctalia updates this policy with the current palette for Helium.
+  # Preserve the rendered color across rebuilds; this must stay a writable file.
+  systemd.tmpfiles.settings."10-noctalia-chromium".
+    "/etc/chromium/policies/managed/noctalia-color.json".f = {
+      user = "janzon";
+      group = "users";
+      mode = "0644";
+      argument = "{}";
+    };
+
   programs.helium = {
     enable = true;
     flags = [ "--password-store=gnome-libsecret" ];
