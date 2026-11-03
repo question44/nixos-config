@@ -12,6 +12,18 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Claude Secret Service backend — 2026-11-03
+
+Added `--password-store=gnome-libsecret` declaratively to Claude's package
+wrapper, covering CLI and desktop actions. Flake checks and system build passed;
+pkexec test and switch activation passed, persisted as generation 241.
+Home Manager active, no failed system units. Restarted Claude: live process
+arguments include the flag and Umbriel confirms a visible native Wayland window.
+Oo7 owns org.freedesktop.secrets (verified daemon process); actual credential
+round-trip and sign-in remain untested. Old Claude needed systemd's 90-second
+stop timeout before the queued restart completed. Existing mimeapps.list
+read-only warning persists without preventing launch. No reboot.
+
 ## [COMPLETED] Claude Desktop installation — 2026-11-03
 
 SYS-060. Added the requested tomsch/claude-desktop-nix flake input and

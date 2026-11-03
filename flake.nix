@@ -140,7 +140,12 @@
               };
               home.packages = with pkgs; [
                 zenBrowser
-                claude-desktop-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
+                (claude-desktop-nix.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
+                  postFixup = (old.postFixup or "") + ''
+                    wrapProgram "$out/bin/claude-desktop" \
+                      --add-flags "--password-store=gnome-libsecret"
+                  '';
+                }))
                 zed-editor
                 neovim
                 fd
