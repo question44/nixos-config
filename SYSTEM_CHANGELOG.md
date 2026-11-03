@@ -12,6 +12,17 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Uninstall ungoogled Chromium — 2026-11-03
+
+Removed the system package and its Secret Service wrapper at the user's explicit
+request, superseding the Chromium preservation preference in AGENTS.md.
+`nix flake check path:/etc/nixos` and `nixos-rebuild build --flake
+path:/etc/nixos#moria --no-link` passed. Pkexec test and switch activation
+succeeded; persisted as generation 243. Chromium commands and desktop launcher
+are absent from the active system; Home Manager active, no failed system units.
+Helium remains the default browser. Browser profiles and saved data preserved.
+No reboot.
+
 ## [COMPLETED] AWS CLI v2 and AWS SAM CLI — 2026-11-03
 
 SYS-061. Added nixpkgs `awscli2` and `aws-sam-cli` to system packages beside

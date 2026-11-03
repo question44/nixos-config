@@ -66,19 +66,6 @@ let
     buildInputs = [ pkgs.systemdLibs ];
   });
 
-  chromiumWithSecretService = pkgs.symlinkJoin {
-    name = "ungoogled-chromium-with-secret-service";
-    paths = [ pkgs.ungoogled-chromium ];
-    nativeBuildInputs = [ pkgs.makeWrapper ];
-    postBuild = ''
-      rm "$out/bin/chromium" "$out/bin/chromium-browser"
-      makeWrapper ${pkgs.ungoogled-chromium}/bin/chromium "$out/bin/chromium" \
-        --add-flags "--password-store=gnome-libsecret"
-      makeWrapper ${pkgs.ungoogled-chromium}/bin/chromium-browser "$out/bin/chromium-browser" \
-        --add-flags "--password-store=gnome-libsecret"
-    '';
-  };
-
   t3codeStart = pkgs.writeShellScript "t3code-start" ''
     export PATH="/home/janzon/.local/bin:$PATH"
     exec /home/janzon/.local/bin/t3 serve --mode web --host 127.0.0.1 --port 3773 --base-dir /home/janzon/.t3/server
@@ -703,7 +690,6 @@ in
     (discord.override { withVencord = true; })
     vicinae.packages.${pkgs.stdenv.hostPlatform.system}.default
     ghostty
-    chromiumWithSecretService
     xwayland-satellite
     wl-clipboard
     wlr-randr
