@@ -1,6 +1,6 @@
 {
   "login": "jmmzon@gmail.com",
-  "origins": ["https://erebor.jzon.pl", "https://moria.jzon.pl"],
+  "origins": ["https://erebor.jzon.pl"],
   "osPeers": [
     {
       "state": "nixos",

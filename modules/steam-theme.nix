@@ -26,9 +26,9 @@ in
       config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.local/share/Steam/steamui/skins/Material-Theme";
     home.activation.steamNoctaliaTheme = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
       settings="$HOME/.config/millennium/config.json"
-      $DRY_RUN_CMD ${pkgs.coreutils}/bin/mkdir -p "$(dirname "$settings")"
+      run ${pkgs.coreutils}/bin/mkdir -p "$(dirname "$settings")"
       if [ ! -e "$settings" ]; then
-        $DRY_RUN_CMD ${pkgs.coreutils}/bin/install -m 600 ${pkgs.writeText "millennium-noctalia-config.json" (builtins.toJSON {
+        run ${pkgs.coreutils}/bin/install -m 600 ${pkgs.writeText "millennium-noctalia-config.json" (builtins.toJSON {
           themes = {
             activeTheme = "Material-Theme";
             conditions.Material-Theme.Color = "Matugen";

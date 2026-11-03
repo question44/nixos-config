@@ -63,7 +63,7 @@ in
     xdg.configFile."spicetify/Themes/Comfy/theme.js".source = "${comfy}/Comfy/theme.script.js";
     xdg.configFile."spicetify/Themes/Comfy/assets".source = "${comfy}/Comfy/assets";
     home.activation.spotifyNoctaliaTheme = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
-      $DRY_RUN_CMD ${prepare}/bin/spotify-noctalia-prepare
+      run ${prepare}/bin/spotify-noctalia-prepare
     '';
   };
 }

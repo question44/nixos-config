@@ -15,7 +15,7 @@
     ];
     environment = {
       TZ = "Europe/Warsaw";
-      JELLYFIN_PublishedServerUrl = "http://moria:8096";
+      JELLYFIN_PublishedServerUrl = "http://erebor:8096";
     };
     extraOptions = [ "--user=1000:1000" ];
   };

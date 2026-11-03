@@ -8,7 +8,7 @@ let
   sunshineConfig = (pkgs.formats.keyValue { }).generate "sunshine.conf" config.services.sunshine.settings;
   output = pkgs.writeShellApplication {
     name = "sunshine-output";
-    runtimeInputs = [ config.programs.umbriel.package config.programs.mango.package pkgs.wlr-randr pkgs.jq ];
+    runtimeInputs = [ config.programs.umbriel.package pkgs.jq ];
     text = builtins.readFile ../home/sunshine/output.sh;
   };
 in
@@ -31,7 +31,6 @@ in
       csrf_allowed_origins = lib.concatStringsSep "," [
         "https://192.168.1.106:47990"
         "https://sunshine.erebor.jzon.pl"
-        "https://sunshine.moria.jzon.pl"
       ];
       global_prep_cmd = builtins.toJSON [ {
         do = "${output}/bin/sunshine-output create";
@@ -71,16 +70,7 @@ in
   systemd.user.services.sunshine.serviceConfig = {
     ExecCondition = pkgs.writeShellScript "sunshine-session-ready" ''
       test -S "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" || exit 1
-      if [ "''${XDG_CURRENT_DESKTOP:-}" = mango ]; then
-        ${config.programs.mango.package}/bin/mmsg get version >/dev/null
-      else
-        test -S "''${UMBRIEL_SOCKET:-$XDG_RUNTIME_DIR/umbriel-$WAYLAND_DISPLAY.sock}"
-      fi
-    '';
-    ExecStartPre = pkgs.writeShellScript "sunshine-prepare-output" ''
-      if [ "''${XDG_CURRENT_DESKTOP:-}" = mango ]; then
-        exec ${output}/bin/sunshine-output create
-      fi
+      test -S "''${UMBRIEL_SOCKET:-$XDG_RUNTIME_DIR/umbriel-$WAYLAND_DISPLAY.sock}"
     '';
     ExecStart = lib.mkForce "${config.security.wrapperDir}/sunshine ${sunshineConfig}";
     UMask = "0077";

@@ -66,23 +66,17 @@ class Desktop:
                 if len(sockets) != 1:
                     raise RuntimeError('Cannot identify the active Niri socket')
                 os.environ['NIRI_SOCKET'] = sockets[0]
-        elif 'mango' in names:
-            self.kind = 'mango'
         elif 'umbriel' in names:
             self.kind = 'umbriel'
         else:
-            raise RuntimeError('Right Ctrl app switching requires Niri, Umbriel, or Mango')
+            raise RuntimeError('Right Ctrl app switching requires Niri or Umbriel')
 
     def windows(self):
-        if self.kind == 'mango':
-            return [dict(w, app_id=w.get('appid', '')) for w in json.loads(command(['mmsg', 'get', 'all-clients']))['clients']]
         args = ['niri', 'msg', '--json', 'windows'] if self.kind == 'niri' else ['umbriel', 'windows', '--json']
         return json.loads(command(args))
 
     def focus(self, window):
-        if self.kind == 'mango':
-            command(['mmsg', 'dispatch', 'focusid', 'client,' + str(window['id'])])
-        elif self.kind == 'niri':
+        if self.kind == 'niri':
             command(['niri', 'msg', 'action', 'focus-window', '--id', str(window['id'])])
             command(['niri', 'msg', 'action', 'center-column'])
         else:

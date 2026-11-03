@@ -8,7 +8,7 @@ let
   session = pkgs.writeShellScript "remote-desktop-session" ''
     # Keep the remote X11 session separate from the local Wayland session bus.
     unset DBUS_SESSION_BUS_ADDRESS WAYLAND_DISPLAY UMBRIEL_SOCKET
-    unset NIRI_SOCKET MANGO_INSTANCE_SIGNATURE SESSION_MANAGER NIXOS_OZONE_WL
+    unset NIRI_SOCKET SESSION_MANAGER NIXOS_OZONE_WL
     export XDG_SESSION_TYPE=x11
     export XDG_CURRENT_DESKTOP=XFCE
     export XDG_SESSION_DESKTOP=xfce

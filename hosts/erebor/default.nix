@@ -129,6 +129,8 @@ in
     font = "${pkgs.dejavu_fonts.minimal}/share/fonts/truetype/DejaVuSans.ttf";
     fontSize = 20;
     useOSProber = false;
+    # Bound the NixOS kernels kept on the shared 6 GB ESP.
+    configurationLimit = 15;
     extraEntries = ''
       menuentry "Windows Boot Manager" {
         insmod part_gpt
@@ -157,12 +159,18 @@ in
   boot.kernelParams = [ "quiet" ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.auto-optimise-store = true;
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 30d";
+  };
 
   networking.hostName = "erebor";
   networking.networkmanager.enable = true;
   networking.hosts = {
     "127.0.0.1" = [
-      "moria" "erebor"
+      "erebor"
       "torrent" "torrent.localhost"
       "jellyfin" "jellyfin.localhost"
       "nextcloud" "nextcloud.localhost"
@@ -170,7 +178,7 @@ in
     ];
   };
   networking.firewall.allowedTCPPorts = [ 22 ];
-  networking.firewall.interfaces.br0.allowedTCPPorts = [ 80 8080 8095 8096 8384 8082 22000 ];
+  networking.firewall.interfaces.br0.allowedTCPPorts = [ 80 8095 8096 8384 8082 22000 ];
   networking.firewall.interfaces.br0.allowedUDPPorts = [ 22000 ];
   networking.firewall.interfaces.br0.allowedTCPPortRanges = [ { from = 1714; to = 1764; } ];
   networking.firewall.interfaces.br0.allowedUDPPortRanges = [ { from = 1714; to = 1764; } ];
@@ -237,7 +245,6 @@ in
   programs.steam.enable = true;
   programs.nix-ld.enable = true;
 
-  security.sudo.wheelNeedsPassword = true;
   security.polkit.enable = true;
   security.polkit.extraConfig = ''
     polkit.addRule(function(action, subject) {
@@ -512,7 +519,7 @@ in
       }
 
       :80 {
-        @domain host moria.jzon.pl erebor.jzon.pl *.moria.jzon.pl *.erebor.jzon.pl
+        @domain host erebor.jzon.pl *.erebor.jzon.pl
         redir @domain https://{host}{uri} permanent
 
         @jellyfin host jellyfin.localhost jellyfin
@@ -541,9 +548,9 @@ in
         @torrent host torrent.localhost torrent
         handle @torrent {
           reverse_proxy 127.0.0.1:18081 {
-            header_up Host torrent.moria.jzon.pl
-            header_up Origin https://torrent.moria.jzon.pl
-            header_up Referer https://torrent.moria.jzon.pl/
+            header_up Host torrent.erebor.jzon.pl
+            header_up Origin https://torrent.erebor.jzon.pl
+            header_up Referer https://torrent.erebor.jzon.pl/
             header_up -Authorization
           }
         }
@@ -553,10 +560,6 @@ in
           root * ${dashboard}
           file_server
         }
-      }
-
-      :8080 {
-        reverse_proxy 127.0.0.1:3773
       }
 
       :8096 {
@@ -578,7 +581,7 @@ in
         reverse_proxy 127.0.0.1:18081
       }
 
-      moria.jzon.pl, erebor.jzon.pl {
+      erebor.jzon.pl {
         import ovh_tls
         import dashboard_controls
         @legacy_desktop path /desktop /desktop/*
@@ -588,22 +591,22 @@ in
         file_server
       }
 
-      *.moria.jzon.pl, *.erebor.jzon.pl {
+      *.erebor.jzon.pl {
         import ovh_tls
         import browser_desktop
         encode gzip
 
-        @code host code.moria.jzon.pl code.erebor.jzon.pl
+        @code host code.erebor.jzon.pl
         handle @code {
           reverse_proxy 127.0.0.1:3773
         }
 
-        @ai host ai.moria.jzon.pl ai.erebor.jzon.pl
+        @ai host ai.erebor.jzon.pl
         handle @ai {
           reverse_proxy 127.0.0.1:3000
         }
 
-        @cloud host cloud.moria.jzon.pl cloud.erebor.jzon.pl
+        @cloud host cloud.erebor.jzon.pl
         handle @cloud {
           @carddav path /.well-known/carddav
           redir @carddav /remote.php/dav 301
@@ -612,12 +615,12 @@ in
           reverse_proxy 127.0.0.1:18089
         }
 
-        @media host media.moria.jzon.pl media.erebor.jzon.pl
+        @media host media.erebor.jzon.pl
         handle @media {
           reverse_proxy 127.0.0.1:18096
         }
 
-        @sync host sync.moria.jzon.pl sync.erebor.jzon.pl
+        @sync host sync.erebor.jzon.pl
         handle @sync {
           reverse_proxy 127.0.0.1:18384 {
             header_up Host localhost:18384
@@ -625,22 +628,22 @@ in
           }
         }
 
-        @torrent host torrent.moria.jzon.pl torrent.erebor.jzon.pl
+        @torrent host torrent.erebor.jzon.pl
         handle @torrent {
           reverse_proxy 127.0.0.1:18081 {
-            header_up Host torrent.moria.jzon.pl
-            header_up Origin https://torrent.moria.jzon.pl
-            header_up Referer https://torrent.moria.jzon.pl/
+            header_up Host torrent.erebor.jzon.pl
+            header_up Origin https://torrent.erebor.jzon.pl
+            header_up Referer https://torrent.erebor.jzon.pl/
             header_up -Authorization
           }
         }
 
-        @hyperhdr host hyperhdr.moria.jzon.pl hyperhdr.erebor.jzon.pl
+        @hyperhdr host hyperhdr.erebor.jzon.pl
         handle @hyperhdr {
           reverse_proxy 127.0.0.1:8090
         }
 
-        @sunshine host sunshine.moria.jzon.pl sunshine.erebor.jzon.pl
+        @sunshine host sunshine.erebor.jzon.pl
         handle @sunshine {
           reverse_proxy https://127.0.0.1:47990 {
             # Sunshine serves a self-signed certificate on this loopback hop.

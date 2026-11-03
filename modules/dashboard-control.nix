@@ -35,12 +35,11 @@
     control = {
       enable = true;
       user = "janzon";
-      allowedHosts = [ "moria" "erebor" "localhost" "127.0.0.1" "moria.local" "erebor.local"
-        "moria.jzon.pl" "erebor.jzon.pl" ];
+      allowedHosts = [ "erebor" "localhost" "127.0.0.1" "erebor.local" "erebor.jzon.pl" ];
       enabledActions = [ "display-on" "display-off" "ambilight-on" "ambilight-off"
         "sleep" "power-off" "reboot-windows" ];
       wledUrl = "http://192.168.1.118";
-      extraPackages = [ pkgs.niri config.programs.umbriel.package config.programs.mango.package ];
+      extraPackages = [ pkgs.niri config.programs.umbriel.package ];
     };
   };
 }

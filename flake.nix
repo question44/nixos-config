@@ -1,5 +1,5 @@
 {
-  description = "Minimal NixOS installation for moria";
+  description = "Minimal NixOS installation for erebor";
 
   inputs = {
     self.submodules = true;
@@ -16,10 +16,6 @@
     noctalia.url = "github:noctalia-dev/noctalia-shell";
     noctalia-greeter = {
       url = "github:noctalia-dev/noctalia-greeter";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    mango = {
-      url = "github:mangowm/mango/0.18.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     umbriel.url = "github:noctalia-dev/umbriel";
@@ -46,28 +42,23 @@
     };
   };
 
-  outputs = { self, nixpkgs, claude-desktop-nix, moonshine, dashboard, noctalia, noctalia-greeter, umbriel, mango, millennium, helium, zen-browser, darkly, vicinae, home-manager, ... }:
+  outputs = { self, nixpkgs, claude-desktop-nix, moonshine, dashboard, noctalia, noctalia-greeter, umbriel, millennium, helium, zen-browser, darkly, vicinae, home-manager, ... }:
     {
-      nixosConfigurations.moria = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.erebor = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = { inherit darkly vicinae; };
         modules = [
           moonshine.nixosModules.default
           ./modules/moonshine.nix
-          ./hosts/moria/default.nix
+          ./hosts/erebor/default.nix
           noctalia-greeter.nixosModules.default
           noctalia.nixosModules.default
           umbriel.nixosModules.default
-          mango.nixosModules.mango
-          ./modules/mango.nix
           dashboard.nixosModules.default
           ./modules/dashboard-control.nix
           helium.nixosModules.default
           home-manager.nixosModules.home-manager
           {
-            programs.mango.package = import ./packages/mango.nix {
-              mango = mango.packages.x86_64-linux.mango;
-            };
             nixpkgs.overlays = [ millennium.overlays.default ];
             # Home Manager uses the modern profile CLI during system activation.
             systemd.services.home-manager-janzon.environment.NIX_CONFIG =
@@ -98,25 +89,7 @@
                 '';
               in
               {
-              imports = [ umbriel.homeModules.default mango.hmModules.mango ];
-              wayland.windowManager.mango = {
-                enable = true;
-                package = import ./packages/mango.nix {
-                  mango = mango.packages.${pkgs.stdenv.hostPlatform.system}.mango;
-                };
-                extraConfig = builtins.readFile ./home/mango/config.conf;
-                systemd.variables = [ "DISPLAY" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP"
-                  "XDG_SESSION_TYPE" "NIXOS_OZONE_WL" "XCURSOR_THEME" "XCURSOR_SIZE"
-                  "MANGO_INSTANCE_SIGNATURE" "QT_QPA_PLATFORMTHEME" ];
-                systemd.extraCommands = [
-                  "systemctl --user start mango-session.target"
-                ];
-                autostart_sh = "systemctl --user start noctalia.service";
-              };
-              home.file.".local/bin/mango-action" = {
-                source = ./home/mango/action;
-                executable = true;
-              };
+              imports = [ umbriel.homeModules.default ];
               home.stateVersion = "26.05";
               home.pointerCursor = {
                 enable = true;
@@ -160,9 +133,7 @@
                 curl
                 lazygit
                 gcc
-                jq
                 tree-sitter
-                nodejs
               ];
               home.sessionVariables = {
                 EDITOR = "${sessionEditor}/bin/session-editor";
@@ -251,13 +222,13 @@
                 };
               };
               home.activation.dolphinColorScheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-                $DRY_RUN_CMD ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 \
+                run ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 \
                   --file "$HOME/.config/dolphinrc" \
                   --group UiSettings \
                   --key ColorScheme "*"
               '';
               home.activation.kdeIconTheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-                $DRY_RUN_CMD ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 \
+                run ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 \
                   --file "$HOME/.config/kdeglobals" \
                   --group Icons \
                   --key Theme "candy-icons"
@@ -266,8 +237,8 @@
                 base="$HOME/.config/noctalia/starship-base.toml"
                 palette="$HOME/.cache/noctalia/starship-palette.toml"
                 target="$HOME/.config/noctalia/starship.toml"
-                $DRY_RUN_CMD ${pkgs.coreutils}/bin/mkdir -p "$(dirname "$target")"
-                if [ -f "$palette" ]; then
+                run ${pkgs.coreutils}/bin/mkdir -p "$(dirname "$target")"
+                if [ -f "$palette" ] && [ ! -v DRY_RUN ]; then
                   temporary="$(${pkgs.coreutils}/bin/mktemp "$(dirname "$target")/.starship.toml.XXXXXX")"
                   {
                     ${pkgs.gawk}/bin/awk '
@@ -280,12 +251,12 @@
                     printf '# <<< NOCTALIA STARSHIP PALETTE <<<\n'
                   } >"$temporary"
                   if ! ${pkgs.diffutils}/bin/cmp -s "$temporary" "$target" 2>/dev/null; then
-                    $DRY_RUN_CMD ${pkgs.coreutils}/bin/mv "$temporary" "$target"
+                    ${pkgs.coreutils}/bin/mv "$temporary" "$target"
                   else
                     ${pkgs.coreutils}/bin/rm "$temporary"
                   fi
-                elif [ ! -e "$target" ]; then
-                  $DRY_RUN_CMD ${pkgs.coreutils}/bin/cp "$base" "$target"
+                elif [ ! -f "$palette" ] && [ ! -e "$target" ]; then
+                  run ${pkgs.coreutils}/bin/cp "$base" "$target"
                 fi
               '';
               xdg.userDirs = {
@@ -351,10 +322,10 @@
               xdg.configFile."noctalia/starship-base.toml".source = ./home/starship.toml;
               # Keep Vencord settings writable and let Noctalia generate its CSS.
               home.activation.discordNoctaliaTheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-                $DRY_RUN_CMD ${pkgs.coreutils}/bin/mkdir -p "$HOME/.config/Vencord/themes" "$HOME/.config/Vencord/settings"
+                run ${pkgs.coreutils}/bin/mkdir -p "$HOME/.config/Vencord/themes" "$HOME/.config/Vencord/settings"
                 settings="$HOME/.config/Vencord/settings/settings.json"
                 if [ ! -e "$settings" ]; then
-                  $DRY_RUN_CMD ${pkgs.coreutils}/bin/install -m 600 ${pkgs.writeText "vencord-noctalia-settings.json" (builtins.toJSON {
+                  run ${pkgs.coreutils}/bin/install -m 600 ${pkgs.writeText "vencord-noctalia-settings.json" (builtins.toJSON {
                     enabledThemes = [ "noctalia.theme.css" ];
                   })} "$settings"
                 fi
@@ -466,9 +437,7 @@
                     *) exit 2 ;;
                   esac
 
-                  if [ "''${XDG_SESSION_DESKTOP:-}" = mango ] || [ "''${XDG_CURRENT_DESKTOP:-}" = mango ]; then
-                    exec mmsg dispatch "focusdir,$direction"
-                  elif umbriel windows --json >/dev/null 2>&1; then
+                  if umbriel windows --json >/dev/null 2>&1; then
                     exec umbriel msg "window-focus-$direction"
                   else
                     exec niri msg action "focus-column-$direction"

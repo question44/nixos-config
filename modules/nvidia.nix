@@ -7,7 +7,7 @@ lib.mkIf (!config.virtualisation.windowsGpuPassthrough.enable) {
   services.xserver.videoDrivers = [ "nvidia" ];
   hardware.nvidia = {
     modesetting.enable = true;
-    open = false;
+    open = true;
     nvidiaSettings = true;
     package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
       version = "615.78.08";
@@ -17,7 +17,7 @@ lib.mkIf (!config.virtualisation.windowsGpuPassthrough.enable) {
       settingsSha256 = "sha256-inDRpG02sdDgHmlqgu/DsgK8OFdOt1fZIYyXdhlGC/c=";
       persistencedSha256 = "sha256-RzeR6Ldct6MUxjnXRyThdh5Y3jjMehTVg85MtwuWNX4=";
     };
-    powerManagement.enable = false;
+    powerManagement.enable = true;
     powerManagement.finegrained = false;
   };
 

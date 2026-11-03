@@ -1,4 +1,4 @@
-# NixOS system change log for `erebor` (flake target `moria`)
+# NixOS system change log for `erebor` (flake target `erebor`)
 
 This file records dated changes and their evidence. Current unfinished work lives
 in [SYSTEM_TODO.md](SYSTEM_TODO.md); recovery knowledge lives in
@@ -11,6 +11,40 @@ acting. A historical checkpoint is not an instruction or fresh authorization.
 recorded; explicit limitations still apply. `[RECORDED]` preserves an older attempt
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
+
+## [COMPLETED] Remove Mango, rename flake target to erebor, review fixes — 2026-11-03
+
+At the user's request: removed MangoWM (flake input, NixOS/HM modules, patched
+package, session entry, `home/mango/`, Mango branches in Sunshine, rcmd,
+noctalia-bar-focus); removed every `moria` name from configuration and current
+docs — flake target is now `#erebor`, `hosts/moria` → `hosts/erebor`, and
+`*.moria.jzon.pl`/`moria` host aliases are no longer served (dated history and the
+dashboard submodule's test fixtures unchanged). Review fixes: NVIDIA open kernel
+modules and power management (VRAM preserved across suspend); T3 Code LAN
+listener `:8080` and its br0 port removed (Tailscale `code.*` only); weekly
+`nix.gc` (30 days), `auto-optimise-store`, GRUB `configurationLimit = 15`;
+dropped duplicate `nodejs`/`jq` HM packages and default `wheelNeedsPassword`;
+HM activation uses `run` and Starship merge skips dry runs; `.gitignore` covers
+`result` and `__pycache__`. `programs.nix-ld` kept: the `t3` CLI needs it.
+
+Prechecks: live generation 244, booted 244, kernel 6.18.59, no failed units, no
+Mango session running (current session Umbriel). `nix flake check` and
+`nixos-rebuild build/dry-build --flake path:/etc/nixos#erebor` passed.
+Recovery: GRUB keeps prior generations (now ≤15 entries) and the systemd-boot
+recovery chainload; generation 244 boots the proprietary NVIDIA module.
+Outcome: pkexec test reported exit 4 only from Jellyfin's transient podman
+healthcheck while the container restarted (new published URL); Jellyfin then
+returned 200 and the unit cleared. Pkexec switch succeeded as generation 245.
+Verified: no failed system/user units; Caddy, Jellyfin, Nextcloud, Syncthing,
+qBittorrent, Ollama, Open WebUI and t3code active; `erebor.jzon.pl` 200,
+`moria.jzon.pl` and `:8080` no longer served; GRUB lists 15 NixOS
+configurations plus Windows and systemd-boot recovery; firmware BootOrder
+unchanged; `/boot` 75% → 24%; `nix-gc.timer` scheduled; closure contains
+`nvidia-open-615.78.08`. Also removed the imperative `mango` user-profile
+install (`nix profile`); `~/.config/mango/monitors.conf` left in place.
+Limits: no reboot performed. Open NVIDIA modules, suspend/resume and the
+`erebor` login banner are untested until the next boot. Old `moria`
+trusted domain may remain in Nextcloud's live `config.php`.
 
 ## [COMPLETED] Noctalia Chromium-based theme for Helium — 2026-11-03
 

@@ -2,33 +2,6 @@
 set -euo pipefail
 
 stream_output=sunshine
-if [[ ${XDG_CURRENT_DESKTOP:-} == mango ]]; then
-  case "${1:-}" in
-    create)
-      width=${SUNSHINE_CLIENT_WIDTH:-1920}
-      height=${SUNSHINE_CLIENT_HEIGHT:-1080}
-      fps=${SUNSHINE_CLIENT_FPS:-60}
-      [[ "$width" =~ ^[0-9]+$ && "$height" =~ ^[0-9]+$ && "$fps" =~ ^[0-9]+$ ]] || exit 1
-      if ! wlr-randr --json | jq -e --arg name "$stream_output" \
-        'any(.[]; .name == $name)' >/dev/null; then
-        mmsg dispatch "create_virtual_output,$stream_output"
-      fi
-      # Place the stream beyond existing outputs, preserving their layout.
-      right=$(mmsg get all-monitors | jq --arg name "$stream_output" \
-        '[.monitors[] | select(.name != $name) | .x + .width] | max // 0')
-      wlr-randr --output "$stream_output" --on --custom-mode "${width}x${height}@${fps}Hz" \
-        --scale 1 --pos "$right,0"
-      ;;
-    remove)
-      # Keep this output alive between streams. Mango 0.18.2 can abort in
-      # output_manager_apply_or_test when disabling/re-enabling outputs, and
-      # destroy_all_virtual_output would also remove the ambilight output.
-      :
-      ;;
-    *) echo 'Usage: sunshine-output create|remove' >&2; exit 2 ;;
-  esac
-  exit 0
-fi
 export UMBRIEL_SOCKET="${UMBRIEL_SOCKET:-${XDG_RUNTIME_DIR:?}/umbriel-${WAYLAND_DISPLAY:-wayland-0}.sock}"
 
 case "${1:-}" in

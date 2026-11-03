@@ -89,7 +89,7 @@
 
   services.caddy.extraConfig = ''
     (browser_desktop) {
-      @desktop_host host desktop.erebor.jzon.pl desktop.moria.jzon.pl
+      @desktop_host host desktop.erebor.jzon.pl
       handle @desktop_host {
         @tailnet remote_ip 127.0.0.1 ::1 100.64.0.0/10 fd7a:115c:a1e0::/48
         handle @tailnet {
@@ -98,7 +98,7 @@
           import /var/lib/desktop-auth/auth.caddy
           redir / /vnc.html?autoconnect=1&resize=scale 302
           handle /websockify {
-            @same_origin header_regexp Origin ^https://desktop[.](erebor|moria)[.]jzon[.]pl$
+            @same_origin header_regexp Origin ^https://desktop[.]erebor[.]jzon[.]pl$
             handle @same_origin {
               reverse_proxy 127.0.0.1:15901
             }

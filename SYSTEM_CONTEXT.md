@@ -1,4 +1,4 @@
-# System context for NixOS `erebor` (flake target `moria`)
+# System context for NixOS `erebor` (flake target `erebor`)
 
 Verify live state before acting; this file is not a system inventory. Fedora
 was retired on 2026-10-23 at the user's explicit request after its active
@@ -32,7 +32,7 @@ Unfinished work and verification checks belong in
 ## Reusable operational pitfalls
 
 - With unpublished local dashboard submodule commits, build the full local tree
-  using `--flake path:/etc/nixos#moria`; the Git flake URL with `submodules=1`
+  using `--flake path:/etc/nixos#erebor`; the Git flake URL with `submodules=1`
   can try to fetch the submodule commit from its remote and fail before it is
   published. This does not change the pinned dependency versions.
 
@@ -59,14 +59,14 @@ Unfinished work and verification checks belong in
   caused load and timeouts on this device; retain the socket-based implementation.
 
 - For deployments using the private dashboard submodule, run
-  `nixos-rebuild test/switch --sudo --flake /etc/nixos#moria` as janzon so Nix
+  `nixos-rebuild test/switch --sudo --flake /etc/nixos#erebor` as janzon so Nix
   evaluates with the user's Git/SSH access and sudo handles activation. A full
   root invocation tried to fetch GitHub without trusted-host/user SSH state;
   no root SSH trust changes were made. Verified during SYS-036 deployment.
 
 - The private dashboard submodule needs GitHub SSH access when Nix fetches a
   clean Git source. Evaluate/build as the SSH-authenticated user; for deployment,
-  `nixos-rebuild test --sudo --flake /etc/nixos#moria` reserves sudo for activation.
+  `nixos-rebuild test --sudo --flake /etc/nixos#erebor` reserves sudo for activation.
   The installed rebuild command supports `--sudo`; do not copy SSH keys to root
   or into the Nix store. See SYS-037 for the tested clone/build evidence.
 

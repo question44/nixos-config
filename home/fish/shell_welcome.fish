@@ -45,7 +45,7 @@ function shell_welcome --description 'Show compact Fastfetch and Cowsay in three
         set -l padding (math $logo_width - (string length --visible -- "$logo_line") + 2)
         set -a fetch_lines (printf '%s\e[0m%*s%s' "$logo_line" $padding '' "$info_line")
     end
-    set -l banner_lines (toilet -d @figlet@/share/figlet -f slant --filter crop moria | shell_welcome_gradient | sed 's/^/                    /')
+    set -l banner_lines (toilet -d @figlet@/share/figlet -f slant --filter crop erebor | shell_welcome_gradient | sed 's/^/                    /')
     set -l left_lines $banner_lines '' $fetch_lines
 
     set -l left_width 0

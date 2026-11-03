@@ -1,3 +1,8 @@
 # Never stage plaintext or incomplete Tailscale state backups.
 secrets/*.tmp.*
 secrets/*.tar
+
+# Build output links and Python bytecode.
+/result
+/result-*
+__pycache__/
