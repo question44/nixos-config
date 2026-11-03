@@ -12,7 +12,7 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
-## [PREPARED] Claude Desktop installation — 2026-11-03
+## [COMPLETED] Claude Desktop installation — 2026-11-03
 
 SYS-060. Added the requested tomsch/claude-desktop-nix flake input and
 Home Manager package, pinned at b94e2b0. Existing input revisions preserved.
@@ -23,13 +23,15 @@ through Umbriel IPC. Sign-in and application features remain untested.
 Electron logged a failed attempt to update the store-backed mimeapps.list;
 the window still opened.
 
-Persistent activation awaits local sudo authentication (`sudo -n true` requires
-a password). Current system profile remains generation 239. Next action:
-`sudo nixos-rebuild test --flake path:/etc/nixos#moria`, verify the Home Manager
-service and launcher, then `sudo nixos-rebuild switch --flake path:/etc/nixos#moria`
-and record the resulting generation. No activation or boot changes performed.
-Prechecks: root/ESP mounts and boot entries inspected, no failed system units;
-pre-existing failed Noctalia user unit left untouched.
+Pkexec test activation succeeded on 2026-11-03. Home Manager is active;
+installed command and desktop entry verified, with no failed system units.
+Current live system is `/nix/store/81zs30l3laqvb67lwbiw2qa6m0dqyi7w-nixos-system-erebor-26.05.20261029.6f06d20`.
+Persistent switch through pkexec succeeded as generation 240. Home Manager
+remains active, no failed system units, and Claude's native Wayland window is
+still visible. The first store-path switch attempt failed before activation
+because nixos-rebuild tried legacy configuration lookup; the explicit-flake
+retry succeeded. Pre-existing failed Noctalia user unit left untouched.
+Sign-in and application features remain user acceptance checks. No reboot.
 
 ## [COMPLETED] Umbriel keybinding syntax repair — 2026-11-02
 

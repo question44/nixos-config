@@ -20,12 +20,12 @@ Earlier approvals remain bounded by their original scope and safety precondition
 
 ### SYS-060 — Install Claude Desktop
 
-**Status:** OPEN · **Review:** 2026-11-03
+**Status:** DONE · **Closed:** 2026-11-03
 
-Configuration and package built; native Wayland window verified. Complete local
-sudo test/switch activation, verify Home Manager and desktop launcher, and record
-the resulting generation. Authentication and app features require user sign-in.
-**Evidence:** [prepared installation](SYSTEM_CHANGELOG.md#prepared-claude-desktop-installation--2026-11-03).
+Tested and persistently activated through pkexec as generation 240. Home Manager,
+installed command, desktop entry and visible native Wayland window verified;
+no failed system units. Sign-in and application features remain untested.
+**Evidence:** [completed installation](SYSTEM_CHANGELOG.md#completed-claude-desktop-installation--2026-11-03).
 
 <a id="sys-059"></a>
 
