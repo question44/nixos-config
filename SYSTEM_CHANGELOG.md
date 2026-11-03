@@ -12,6 +12,17 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] AWS CLI v2 and AWS SAM CLI — 2026-11-03
+
+SYS-061. Added nixpkgs `awscli2` and `aws-sam-cli` to system packages beside
+other developer CLIs, for the user's serverless (AWS SAM) project.
+`nix flake check path:/etc/nixos` and `nixos-rebuild build --flake
+path:/etc/nixos#moria` passed. Pkexec test then switch activation succeeded,
+persisted as generation 242; Home Manager active, no failed system units.
+A fresh fish login shell resolves both from `/run/current-system/sw/bin` and
+reported aws-cli/2.34.24 and SAM CLI 1.160.0. No AWS credentials or profiles
+configured (user scope); `sam` features needing Docker remain untested. No reboot.
+
 ## [COMPLETED] Claude Secret Service backend — 2026-11-03
 
 Added `--password-store=gnome-libsecret` declaratively to Claude's package

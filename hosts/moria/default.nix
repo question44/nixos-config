@@ -683,6 +683,8 @@ in
     oo7
     nodejs
     gh
+    awscli2
+    aws-sam-cli
     gnupg
     gnumake
     kdePackages.dolphin

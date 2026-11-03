@@ -16,6 +16,17 @@ instead of copying their instructions. No review task authorizes a reboot,
 activation, storage change, secret archive or graphical-session interruption.
 Earlier approvals remain bounded by their original scope and safety preconditions.
 
+<a id="sys-061"></a>
+
+### SYS-061 — Install AWS CLI v2 and AWS SAM CLI
+
+**Status:** DONE · **Closed:** 2026-11-03
+
+Tested and persistently activated through pkexec as generation 242; a fresh
+shell reports aws-cli 2.34.24 and SAM CLI 1.160.0, no failed system units.
+AWS credentials and profiles are out of scope (configured by the user).
+**Evidence:** [completed installation](SYSTEM_CHANGELOG.md#completed-aws-cli-v2-and-aws-sam-cli--2026-11-03).
+
 <a id="sys-060"></a>
 
 ### SYS-060 — Install Claude Desktop
