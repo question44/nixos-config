@@ -12,6 +12,19 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Qt image decoders for Dolphin WebP thumbnails — 2026-11-03
+
+At the user's request: added `kdePackages.qtimageformats` (WebP, TIFF, TGA,
+ICNS, JP2) and `kdePackages.kimageformats` (AVIF, HEIF, JXL, PSD, XCF, EXR, ...)
+to Home Manager packages. Dolphin's wrapper bundles kio-extras' image
+thumbnailer but only qtbase's decoders; the session's `QT_PLUGIN_PATH` covers
+the per-user profile only, so the decoders belong there, not in systemPackages.
+Flake check and build passed; pkexec test then switch succeeded, generation
+247. Verified `libqwebp.so` and `kimg_*` in the per-user Qt plugin path and
+that Dolphin generated a 128×128 thumbnail for a WebP test image in a home
+folder (test file and thumbnail removed). KIO does not cache thumbnails for
+files under /tmp, so that location gave no result. No reboot.
+
 ## [COMPLETED] SSH TOTP second factor and LAN/tailnet-only port 22 — 2026-11-03
 
 At the user's request: SSH now accepts a key alone, or keyboard-interactive PAM

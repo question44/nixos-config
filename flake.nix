@@ -134,6 +134,9 @@
                 lazygit
                 gcc
                 tree-sitter
+                # Qt image decoders for Dolphin's thumbnailer (WebP, AVIF, HEIC, JXL, ...).
+                kdePackages.qtimageformats
+                kdePackages.kimageformats
               ];
               home.sessionVariables = {
                 EDITOR = "${sessionEditor}/bin/session-editor";
