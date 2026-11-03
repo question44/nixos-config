@@ -12,6 +12,25 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [PREPARED] Claude Desktop installation — 2026-11-03
+
+SYS-060. Added the requested tomsch/claude-desktop-nix flake input and
+Home Manager package, pinned at b94e2b0. Existing input revisions preserved.
+`nix flake check path:/etc/nixos` and `nixos-rebuild build --flake
+path:/etc/nixos#moria` passed. Built Claude Desktop 4.4212.0 and launched
+it directly: active process and visible native Wayland Claude window verified
+through Umbriel IPC. Sign-in and application features remain untested.
+Electron logged a failed attempt to update the store-backed mimeapps.list;
+the window still opened.
+
+Persistent activation awaits local sudo authentication (`sudo -n true` requires
+a password). Current system profile remains generation 239. Next action:
+`sudo nixos-rebuild test --flake path:/etc/nixos#moria`, verify the Home Manager
+service and launcher, then `sudo nixos-rebuild switch --flake path:/etc/nixos#moria`
+and record the resulting generation. No activation or boot changes performed.
+Prechecks: root/ESP mounts and boot entries inspected, no failed system units;
+pre-existing failed Noctalia user unit left untouched.
+
 ## [COMPLETED] Umbriel keybinding syntax repair — 2026-11-02
 
 Migrated parameterized keybinding actions from colon to space syntax required by

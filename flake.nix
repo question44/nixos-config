@@ -11,6 +11,7 @@
       url = "github:hgaiser/moonshine/79554f853135cbac44502b58093a4eb0f0f5e6f1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    claude-desktop-nix.url = "github:tomsch/claude-desktop-nix";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     noctalia.url = "github:noctalia-dev/noctalia-shell";
     noctalia-greeter = {
@@ -45,7 +46,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, moonshine, dashboard, noctalia, noctalia-greeter, umbriel, mango, millennium, helium, zen-browser, darkly, vicinae, home-manager, ... }:
+  outputs = { self, nixpkgs, claude-desktop-nix, moonshine, dashboard, noctalia, noctalia-greeter, umbriel, mango, millennium, helium, zen-browser, darkly, vicinae, home-manager, ... }:
     {
       nixosConfigurations.moria = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
@@ -139,6 +140,7 @@
               };
               home.packages = with pkgs; [
                 zenBrowser
+                claude-desktop-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
                 zed-editor
                 neovim
                 fd

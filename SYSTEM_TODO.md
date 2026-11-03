@@ -16,6 +16,17 @@ instead of copying their instructions. No review task authorizes a reboot,
 activation, storage change, secret archive or graphical-session interruption.
 Earlier approvals remain bounded by their original scope and safety preconditions.
 
+<a id="sys-060"></a>
+
+### SYS-060 — Install Claude Desktop
+
+**Status:** OPEN · **Review:** 2026-11-03
+
+Configuration and package built; native Wayland window verified. Complete local
+sudo test/switch activation, verify Home Manager and desktop launcher, and record
+the resulting generation. Authentication and app features require user sign-in.
+**Evidence:** [prepared installation](SYSTEM_CHANGELOG.md#prepared-claude-desktop-installation--2026-11-03).
+
 <a id="sys-059"></a>
 
 ### SYS-059 — Show NanoKVM outlet readings in the hub
