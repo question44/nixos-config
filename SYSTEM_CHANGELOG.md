@@ -1,5 +1,15 @@
 # NixOS system change log for `erebor` (flake target `erebor`)
 
+## [COMPLETED] Claude Code CLI — 2026-11-04
+
+Added `claude-code` to the Home Manager packages and the unfree allow-list
+(`ebb1e67`), at the user's request. Builds had been failing because the dashboard
+submodule pointed at commits not on GitHub; the user approved pushing them
+(`6225bab..cad8818`). `nix flake check` and `nixos-rebuild build` passed; activated
+with `pkexec nixos-rebuild switch` as generation 258 (the same generation recorded
+in the hub fix entry below). `claude --version` reports `2.1.223 (Claude Code)`;
+no failed system or user units. No reboot.
+
 ## [COMPLETED] Hub display power command fix — 2026-11-04
 
 SYS-062. Fixed obsolete Umbriel `dpms-off:OUTPUT` / `dpms-on:OUTPUT`
