@@ -1,5 +1,14 @@
 # NixOS system change log for `erebor` (flake target `erebor`)
 
+## [COMPLETED] smartd disk monitoring — 2026-11-04
+
+Enabled `services.smartd` with default notifications (wall), at the user's
+request. `nix flake check` and `nixos-rebuild build` passed; activated with
+`pkexec nixos-rebuild switch` as generation 260. `smartd.service` is active and
+monitors 3 ATA/SATA disks and 1 NVMe disk with no startup warnings. The USB
+"Expansion SW" disk (`sdd`) is skipped because its bridge does not pass through
+SMART. No failed system or user units. No reboot.
+
 ## [COMPLETED] kinfocenter and smartmontools — 2026-11-04
 
 Added `kdePackages.kinfocenter` (6.6.6) and `smartmontools` (7.5) to the erebor

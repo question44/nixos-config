@@ -414,6 +414,8 @@ in
     unixAuth = lib.mkForce true;
   };
   services.udisks2.enable = true;
+  # SMART disk health monitoring; warnings go to logged-in terminals (wall).
+  services.smartd.enable = true;
   services.dbus.packages = [ pkgs.oo7-server ];
   services.gnome.gnome-keyring.enable = false;
 
