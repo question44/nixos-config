@@ -113,6 +113,7 @@ in
       "steam"
       "steam-unwrapped"
       "google-chrome"
+      "claude-code"
     ];
 
   boot.loader.systemd-boot.enable = false;

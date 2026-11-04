@@ -127,6 +127,7 @@
                       --add-flags "--password-store=gnome-libsecret"
                   '';
                 }))
+                claude-code
                 zed-editor
                 neovim
                 fd
