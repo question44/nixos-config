@@ -429,10 +429,6 @@
                 source = ./home/umbriel/screenshot-window;
                 executable = true;
               };
-              home.file.".local/bin/umbriel-ambilight-session" = {
-                source = ./home/umbriel/ambilight-session;
-                executable = true;
-              };
               home.file.".local/bin/umbriel-hdr-toggle" = {
                 source = pkgs.writeShellScript "umbriel-hdr-toggle" ''
                   set -euo pipefail
