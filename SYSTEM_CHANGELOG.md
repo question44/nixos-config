@@ -12,6 +12,16 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Umbriel blur radius increased to 5 — 2026-11-04
+
+Changed `appearance.blur.radius` from 3 to 5 in the declarative Umbriel
+configuration. Umbriel validation, flake check and NixOS build passed; test
+activation and switch succeeded, generation 249. Verified the deployed radius
+is 5 and reloaded the running compositor; its journal confirmed the appearance
+change applied to scene blur, view chrome and layer effects. Umbriel remained
+active and there were no failed system units. Visual strength was not
+independently inspected. No logout or reboot.
+
 ## [COMPLETED] Zed background opacity at 90% with dynamic Noctalia colors — 2026-11-04
 
 Added a Home Manager managed custom Noctalia Zed template, preserving all
