@@ -1,31 +1,23 @@
 # NixOS system change log for `erebor` (flake target `erebor`)
 
-## [PARTIAL] Hub display power command fix — 2026-11-04
+## [COMPLETED] Hub display power command fix — 2026-11-04
 
 SYS-062. Fixed obsolete Umbriel `dpms-off:OUTPUT` / `dpms-on:OUTPUT`
 commands to pass the output as a separate argument. Dashboard flake check,
 all 35 API tests, system flake check, dry-build and full build passed.
-Built from a clean HEAD export plus this fix, excluding pending Claude Code
-edits. Dashboard fix committed as `35f526b`.
+Dashboard fix committed as `35f526b`. Initial isolated test activation
+succeeded; the initial persistent attempts failed on a NIX_PATH re-exec
+lookup and then dismissed administrator authentication.
 
-Test activation succeeded: live system is
-`/nix/store/336jfsk5zn69kqp36pwkp5giz6bqss3p-nixos-system-erebor-26.05.20261029.6f06d20`.
-Display-on POST through Caddy returned HTTP 200 and `Command sent`;
-status reports both physical outputs powered on, Caddy/control active,
-no failed system/user units. Physical off/wake remains untested (SYS-002).
-Root/ESP UUIDs and EFI boot order remain unchanged. No reboot.
-
-Persistence remains unfinished: selected generation is still 257,
-`/nix/store/f1zfmgr7nflnlj0jkn5mi4jn9azxgf3p-nixos-system-erebor-26.05.20261029.6f06d20`.
-First `nixos-rebuild switch --store-path` failed during re-exec because
-`nixos-config` was absent from NIX_PATH; retry with `--no-reexec` returned
-`Error executing command as another user: Request dismissed` (exit 126).
-The test activation remains live but a reboot selects the previous version.
-Next: authenticate a persistent switch of the built candidate with
-`nixos-rebuild switch --no-reexec --store-path` and verify the selected
-profile and services. Snapper is not configured (`/etc/snapper/configs`
-absent); recovery is generation 257 from GRUB or its
-`bin/switch-to-configuration test`.
+On retry, live inspection found a subsequent persistent activation already
+included the fix in generation 258:
+`/nix/store/3cg44yxvgzcqvj848vd3av7cpsm4blhx-nixos-system-erebor-26.05.20261029.6f06d20`.
+Live and selected system paths match. Verified the running service's packaged
+code passes the output separately; display-on POST through Caddy returned
+HTTP 200 and `Command sent`. Caddy/control active, no failed system/user
+units. Root/ESP UUIDs and EFI boot order match prechecks. No further activation
+or reboot was needed on retry. Unrelated working-tree edits remain untouched.
+Physical display off/wake remains untested under separate SYS-002.
 
 
 This file records dated changes and their evidence. Current unfinished work lives
