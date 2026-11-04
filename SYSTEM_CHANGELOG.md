@@ -12,6 +12,27 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Remove leftover Fedora firmware entry and Btrfs label — 2026-11-04
+
+User requested removing firmware entry Boot0009 "Fedora"
+(`\EFI\fedora\shimx64.efi` on the Windows ESP, PARTUUID
+`8c2ce2ef-72ab-4bc5-bcab-b66ae52987fe`) and renaming root Btrfs UUID
+`5be9be17-20c9-4a47-ba2d-6adf1ceb4c55` from label `fedora-unencrypted` to
+`erebor`. Live generation 249; BootCurrent 0000 (NixOS-boot); BootOrder
+0000,0004,0007,0008,0009,000A,000B,000C. No fstab/GRUB use of the label.
+No snapshot (no filesystem data changes). Recovery: recreate the entry with
+`efibootmgr -c -d <disk holding that PARTUUID> -p 1 -L Fedora -l
+'\EFI\fedora\shimx64.efi'`; restore label with `btrfs
+filesystem label`.
+
+Ran `efibootmgr -b 0009 -B` and `btrfs filesystem label / erebor` via pkexec,
+both exit 0. Before/after `efibootmgr -v` diff shows only Boot0009 removed;
+BootCurrent 0000 and the remaining order are unchanged. Label reads `erebor`;
+root, `/nix/store`, `/btrfs-top` and ESP `/boot` stay mounted; no failed
+system or user units. The udev `by-label/fedora-unencrypted` link persists
+until the next boot (unused). `\EFI\fedora` files on the Windows ESP were not
+inspected or removed. No reboot.
+
 ## [COMPLETED] Re-enable HyperHDR LEDs at startup — 2026-11-04
 
 Ambilight stayed dark after login: HyperHDR's non-declarative `general`
