@@ -20,12 +20,14 @@ Earlier approvals remain bounded by their original scope and safety precondition
 
 ### SYS-062 — Repair hub display power commands for Umbriel
 
-**Status:** ACTIVE · **Reviewed:** 2026-11-04
+**Status:** OPEN · **Reviewed:** 2026-11-04
 
-**Done when:** Correct the Umbriel DPMS command arguments, pass package/system
-checks, activate the control service, and verify a hub API command succeeds.
-Physical display off/wake confirmation remains the separate SYS-002 acceptance check.
-**Evidence:** [implementation record](SYSTEM_CHANGELOG.md#pending-hub-display-power-command-fix--2026-11-04).
+Fix built, tested and live through test activation. Caddy display-on API
+returns 200; no failed units. Persistent switch authentication was dismissed;
+selected generation remains 257, so reboot restores the previous service.
+**Done when:** Persistently activate the built candidate and verify selected
+profile and control service. Physical off/wake remains the separate SYS-002 check.
+**Evidence:** [implementation record](SYSTEM_CHANGELOG.md#partial-hub-display-power-command-fix--2026-11-04).
 
 <a id="sys-061"></a>
 

@@ -1,22 +1,31 @@
 # NixOS system change log for `erebor` (flake target `erebor`)
 
-## [PENDING] Hub display power command fix — 2026-11-04
+## [PARTIAL] Hub display power command fix — 2026-11-04
 
-SYS-062. The hub returned 503 because Umbriel now expects `dpms-off OUTPUT`
-rather than `dpms-off:OUTPUT`; corrected both power directions and their
-regression test. Dashboard flake check and all 35 API tests passed; system
-flake check, dry-build and full build passed. Build uses a clean HEAD export
-plus this fix, excluding unrelated pending Claude Code edits.
+SYS-062. Fixed obsolete Umbriel `dpms-off:OUTPUT` / `dpms-on:OUTPUT`
+commands to pass the output as a separate argument. Dashboard flake check,
+all 35 API tests, system flake check, dry-build and full build passed.
+Built from a clean HEAD export plus this fix, excluding pending Claude Code
+edits. Dashboard fix committed as `35f526b`.
 
-Pre-activation: live/selected generation 257 is
+Test activation succeeded: live system is
+`/nix/store/336jfsk5zn69kqp36pwkp5giz6bqss3p-nixos-system-erebor-26.05.20261029.6f06d20`.
+Display-on POST through Caddy returned HTTP 200 and `Command sent`;
+status reports both physical outputs powered on, Caddy/control active,
+no failed system/user units. Physical off/wake remains untested (SYS-002).
+Root/ESP UUIDs and EFI boot order remain unchanged. No reboot.
+
+Persistence remains unfinished: selected generation is still 257,
 `/nix/store/f1zfmgr7nflnlj0jkn5mi4jn9azxgf3p-nixos-system-erebor-26.05.20261029.6f06d20`.
-Candidate: `/nix/store/336jfsk5zn69kqp36pwkp5giz6bqss3p-nixos-system-erebor-26.05.20261029.6f06d20`.
-Only six service/system derivations rebuild. Caddy/control active, no failed
-units; root/ESP UUIDs match AGENTS.md, EFI boot order unchanged. Snapper is
-not configured (`/etc/snapper/configs` absent). Recovery is the previous
-system's `bin/switch-to-configuration test` or generation 257 from GRUB.
-Next: test activation, API display-on check, persistent switch and service/
-generation checks. No reboot or physical power-off test is planned.
+First `nixos-rebuild switch --store-path` failed during re-exec because
+`nixos-config` was absent from NIX_PATH; retry with `--no-reexec` returned
+`Error executing command as another user: Request dismissed` (exit 126).
+The test activation remains live but a reboot selects the previous version.
+Next: authenticate a persistent switch of the built candidate with
+`nixos-rebuild switch --no-reexec --store-path` and verify the selected
+profile and services. Snapper is not configured (`/etc/snapper/configs`
+absent); recovery is generation 257 from GRUB or its
+`bin/switch-to-configuration test`.
 
 
 This file records dated changes and their evidence. Current unfinished work lives
