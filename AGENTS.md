@@ -2,7 +2,7 @@
 
 This repository is the authoritative declarative configuration for the
 installed NixOS system. Maintain the system incrementally, preserve the
-working Fedora and Windows installations, and verify every material change.
+working Windows installation, and verify every material change.
 
 ## Before changing the system
 
@@ -14,7 +14,7 @@ working Fedora and Windows installations, and verify every material change.
 - Keep changes small and declarative. Do not duplicate facts already derived
   from the flake or modules in the operational documents.
 - Stop and ask the user when the requested change is ambiguous, conflicts with
-  this file, or could affect Fedora, Windows, the ESP, or user data.
+  this file, or could affect Windows, the ESP, or user data.
 
 ## Storage and boot safety
 
@@ -25,7 +25,7 @@ working Fedora and Windows installations, and verify every material change.
 - Never run partitioning, formatting, signature-wiping, or recursive deletion
   commands for this system without explicit user authorization and a reviewed
   recovery plan.
-- Preserve Fedora and Windows UEFI files and entries. Do not change the
+- Preserve Windows UEFI files and entries. Do not change the
   firmware default or remove another operating system's boot entry as part of
   routine maintenance.
 - Before any material boot, ESP, filesystem, subvolume, or reboot operation,

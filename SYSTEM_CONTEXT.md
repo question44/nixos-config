@@ -1,9 +1,6 @@
 # System context for NixOS `erebor` (flake target `erebor`)
 
-Verify live state before acting; this file is not a system inventory. Fedora
-was retired on 2026-10-23 at the user's explicit request after its active
-root/home subvolumes were found missing. Shared service data remains in use
-by NixOS. See SYS-025 and its dated change record.
+Verify live state before acting; this file is not a system inventory.
 
 This document becomes the NixOS-side operational memory after the parallel
 installation. Verify live state before acting and do not record passwords,
@@ -81,13 +78,6 @@ Unfinished work and verification checks belong in
   source path updated before reuse, or be paired with a restored original
   disk/NVRAM/TPM. See [Windows VM recovery](WINDOWS_VM.md#disk-location-and-recovery).
 
-- Fedora boot files and original firmware entry descriptions were archived
-  under root-only `/var/lib/system-recovery/fedora-retirement-20261023`.
-  These archives do not contain the deleted Fedora root snapshot. The
-  pre-retirement NixOS recovery snapshot is
-  `/btrfs-top/nixos-root-pre-fedora-retirement-20261023` (ID 656, ro=true).
-  Rolling back to generation 200 may restore an obsolete Fedora menu entry;
-  the current declarative configuration intentionally omits that entry.
 - Interactive sudo supports YubiKey authentication through a PTY; noninteractive
   sudo can report that a password is required even when a YubiKey is available.
 - A newly added kernel module is not found by default modprobe after a NixOS
