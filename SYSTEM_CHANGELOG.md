@@ -12,6 +12,18 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Removed the wallpaper-only `ambilight` virtual output — 2026-11-04
+
+At the user's request, Ambilight now follows DP-1's content ([SYS-005](SYSTEM_TODO.md#sys-005)).
+Removed `[output.ambilight]` and the `umbriel-ambilight-session` wrapper
+(`33bfbf3`); Umbriel now autostarts `noctalia` directly. Umbriel validation,
+flake check and build passed; test-activated, not switched, because another
+session had unfinished wallpaper-engine edits in the tree. Destroyed the live
+output; DP-1 and HDMI-A-1 remain. After a HyperHDR restart it streamed 21:9
+frames (DP-1) with no picker. Not verified: LEDs following on-screen content,
+and the next login's autostart. Stale `ambilight` wallpaper and lockscreen
+entries remain in Noctalia's UI state (`~/.local/state/noctalia/settings.toml`).
+
 ## [COMPLETED] Shared application background opacity — 2026-11-04
 
 Added `home/appearance.nix` with `appOpacity = 0.9` as the shared setting for

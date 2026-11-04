@@ -593,9 +593,11 @@ system change. The archive contains later records that may supersede them.
 
 ### SYS-005 — Review HyperHDR capture target
 
-**Status:** REVIEW · **Reviewed:** 2026-10-23
+**Status:** OPEN · **Reviewed:** 2026-11-04
 
 Observed 2026-10-23: saved portal selection is physical DP-1. Earlier work requested wallpaper-only ambilight; latest troubleshooting concerned reaction to display content.
+
+Decided 2026-11-04 (user): display content. The wallpaper-only `ambilight` output was removed; after restart HyperHDR streamed 21:9 frames, which only DP-1 provides. Remaining: confirm the LEDs follow on-screen content.
 
 **Done when:** Confirm the desired capture behavior before changing it. Verify either display-content response or wallpaper-only isolation, record the chosen behavior, and close or cancel the old request accordingly.
 
