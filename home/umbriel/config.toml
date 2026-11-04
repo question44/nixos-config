@@ -35,7 +35,9 @@ mode = "3440x1440@30"
 position = [3440, 0]
 
 [appearance.blur]
-radius = 5
+radius = 8
+passes = 3
+noise = 0.05
 
 [[layer_rule]]
 match.namespace = "^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd)$"
