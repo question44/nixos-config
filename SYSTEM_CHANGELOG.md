@@ -12,6 +12,25 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] One-at-a-time screen switch (DP-1 / HDMI-A-1) — 2026-11-04
+
+At the user's request: added `umbriel-display-mode dp|hdmi|toggle|status`
+(`packages/umbriel-display-mode.nix`), which keeps only one physical Umbriel
+output enabled. It enables the target before disabling the other and stops if
+the target is missing. It is a Noctalia bar button (`display-switch`,
+left-click toggles) and backs new hub actions `screen-dp` / `screen-hdmi`
+(dashboard `cad8818`). The hub reports the active screen, and display power
+and DPMS now ignore the switched-away output. Virtual outputs are untouched.
+
+Live checks first: Umbriel `output-disable`/`output-enable` of HDMI-A-1
+restores its position and survives `config-replace`. Dashboard tests (35),
+flake check and build passed. Test activation, then switch, to generation 251.
+No failed units; `dashboard-control` active. Hub `screen-dp` POST disabled
+HDMI-A-1 and status read `dp`. The served hub has the new actions, and Noctalia
+loaded the widget. Not tested: clicking the bar button, and switching to HDMI
+(which turns DP-1 off). Runtime state resets at login (both outputs enabled).
+No reboot.
+
 ## [COMPLETED] Dolphin thumbnailers for all available formats — 2026-11-04
 
 At the user's request: added `ffmpegthumbs` (video), `kdegraphics-thumbnailers`

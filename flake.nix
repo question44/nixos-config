@@ -113,6 +113,7 @@
               };
               home.packages = with pkgs; [
                 zenBrowser
+                (callPackage ./packages/umbriel-display-mode.nix { })
                 (claude-desktop-nix.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
                   postFixup = (old.postFixup or "") + ''
                     wrapProgram "$out/bin/claude-desktop" \

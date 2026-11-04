@@ -31,7 +31,7 @@ margin_edge = 4
 margin_ends = 20
 margin_opposite_edge = 4
 radius = 16
-start = [ "bar-autohide", "group:g3", "cat", "bar", "lyrics", "audio_visualizer", "lyrics_2" ]
+start = [ "bar-autohide", "display-switch", "group:g3", "cat", "bar", "lyrics", "audio_visualizer", "lyrics_2" ]
 thickness = 48
 
     [bar.default.dead_zone.actions]
@@ -50,6 +50,15 @@ tooltip = "Toggle smart bar auto-hide"
 
     [widget.bar-autohide.actions]
     left = "exec /home/janzon/.local/bin/noctalia-bar-autohide"
+
+# The bar is on every output, so this stays reachable on whichever screen is on.
+[widget.display-switch]
+type = "custom_button"
+glyph = "device-desktop"
+tooltip = "Switch screen (DP-1 / HDMI)"
+
+    [widget.display-switch.actions]
+    left = "exec /etc/profiles/per-user/janzon/bin/umbriel-display-mode toggle"
 
     [[bar.default.capsule_group]]
     accordion = false

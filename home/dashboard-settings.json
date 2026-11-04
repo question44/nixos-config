@@ -8,6 +8,8 @@
     "wake",
     "display-on",
     "display-off",
+    "screen-dp",
+    "screen-hdmi",
     "ambilight-on",
     "ambilight-off",
     "sleep",
