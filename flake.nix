@@ -57,6 +57,8 @@
           dashboard.nixosModules.default
           ./modules/dashboard-control.nix
           helium.nixosModules.default
+          # Privileged input-server wrapper for vicinae paste and snippets.
+          vicinae.nixosModules.default
           home-manager.nixosModules.home-manager
           {
             nixpkgs.overlays = [ millennium.overlays.default ];

@@ -341,6 +341,9 @@ in
   systemd.user.services.xdg-desktop-portal = {
     after = [ "graphical-session.target" "xdg-desktop-portal-gnome.service" ];
     wants = [ "xdg-desktop-portal-gnome.service" ];
+    # The host app registry resolves desktop-file Exec= commands via PATH;
+    # without the system/user profiles it rejects apps like vicinae.
+    path = [ "/run/current-system/sw" "/etc/profiles/per-user/janzon" ];
   };
   systemd.user.services.xremap-restart = {
     description = "Restart xremap after keyboard connection";
@@ -720,6 +723,9 @@ in
     kdePackages.plasma-systemmonitor
     kdePackages.ksystemstats
     kdePackages.kinfocenter
+    # Storage Device Health page; kded6 is D-Bus activated to run its SMART module.
+    kdePackages.plasma-disks
+    kdePackages.kded
     smartmontools
     (google-chrome.override { commandLineArgs = "--password-store=gnome-libsecret"; })
     haruna

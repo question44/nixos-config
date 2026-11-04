@@ -1,5 +1,27 @@
 # NixOS system change log for `erebor` (flake target `erebor`)
 
+## [COMPLETED] plasma-disks and vicinae fixes — 2026-11-04
+
+Requested by the user. Added `kdePackages.plasma-disks` and `kdePackages.kded`
+so kinfocenter's Storage Device Health page works under Niri: kded6 is started
+on demand over D-Bus and loads the `smart` module.
+
+Fixed two vicinae startup errors:
+- Imported `vicinae.nixosModules.default`, which creates the
+  `/run/wrappers/bin/vicinae-input-server` capability wrapper that the package
+  expects. Without it, the input server (paste and snippets) failed with `execve`
+  ENOENT.
+- Added the system and user profiles to `xdg-desktop-portal`'s PATH. Its host
+  app registry could not resolve `Exec=vicinae` and rejected the app ID with
+  "App info not found".
+
+`nix flake check` and `nixos-rebuild build` passed; activated with
+`pkexec nixos-rebuild switch` as generation 261. After restarting the portal and
+vicinae, the input server is running with no errors in the log. kded6 exposes
+SMART data for nvme0n1, sda, sdb and sdc, all reporting `failed=false`.
+Seeing the page in the kinfocenter GUI is not yet confirmed by the user.
+No reboot.
+
 ## [COMPLETED] smartd disk monitoring — 2026-11-04
 
 Enabled `services.smartd` with default notifications (wall), at the user's
