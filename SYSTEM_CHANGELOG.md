@@ -12,6 +12,24 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Noctalia config validation warnings — 2026-11-04
+
+`noctalia config validate` (Noctalia v5.4.1) reported 9 warnings on
+`home/noctalia/config.toml`. Replaced the renamed palette role
+`surface_variant` with `surface_container` (bar border, capsule group fills,
+lockscreen login box) and dropped the unknown key
+`shell.screen_corners.telemetry_enabled` (`shell.telemetry_enabled` stays true).
+The remaining warning for `question44/spotify-media-niri:bar` is a false positive
+of path-mode validation: `noctalia msg plugins list` shows that plugin installed
+and enabled.
+
+Validation: config validates with 1 warning; `nix flake check` and
+`nixos-rebuild build` passed; switched (via `pkexec`) to generation 255
+(`vwf4018f…-nixos-system-erebor-26.05.20261029.6f06d20`). The deployed config
+matches the repository, the running shell's exported config has no
+`surface_variant`, and no system units failed. The visual appearance was not
+checked by the user.
+
 ## [COMPLETED] Wallpaper Engine animated wallpaper plugin — 2026-11-04
 
 At the user's request, added a local Noctalia plugin `janzon/wallpaper-engine`
