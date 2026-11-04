@@ -816,6 +816,23 @@ Isolated compositor/NVENC tests passed; end-to-end Moonlight and persistent depl
 
 **Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-023-1).
 
+<a id="sys-028"></a>
+
+### SYS-028 — Niri overview swaybg runs under Umbriel
+
+**Status:** OPEN · **Reviewed:** 2026-11-04
+
+`niri-overview-wallpaper` (swaybg, DP-1, background layer) starts with every
+graphical session, including Umbriel, where it serves no purpose. It sits below
+the Wallpaper Engine scene only because it maps first; a restart of swaybg could
+cover the animated wallpaper.
+
+**Done when:** The service runs only in Niri sessions (or is removed), and under
+Umbriel `umbriel layers` shows no `wallpaper` swaybg surface while the Wallpaper
+Engine scene stays visible after a re-login.
+
+**Evidence:** [wallpaper plugin record](SYSTEM_CHANGELOG.md#completed-wallpaper-engine-animated-wallpaper-plugin--2026-11-04).
+
 ## Closed tasks
 
 <a id="sys-010"></a>
@@ -832,7 +849,7 @@ Superseded by the completed 2026-10-20 replacement of background-apps with nativ
 
 ## Adding or closing a task
 
-Use the next unused SYS number (currently SYS-028). Record status, review date,
+Use the next unused SYS number (currently SYS-029). Record status, review date,
 what remains, a concrete completion condition, and a link to evidence. For active
 work, record the next safe step and any applicable recovery checkpoint. Required
 acceptance checks block completion of that task; optional follow-ups get their

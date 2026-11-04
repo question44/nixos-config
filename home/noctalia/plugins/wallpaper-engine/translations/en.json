@@ -1,0 +1,57 @@
+{
+  "all_outputs": "All Outputs",
+  "empty": "No scene or video wallpapers found. Subscribe to some in the Steam Workshop.",
+  "kind_all": "All types",
+  "kind_scene": "Scenes",
+  "kind_video": "Videos",
+  "no_match": "No wallpapers match the search",
+  "no_workshop": "Wallpaper Engine Workshop folder not found",
+  "not_installed": "linux-wallpaperengine is not installed",
+  "output": "Output",
+  "pause": "Pause",
+  "resume": "Resume",
+  "search": "Search wallpapers",
+  "settings": {
+    "extra_args": {
+      "description": "Additional space-separated linux-wallpaperengine arguments, e.g. --disable-particles",
+      "label": "Extra Arguments"
+    },
+    "fps": {
+      "description": "Frame-rate limit for rendering",
+      "label": "Frame Rate"
+    },
+    "fullscreen_pause": {
+      "description": "Pause rendering while a window is fullscreen",
+      "label": "Pause for Fullscreen"
+    },
+    "glyph": {
+      "label": "Glyph"
+    },
+    "match_theme": {
+      "description": "Use the wallpaper's preview image as Noctalia's wallpaper so the color palette follows it",
+      "label": "Match Theme Colors"
+    },
+    "mouse": {
+      "description": "Let scenes react to the mouse pointer",
+      "label": "Mouse Interaction"
+    },
+    "mute": {
+      "label": "Mute Audio"
+    },
+    "scaling": {
+      "label": "Scaling",
+      "options": {
+        "default": "Default",
+        "fill": "Fill",
+        "fit": "Fit",
+        "stretch": "Stretch"
+      }
+    },
+    "workshop_directory": {
+      "description": "Steam Workshop folder for Wallpaper Engine (app 431960); defaults to ~/.local/share/Steam/steamapps/workshop/content/431960",
+      "label": "Workshop Folder"
+    }
+  },
+  "stop": "Stop",
+  "title": "Wallpaper Engine"
+}

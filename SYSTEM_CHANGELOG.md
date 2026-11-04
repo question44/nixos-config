@@ -12,6 +12,33 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Wallpaper Engine animated wallpaper plugin — 2026-11-04
+
+At the user's request, added a local Noctalia plugin `janzon/wallpaper-engine`
+(`home/noctalia/plugins/wallpaper-engine/`, deployed to
+`~/.local/share/noctalia/plugins/`) that plays Wallpaper Engine Workshop scenes
+and videos with `linux-wallpaperengine` (added to system packages). A service
+runs the renderer as the transient user unit `noctalia-wallpaper-engine` and
+disables Noctalia's wallpaper on the outputs it covers; a picker panel, bar
+widget and control-center shortcut select items. Wallpaper Engine itself is
+installed in Steam (Proton) for its assets; web wallpapers and presets are not
+listed because linux-wallpaperengine cannot render them.
+
+Before this, the Btrfs filesystem had no unallocated space and writes failed
+with ENOSPC; the user ran `nix-collect-garbage --delete-older-than 14d` (root
+and user), leaving 42 GiB unallocated and metadata at 77%.
+
+Flake check and build passed; a first `test` activation was overwritten by
+another session's switch, then re-run once that work was committed. Switched via
+pkexec to generation 254. Plugin enabled (the live config reload raced the new
+plugin directory, so it was enabled once with `noctalia msg plugins enable`).
+Applying item 2925330428 through the service IPC started the unit on DP-1 and
+HDMI-A-1, Noctalia logged both as externally managed, and the user confirmed the
+animated wallpaper looks correct with HDR on. Not tested: the picker panel UI,
+the "Match Theme Colors" option, pause/stop, and startup on the next login.
+The Niri-only `niri-overview-wallpaper` swaybg still runs under Umbriel on DP-1
+below the scene ([SYS-028](SYSTEM_TODO.md#sys-028)). No reboot.
+
 ## [COMPLETED] Umbriel action arguments in rcmd and helpers — 2026-11-04
 
 The current Umbriel rejects `action:argument` messages ("unknown action") and

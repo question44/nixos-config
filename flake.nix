@@ -354,6 +354,8 @@
                 appOpacity = builtins.toJSON (appOpacityByte / 255.0);
               };
               xdg.configFile."noctalia/config.toml".source = ./home/noctalia/config.toml;
+              # Local plugins in the data dir outrank every plugin source.
+              xdg.dataFile."noctalia/plugins/wallpaper-engine".source = ./home/noctalia/plugins/wallpaper-engine;
               xdg.configFile."noctalia/templates/zed.json".source = pkgs.replaceVars ./home/noctalia/templates/zed.json {
                 inherit appOpacityAlpha;
               };

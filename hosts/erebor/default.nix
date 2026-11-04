@@ -729,6 +729,8 @@ in
     tuigreet
     xremap
     hyperhdr
+    # Renderer for the janzon/wallpaper-engine Noctalia plugin.
+    linux-wallpaperengine
     aiUsagebar
     auroraNcs
     ut2004.ut2004

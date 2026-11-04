@@ -1,0 +1,114 @@
+# Wallpaper Engine scenes and videos via linux-wallpaperengine. A headless
+# [[service]] runs one linux-wallpaperengine process (as a transient systemd user
+# unit) that renders every assigned output. The [[panel]] browses the Steam
+# Workshop items for Wallpaper Engine and applies one per output (or to all); the
+# bar [[widget]] and control-center [[shortcut]] open it. While an output shows a
+# Wallpaper Engine item, the service asks the host to drop its own wallpaper
+# surface there (noctalia.setWallpaperEnabled) so the scene shows through.
+#
+# Requires the external `linux-wallpaperengine` command and an installed copy of
+# Wallpaper Engine in Steam (its assets are found automatically).
+
+id = "janzon/wallpaper-engine"
+name = "Wallpaper Engine"
+version = "1.0.0"
+plugin_api = 43
+author = "janzon"
+license = "MIT"
+dependencies = ["linux-wallpaperengine"]
+tags = ["wallpaper", "animated"]
+icon = "wallpaper"
+description = "Animated Wallpaper Engine scenes and videos via linux-wallpaperengine."
+
+[[setting]]
+key = "workshop_directory"
+type = "folder"
+label_key = "settings.workshop_directory.label"
+description_key = "settings.workshop_directory.description"
+default = ""
+
+[[setting]]
+key = "fps"
+type = "int"
+label_key = "settings.fps.label"
+description_key = "settings.fps.description"
+default = 30
+min = 5
+max = 144
+step = 1
+
+[[setting]]
+key = "scaling"
+type = "select"
+label_key = "settings.scaling.label"
+default = "fill"
+options = [
+  { value = "fill", label_key = "settings.scaling.options.fill" },
+  { value = "fit", label_key = "settings.scaling.options.fit" },
+  { value = "stretch", label_key = "settings.scaling.options.stretch" },
+  { value = "default", label_key = "settings.scaling.options.default" },
+]
+
+[[setting]]
+key = "mute"
+type = "bool"
+label_key = "settings.mute.label"
+default = true
+
+[[setting]]
+key = "fullscreen_pause"
+type = "bool"
+label_key = "settings.fullscreen_pause.label"
+description_key = "settings.fullscreen_pause.description"
+default = true
+
+[[setting]]
+key = "mouse"
+type = "bool"
+label_key = "settings.mouse.label"
+description_key = "settings.mouse.description"
+default = false
+
+[[setting]]
+key = "match_theme"
+type = "bool"
+label_key = "settings.match_theme.label"
+description_key = "settings.match_theme.description"
+default = false
+
+[[setting]]
+key = "extra_args"
+type = "string"
+label_key = "settings.extra_args.label"
+description_key = "settings.extra_args.description"
+default = ""
+
+# Headless background service: owns the process and per-output assignments.
+[[service]]
+id = "service"
+entry = "service.luau"
+
+# Workshop item picker.
+[[panel]]
+id = "picker"
+entry = "panel.luau"
+width = 920
+height = 780
+placement = "attached"
+position = "auto"
+
+# Bar tile that opens the picker.
+[[widget]]
+id = "wallpaper-engine"
+entry = "widget.luau"
+
+  [[widget.setting]]
+  key = "glyph"
+  type = "glyph"
+  label_key = "settings.glyph.label"
+  default = "wallpaper"
+
+# Control center shortcut that opens the picker.
+[[shortcut]]
+id = "shortcut"
+entry = "shortcut.luau"

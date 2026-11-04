@@ -228,7 +228,8 @@ enabled = [
     "noctalia/translator",
     "noctalia/wallhaven",
     "notfinaldev/web-search",
-    "al3x/visualizerp"
+    "al3x/visualizerp",
+    "janzon/wallpaper-engine"
 ]
 
 [shell]
