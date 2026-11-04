@@ -12,6 +12,17 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Google Chrome — 2026-11-04
+
+At the user's request, added `google-chrome` to system packages and to the
+unfree allowlist, launched with `--password-store=gnome-libsecret` so it uses
+the Oo7 Secret Service like Helium.
+
+Validation: `nix flake check` and `nixos-rebuild build` passed; switched (via
+`pkexec`) to generation 257 (`f1zfmgr7…-nixos-system-erebor-26.05.20261029.6f06d20`).
+`google-chrome-stable --version` reports 156.0.8078.73 and no system units
+failed. Browser launch and sign-in were not checked by the user.
+
 ## [COMPLETED] Plasma System Monitor — 2026-11-04
 
 At the user's request, added `kdePackages.plasma-systemmonitor` and its sensor

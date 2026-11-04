@@ -112,6 +112,7 @@ in
       "unrar"
       "steam"
       "steam-unwrapped"
+      "google-chrome"
     ];
 
   boot.loader.systemd-boot.enable = false;
@@ -715,6 +716,7 @@ in
     # System Monitor app; ksystemstats provides its D-Bus sensor backend outside Plasma.
     kdePackages.plasma-systemmonitor
     kdePackages.ksystemstats
+    (google-chrome.override { commandLineArgs = "--password-store=gnome-libsecret"; })
     haruna
     moonlight-qt
     stremio-linux-shell
