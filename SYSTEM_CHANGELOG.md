@@ -1,5 +1,24 @@
 # NixOS system change log for `erebor` (flake target `erebor`)
 
+## [PENDING] Hub display power command fix — 2026-11-04
+
+SYS-062. The hub returned 503 because Umbriel now expects `dpms-off OUTPUT`
+rather than `dpms-off:OUTPUT`; corrected both power directions and their
+regression test. Dashboard flake check and all 35 API tests passed; system
+flake check, dry-build and full build passed. Build uses a clean HEAD export
+plus this fix, excluding unrelated pending Claude Code edits.
+
+Pre-activation: live/selected generation 257 is
+`/nix/store/f1zfmgr7nflnlj0jkn5mi4jn9azxgf3p-nixos-system-erebor-26.05.20261029.6f06d20`.
+Candidate: `/nix/store/336jfsk5zn69kqp36pwkp5giz6bqss3p-nixos-system-erebor-26.05.20261029.6f06d20`.
+Only six service/system derivations rebuild. Caddy/control active, no failed
+units; root/ESP UUIDs match AGENTS.md, EFI boot order unchanged. Snapper is
+not configured (`/etc/snapper/configs` absent). Recovery is the previous
+system's `bin/switch-to-configuration test` or generation 257 from GRUB.
+Next: test activation, API display-on check, persistent switch and service/
+generation checks. No reboot or physical power-off test is planned.
+
+
 This file records dated changes and their evidence. Current unfinished work lives
 in [SYSTEM_TODO.md](SYSTEM_TODO.md); recovery knowledge lives in
 [SYSTEM_CONTEXT.md](SYSTEM_CONTEXT.md). Nix files define intended configuration.

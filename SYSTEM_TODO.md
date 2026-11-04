@@ -16,6 +16,17 @@ instead of copying their instructions. No review task authorizes a reboot,
 activation, storage change, secret archive or graphical-session interruption.
 Earlier approvals remain bounded by their original scope and safety preconditions.
 
+<a id="sys-062"></a>
+
+### SYS-062 — Repair hub display power commands for Umbriel
+
+**Status:** ACTIVE · **Reviewed:** 2026-11-04
+
+**Done when:** Correct the Umbriel DPMS command arguments, pass package/system
+checks, activate the control service, and verify a hub API command succeeds.
+Physical display off/wake confirmation remains the separate SYS-002 acceptance check.
+**Evidence:** [implementation record](SYSTEM_CHANGELOG.md#pending-hub-display-power-command-fix--2026-11-04).
+
 <a id="sys-061"></a>
 
 ### SYS-061 — Install AWS CLI v2 and AWS SAM CLI
