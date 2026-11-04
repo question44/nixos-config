@@ -712,6 +712,9 @@ in
     kdePackages.gwenview
     kdePackages.okular
     kdePackages.ark
+    # System Monitor app; ksystemstats provides its D-Bus sensor backend outside Plasma.
+    kdePackages.plasma-systemmonitor
+    kdePackages.ksystemstats
     haruna
     moonlight-qt
     stremio-linux-shell

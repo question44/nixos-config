@@ -12,6 +12,17 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Plasma System Monitor — 2026-11-04
+
+At the user's request, added `kdePackages.plasma-systemmonitor` and its sensor
+daemon `kdePackages.ksystemstats` (D-Bus activated, needed outside Plasma) to
+system packages.
+
+Validation: `nix flake check` and `nixos-rebuild build` passed; switched (via
+`pkexec`) to generation 256 (`ppyzvygn…-nixos-system-erebor-26.05.20261029.6f06d20`).
+Both binaries are on PATH and no system units failed. The app's UI was not
+checked by the user.
+
 ## [COMPLETED] Noctalia config validation warnings — 2026-11-04
 
 `noctalia config validate` (Noctalia v5.4.1) reported 9 warnings on
