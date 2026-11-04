@@ -80,7 +80,7 @@ class Desktop:
             command(['niri', 'msg', 'action', 'focus-window', '--id', str(window['id'])])
             command(['niri', 'msg', 'action', 'center-column'])
         else:
-            command(['umbriel', 'msg', 'window-focus:' + str(window['id'])])
+            command(['umbriel', 'msg', 'window-focus', str(window['id'])])
             command(['umbriel', 'msg', 'column-center'])
 
 

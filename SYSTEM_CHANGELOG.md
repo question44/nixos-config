@@ -12,6 +12,22 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Umbriel action arguments in rcmd and helpers — 2026-11-04
+
+The current Umbriel rejects `action:argument` messages ("unknown action") and
+takes arguments as separate words. rcmd therefore failed at its focus step, so
+an app chosen in vicinae launched but was never focused, and cycling running
+windows failed too. Switched to the word form in `home/rcmd/rcmd.py`,
+`home/umbriel/focus-or-launch`, `home/umbriel/scratchpad-navigate` and
+`home/sunshine/output.sh` (`window-move-to-workspace-silent --name … --output …`).
+
+Flake check and build passed; switch via pkexec to generation 253, built from
+HEAD plus only these files (uncommitted wallpaper-engine work excluded). No
+failed units; xremap active. Verified deployed scripts use the new form and
+live `rcmd g`/`rcmd c` focused Ghostty/Claude. Not tested: the vicinae
+chooser-then-launch path, scratchpad navigation and Sunshine output removal.
+No reboot.
+
 ## [COMPLETED] Removed the wallpaper-only `ambilight` virtual output — 2026-11-04
 
 At the user's request, Ambilight now follows DP-1's content ([SYS-005](SYSTEM_TODO.md#sys-005)).

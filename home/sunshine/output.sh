@@ -34,8 +34,8 @@ case "${1:-}" in
       '.[] | select(.workspace | startswith($prefix)) | .id')
     for window in "${survivors[@]}"; do
       [[ -n "$destination" ]] || { echo 'No destination for stream windows' >&2; exit 1; }
-      umbriel msg "window-focus:$window"
-      umbriel msg "window-move-to-workspace-silent:$destination"
+      umbriel msg window-focus "$window"
+      umbriel msg window-move-to-workspace-silent --name "${destination%/*}" --output "${destination##*/}"
     done
     if umbriel outputs --json | jq -e --arg name "$stream_output" \
       'any(.[]; .name == $name)' >/dev/null; then

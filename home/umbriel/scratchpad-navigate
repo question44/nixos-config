@@ -10,7 +10,7 @@ esac
 # active means keyboard focus; focused only tracks a workspace's selected tile.
 scratchpad=$(umbriel windows --json | jq -r 'first(.[] | select(.active == true) | .scratchpad) // ""')
 if [[ -n "$scratchpad" ]]; then
-  exec umbriel msg "scratchpad-window-show-$step:$scratchpad"
+  exec umbriel msg "scratchpad-window-show-$step" "$scratchpad"
 else
   exec umbriel msg "window-focus-$1"
 fi

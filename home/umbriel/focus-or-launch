@@ -23,7 +23,7 @@ find_window_id() {
 }
 
 focus_window() {
-  umbriel msg "window-focus:$1"
+  umbriel msg window-focus "$1"
   umbriel msg column-center
 }
 
