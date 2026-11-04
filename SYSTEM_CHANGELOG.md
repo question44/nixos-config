@@ -12,6 +12,21 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Zed background opacity at 90% with dynamic Noctalia colors — 2026-11-04
+
+Added a Home Manager managed custom Noctalia Zed template, preserving all
+community color placeholders and changing only the six background alpha values
+in each transparent variant from B6 to E6 (about 90%). Replaced the community
+Zed selection with the custom template; existing Zed and Gram output paths stay
+in place, so palette changes continue generating colors without resetting alpha.
+
+Noctalia config validation, flake check, dry build and build passed. Test
+activation and switch succeeded, generation 248. Reloaded Noctalia and applied
+templates; verified all six surfaces in both generated transparent variants have
+E6 alpha and no unresolved placeholders. Home Manager and Noctalia are active;
+no failed system units. Visual appearance inside Zed was not independently
+inspected. No reboot.
+
 ## [COMPLETED] Qt image decoders for Dolphin WebP thumbnails — 2026-11-03
 
 At the user's request: added `kdePackages.qtimageformats` (WebP, TIFF, TGA,

@@ -322,6 +322,7 @@
               xdg.configFile."nvim".source = ./home/nvim;
               xdg.configFile."ghostty/config.ghostty".source = ./home/ghostty/config.ghostty;
               xdg.configFile."noctalia/config.toml".source = ./home/noctalia/config.toml;
+              xdg.configFile."noctalia/templates/zed.json".source = ./home/noctalia/templates/zed.json;
               xdg.configFile."noctalia/starship-base.toml".source = ./home/starship.toml;
               # Keep Vencord settings writable and let Noctalia generate its CSS.
               home.activation.discordNoctaliaTheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''

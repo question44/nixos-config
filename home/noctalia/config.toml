@@ -328,13 +328,18 @@ wallpaper_scheme = "m3-tonal-spot"
         "micro",
         "neovim",
         "vscode",
-        "zed",
         "steam",
         "vicinae",
         "fastfetch",
         "bat",
         "konsole"
     ]
+
+    # Keep palette colors dynamic; the local template sets 90% background opacity.
+    [theme.templates.user.zed]
+    enabled = true
+    input_path = "/home/janzon/.config/noctalia/templates/zed.json"
+    output_path = [ "$XDG_CONFIG_HOME/zed/themes/noctalia.json", "$XDG_CONFIG_HOME/gram/themes/noctalia.json" ]
 
 [wallpaper.default]
 path = "/home/janzon/Pictures/redhead.png"
