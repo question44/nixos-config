@@ -12,6 +12,22 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Shared application background opacity — 2026-11-04
+
+Added `home/appearance.nix` with `appOpacity = 0.9` as the shared setting for
+Ghostty and both Noctalia transparent Zed/Gram variants. Home Manager validates
+the range, rounds to an 8-bit alpha and substitutes that alpha into the Zed
+template and the equivalent decimal into Ghostty. Noctalia's dynamic palette
+placeholders remain intact. Existing Umbriel blur settings are unchanged.
+
+Flake check and build passed; test activation and switch succeeded, generation
+252. Reloaded Noctalia and Ghostty and reapplied templates. Verified Ghostty's
+parsed opacity equals the generated alpha on all six main background surfaces
+in each transparent theme; no unresolved substitution tokens. Noctalia,
+Umbriel and dashboard-control remained active; no failed system units. Visual
+appearance was not independently inspected. Future changes use a NixOS rebuild
+and Noctalia template application/Ghostty reload. No reboot.
+
 ## [COMPLETED] One-at-a-time screen switch (DP-1 / HDMI-A-1) — 2026-11-04
 
 At the user's request: added `umbriel-display-mode dp|hdmi|toggle|status`

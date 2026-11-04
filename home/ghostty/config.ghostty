@@ -1,2 +1,2 @@
 theme = noctalia
-background-opacity = 0.9019607843
+background-opacity = @appOpacity@

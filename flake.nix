@@ -68,6 +68,13 @@
             home-manager.backupFileExtension = "backup";
             home-manager.users.janzon = { lib, pkgs, ... }:
               let
+                appearance = import ./home/appearance.nix;
+                # Zed uses an 8-bit alpha; use the same rounded value in Ghostty.
+                appOpacityByte =
+                  assert lib.assertMsg (appearance.appOpacity >= 0 && appearance.appOpacity <= 1)
+                    "appearance.appOpacity must be between 0 and 1";
+                  builtins.floor (appearance.appOpacity * 255 + 0.5);
+                appOpacityAlpha = lib.toUpper (lib.fixedWidthString 2 "0" (lib.toHexString appOpacityByte));
                 zenPackages = zen-browser.packages.${pkgs.stdenv.hostPlatform.system};
                 zenBrowser = zenPackages.default;
                 rcmdPython = pkgs.python3.withPackages (ps: [ ps.pygobject3 ]);
@@ -343,9 +350,13 @@
                 StartupNotify=true
               '';
               xdg.configFile."nvim".source = ./home/nvim;
-              xdg.configFile."ghostty/config.ghostty".source = ./home/ghostty/config.ghostty;
+              xdg.configFile."ghostty/config.ghostty".source = pkgs.replaceVars ./home/ghostty/config.ghostty {
+                appOpacity = builtins.toJSON (appOpacityByte / 255.0);
+              };
               xdg.configFile."noctalia/config.toml".source = ./home/noctalia/config.toml;
-              xdg.configFile."noctalia/templates/zed.json".source = ./home/noctalia/templates/zed.json;
+              xdg.configFile."noctalia/templates/zed.json".source = pkgs.replaceVars ./home/noctalia/templates/zed.json {
+                inherit appOpacityAlpha;
+              };
               xdg.configFile."noctalia/starship-base.toml".source = ./home/starship.toml;
               # Keep Vencord settings writable and let Noctalia generate its CSS.
               home.activation.discordNoctaliaTheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''

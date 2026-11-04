@@ -344,7 +344,7 @@ wallpaper_scheme = "m3-tonal-spot"
         "konsole"
     ]
 
-    # Keep palette colors dynamic; the local template sets 90% background opacity.
+    # Keep palette colors dynamic; template alpha comes from home/appearance.nix.
     [theme.templates.user.zed]
     enabled = true
     input_path = "/home/janzon/.config/noctalia/templates/zed.json"
