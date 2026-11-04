@@ -137,6 +137,14 @@
                 # Qt image decoders for Dolphin's thumbnailer (WebP, AVIF, HEIC, JXL, ...).
                 kdePackages.qtimageformats
                 kdePackages.kimageformats
+                kdePackages.qtsvg
+                # Extra KIO thumbnailers: video, PDF/PS/RAW/Blender/mobi, gettext.
+                kdePackages.ffmpegthumbs
+                kdePackages.kdegraphics-thumbnailers
+                kdePackages.kdesdk-thumbnailers
+                # Helpers the kio-extras comic (.cbr) and DjVu thumbnailers execute.
+                unrar
+                djvulibre
               ];
               home.sessionVariables = {
                 EDITOR = "${sessionEditor}/bin/session-editor";
@@ -229,6 +237,20 @@
                   --file "$HOME/.config/dolphinrc" \
                   --group UiSettings \
                   --key ColorScheme "*"
+              '';
+              # Enable every installed KIO thumbnailer; several are off by default.
+              home.activation.dolphinPreviewPlugins = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+                run ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 \
+                  --file "$HOME/.config/dolphinrc" \
+                  --group PreviewSettings \
+                  --key Plugins "${lib.concatStringsSep "," [
+                    "appimagethumbnail" "audiothumbnail" "blenderthumbnail" "comicbookthumbnail"
+                    "cursorthumbnail" "directorythumbnail" "djvuthumbnail" "ebookthumbnail"
+                    "exrthumbnail" "ffmpegthumbs" "gsthumbnail" "imagethumbnail" "jpegthumbnail"
+                    "kraorathumbnail" "mobithumbnail" "opendocumentthumbnail" "pothumbnail"
+                    "rawthumbnail" "svgthumbnail" "textthumbnail" "windowsexethumbnail"
+                    "windowsimagethumbnail"
+                  ]}"
               '';
               home.activation.kdeIconTheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
                 run ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 \

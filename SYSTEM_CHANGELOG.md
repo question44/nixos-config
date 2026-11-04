@@ -12,6 +12,26 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Dolphin thumbnailers for all available formats — 2026-11-04
+
+At the user's request: added `ffmpegthumbs` (video), `kdegraphics-thumbnailers`
+(PDF/PS/DVI/EPS, RAW, Blender, mobi), `kdesdk-thumbnailers` (gettext `.po`) and
+`qtsvg` to Home Manager packages, plus `unrar` (allowlisted unfree) and
+`djvulibre` because kio-extras' comic and DjVu thumbnailers execute them. Dolphin
+already bundles kio-extras; a Home Manager activation now writes all 22
+installed plugin IDs to `dolphinrc` `[PreviewSettings] Plugins`. Not included:
+font thumbnails (plasma-workspace) and Calligra.
+
+The first build hit Btrfs metadata ENOSPC; the user ran a data balance first
+([SYS-008](SYSTEM_TODO.md#sys-008)). Built from a clean worktree of HEAD plus only
+this change so unrelated uncommitted work was not activated; the closure diff
+showed only the new packages and Home Manager files. Flake check and build
+passed; pkexec test then switch succeeded, generation 250 (GRUB default). No
+failed system or user units. Dolphin generated cached thumbnails for MP4 (real
+frame), SVG, PDF and PostScript test files in a home folder (test files and
+thumbnails removed). The `.po` thumbnail was not observed: the plugin opts out of
+the disk cache and the screen was not inspected. No reboot.
+
 ## [COMPLETED] Remove leftover Fedora firmware entry and Btrfs label — 2026-11-04
 
 User requested removing firmware entry Boot0009 "Fedora"

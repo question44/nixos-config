@@ -109,6 +109,7 @@ in
       "spotify"
       "discord"
       "stremio-linux-shell"
+      "unrar"
       "steam"
       "steam-unwrapped"
     ];
