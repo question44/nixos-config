@@ -21,7 +21,8 @@ the Oo7 Secret Service like Helium.
 Validation: `nix flake check` and `nixos-rebuild build` passed; switched (via
 `pkexec`) to generation 257 (`f1zfmgr7…-nixos-system-erebor-26.05.20261029.6f06d20`).
 `google-chrome-stable --version` reports 156.0.8078.73 and no system units
-failed. Browser launch and sign-in were not checked by the user.
+failed. After restarting Vicinae, the user confirmed Chrome appears in the
+launcher; sign-in was not checked.
 
 ## [COMPLETED] Plasma System Monitor — 2026-11-04
 

@@ -80,6 +80,9 @@ Unfinished work and verification checks belong in
 
 - Interactive sudo supports YubiKey authentication through a PTY; noninteractive
   sudo can report that a password is required even when a YubiKey is available.
+- The long-running Vicinae daemon does not pick up applications added by a
+  `nixos-rebuild switch`; run `systemctl --user restart vicinae` to rescan
+  (verified 2026-11-04 with Google Chrome).
 - A newly added kernel module is not found by default modprobe after a NixOS
   test activation because it searches `/run/booted-system/kernel-modules`.
   For a module built against the running kernel, load it with
