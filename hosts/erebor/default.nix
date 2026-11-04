@@ -717,6 +717,8 @@ in
     # System Monitor app; ksystemstats provides its D-Bus sensor backend outside Plasma.
     kdePackages.plasma-systemmonitor
     kdePackages.ksystemstats
+    kdePackages.kinfocenter
+    smartmontools
     (google-chrome.override { commandLineArgs = "--password-store=gnome-libsecret"; })
     haruna
     moonlight-qt

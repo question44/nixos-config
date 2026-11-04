@@ -1,5 +1,13 @@
 # NixOS system change log for `erebor` (flake target `erebor`)
 
+## [COMPLETED] kinfocenter and smartmontools — 2026-11-04
+
+Added `kdePackages.kinfocenter` (6.6.6) and `smartmontools` (7.5) to the erebor
+system packages, at the user's request. `nix flake check` and `nixos-rebuild build`
+passed; activated with `pkexec nixos-rebuild switch` as generation 259. Both
+`kinfocenter` and `smartctl` resolve under `/run/current-system/sw/bin`; no failed
+system or user units. The `smartd` daemon was not enabled. No reboot.
+
 ## [COMPLETED] Claude Code CLI — 2026-11-04
 
 Added `claude-code` to the Home Manager packages and the unfree allow-list
