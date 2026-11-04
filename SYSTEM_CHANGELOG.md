@@ -12,6 +12,27 @@ recorded; explicit limitations still apply. `[RECORDED]` preserves an older atte
 whose final outcome is uncertain; its linked task holds the current disposition.
 New active operations use `[PENDING]` only while work is actually in progress.
 
+## [COMPLETED] Re-enable HyperHDR LEDs at startup — 2026-11-04
+
+Ambilight stayed dark after login: HyperHDR's non-declarative `general`
+setting `disableLedsStartup` had been set to `true` (database timestamp
+2026-10-24T23:27Z, no matching record), so each start disabled the whole
+instance (`ALL`). The dashboard On action only enables `LEDDEVICE`, so it could
+not recover this state. Backed up the database to
+`~/.hyperhdr/backups/hyperhdr-before-leds-startup-enable-20261104.db`, then
+with the user service stopped set `disableLedsStartup` to `false` (JSON
+`setconfig` requires admin authorization) and started the service. Verified
+`ALL`, `SYSTEMGRABBER` and `LEDDEVICE` enabled with the system grabber active
+at priority 245, and WLED on with `lor` 0 and live UDP from 192.168.1.106. No
+Nix configuration change or rebuild. Lights were not visually confirmed.
+
+Recording this initially failed with ENOSPC: the root Btrfs filesystem had no
+unallocated space (data chunks 374.58 GiB holding 281.8 GiB; metadata 7.49 of
+8 GiB DUP). With user approval ran `btrfs balance start -dusage=10 /` via
+pkexec (44 of 389 chunks relocated, exit 0). Afterwards: 43 GiB unallocated,
+data 330.58 GiB total, metadata 8.50 GiB total / 7.48 GiB used; this write
+succeeded. No snapshot was taken first (balance only relocates chunks).
+
 ## [COMPLETED] Umbriel blur radius increased to 5 — 2026-11-04
 
 Changed `appearance.blur.radius` from 3 to 5 in the declarative Umbriel
