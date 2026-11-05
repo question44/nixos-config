@@ -1,3 +1,31 @@
+# Translucent browser terminal in the dashboard — 2026-11-05
+
+SYS-071 follow-up. User reported a black bar at the bottom of the tabbed
+terminal window and asked for a 95% translucent, blurred background.
+- The bar was the tab-mode resize strip (solid #000); it now uses the
+  terminal tint.
+- ttyd draws a transparent xterm background (`allowTransparency`, transparent
+  `theme` in `modules/browser-terminal.nix`).
+- `packages/ttyd-web-assets.nix` paints #2b2b2b on the page, unless the page is
+  framed (`html.embedded`).
+- Dashboard `4bf2fd3`: windows and the tab frame blur the page behind them and
+  tint the terminal area with #2b2b2b at 95%. Title and tab bars are frosted.
+  The iframe uses `color-scheme: normal` so browsers don't paint an opaque
+  backdrop.
+
+Validation: a Playwright pixel test against a real local ttyd 1.7.7 (read-only,
+test pattern, same client options and assets) passed 8/8:
+- Light page: the terminal area is (54,53,54) vs solid (43,43,43), i.e.
+  translucent.
+- Dark page: it stays dark (42,42,43), with no opaque backdrop.
+- The tab-mode footer matches the terminal in both schemes.
+- Opened directly, the terminal is still exactly #2b2b2b.
+
+`nix flake check` passed. Activated → generation 279 (`23j4xnjm…`). Verified:
+ttyd active with the new client options and page, dashboard-control active, no
+failed units, served CSS contains the tint. The ttyd restart ended open browser
+terminal sessions.
+
 # Dashboard tabbed terminal window — 2026-11-05
 
 SYS-071 follow-up. User asked for an option to merge all windows and use tabs.
