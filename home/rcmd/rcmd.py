@@ -17,6 +17,14 @@ gi.require_version("GioUnix", "2.0")
 from gi.repository import Gio, GioUnix
 
 
+# Desktop actions that open another window/instance, in order of preference.
+NEW_WINDOW_ACTIONS = ('new-window', 'NewWindow', 'new-instance', 'NewInstance',
+                      'NewWorkspace')
+
+
+NEW_WINDOW = object()  # chooser marker: open another window of a running app
+
+
 def initial(text):
     text = unicodedata.normalize('NFKD', text).casefold().strip()
     return text[:1]
@@ -34,7 +42,12 @@ def catalog():
         if wmclass:
             aliases.add(wmclass.casefold())
         executable = info.get_executable() or ''
+        actions = info.list_actions()
+        new_action = next((a for a in NEW_WINDOW_ACTIONS if a in actions), None)
         apps.append({'id': desktop_id, 'name': name, 'aliases': aliases,
+                     'new_action': new_action,
+                     'actions': [(a, info.get_action_name(a)) for a in actions
+                                 if a != new_action],
                      'executable': Path(executable).name.casefold(),
                      'visible': info.should_show(), 'info': info})
     return sorted(apps, key=lambda a: (a['name'].casefold(), a['id']))
@@ -121,7 +134,7 @@ def choose(apps, running, letter):
         try:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
-            return None
+            return None, None
         choices = {}
         matching_apps = [app for app in apps
                          if app['visible'] and initial(app['name']) == letter]
@@ -136,19 +149,43 @@ def choose(apps, running, letter):
             # entries share a name, while keeping the useful state first.
             if label in choices:
                 label += f" ({app['id'].removesuffix('.desktop')})"
-            choices[label] = app
+            choices[label] = (app, None)
+            name = app['name'].replace('\n', ' ')
+            if window_count:
+                choices[f"＋ New window — {name}"] = (app, NEW_WINDOW)
+            for action, action_name in app['actions']:
+                choices[f"   ↳ {action_name.replace('\n', ' ')} — {name}"] = (app, action)
         result = subprocess.run(
             ['vicinae', 'dmenu', '--format', 'data', '--no-quick-look',
              '--navigation-title', f'{letter.upper()} — choose an app',
-             '--placeholder', '● running  •  ○ not running' if choices else f'No installed apps starting with {letter.upper()}',
+             '--placeholder', '● running  •  ○ not running  •  ＋ new window' if choices else f'No installed apps starting with {letter.upper()}',
              '--section-title', 'Installed apps ({count})'],
             input='\n'.join(choices) + ('\n' if choices else ''), text=True, capture_output=True)
         if result.returncode != 0:
-            return None  # Esc/cancel does not launch anything.
-        return choices.get(result.stdout.rstrip('\n'))
+            return None, None  # Esc/cancel does not launch anything.
+        return choices.get(result.stdout.rstrip('\n'), (None, None))
+
+
+def launch(app, action):
+    # A separate scope prevents xremap restarts from killing this app.
+    if action == NEW_WINDOW:
+        action = app['new_action']
+    if action:
+        target = [sys.executable, os.path.abspath(sys.argv[0]), '--launch-action',
+                  app['info'].get_filename(), action]
+    else:
+        target = [os.environ['RCMD_GIO'], 'launch', app['info'].get_filename()]
+    subprocess.Popen(
+        ['systemd-run', '--user', '--scope', '--quiet', '--', *target],
+        stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+        stderr=None, start_new_session=True)
 
 
 def main():
+    if len(sys.argv) == 4 and sys.argv[1] == '--launch-action':
+        info = GioUnix.DesktopAppInfo.new_from_filename(sys.argv[2])
+        info.launch_action(sys.argv[3], None)
+        return
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('letter', choices=list('abcdefghijklmnopqrstuvwxyz'))
     parser.add_argument('--reverse', action='store_true')
@@ -171,24 +208,28 @@ def main():
             desktop.focus(cycle(groups, args.reverse))
             return
         running = {group['app']['id']: group['windows'] for group in groups}
-        app = choose(apps, running, args.letter)
+        app, action = choose(apps, running, args.letter)
+        new_window = action is not None
         if app is None:
             return
+
+        def app_windows():
+            return [w for w in desktop.windows() if app_for_window(w, apps)['id'] == app['id']]
+
         # Recheck after the chooser: the app may have opened in the meantime.
-        matching = [w for w in desktop.windows() if app_for_window(w, apps)['id'] == app['id']]
-        if not matching:
-            # A separate scope prevents xremap restarts from killing this app.
-            subprocess.Popen(
-                ['systemd-run', '--user', '--scope', '--quiet', '--',
-                 os.environ['RCMD_GIO'], 'launch', app['info'].get_filename()],
-                stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
-                stderr=None, start_new_session=True)
+        before = {w['id'] for w in app_windows()}
+        if new_window or not before:
+            launch(app, action)
         for _ in range(80):
-            matching = [w for w in desktop.windows() if app_for_window(w, apps)['id'] == app['id']]
-            if matching:
-                desktop.focus(max(matching, key=timestamp))
+            matching = app_windows()
+            fresh = [w for w in matching if w['id'] not in before]
+            if fresh or (matching and not new_window):
+                desktop.focus(max(fresh or matching, key=timestamp))
                 return
             time.sleep(.1)
+        if new_window and matching:
+            # Single-window apps may just raise their existing window.
+            desktop.focus(max(matching, key=timestamp))
 
 
 if __name__ == '__main__':

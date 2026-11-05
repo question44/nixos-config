@@ -1,3 +1,18 @@
+# rcmd chooser: new window and desktop actions — 2026-11-05
+
+User asked that the Right Ctrl+Alt+<letter> app chooser (`home/rcmd/rcmd.py`)
+can open a new instance, then for more actions. Running apps now get a
+`＋ New window — <App>` row (desktop action `new-window`/`NewWindow`/
+`new-instance`/`NewWorkspace` when present, else a plain relaunch), and every
+other desktop action of each matching app is listed as `↳ <Action> — <App>`
+(e.g. Zen/Chrome private window, Konsole new tab, Claude new chat). Actions run
+in their own `systemd-run --user --scope`; rcmd focuses the newly appeared window
+(falls back to the app's latest window after 8 s). `nix flake check` and
+`dry-build` passed; offline test of chooser rows/launch commands passed.
+Not activated: the job had no sudo. Pending: user runs
+`sudo nixos-rebuild switch --flake /etc/nixos#erebor`, then tries Right
+Ctrl+Alt+Z on a running Zen.
+
 # NanoKVM Tailscale update to 1.104.5 — 2026-11-05
 
 User asked to update Tailscale on NanoKVM `kvm-37ff` (manual remote state, not
