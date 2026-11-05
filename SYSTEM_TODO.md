@@ -20,18 +20,17 @@ Earlier approvals remain bounded by their original scope and safety precondition
 
 ### SYS-065 — Serve Nerd Fonts with the browser terminal
 
-**Status:** OPEN · **Review:** 2026-11-05
+**Status:** DONE · **Closed:** 2026-11-05
 
 Bundle web fonts and select them in ttyd so eza icons work without client
 font installation. Completion: build/check, browser font/icon verification,
-activation and live service/routing checks. Original fonts are live in generation
-263, user reloaded; missing legacy logo glyphs require the prepared follow-up.
-Added a small fallback and corrected ttyd's font-family parsing; browser checks
-verify the logo glyphs and eza icons. Flake/full build passed; activation blocked
-at local sudo authentication; live/selected generation remains 263.
-Next: activate/verify the follow-up using
-`sudo bash /tmp/activate-ttyd-logo.sh`, then confirm the real browser logo.
-**Evidence:** [prepared logo follow-up](SYSTEM_CHANGELOG.md#prepared-ttyd-legacy-logo-glyphs--2026-11-05).
+activation and live service/routing checks. Added a small legacy-block fallback
+and corrected ttyd's font-family parsing. Flake/full build and Chromium logo/eza
+checks passed; Touch ID test/switch succeeded as generation 264 with verified
+readonly recovery snapshot. Live page, fallback list, protected fonts, matching
+profiles and healthy services verified. Actual user-browser appearance after
+activation remains unobserved. The activation helper is superseded.
+**Evidence:** [completed logo/font deployment](SYSTEM_CHANGELOG.md#completed-ttyd-legacy-logo-glyphs--2026-11-05).
 
 <a id="sys-064"></a>
 

@@ -1,4 +1,4 @@
-## [PREPARED] ttyd legacy logo glyphs — 2026-11-05
+## [COMPLETED] ttyd legacy logo glyphs — 2026-11-05
 
 SYS-065 follow-up. User confirmed the font deployment but fastfetch's small
 NixOS logo still had missing characters. JetBrains Mono lacks its eight distinct
@@ -16,16 +16,18 @@ Live/selected generation 263 before activation:
 `/nix/store/0lykybvg965qq3icy844f79ylim2hsbv-nixos-system-erebor-26.05.20261029.6f06d20`.
 Target: `/nix/store/ajdns1k3kjlmhnv50mykwcnsvxmp8y34-nixos-system-erebor-26.05.20261029.6f06d20`.
 Root/ESP/btrfs-top UUIDs verified, no failed units; caddy and ttyd active.
-Activation and the user-requested retry both stopped at local sudo password
-authentication after the Mac approval timeout; prompts cancelled without
-credentials. Rechecked live/selected generation 263, services active and no new
-snapshot: no activation occurred. Next: run
-`sudo bash /tmp/activate-ttyd-logo.sh` from the user's own terminal.
-The syntax-checked helper checks generation/UUIDs, creates/verifies
-readonly recovery snapshot (Snapper absent), test-activates and checks protected
-fonts/page, then persists/verifies profiles. Recovery: generation 263 and its
-switch-to-configuration. Risk: browser shell disconnect on ttyd restart.
-No reboot performed; unrelated host source edit remains untouched.
+After earlier authentication timeouts, user-requested Touch ID retry succeeded
+through the refreshed agent socket. Helper created and verified readonly snapshot
+`/btrfs-top/nixos-root-pre-ttyd-logo-20261105` (Snapper absent), test-activated,
+verified live page/protected fonts, then persistently switched to generation 264.
+Live/selected profile both match the target above; caddy/ttyd active, no failed
+system/user units. Verified deployed fallback list, range-specific face, Caddy
+asset path and WOFF2 signature; unauthenticated HTTPS font request returns 401.
+Root/ESP UUIDs and Windows EFI entries/firmware boot order remain unchanged.
+Real authenticated user-browser appearance after activation is not observed;
+the exact built assets were browser-tested as above. No reboot performed;
+unrelated host source edit remains untouched. Generation 263 remains recovery.
+Activation helper is now superseded and must not be replayed.
 
 ## [COMPLETED] ttyd bundled Nerd Fonts — 2026-11-05
 
