@@ -1,3 +1,38 @@
+# Dashboard terminal window, heading-click folding, animations — 2026-11-05
+
+SYS-071 follow-up. The user asked for:
+- ttyd in a draggable in-page window — only the terminal, and only on
+  erebor.jzon.pl.
+- Folding by clicking a section's heading row.
+- Animated reordering, and a springy fold/unfold that snaps into place.
+
+Dashboard `bb08c04`:
+- The terminal service has `embedOn: ["erebor.jzon.pl"]` and opens in a
+  draggable, resizable window with open-in-tab, maximise and close (full screen
+  on phones). Ctrl-click and other hosts keep the link.
+- The `modules/browser-terminal.nix` CSP is now
+  `frame-ancestors 'self' https://erebor.jzon.pl`. Tailscale, password and Origin
+  checks are unchanged.
+- FLIP animation of other items while dragging. Sliding items ignore the pointer
+  during a drag so CDK hit-testing doesn't swap them back.
+- Spring max-height fold, staggered row reveal.
+
+Validation:
+- API tests passed.
+- The main Playwright suite passed 38/38 three runs in a row: peak 3 items
+  sliding mid-drag, no replay on drop, heading click folds and unfolds, revealed
+  rows animate.
+- The window suite passed 10/10 against a fake HTTPS terminal: loads, drag,
+  maximise/restore, close, ctrl-click, non-listed host keeps link, phone full
+  screen.
+- `nix flake check` passed.
+
+Activated → generation 276 (`ifgwkpmd…`). Verified: dashboard-control active,
+no failed units, served bundle contains the window, running Caddy config has the
+new terminal CSP, terminal still returns 401 Basic auth. Untested live: the
+terminal in the window with the real password prompt (browsers may not show Basic
+auth inside a frame; the window offers "open in new tab").
+
 # Dashboard foldable sections and PIN autofill opt-out — 2026-11-05
 
 SYS-071 follow-up. User asked to fold sections to N rows, with N set by
