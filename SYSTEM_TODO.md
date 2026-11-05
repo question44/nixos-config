@@ -47,8 +47,8 @@ cached view while the API is down. Completion: activate, complete the setup wiza
 on the live dashboard, verify a restricted user and the wake flow, and push the
 dashboard submodule. Activated 2026-11-05 in generation 266 (`switch`); live
 dashboard serves the wizard, unauthenticated API calls return 401. Setup wizard
-completed by the user (session endpoint reports no setup required). Remaining:
-restricted-user and wake checks, then push. **Evidence:** [Dashboard accounts](SYSTEM_CHANGELOG.md#dashboard-user-accounts--2026-11-05).
+completed by the user (session endpoint reports no setup required). Dashboard `9d08128`
+and parent pushed 2026-11-05. Remaining: restricted-user and wake checks. **Evidence:** [Dashboard accounts](SYSTEM_CHANGELOG.md#dashboard-user-accounts--2026-11-05).
 
 <a id="sys-067"></a>
 
