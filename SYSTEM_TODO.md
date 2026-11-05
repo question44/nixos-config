@@ -16,6 +16,21 @@ instead of copying their instructions. No review task authorizes a reboot,
 activation, storage change, secret archive or graphical-session interruption.
 Earlier approvals remain bounded by their original scope and safety preconditions.
 
+<a id="sys-066"></a>
+
+### SYS-066 — Enable browser terminal file transfers
+
+**Status:** OPEN · **Review:** 2026-11-05
+
+Enable ttyd trzsz support and install trz/tsz declaratively. Completion:
+flake/build checks, browser upload/download content verification, activation
+and live tool/service/access-gate verification. Build and isolated Chromium
+transfers passed with exact binary content and Unicode filename. Activation
+blocked at sudo/Touch ID authentication; generation 264 remains live/selected.
+Next: `sudo bash /tmp/activate-ttyd-transfers.sh`, verify persistence and live
+tools/options/services, then close. Native picker/directory transfers untested.
+**Evidence:** [prepared file transfer deployment](SYSTEM_CHANGELOG.md#prepared-ttyd-file-transfers--2026-11-05).
+
 <a id="sys-065"></a>
 
 ### SYS-065 — Serve Nerd Fonts with the browser terminal
