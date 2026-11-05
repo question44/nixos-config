@@ -11,6 +11,7 @@
       url = "github:hgaiser/moonshine/79554f853135cbac44502b58093a4eb0f0f5e6f1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    monstar.url = "github:rockorager/monstar/406c48eb938a065997bf5378457d7ca24fbfcea5";
     claude-desktop-nix.url = "github:tomsch/claude-desktop-nix";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     noctalia.url = "github:noctalia-dev/noctalia-shell";
@@ -42,7 +43,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, claude-desktop-nix, moonshine, dashboard, noctalia, noctalia-greeter, umbriel, millennium, helium, zen-browser, darkly, vicinae, home-manager, ... }:
+  outputs = { self, nixpkgs, claude-desktop-nix, moonshine, monstar, dashboard, noctalia, noctalia-greeter, umbriel, millennium, helium, zen-browser, darkly, vicinae, home-manager, ... }:
     {
       nixosConfigurations.erebor = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
@@ -122,6 +123,7 @@
               };
               home.packages = with pkgs; [
                 zenBrowser
+                monstar.packages.${pkgs.stdenv.hostPlatform.system}.default
                 (callPackage ./packages/umbriel-display-mode.nix { })
                 (claude-desktop-nix.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
                   postFixup = (old.postFixup or "") + ''

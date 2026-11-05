@@ -16,6 +16,39 @@ instead of copying their instructions. No review task authorizes a reboot,
 activation, storage change, secret archive or graphical-session interruption.
 Earlier approvals remain bounded by their original scope and safety preconditions.
 
+<a id="sys-068"></a>
+
+### SYS-068 — Dashboard user accounts and per-user visibility
+
+**Status:** ACTIVE · **Review:** 2026-11-06
+
+User requested accounts: a first-run wizard creates the administrator, who chooses
+the modules, services and actions each user sees. Implemented in dashboard commit
+`e0d1859` (API accounts/sessions in `~/.local/state/erebor-dashboard`, filtered
+config, server-side action enforcement, setup/login/user-management UI). API tests,
+dashboard `nix flake check`, parent flake check and `nixos-rebuild build` passed; a
+local Caddy+API browser run verified setup, user creation, restricted view and the
+cached view while the API is down. Completion: activate, complete the setup wizard
+on the live dashboard, verify a restricted user and the wake flow, and push the
+dashboard submodule. Activated 2026-11-05 in generation 266 (`switch`); live
+dashboard serves the wizard, unauthenticated API calls return 401. Remaining: the
+user completes setup, then restricted-user and wake checks, then push. **Evidence:** [Dashboard accounts](SYSTEM_CHANGELOG.md#dashboard-user-accounts--2026-11-05).
+
+<a id="sys-067"></a>
+
+### SYS-067 — Install Monstar terminal
+
+**Status:** OPEN · **Review:** 2026-11-05
+
+Add upstream Monstar to Home Manager. Completion: build and activate the intended
+configuration, then verify the executable and graphical launch. Flake check and
+dry-build passed; upstream package built and reports version 1.1.0. A full
+system build failed because the separately modified dashboard imports an
+untracked `auth` module absent from its flake source. Activated 2026-11-05 with
+SYS-068 in generation 266 at user request; `monstar --version` returns 1.1.0.
+Graphical launch remains unverified.
+**Evidence:** [Monstar preparation](SYSTEM_CHANGELOG.md#monstar-preparation--2026-11-05).
+
 <a id="sys-066"></a>
 
 ### SYS-066 — Enable browser terminal file transfers

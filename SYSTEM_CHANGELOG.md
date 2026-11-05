@@ -1,3 +1,33 @@
+# Dashboard user accounts — 2026-11-05
+
+SYS-068. Added accounts to the erebor dashboard (submodule commit `e0d1859`): first-run
+administrator wizard, admin-managed users with per-user modules/services/actions,
+API-enforced action permissions, and a cached last view for Wake while the host
+sleeps. Public `config.json` now carries only branding. Validation: API unit tests
+(47), dashboard and parent `nix flake check`, `nixos-rebuild build`, and a local
+browser run of setup → add restricted user → restricted sign-in → API-down cached
+view. This also resolved the missing `auth` module build failure under SYS-067.
+Activated at user request together with SYS-067 and the t3code `ConditionUser`
+edit: `nixos-rebuild test`, then `switch` → generation 266
+(`gkim8yinpc1j…-nixos-system-erebor`). Live checks: `dashboard-control` active,
+`users.sqlite3` mode 0600, public `config.json` branding-only, session endpoint
+reports setup required, unauthenticated `/api/control/status` 401, Caddy and ttyd
+active, no failed system/user units (noctalia's earlier failed state cleared),
+`monstar --version` 1.1.0. Pending: user completes the setup wizard (SYS-068).
+
+# Monstar preparation — 2026-11-05
+
+Added upstream Monstar 1.1.0 at revision 406c48e to Home Manager, retaining
+its separately pinned Nixpkgs because the system's Nixpkgs lacks Zig 0.17.
+`nix flake check` and `nixos-rebuild dry-build --flake /etc/nixos#erebor`
+passed. Activation and graphical behavior remain unverified; administrator
+authentication is required, and the current tree contains unrelated dashboard
+and service edits that a full activation would also apply. See [SYS-067](SYSTEM_TODO.md#sys-067).
+The upstream package built successfully and `monstar --version` returned 1.1.0.
+On retry, administrator authentication succeeded, but the full system build
+failed: the separately modified dashboard control package imports `auth`, which
+is untracked and absent from its flake source. No activation was attempted.
+
 ## [COMPLETED] ttyd file transfers — 2026-11-05
 
 SYS-066. User requested uploads/downloads. Enabled ttyd's existing trzsz client
