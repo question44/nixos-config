@@ -78,7 +78,10 @@
       "label": "Terminal",
       "description": "Interactive shell on Erebor (Tailscale)",
       "icon": "system",
-      "url": "https://terminal.erebor.jzon.pl"
+      "url": "https://terminal.erebor.jzon.pl",
+      "embedOn": [
+        "erebor.jzon.pl"
+      ]
     },
     {
       "id": "hyperhdr",

@@ -55,7 +55,8 @@ in
               not header Origin https://terminal.erebor.jzon.pl
             }
             respond @terminal_bad_origin "Invalid terminal origin." 403
-            header Content-Security-Policy "frame-ancestors 'self'"
+            # The dashboard on erebor.jzon.pl may show the terminal in an in-page window.
+            header Content-Security-Policy "frame-ancestors 'self' https://erebor.jzon.pl"
             handle /fonts/* {
               root * ${terminalAssets}
               file_server
