@@ -44,6 +44,14 @@ runCommand "ttyd-web-assets" {
       'src: url("/fonts/TerminalLegacySymbols.woff2") format("woff2"); }'
   )
   loads.append('document.fonts.load(\'16px "Erebor Terminal Symbols"\', "\\u{1FB0B}\\u{1FB83}")')
+  # xterm draws a transparent background (allowTransparency); the page supplies the colour,
+  # except when framed by the dashboard, which tints and blurs behind it instead.
+  faces.append(
+      'html, body { background: #2b2b2b !important; } '
+      'html.embedded, html.embedded body, html.embedded #terminal-container, html.embedded .xterm, '
+      'html.embedded .xterm-viewport, html.embedded .xterm-screen { background: transparent !important; }'
+  )
+  embedded = '<script>if (window.top !== window) document.documentElement.classList.add("embedded");</script>'
   assert page.count("</head>") == 1
   page = page.replace("</head>", '<link rel="preload" href="/fonts/JetBrainsMonoNerdFontMono-Regular.woff2" as="font" type="font/woff2" crossorigin><style>' + "\n".join(faces) + "</style></head>")
   # Wait for web fonts before xterm measures cells or initializes its renderer.
@@ -51,6 +59,9 @@ runCommand "ttyd-web-assets" {
   assert page.count(start) == 1 and page.count("</script>") == 1
   page = page.replace(start, start + "Promise.all([" + ",".join(loads) + "]).catch(console.warn).then(() => {\n")
   page = page.replace("</script>", "\n});</script>")
+  # After the font wrapper, which expects the page's single script.
+  assert page.count("<head>") == 1
+  page = page.replace("<head>", "<head>" + embedded)
   (Path(os.environ["out"]) / "index.html").write_text(page)
   PY
 ''

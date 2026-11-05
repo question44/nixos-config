@@ -22,6 +22,9 @@ in
       fontSize = "16";
       enableTrzsz = "true";
       enableSixel = "true";
+      # The page or the embedding dashboard paints the background (see ttyd-web-assets).
+      allowTransparency = "true";
+      theme = ''{"background":"rgba(43,43,43,0)"}'';
       # ttyd parses a leading quoted family as JSON and drops trailing fallbacks.
       fontFamily = "Erebor Terminal, Erebor Terminal Symbols, monospace";
     };
