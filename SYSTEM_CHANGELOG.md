@@ -1,3 +1,12 @@
+# Fish image preview aliases — 2026-11-05
+
+User asked for aliases for the ttyd sixel previews. Added fish alias `img`
+(`chafa --format=sixel`) and function `imgs` (previews given files, or all
+images in the current directory, with filenames) in `flake.nix`. Flake check and
+dry-build passed; activated → generation 272 (`y22imy6c…`), no failed units.
+Verified `img` resolves in an interactive fish and `imgs` emits sixel output for
+a test PNG. Untested live: rendering in a browser session.
+
 # Browser terminal sixel image previews — 2026-11-05
 
 User asked to configure image previews in the ttyd browser terminal. Enabled the

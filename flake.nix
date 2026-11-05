@@ -172,6 +172,18 @@
               programs.fish = {
                 enable = true;
                 functions.fish_greeting.body = "printf '\\n'; shell_welcome; printf '\\n'";
+                functions.imgs = {
+                  description = "Preview images (default: all in current directory) with filenames";
+                  body = ''
+                    set -l files $argv
+                    test (count $files) -eq 0; and set files *.{png,jpg,jpeg,gif,webp,bmp,svg}
+                    for f in $files
+                      test -f $f; or continue
+                      set_color --bold; echo $f; set_color normal
+                      chafa --format=sixel --size=60x20 --animate=off $f
+                    end
+                  '';
+                };
                 shellAliases = {
                   cat = "bat --style=plain --paging=never";
                   catn = "bat --style=numbers --paging=never";
@@ -181,6 +193,8 @@
                   la = "eza --all --group-directories-first --icons=auto";
                   lla = "eza --long --all --header --group-directories-first --icons=auto";
                   lt = "eza --tree --level=2 --group-directories-first --icons=auto";
+                  # Inline image previews (sixel; works in the ttyd browser terminal).
+                  img = "chafa --format=sixel";
 
                   # Common Oh My Zsh Git shortcuts, available in Fish.
                   g = "git";
