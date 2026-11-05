@@ -1,3 +1,24 @@
+# Dashboard movable action tiles and spacers — 2026-11-05
+
+SYS-071 follow-up. User asked that Wake up and the other action buttons move
+freely, and for empty 1-unit spacer cards (1 unit = one button tile). Dashboard
+`2f8371f`:
+- Quick actions are one grid: 4 units wide, 2 on phones.
+- Status cards span 2 units. Action buttons are 1-unit tiles that drag and hide
+  like the cards.
+- In edit mode, "Add spacer" inserts an empty 1-unit cell, in Quick actions and
+  Services. Spacers are stored in the per-user order and removed with ✕.
+
+Validation:
+- API tests passed.
+- A local Playwright run passed all 25 checks, including Wake up dragged first,
+  spacer width = button tile (205 px), and spacer add/remove/persist, blank
+  outside edit mode.
+- `nix flake check` passed.
+
+Activated → generation 274 (`3a69i49r…`). Verified: dashboard-control active,
+no failed units, served bundle contains spacers.
+
 # Dashboard per-user layout edit mode — 2026-11-05
 
 SYS-071. User asked to drag and drop quick-action cards and services, to hide
