@@ -9,9 +9,12 @@ other desktop action of each matching app is listed as `↳ <Action> — <App>`
 in their own `systemd-run --user --scope`; rcmd focuses the newly appeared window
 (falls back to the app's latest window after 8 s). `nix flake check` and
 `dry-build` passed; offline test of chooser rows/launch commands passed.
-Not activated: the job had no sudo. Pending: user runs
-`sudo nixos-rebuild switch --flake /etc/nixos#erebor`, then tries Right
-Ctrl+Alt+Z on a running Zen.
+Activated → generation 269 (`xdyfrlp6…-nixos-system-erebor`), sudo approved by
+FIDO touch. Built as janzon with a one-shot git `insteadOf` pointing the
+`erebor-dashboard` submodule URL at the local checkout (its pinned 9d08128 is 2
+commits ahead of origin/main, unpushed). Verified deployed rcmd contains the
+change, xremap active, no failed units. Untested live: chooser UI (job had no
+Niri socket).
 
 # NanoKVM Tailscale update to 1.104.5 — 2026-11-05
 
