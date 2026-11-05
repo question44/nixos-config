@@ -1,5 +1,23 @@
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 
+let
+  # Bound the existing signature-only PAM service, without timing out the
+  # caller's whole PAM stack (which would also prevent password fallback).
+  macApprovalWithTimeout = pkgs.writeShellScript "mac-approval-with-timeout" ''
+    test "$PAM_TYPE" = auth || exit 1
+    test -n "$PAM_USER" || exit 1
+    exec ${pkgs.coreutils}/bin/timeout --kill-after=2s 30s \
+      ${pkgs.pamtester}/bin/pamtester mac-approval-check "$PAM_USER" authenticate </dev/null
+  '';
+  # WARNING: NixOS security.pam.services.*.rules is experimental and may
+  # change incompatibly. Recheck generated PAM stacks on NixOS upgrades;
+  # incompatible rules can lock users out or weaken authentication.
+  boundedMacApproval = {
+    modulePath = lib.mkForce "${pkgs.pam}/lib/security/pam_exec.so";
+    settings = lib.mkForce { };
+    args = lib.mkForce [ "quiet" "seteuid" (toString macApprovalWithTimeout) ];
+  };
+in
 {
   imports = [ ./yubikey-touch-notify.nix ];
 
@@ -17,6 +35,10 @@
   # for sudo. The sufficient PAM rules retain Unix password recovery.
   security.pam.services.sudo.rssh = true;
   security.pam.services.polkit-1.rssh = true;
+  # Preserve the generated order and sufficient control. Timeout/failure
+  # continues to U2F (sudo only), then the existing Unix password rule.
+  security.pam.services.sudo.rules.auth.rssh = boundedMacApproval;
+  security.pam.services.polkit-1.rules.auth.rssh = boundedMacApproval;
 
   # The credential mapping is provisioned locally after touching the key; it
   # is intentionally outside Git and the Nix store. A successful U2F
@@ -35,7 +57,8 @@
   };
 
   # A diagnostic service verifies Mac approval without granting privileges
-  # or allowing a password to hide an unavailable signing agent.
+  # or allowing a password to hide an unavailable signing agent. Keep this
+  # service unwrapped: the bounded helper invokes it, so wrapping it recurses.
   security.pam.services.mac-approval-check = {
     rssh = true;
     unixAuth = false;

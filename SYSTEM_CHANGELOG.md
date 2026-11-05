@@ -1,3 +1,7 @@
+## [COMPLETED] Mac approval timeout — 2026-11-05
+
+SYS-064: activated and persisted a 30-second Mac approval timeout for sudo and Polkit. Flake check, dry-build and build passed. Test activation verified successful sudo Touch ID and the password prompt after an unanswered request. Live and selected system match; no failed units. Password entry and desktop Polkit behavior remain untested (SYS-064). The switch also activated previously configured ttyd; GRUB was updated by nixos-rebuild. Previous system: /nix/store/c2cpk55chl58br224w0bx4xy5s00nk4v-nixos-system-erebor-26.05.20261029.6f06d20.
+
 # NixOS system change log for `erebor` (flake target `erebor`)
 
 ## [COMPLETED] Claude CLI latest auto-update channel — 2026-11-05

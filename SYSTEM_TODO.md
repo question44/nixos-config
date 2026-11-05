@@ -16,6 +16,18 @@ instead of copying their instructions. No review task authorizes a reboot,
 activation, storage change, secret archive or graphical-session interruption.
 Earlier approvals remain bounded by their original scope and safety preconditions.
 
+<a id="sys-064"></a>
+
+### SYS-064 — Bound Mac approval wait for sudo and Polkit
+
+**Status:** OPEN · **Review:** 2026-11-05
+
+30-second timeout persistently activated; sudo Touch ID and transition to the
+password prompt after timeout were verified. Completion: confirm actual password
+entry and desktop Polkit approval and timeout behavior. Flake, dry-build and
+system build passed; no failed system units.
+**Evidence:** [activation record](SYSTEM_CHANGELOG.md#completed-mac-approval-timeout--2026-11-05).
+
 <a id="sys-063"></a>
 
 ### SYS-063 — Add browser terminal and hub card
