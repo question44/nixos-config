@@ -16,10 +16,12 @@ Live/selected generation 263 before activation:
 `/nix/store/0lykybvg965qq3icy844f79ylim2hsbv-nixos-system-erebor-26.05.20261029.6f06d20`.
 Target: `/nix/store/ajdns1k3kjlmhnv50mykwcnsvxmp8y34-nixos-system-erebor-26.05.20261029.6f06d20`.
 Root/ESP/btrfs-top UUIDs verified, no failed units; caddy and ttyd active.
-Activation did not start: sudo Mac approval fell through to the local password
-prompt, cancelled without credentials. Live/selected generation remains 263;
-no new snapshot or system change. Next: run `sudo bash /tmp/activate-ttyd-logo.sh`
-locally. The syntax-checked helper checks generation/UUIDs, creates/verifies
+Activation and the user-requested retry both stopped at local sudo password
+authentication after the Mac approval timeout; prompts cancelled without
+credentials. Rechecked live/selected generation 263, services active and no new
+snapshot: no activation occurred. Next: run
+`sudo bash /tmp/activate-ttyd-logo.sh` from the user's own terminal.
+The syntax-checked helper checks generation/UUIDs, creates/verifies
 readonly recovery snapshot (Snapper absent), test-activates and checks protected
 fonts/page, then persists/verifies profiles. Recovery: generation 263 and its
 switch-to-configuration. Risk: browser shell disconnect on ttyd restart.
