@@ -1,4 +1,31 @@
-## [PREPARED] ttyd bundled Nerd Fonts — 2026-11-05
+## [PREPARED] ttyd legacy logo glyphs — 2026-11-05
+
+SYS-065 follow-up. User confirmed the font deployment but fastfetch's small
+NixOS logo still had missing characters. JetBrains Mono lacks its eight distinct
+U+1FBxx legacy-computing shapes. Added a 2,892-byte WOFF2 subset of Unifont Upper,
+preloaded only for that Unicode range; ordinary text and Nerd icons keep their
+existing font. Fixed ttyd's JSON parsing of the leading quoted font-family,
+which silently discarded the fallback list. FontTools' Unicode-range pruning
+fails on reserved bits in this Unifont source; disabled pruning for the subset.
+
+Flake check and full build passed. Chromium verified five font downloads, all eight glyphs
+rendered by the downloaded fallback (CDP), the actual terminal canvas using the
+complete fallback list, eza icons and no browser errors. Fixed-logo screenshot
+`/tmp/ttyd-font-browser/fastfetch-fixed.png` visually inspected (no missing boxes).
+Live/selected generation 263 before activation:
+`/nix/store/0lykybvg965qq3icy844f79ylim2hsbv-nixos-system-erebor-26.05.20261029.6f06d20`.
+Target: `/nix/store/ajdns1k3kjlmhnv50mykwcnsvxmp8y34-nixos-system-erebor-26.05.20261029.6f06d20`.
+Root/ESP/btrfs-top UUIDs verified, no failed units; caddy and ttyd active.
+Activation did not start: sudo Mac approval fell through to the local password
+prompt, cancelled without credentials. Live/selected generation remains 263;
+no new snapshot or system change. Next: run `sudo bash /tmp/activate-ttyd-logo.sh`
+locally. The syntax-checked helper checks generation/UUIDs, creates/verifies
+readonly recovery snapshot (Snapper absent), test-activates and checks protected
+fonts/page, then persists/verifies profiles. Recovery: generation 263 and its
+switch-to-configuration. Risk: browser shell disconnect on ttyd restart.
+No reboot performed; unrelated host source edit remains untouched.
+
+## [COMPLETED] ttyd bundled Nerd Fonts — 2026-11-05
 
 SYS-065. User requested web-served fonts for eza icons. Generate ttyd's custom
 index from its packaged HTML, add @font-face rules and wait for regular/bold/
@@ -17,17 +44,11 @@ The pre-existing uncommitted t3code ConditionUser change is already live;
 its service path matches the build and its source edit will remain untouched.
 Built Caddy routes also verified all four WOFF2 signatures and font/woff2 MIME,
 unauthenticated 401, foreign origin 403, and missing font 404 with fixture auth.
-Test activation did not start: Mac approval fell through to a local sudo
-password prompt, which was cancelled. Live/selected generation remains 262;
-no system changes or recovery snapshot were made. Snapper is absent.
-Next: `sudo bash /tmp/activate-ttyd-fonts.sh` locally. The syntax-checked helper
-checks generation/UUIDs, creates/verifies a readonly recovery snapshot, test
-activates the verified closure, checks the live page and protected font routes,
-then persists and verifies the selected/live profile. Afterwards verify real
-browser login/icons and update SYS-065. Prepared source is committed separately
-from the unrelated host edit.
-Recovery: generation 262 and its switch-to-configuration. Risk: ttyd restart
-disconnects existing browser shells; Caddy reload. No reboot performed.
+Initial agent activation was blocked at sudo. Later user activation verified
+live/selected generation 263 at the target above, active caddy/ttyd and the
+user's reloaded browser. Legacy-computing logo glyphs are the SYS-065 follow-up
+above. The generation-262 activation helper is superseded; do not replay it.
+No reboot performed.
 
 ## [COMPLETED] Mac approval timeout — 2026-11-05
 

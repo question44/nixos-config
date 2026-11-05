@@ -1,10 +1,11 @@
-{ runCommand, python3, woff2, ttyd, nerd-fonts }:
+{ runCommand, python3, woff2, ttyd, nerd-fonts, unifont_upper }:
 
 # Keep the custom page in sync with the packaged ttyd client, without rebuilding JS.
 runCommand "ttyd-web-assets" {
-  nativeBuildInputs = [ python3 woff2 ];
+  nativeBuildInputs = [ (python3.withPackages (ps: [ ps.fonttools ps.brotli ])) woff2 ];
   ttydSource = ttyd.src;
   fontDirectory = "${nerd-fonts.jetbrains-mono}/share/fonts/truetype/NerdFonts/JetBrainsMono";
+  legacyFont = "${unifont_upper}/share/fonts/opentype/unifont_upper.otf";
 } ''
   mkdir -p "$out/fonts"
   for variant in Regular Bold Italic BoldItalic; do
@@ -12,6 +13,10 @@ runCommand "ttyd-web-assets" {
     woff2_compress "$out/fonts/JetBrainsMonoNerdFontMono-$variant.ttf"
     rm "$out/fonts/JetBrainsMonoNerdFontMono-$variant.ttf"
   done
+  # Only ship the legacy-computing block used by fastfetch's small NixOS logo.
+  python3 -m fontTools.subset "$legacyFont" --unicodes=U+1FB00-1FBFF \
+    --no-prune-unicode-ranges \
+    --flavor=woff2 --output-file="$out/fonts/TerminalLegacySymbols.woff2"
   python3 <<'PY'
   import gzip
   import os
@@ -32,6 +37,13 @@ runCommand "ttyd-web-assets" {
           f'src: url("/fonts/JetBrainsMonoNerdFontMono-{variant}.woff2") format("woff2"); }}'
       )
       loads.append(f'document.fonts.load(\'{style} {weight} 16px "Erebor Terminal"\')')
+  # A range-specific face supplements JetBrains Mono without replacing text/icons.
+  faces.append(
+      '@font-face { font-family: "Erebor Terminal Symbols"; font-weight: 400 700; '
+      'font-style: normal; font-display: block; unicode-range: U+1FB00-1FBFF; '
+      'src: url("/fonts/TerminalLegacySymbols.woff2") format("woff2"); }'
+  )
+  loads.append('document.fonts.load(\'16px "Erebor Terminal Symbols"\', "\\u{1FB0B}\\u{1FB83}")')
   assert page.count("</head>") == 1
   page = page.replace("</head>", '<link rel="preload" href="/fonts/JetBrainsMonoNerdFontMono-Regular.woff2" as="font" type="font/woff2" crossorigin><style>' + "\n".join(faces) + "</style></head>")
   # Wait for web fonts before xterm measures cells or initializes its renderer.

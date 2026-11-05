@@ -15,7 +15,8 @@ in
     clientOptions = {
       titleFixed = "Erebor terminal";
       fontSize = "16";
-      fontFamily = "'Erebor Terminal', monospace";
+      # ttyd parses a leading quoted family as JSON and drops trailing fallbacks.
+      fontFamily = "Erebor Terminal, Erebor Terminal Symbols, monospace";
     };
   };
 
