@@ -355,6 +355,9 @@ in
   };
   systemd.user.services.t3code = {
     description = "T3 Code web server";
+    # Global user unit: only janzon's lingering manager may run it; other
+    # managers (e.g. greeter) cannot enter /home/janzon and would crash-loop.
+    unitConfig.ConditionUser = "janzon";
     after = [ "network-online.target" ];
     wants = [ "network-online.target" ];
     wantedBy = [ "default.target" ];
