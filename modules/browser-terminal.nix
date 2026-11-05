@@ -3,7 +3,10 @@ let
   terminalAssets = pkgs.callPackage ../packages/ttyd-web-assets.nix { };
 in
 {
-  environment.systemPackages = [ (pkgs.callPackage ../packages/trzsz.nix { }) ];
+  environment.systemPackages = [
+    (pkgs.callPackage ../packages/trzsz.nix { })
+    pkgs.chafa # inline image previews (chafa -f sixel image.png)
+  ];
 
   services.ttyd = {
     enable = true;
@@ -18,6 +21,7 @@ in
       titleFixed = "Erebor terminal";
       fontSize = "16";
       enableTrzsz = "true";
+      enableSixel = "true";
       # ttyd parses a leading quoted family as JSON and drops trailing fallbacks.
       fontFamily = "Erebor Terminal, Erebor Terminal Symbols, monospace";
     };

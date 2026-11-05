@@ -1,3 +1,13 @@
+# Browser terminal sixel image previews — 2026-11-05
+
+User asked to configure image previews in the ttyd browser terminal. Enabled the
+ttyd 1.7.7 `enableSixel` client option and added `chafa` to system packages in
+`modules/browser-terminal.nix`. `nix flake check` and `dry-build` passed.
+Activated → generation 271 (`fc8hqkg1…-nixos-system-erebor`); ttyd restarted
+active with `--client-option enableSixel true`, served page contains the sixel
+addon, `chafa` on PATH, no failed units. Untested live: rendering an image in a
+browser session (`chafa -f sixel image.png`).
+
 # Dashboard recent accounts and performance profiles — 2026-11-05
 
 SYS-070. User asked for the dashboard sign-in screen to list recently signed-in
