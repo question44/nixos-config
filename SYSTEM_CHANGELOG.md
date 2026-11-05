@@ -1,3 +1,26 @@
+# Dashboard tabbed terminal window — 2026-11-05
+
+SYS-071 follow-up. User asked for an option to merge all windows and use tabs.
+Dashboard `0c9670f`:
+- "Merge into tabs" in any title bar puts every window into one tabbed window:
+  switch, close, + new tab, arrow keys, open in a new browser tab, minimise to
+  one dock chip, maximise.
+- "Split into windows" reverses it. Iframes never move in the DOM (that would
+  reload them and end their shells): in tab mode they are laid over the tab
+  frame's content area.
+- The mode is remembered per device.
+
+Validation:
+- The window suite passed 31/31, including: merge and split keep each
+  terminal's in-page marker (no reload), only the active tab is visible and
+  aligned to the content area (also after dragging), tab switch/close/new,
+  minimise/restore, mode remembered.
+- The main suite passed 38/38.
+- `nix flake check` passed.
+
+Activated → generation 278 (`00sl0hvg…`). Verified: dashboard-control active,
+no failed units, served bundle contains tabs.
+
 # Dashboard multiple terminal windows — 2026-11-05
 
 SYS-071 follow-up. User asked to open multiple terminals. Dashboard `f3b2b5a`:

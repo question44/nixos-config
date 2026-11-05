@@ -26,7 +26,7 @@ Pencil edit mode with wiggle, drag/keyboard reordering of cards, action tiles an
 services, 1-unit spacers (generation 274), foldable sections with a draggable
 fold line (generation 275), heading-click folding with spring animations and the
 terminal in in-page windows on erebor.jzon.pl (generation 276; multiple windows
-with a dock in generation 277), hiding, a Show hidden
+with a dock in generation 277; tab mode in generation 278), hiding, a Show hidden
 toggle (all stored per account), and the install hint hidden in installed mode.
 Activated in generation 273, with the service, DB migration and endpoint verified.
 Completion: the user arranges the dashboard on a phone and on desktop and confirms
