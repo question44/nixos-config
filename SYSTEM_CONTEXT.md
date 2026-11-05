@@ -58,6 +58,9 @@ Unfinished work and verification checks belong in
   not OS responsiveness; hardware acceptance is tracked in SYS-040.
   OS probes use tailscaled’s local Unix socket: launching the Go CLI per probe
   caused load and timeouts on this device; retain the socket-based implementation.
+  Restart tailscaled over LAN SSH (`root@192.168.1.122`), not over Tailscale.
+  `S98tailscaled stop` does not wait for exit: confirm the old PID is gone before
+  start (SIGKILL if needed), or both daemons share state and exhaust ~158 MiB RAM.
 
 - For deployments using the private dashboard submodule, run
   `nixos-rebuild test/switch --sudo --flake /etc/nixos#erebor` as janzon so Nix

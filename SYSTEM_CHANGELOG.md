@@ -1,3 +1,16 @@
+# NanoKVM Tailscale update to 1.104.5 — 2026-11-05
+
+User asked to update Tailscale on NanoKVM `kvm-37ff` (manual remote state, not
+flake-managed). Static riscv64 1.104.5 (current stable) binaries were already in
+`/usr/bin/tailscale` and `/usr/sbin/tailscaled` while the 1.80.2 daemon kept
+running. Ran `/etc/init.d/S98tailscaled restart` over LAN SSH
+(`root@192.168.1.122`). Its stop step reported OK, but the old daemon kept running
+alongside the new one on the same state/socket, and the new daemon stalled in
+disk sleep at 3 MiB free RAM. SIGKILL of the old PID let 1.104.5 start. Verified:
+one tailscaled at 1.104.5, node `100.114.21.112` online with direct 1 ms ping from
+erebor, `CorpDNS` false, Serve 8443 → 127.0.0.1:18091 intact, wake helper
+`/health` ready and `/status` returning LED and Tailscale OS-probe state over Serve.
+
 # Monstar activation, tab key and terminal keymaps — 2026-11-05
 
 SYS-067. User launched Monstar and asked for a Super+T tab key and a working
