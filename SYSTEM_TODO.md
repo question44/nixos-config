@@ -16,6 +16,18 @@ instead of copying their instructions. No review task authorizes a reboot,
 activation, storage change, secret archive or graphical-session interruption.
 Earlier approvals remain bounded by their original scope and safety preconditions.
 
+<a id="sys-070"></a>
+
+### SYS-070 — Dashboard recent accounts and performance profiles
+
+**Status:** REVIEW · **Review:** 2026-11-12
+
+Per-device recent-account tiles on the sign-in screen and a Performance profile
+card in quick actions. Activated in generation 270, with service, polkit and API
+verified. Completion: the user signs in from a tile and switches profiles from
+the dashboard. **Evidence:**
+[Recent accounts and profiles](SYSTEM_CHANGELOG.md#dashboard-recent-accounts-and-performance-profiles--2026-11-05).
+
 <a id="sys-069"></a>
 
 ### SYS-069 — Moonlight pairing from the dashboard hub

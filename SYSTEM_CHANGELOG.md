@@ -1,3 +1,21 @@
+# Dashboard recent accounts and performance profiles — 2026-11-05
+
+SYS-070. User asked for the dashboard sign-in screen to list recently signed-in
+users, and to switch performance profiles. Chosen design (user): per device —
+the browser keeps up to 5 usernames with sign-in times in `localStorage`; tiles
+prefill the username and can be removed. Nothing is exposed by the server. New
+quick-action card "Performance" (`profile-power-saver`/`-balanced`/`-performance`)
+sets power-profiles-daemon `ActiveProfile` via `busctl`. The status shows the
+active profile and any `PerformanceDegraded` reason. A polkit rule grants janzon
+`org.freedesktop.UPower.PowerProfiles.switch-profile`, because the user service
+has no active session. API tests (60), `nix flake check` and `nixos-rebuild build`
+passed. Activated → generation 270 (`hhh4xcnw…-nixos-system-erebor`). FIDO touch
+approved sudo; the job's PATH lacked `/run/wrappers/bin`. Verified:
+dashboard-control active, no failed units; `busctl` profile set from the user
+manager succeeded (polkit rule effective); live OpenAPI lists the actions and
+`profile` status; served bundle contains the new UI. Untested live: the sign-in
+tiles and profile card in a real browser session.
+
 # rcmd chooser: new window and desktop actions — 2026-11-05
 
 User asked that the Right Ctrl+Alt+<letter> app chooser (`home/rcmd/rcmd.py`)
