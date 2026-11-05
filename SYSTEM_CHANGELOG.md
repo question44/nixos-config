@@ -1,3 +1,31 @@
+# Dashboard per-user layout edit mode — 2026-11-05
+
+SYS-071. User asked to drag and drop quick-action cards and services, to hide
+items, to have a "show hidden" toggle, and to remember all of this per user. They
+also asked for an Android-style pencil edit mode with iPhone-style wiggle, and to
+hide the install hint when the dashboard runs as an installed app. Dashboard
+`dd8ec74`:
+- New `users.layout` column, migrated in place, and `PUT /api/control/layout`.
+- Pencil button (top right) toggles edit mode. In edit mode, items wiggle,
+  whole cards drag (arrow keys work on the move button), and an eye button hides
+  each item. A "Show hidden (N)" header toggle appears otherwise.
+- Install footer hidden in standalone/iOS home-screen mode.
+
+Validation:
+- API tests (62) passed.
+- A local Caddy+API Playwright run passed all 17 checks: no drag outside edit
+  mode, wiggle, hide, mouse drag, keyboard move, persistence across reload,
+  show-hidden, separate guest layout, footer hidden when standalone, no page errors.
+- `nix flake check` and the build passed.
+
+Pitfall: Nix builds the submodule at the parent HEAD's gitlink (`self.submodules`),
+so a staged bump was not enough. Committed the bump (`28ab07b`) and built via
+`insteadOf` the local checkout. Activated → generation 273
+(`hpks00m0…-nixos-system-erebor`). Verified: dashboard-control active, no failed
+units, live DB has the `layout` column (janzon, karol default), endpoint 401
+unauthenticated, served bundle contains edit mode. Untested live: the user's own
+devices.
+
 # Fish image preview aliases — 2026-11-05
 
 User asked for aliases for the ttyd sixel previews. Added fish alias `img`

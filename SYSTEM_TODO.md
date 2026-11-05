@@ -16,6 +16,19 @@ instead of copying their instructions. No review task authorizes a reboot,
 activation, storage change, secret archive or graphical-session interruption.
 Earlier approvals remain bounded by their original scope and safety preconditions.
 
+<a id="sys-071"></a>
+
+### SYS-071 — Dashboard per-user layout edit mode
+
+**Status:** REVIEW · **Review:** 2026-11-12
+
+Pencil edit mode with wiggle, drag/keyboard reordering, hiding, a Show hidden
+toggle (all stored per account), and the install hint hidden in installed mode.
+Activated in generation 273, with the service, DB migration and endpoint verified.
+Completion: the user arranges the dashboard on a phone and on desktop and confirms
+the layout follows the account. **Evidence:**
+[Layout edit mode](SYSTEM_CHANGELOG.md#dashboard-per-user-layout-edit-mode--2026-11-05).
+
 <a id="sys-070"></a>
 
 ### SYS-070 — Dashboard recent accounts and performance profiles
