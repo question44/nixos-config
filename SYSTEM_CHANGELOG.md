@@ -1,5 +1,22 @@
 # NixOS system change log for `erebor` (flake target `erebor`)
 
+## [COMPLETED] Claude CLI latest auto-update channel — 2026-11-05
+
+User requested the most recent Claude CLI and automatic future updates.
+Installed Anthropic's native user CLI using the official installer with
+`latest`; user settings select `autoUpdatesChannel = latest`. Existing
+nix-ld supports the upstream binary, and ~/.local/bin precedes the Nix
+profile in PATH. The declarative Nix package remains as an inactive fallback;
+it does not control the native CLI's updates.
+
+Verified upstream latest release and local version 2.1.318, including a fresh
+fish login shell. `claude doctor` reports native installation, auto-updates
+enabled, latest channel, working bundled search, and no installation issues.
+Updates install in the background and take effect on the next launch;
+future update delivery has not yet been observed. Authentication remains for
+the user. No Nix configuration, system generation or services changed; no
+system rebuild or administrator approval was needed.
+
 ## [PREPARED] Browser terminal and hub card — 2026-11-05
 
 SYS-063. User requested ttyd on terminal.erebor.jzon.pl and a hub card.
