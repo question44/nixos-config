@@ -1,3 +1,24 @@
+# Dashboard multiple terminal windows — 2026-11-05
+
+SYS-071 follow-up. User asked to open multiple terminals. Dashboard `f3b2b5a`:
+- Each Terminal click, or the title-bar +, opens another window, up to 8. Each
+  window is its own iframe, so ttyd starts a separate shell for it.
+- Windows are numbered, cascade, and come forward on click (including clicks
+  inside the iframe), and can be minimised.
+- A dock restores, focuses or minimises windows. On phones each window is
+  full-width above the dock.
+
+Validation:
+- The Playwright window suite (fake HTTPS terminal) passed: three windows with
+  their own frames, cascade, raise by title bar and by iframe click,
+  minimise/dock restore/dock minimise, + reuses a freed number, drag, maximise,
+  close all, ctrl-click tab, a non-listed host keeps the link, phone layout.
+- The main suite passed 38/38.
+- `nix flake check` passed.
+
+Activated → generation 277 (`9d73mqai…`). Verified: dashboard-control active,
+no failed units, served bundle contains the dock.
+
 # Dashboard terminal window, heading-click folding, animations — 2026-11-05
 
 SYS-071 follow-up. The user asked for:
