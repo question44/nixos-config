@@ -1,5 +1,41 @@
 # NixOS system change log for `erebor` (flake target `erebor`)
 
+## [PREPARED] Browser terminal and hub card — 2026-11-05
+
+SYS-063. User requested ttyd on terminal.erebor.jzon.pl and a hub card.
+Loopback backend runs the user's login fish shell as janzon; Caddy shares
+the existing desktop runtime password gate, tailnet restriction and origin
+checks. DNS resolves to 100.108.216.80. The existing gate returns 503 until
+the user sets a password (SYS-058); no credentials changed.
+
+Flake check and full build passed. Before activation: live/selected generation
+261, `/nix/store/c2cpk55chl58br224w0bx4xy5s00nk4v-nixos-system-erebor-26.05.20261029.6f06d20`.
+Root UUID 5be9be17-20c9-4a47-ba2d-6adf1ceb4c55 and ESP UUID 38B5-8386
+confirmed mounted at / and /boot; Windows EFI entries remain present.
+No failed system units; user xdg-desktop-portal-gtk.service already failed.
+Activation did not start: sudo requires a password; pkexec without a TTY has
+no authentication agent and its TTY attempt requested a password (cancelled).
+Live/selected generation remains 261. No system configuration was activated.
+
+An isolated transient ttyd process and the built Caddy terminal snippet verified
+HTTP 200, missing/wrong fixture credentials 401, valid fixture credentials 200,
+foreign origin 403, and an authenticated WebSocket executing a fish command as
+janzon. Test services were stopped; the real runtime auth file was untouched.
+Built dashboard config contains the exact terminal URL. No live hub/card or
+terminal HTTPS activation verification is claimed.
+
+Prepared `/tmp/activate-browser-terminal.sh` (bash syntax checked) for the user:
+it checks the unchanged generation and filesystem UUIDs, creates/verifies a
+readonly recovery snapshot, test-activates the already built closure, checks
+service/HTTP/gate/hub configuration, then persists and verifies the profile.
+Target: `/nix/store/4672i2lxb56rw2f9xm0v6n1s4a660vl7-nixos-system-erebor-26.05.20261029.6f06d20`.
+Next: run `sudo bash /tmp/activate-browser-terminal.sh`, then
+`sudo desktop-password` locally; verify real login and update SYS-063/SYS-058.
+Snapshot has not yet been created; Snapper is absent.
+Recovery: restore generation 261 using its switch-to-configuration and system
+profile if needed. Risks: brief Caddy reload; terminal stays locked until
+local password setup. No reboot performed.
+
 ## [COMPLETED] plasma-disks and vicinae fixes — 2026-11-04
 
 Requested by the user. Added `kdePackages.plasma-disks` and `kdePackages.kded`

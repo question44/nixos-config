@@ -80,6 +80,7 @@ in
     ../../modules/sunshine.nix
     ../../modules/remote-desktop.nix
     ../../modules/browser-desktop.nix
+    ../../modules/browser-terminal.nix
     ../../modules/steam-theme.nix
     ./hardware-configuration.nix
     ./services/jellyfin.nix
@@ -619,6 +620,7 @@ in
       *.erebor.jzon.pl {
         import ovh_tls
         import browser_desktop
+        import browser_terminal
         encode gzip
 
         @code host code.erebor.jzon.pl

@@ -16,6 +16,21 @@ instead of copying their instructions. No review task authorizes a reboot,
 activation, storage change, secret archive or graphical-session interruption.
 Earlier approvals remain bounded by their original scope and safety preconditions.
 
+<a id="sys-063"></a>
+
+### SYS-063 — Add browser terminal and hub card
+
+**Status:** OPEN · **Review:** 2026-11-05
+
+Deploy ttyd as janzon at terminal.erebor.jzon.pl with the existing desktop
+runtime password and Tailscale gates; add the dashboard link. Completion:
+build/check, activation, terminal WebSocket/shell and routing verification.
+Build/check and isolated authenticated WebSocket/shell/routing checks passed;
+activation requires local administrator authentication. Live generation is 261.
+Run `sudo bash /tmp/activate-browser-terminal.sh` to activate the verified build.
+Real password setup/login remains the linked [SYS-058](#sys-058) acceptance.
+**Evidence:** [prepared terminal deployment](SYSTEM_CHANGELOG.md#prepared-browser-terminal-and-hub-card--2026-11-05).
+
 <a id="sys-062"></a>
 
 ### SYS-062 — Repair hub display power commands for Umbriel

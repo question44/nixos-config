@@ -70,6 +70,13 @@
       "url": "https://desktop.erebor.jzon.pl"
     },
     {
+      "id": "terminal",
+      "label": "Terminal",
+      "description": "Interactive shell on Erebor (Tailscale)",
+      "icon": "system",
+      "url": "https://terminal.erebor.jzon.pl"
+    },
+    {
       "id": "hyperhdr",
       "label": "HyperHDR",
       "description": "Ambilight capture and LED settings",
