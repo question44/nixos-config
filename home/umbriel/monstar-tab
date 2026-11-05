@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# Give Monstar tabs that it does not implement itself.
+#
+# Monstar 1.1.0 has no tab model and no bindable new-window action; its only
+# "new" shortcut is a fixed Ctrl+Shift+N that opens a separate window. This
+# script spawns that second window and then has Umbriel stack it into the
+# focused column as a tab, so Meta+T behaves like a terminal tab key.
+set -euo pipefail
+
+app_id="dev.rockorager.monstar"
+
+focused="$(umbriel focused-window --json)"
+[ "$(jq -r '.app_id' <<<"$focused")" = "$app_id" ] || exit 0
+
+anchor_column="$(jq -r '.column' <<<"$focused")"
+anchor_floating="$(jq -r '.floating' <<<"$focused")"
+anchor_pid="$(jq -r '.pid' <<<"$focused")"
+
+# Start in the focused window's shell directory, the way Monstar's own
+# Ctrl+Shift+N does. Fall back to Monstar's inherited directory.
+command="monstar"
+child="$(pgrep -P "$anchor_pid" | head -n 1 || true)"
+if [ -n "$child" ]; then
+  cwd="$(readlink "/proc/$child/cwd" 2>/dev/null || true)"
+  if [ -n "$cwd" ] && [ -d "$cwd" ]; then
+    command="$(printf 'monstar --working-directory %q' "$cwd")"
+  fi
+fi
+
+monstar_ids() {
+  umbriel windows --json | jq -r --arg app "$app_id" '.[] | select(.app_id == $app) | .id'
+}
+
+before="$(monstar_ids)"
+umbriel msg spawn "$command" >/dev/null
+
+# Wait for the new toplevel to map before touching the layout.
+new=""
+for _ in $(seq 1 100); do
+  sleep 0.05
+  new="$(comm -13 <(sort <<<"$before") <(monstar_ids | sort) | head -n 1)"
+  [ -n "$new" ] && break
+done
+[ -n "$new" ] || exit 0
+
+# A floating anchor has no column to tab into; leave the new window alone.
+[ "$anchor_floating" = "true" ] && exit 0
+
+umbriel msg window-focus "$new" >/dev/null
+new_column="$(umbriel windows --json | jq -r --arg id "$new" '.[] | select(.id == $id) | .column')"
+
+if [ "$new_column" = "$((anchor_column + 1))" ]; then
+  # New windows open in their own column right of the focused one.
+  umbriel msg window-consume-left >/dev/null
+elif [ "$new_column" != "$anchor_column" ]; then
+  # Something else placed the window; tabbing it would move it unexpectedly.
+  exit 0
+fi
+
+umbriel msg column-set-display tabbed >/dev/null

@@ -314,7 +314,17 @@ keymap:
     remap:
       CapsLock-comma: Ctrl-comma
 
-  - name: Terminal clipboard (Konsole, xterm, Ghostty)
+  # Monstar has no tabs of its own; Umbriel stacks the new window as a tab.
+  # Must stay ahead of the terminal and global keymaps that also bind Super-t.
+  - name: "New tab (Monstar)"
+    application:
+      only:
+        - dev.rockorager.monstar
+    remap:
+      Super-t:
+        launch: ["/home/janzon/.local/bin/umbriel-monstar-tab"]
+
+  - name: Terminal clipboard (Konsole, xterm, Ghostty, Monstar)
     application:
       only:
         - konsole
@@ -322,6 +332,7 @@ keymap:
         - xterm
         - ghostty
         - com.mitchellh.ghostty
+        - dev.rockorager.monstar
         - gnome-terminal
         - gnome-terminal-server
         - alacritty
@@ -352,6 +363,7 @@ keymap:
         - xterm
         - ghostty
         - com.mitchellh.ghostty
+        - dev.rockorager.monstar
         - gnome-terminal
         - gnome-terminal-server
         - alacritty

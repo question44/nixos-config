@@ -54,16 +54,14 @@ restricted-user and wake checks, then push. **Evidence:** [Dashboard accounts](S
 
 ### SYS-067 — Install Monstar terminal
 
-**Status:** OPEN · **Review:** 2026-11-05
+**Status:** DONE · **Closed:** 2026-11-05
 
 Add upstream Monstar to Home Manager. Completion: build and activate the intended
-configuration, then verify the executable and graphical launch. Flake check and
-dry-build passed; upstream package built and reports version 1.1.0. A full
-system build failed because the separately modified dashboard imports an
-untracked `auth` module absent from its flake source. Activated 2026-11-05 with
-SYS-068 in generation 266 at user request; `monstar --version` returns 1.1.0.
-Graphical launch remains unverified.
-**Evidence:** [Monstar preparation](SYSTEM_CHANGELOG.md#monstar-preparation--2026-11-05).
+configuration, then verify the executable and graphical launch. Activated in
+generation 266 (`monstar --version` 1.1.0); user launched it graphically.
+Super+T tabs and terminal keymaps activated in generation 268; user confirmed
+Super+T and Ctrl+D. **Evidence:** [Monstar preparation](SYSTEM_CHANGELOG.md#monstar-preparation--2026-11-05),
+[Monstar activation](SYSTEM_CHANGELOG.md#monstar-activation-tab-key-and-terminal-keymaps--2026-11-05).
 
 <a id="sys-066"></a>
 

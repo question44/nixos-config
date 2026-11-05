@@ -1,0 +1,5 @@
+# Monstar configuration. Home Manager deploys this file from
+# /etc/nixos/home/monstar/config; do not edit the deployed copy.
+# background-opacity is substituted from home/appearance.nix, the same source
+# Ghostty's background-opacity uses, so both terminals stay in step.
+background-opacity = @appOpacity@

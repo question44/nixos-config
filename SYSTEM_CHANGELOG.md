@@ -1,3 +1,19 @@
+# Monstar activation, tab key and terminal keymaps — 2026-11-05
+
+SYS-067. User launched Monstar and asked for a Super+T tab key and a working
+Ctrl+D. Monstar 1.1.0 has no tabs, so xremap launches
+`~/.local/bin/umbriel-monstar-tab` (`home/umbriel/monstar-tab`) for
+`dev.rockorager.monstar`; it spawns a window in the focused shell's directory and
+stacks it into the focused column as an Umbriel tab. Monstar was missing from the
+xremap terminal lists, so Ctrl+D/A/E/K were rewritten as Delete/Home/End
+and Super+C/V as Ctrl+C/V; it is now in the terminal clipboard keymap and excluded from the
+non-terminal line-navigation keymap. `home/monstar/config` shares Ghostty's opacity.
+Flake check and build passed; user ran `nixos-rebuild test`, then `switch` →
+generation 268 (`7cxr0a9z8ras…-nixos-system-erebor`). xremap kept its old config
+after each activation until `systemctl --user restart xremap`. Verified: script
+run produced a tabbed column, user confirmed Super+T tabs and Ctrl+D closing a
+Monstar window. Super+W has no Monstar close action (unchanged).
+
 # Moonlight pairing in the dashboard hub — 2026-11-05
 
 SYS-069. Added the `moonshine-pair` dashboard action (submodule `9d08128`), enabled

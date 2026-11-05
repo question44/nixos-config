@@ -358,6 +358,10 @@
               xdg.configFile."ghostty/config.ghostty".source = pkgs.replaceVars ./home/ghostty/config.ghostty {
                 appOpacity = builtins.toJSON (appOpacityByte / 255.0);
               };
+              # Monstar shares Ghostty's background opacity, from home/appearance.nix.
+              xdg.configFile."monstar/config".source = pkgs.replaceVars ./home/monstar/config {
+                appOpacity = builtins.toJSON (appOpacityByte / 255.0);
+              };
               xdg.configFile."noctalia/config.toml".source = ./home/noctalia/config.toml;
               # Local plugins in the data dir outrank every plugin source.
               xdg.dataFile."noctalia/plugins/wallpaper-engine".source = ./home/noctalia/plugins/wallpaper-engine;
@@ -434,6 +438,10 @@
               };
               home.file.".local/bin/umbriel-screenshot-window" = {
                 source = ./home/umbriel/screenshot-window;
+                executable = true;
+              };
+              home.file.".local/bin/umbriel-monstar-tab" = {
+                source = ./home/umbriel/monstar-tab;
                 executable = true;
               };
               home.file.".local/bin/umbriel-hdr-toggle" = {

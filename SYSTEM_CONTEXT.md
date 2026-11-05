@@ -28,6 +28,10 @@ Unfinished work and verification checks belong in
 
 ## Reusable operational pitfalls
 
+- `xremap.service` reads `~/.config/xremap/config.yml` only at startup and
+  activation does not restart it. After any xremap config change, run
+  `systemctl --user restart xremap` and verify the remap.
+
 - With unpublished local dashboard submodule commits, build the full local tree
   using `--flake path:/etc/nixos#erebor`; the Git flake URL with `submodules=1`
   can try to fetch the submodule commit from its remote and fail before it is
