@@ -1,4 +1,4 @@
-## [PREPARED] ttyd file transfers — 2026-11-05
+## [COMPLETED] ttyd file transfers — 2026-11-05
 
 SYS-066. User requested uploads/downloads. Enabled ttyd's existing trzsz client
 and packaged upstream trz/tsz 1.2.0 as system tools, using its x86_64 Linux
@@ -18,17 +18,17 @@ Target: `/nix/store/fzixw0fivvs62clcm6w643mwnqnd0jws-nixos-system-erebor-26.05.2
 Root/ESP/btrfs-top UUIDs, Windows EFI entries and firmware order checked.
 No failed system units; user GTK portal failed again during browser testing,
 unrelated to terminal services. Uncommitted host ConditionUser edit is already
-live and remains untouched. Activation attempts did not pass administrator
-authentication: Touch ID timed out/fell through to the sudo password prompt,
-which was cancelled without credentials. Live/selected generation remains 264;
-services active, no new snapshot or system changes. Test listeners stopped.
-
-Next: `sudo bash /tmp/activate-ttyd-transfers.sh` with successful local/Touch ID
-authentication. Syntax-checked helper verifies baseline, creates/verifies
-readonly root snapshot (Snapper absent), test-activates, checks tools/ttyd/gates,
-then persists/verifies generation. Afterward verify live tools/options/services
-and close SYS-066. Recovery: generation 264 and its switch-to-configuration.
-Risk: ttyd restart disconnects browser shells. No reboot performed.
+live and remains untouched. Initial agent activation attempts stopped at sudo
+authentication without changes. User subsequently ran the helper and reported
+completion. Inspection verified generation 265 persistently selected/live at
+the target above; caddy/ttyd active and no failed system/user units. Live trz/tsz
+report 1.2.0, ttyd startup enables trzsz and preserves the font fallback, and
+unauthenticated HTTPS returns 401. Root/ESP UUIDs remain correct.
+Recovery snapshot is `/btrfs-top/nixos-root-pre-ttyd-transfers-20261105`;
+generation 264 remains available. The helper is superseded; do not replay it.
+Actual native browser picker/directory-transfer behavior remains untested;
+isolated file transfers passed as above. No reboot performed. Unrelated
+dashboard submodule and host edits were left untouched.
 
 ## [COMPLETED] ttyd legacy logo glyphs — 2026-11-05
 

@@ -20,16 +20,16 @@ Earlier approvals remain bounded by their original scope and safety precondition
 
 ### SYS-066 — Enable browser terminal file transfers
 
-**Status:** OPEN · **Review:** 2026-11-05
+**Status:** DONE · **Closed:** 2026-11-05
 
 Enable ttyd trzsz support and install trz/tsz declaratively. Completion:
 flake/build checks, browser upload/download content verification, activation
 and live tool/service/access-gate verification. Build and isolated Chromium
-transfers passed with exact binary content and Unicode filename. Activation
-blocked at sudo/Touch ID authentication; generation 264 remains live/selected.
-Next: `sudo bash /tmp/activate-ttyd-transfers.sh`, verify persistence and live
-tools/options/services, then close. Native picker/directory transfers untested.
-**Evidence:** [prepared file transfer deployment](SYSTEM_CHANGELOG.md#prepared-ttyd-file-transfers--2026-11-05).
+transfers passed with exact binary content and Unicode filename. User activated
+the helper; verified live/selected generation 265, tools 1.2.0, enabled ttyd
+option, preserved fonts, active services, no failed units and HTTPS auth gate.
+Native picker/directory transfers untested; helper superseded.
+**Evidence:** [completed file transfer deployment](SYSTEM_CHANGELOG.md#completed-ttyd-file-transfers--2026-11-05).
 
 <a id="sys-065"></a>
 
