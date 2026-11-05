@@ -16,6 +16,21 @@ instead of copying their instructions. No review task authorizes a reboot,
 activation, storage change, secret archive or graphical-session interruption.
 Earlier approvals remain bounded by their original scope and safety preconditions.
 
+<a id="sys-069"></a>
+
+### SYS-069 — Moonlight pairing from the dashboard hub
+
+**Status:** REVIEW · **Review:** 2026-11-12
+
+User requested Moonshine pairing in the hub. Dashboard commit `9d08128` adds the
+`moonshine-pair` action: a PIN card that submits to Moonshine's local
+`/submit-pin` for the newest waiting client (IDs from the moonshine journal,
+fallback `0123456789ABCDEF`). Activated in generation 267 from a tree excluding
+other in-progress edits. API tests (56), flake checks, and a local browser run
+against live Moonshine (PIN filtering, "nothing waiting" error) passed.
+Completion: pair a real Moonlight client through the hub. **Evidence:**
+[Moonlight pairing](SYSTEM_CHANGELOG.md#moonlight-pairing-in-the-dashboard-hub--2026-11-05).
+
 <a id="sys-068"></a>
 
 ### SYS-068 — Dashboard user accounts and per-user visibility
@@ -31,8 +46,9 @@ local Caddy+API browser run verified setup, user creation, restricted view and t
 cached view while the API is down. Completion: activate, complete the setup wizard
 on the live dashboard, verify a restricted user and the wake flow, and push the
 dashboard submodule. Activated 2026-11-05 in generation 266 (`switch`); live
-dashboard serves the wizard, unauthenticated API calls return 401. Remaining: the
-user completes setup, then restricted-user and wake checks, then push. **Evidence:** [Dashboard accounts](SYSTEM_CHANGELOG.md#dashboard-user-accounts--2026-11-05).
+dashboard serves the wizard, unauthenticated API calls return 401. Setup wizard
+completed by the user (session endpoint reports no setup required). Remaining:
+restricted-user and wake checks, then push. **Evidence:** [Dashboard accounts](SYSTEM_CHANGELOG.md#dashboard-user-accounts--2026-11-05).
 
 <a id="sys-067"></a>
 

@@ -37,7 +37,7 @@
       user = "janzon";
       allowedHosts = [ "erebor" "localhost" "127.0.0.1" "erebor.local" "erebor.jzon.pl" ];
       enabledActions = [ "display-on" "display-off" "screen-dp" "screen-hdmi" "ambilight-on" "ambilight-off"
-        "sleep" "power-off" "reboot-windows" ];
+        "sleep" "power-off" "reboot-windows" "moonshine-pair" ];
       wledUrl = "http://192.168.1.118";
       # The same helper backs the Noctalia bar's screen switch.
       extraPackages = [ pkgs.niri config.programs.umbriel.package

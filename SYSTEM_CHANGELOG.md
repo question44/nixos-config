@@ -1,3 +1,16 @@
+# Moonlight pairing in the dashboard hub — 2026-11-05
+
+SYS-069. Added the `moonshine-pair` dashboard action (submodule `9d08128`), enabled
+it for the control API and hub settings. The API reads pending Moonlight client IDs
+from `moonshine.service`'s journal (verified readable inside the user-unit
+sandbox) and posts the PIN to `http://127.0.0.1:47989/submit-pin` for the newest
+waiting client only. Built from a copy of the committed tree plus these changes
+so another session's uncommitted Monstar/xremap/flake edits were not activated.
+`nixos-rebuild test`, then `switch` → generation 267
+(`ih2ahfa3flpy…-nixos-system-erebor`). Live: `dashboard-control` active with
+`DASHBOARD_MOONSHINE_URL`, pairing endpoint 401 without a session, no failed
+units. Real client pairing through the hub is untested.
+
 # Dashboard user accounts — 2026-11-05
 
 SYS-068. Added accounts to the erebor dashboard (submodule commit `e0d1859`): first-run

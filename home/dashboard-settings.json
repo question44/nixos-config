@@ -12,6 +12,7 @@
     "screen-hdmi",
     "ambilight-on",
     "ambilight-off",
+    "moonshine-pair",
     "sleep",
     "reboot-windows",
     "power-off"
