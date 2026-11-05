@@ -1,4 +1,7 @@
 { config, pkgs, ... }:
+let
+  terminalAssets = pkgs.callPackage ../packages/ttyd-web-assets.nix { };
+in
 {
   services.ttyd = {
     enable = true;
@@ -7,10 +10,12 @@
     user = "janzon";
     writeable = true;
     checkOrigin = true;
+    indexFile = "${terminalAssets}/index.html";
     entrypoint = [ "${pkgs.fish}/bin/fish" "--login" ];
     clientOptions = {
       titleFixed = "Erebor terminal";
       fontSize = "16";
+      fontFamily = "'Erebor Terminal', monospace";
     };
   };
 
@@ -43,8 +48,14 @@
             }
             respond @terminal_bad_origin "Invalid terminal origin." 403
             header Content-Security-Policy "frame-ancestors 'self'"
-            reverse_proxy 127.0.0.1:17681 {
-              header_up -Authorization
+            handle /fonts/* {
+              root * ${terminalAssets}
+              file_server
+            }
+            handle {
+              reverse_proxy 127.0.0.1:17681 {
+                header_up -Authorization
+              }
             }
           }
         }

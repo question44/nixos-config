@@ -1,3 +1,34 @@
+## [PREPARED] ttyd bundled Nerd Fonts — 2026-11-05
+
+SYS-065. User requested web-served fonts for eza icons. Generate ttyd's custom
+index from its packaged HTML, add @font-face rules and wait for regular/bold/
+italic/bold-italic JetBrains Mono Nerd Font Mono WOFF2 files before startup.
+Caddy serves /fonts under the existing password, tailnet and origin gates.
+No ttyd source/executable patch or per-device font install.
+
+Flake check and full system build passed. Isolated Chromium verified all four
+font requests return 200, loaded font faces, selected xterm font, eza icon
+output and no page errors; screenshot /tmp/ttyd-font-browser/eza.png inspected.
+Live/selected generation 262 before activation:
+`/nix/store/rwr7pf2nwb92dv0wzdycav1clhq8k4f4-nixos-system-erebor-26.05.20261029.6f06d20`.
+Target: `/nix/store/0lykybvg965qq3icy844f79ylim2hsbv-nixos-system-erebor-26.05.20261029.6f06d20`.
+Root/ESP UUIDs and Windows EFI directory/entries verified; no failed units.
+The pre-existing uncommitted t3code ConditionUser change is already live;
+its service path matches the build and its source edit will remain untouched.
+Built Caddy routes also verified all four WOFF2 signatures and font/woff2 MIME,
+unauthenticated 401, foreign origin 403, and missing font 404 with fixture auth.
+Test activation did not start: Mac approval fell through to a local sudo
+password prompt, which was cancelled. Live/selected generation remains 262;
+no system changes or recovery snapshot were made. Snapper is absent.
+Next: `sudo bash /tmp/activate-ttyd-fonts.sh` locally. The syntax-checked helper
+checks generation/UUIDs, creates/verifies a readonly recovery snapshot, test
+activates the verified closure, checks the live page and protected font routes,
+then persists and verifies the selected/live profile. Afterwards verify real
+browser login/icons and update SYS-065. Prepared source is committed separately
+from the unrelated host edit.
+Recovery: generation 262 and its switch-to-configuration. Risk: ttyd restart
+disconnects existing browser shells; Caddy reload. No reboot performed.
+
 ## [COMPLETED] Mac approval timeout — 2026-11-05
 
 SYS-064: activated and persisted a 30-second Mac approval timeout for sudo and Polkit. Flake check, dry-build and build passed. Test activation verified successful sudo Touch ID and the password prompt after an unanswered request. Live and selected system match; no failed units. Password entry and desktop Polkit behavior remain untested (SYS-064). The switch also activated previously configured ttyd; GRUB was updated by nixos-rebuild. Previous system: /nix/store/c2cpk55chl58br224w0bx4xy5s00nk4v-nixos-system-erebor-26.05.20261029.6f06d20.

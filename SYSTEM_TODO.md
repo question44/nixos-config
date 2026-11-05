@@ -16,6 +16,20 @@ instead of copying their instructions. No review task authorizes a reboot,
 activation, storage change, secret archive or graphical-session interruption.
 Earlier approvals remain bounded by their original scope and safety preconditions.
 
+<a id="sys-065"></a>
+
+### SYS-065 — Serve Nerd Fonts with the browser terminal
+
+**Status:** OPEN · **Review:** 2026-11-05
+
+Bundle web fonts and select them in ttyd so eza icons work without client
+font installation. Completion: build/check, browser font/icon verification,
+activation and live service/routing checks. Build/check and isolated Chromium
+tests and built Caddy font/auth routes passed. Activation requires local sudo
+authentication; live/selected generation remains 262. Run
+`sudo bash /tmp/activate-ttyd-fonts.sh`, verify real browser login/icons, and close.
+**Evidence:** [prepared font deployment](SYSTEM_CHANGELOG.md#prepared-ttyd-bundled-nerd-fonts--2026-11-05).
+
 <a id="sys-064"></a>
 
 ### SYS-064 — Bound Mac approval wait for sudo and Polkit
@@ -32,14 +46,16 @@ system build passed; no failed system units.
 
 ### SYS-063 — Add browser terminal and hub card
 
-**Status:** OPEN · **Review:** 2026-11-05
+**Status:** DONE · **Closed:** 2026-11-05
 
 Deploy ttyd as janzon at terminal.erebor.jzon.pl with the existing desktop
 runtime password and Tailscale gates; add the dashboard link. Completion:
 build/check, activation, terminal WebSocket/shell and routing verification.
-Build/check and isolated authenticated WebSocket/shell/routing checks passed;
-activation requires local administrator authentication. Live generation is 261.
-Run `sudo bash /tmp/activate-browser-terminal.sh` to activate the verified build.
+Build/check and isolated authenticated WebSocket/shell/routing checks passed.
+The SYS-064 switch activated ttyd in generation 262; current inspection verified
+live/selected profile match, caddy/ttyd active, protected HTTPS returns 401 and
+live hub config contains the exact terminal card URL. The old generation-261
+activation helper is superseded and must not be replayed.
 Real password setup/login remains the linked [SYS-058](#sys-058) acceptance.
 **Evidence:** [prepared terminal deployment](SYSTEM_CHANGELOG.md#prepared-browser-terminal-and-hub-card--2026-11-05).
 
