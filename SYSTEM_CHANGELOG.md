@@ -1,3 +1,26 @@
+# Dashboard foldable sections and PIN autofill opt-out — 2026-11-05
+
+SYS-071 follow-up. User asked to fold sections to N rows, with N set by
+dragging (One UI style), and to keep the Moonlight PIN out of password managers.
+Dashboard `2a203fe`:
+- A heading chevron folds Quick actions or Services to their first N rows, with
+  a "Show all" pill. Rows below the fold are inert.
+- In edit mode a dashed fold line with a grip sets N: drag it (snaps between
+  rows, live label) or use the arrow keys.
+- `layout.folded` and `layout.foldRows` are stored per account.
+- The PIN field uses `autocomplete=off` plus the 1Password, LastPass, Bitwarden
+  and Dashlane ignore attributes.
+
+Validation:
+- API tests passed.
+- A local Playwright run passed all 33 checks: fold to 1 row (2 of 10 services
+  reachable), drag to 3 rows, arrow keys, persistence across reload, Show all,
+  and the PIN attributes.
+- `nix flake check` passed.
+
+Activated → generation 275 (`s4v39p6h…`). Verified: dashboard-control active,
+no failed units, served bundle contains folding.
+
 # Dashboard movable action tiles and spacers — 2026-11-05
 
 SYS-071 follow-up. User asked that Wake up and the other action buttons move

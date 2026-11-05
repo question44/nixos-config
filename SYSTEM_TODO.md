@@ -23,7 +23,8 @@ Earlier approvals remain bounded by their original scope and safety precondition
 **Status:** REVIEW · **Review:** 2026-11-12
 
 Pencil edit mode with wiggle, drag/keyboard reordering of cards, action tiles and
-services, 1-unit spacers (generation 274), hiding, a Show hidden
+services, 1-unit spacers (generation 274), foldable sections with a draggable
+fold line (generation 275), hiding, a Show hidden
 toggle (all stored per account), and the install hint hidden in installed mode.
 Activated in generation 273, with the service, DB migration and endpoint verified.
 Completion: the user arranges the dashboard on a phone and on desktop and confirms
