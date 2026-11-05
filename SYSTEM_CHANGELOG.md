@@ -1,3 +1,11 @@
+# Dashboard terminal opacity 0.8 — 2026-11-05
+
+SYS-071 follow-up. User asked for 0.8 instead of 0.95. Dashboard `eb1bf67`
+changes the `--term-opacity` default. The first activation attempt failed at
+sudo (no touch approval) and stayed on generation 279; the retry activated
+generation 280 (`ih69qc4d…`). Verified: no failed units, served CSS has
+`--term-opacity, .8`. ttyd was not restarted.
+
 # Translucent browser terminal in the dashboard — 2026-11-05
 
 SYS-071 follow-up. User reported a black bar at the bottom of the tabbed
