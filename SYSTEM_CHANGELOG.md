@@ -18,6 +18,10 @@ Oxygen's `dialog-question` as the YubiKey sound.
 - `my.yubikey.sound` (default: the previous freedesktop sound); erebor uses
   Oxygen `dialog-question.ogg`.
 
+Activated generation 288; no failed units. The first live sudo wrote no reason:
+pam_exec runs as the calling user unless given `seteuid`, so the step now
+uses it (same as the Mac step).
+
 Validation: `nix flake check` passed (format check included; template
 evaluates). PAM stacks inspected for both features and for YubiKey only.
 `scripts/erebor-diff`: different, as intended; the only real changes are the two

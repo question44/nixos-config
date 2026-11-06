@@ -56,8 +56,11 @@ let
     inherit order;
     control = "optional";
     modulePath = "${pkgs.pam}/lib/security/pam_exec.so";
+    # seteuid: without it pam_exec runs the script as the calling user, who
+    # can't write the root-owned reason directory.
     args = [
       "quiet"
+      "seteuid"
       (toString recordReason)
     ];
   };
