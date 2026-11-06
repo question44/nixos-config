@@ -25,6 +25,7 @@
     ../services/ollama.nix
     ../services/t3code.nix
     ../services/cockpit.nix
+    ../timemachine.nix
     ../desktop.nix
   ];
 }
