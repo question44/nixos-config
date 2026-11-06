@@ -7,8 +7,9 @@
 let
   cfg = config.my.services.qbittorrent;
   vpn = config.my.torrentVpn.enable;
-  # Fixed container address, so the firewall rules below can match it.
-  vpnIp = "10.88.255.250";
+  # Fixed container address, so the firewall and routing rules below can match it.
+  ip = "10.88.255.250";
+  lan = config.my.network.lanInterface;
 in
 {
   config = lib.mkMerge [
@@ -40,10 +41,7 @@ in
           "6881:6881/udp"
         ];
         # With the VPN, DNS also goes only through the tunnel (Proton's resolver).
-        extraOptions = lib.optionals vpn [
-          "--ip=${vpnIp}"
-          "--dns=10.2.0.1"
-        ];
+        extraOptions = [ "--ip=${ip}" ] ++ lib.optionals vpn [ "--dns=10.2.0.1" ];
         volumes = [
           "/srv/qbittorrent/config:/config"
           "/srv/torrents:/downloads"
@@ -61,9 +59,39 @@ in
           TORRENTING_PORT = "6881";
         };
       };
-      networking.firewall.interfaces.${config.my.network.lanInterface} = lib.mkIf (!vpn) {
+    })
+    (lib.mkIf (cfg.enable && !vpn) {
+      networking.firewall.interfaces.${lan} = {
         allowedTCPPorts = [ 6881 ];
         allowedUDPPorts = [ 6881 ];
+      };
+      # While the Proton VPN app is connected it sends everything through
+      # proton0. Peers arrive on the LAN side, though, so the reverse-path
+      # filter would drop them; let the peer port through.
+      # Also drops the VPN-only rule left over from VPN mode.
+      networking.firewall.extraCommands = ''
+        iptables -w -D FORWARD -s ${ip} -j qbt-vpn-only 2>/dev/null || true
+        for proto in tcp udp; do
+          iptables -w -t mangle -D nixos-fw-rpfilter -i ${lan} -p "$proto" --dport 6881 -j RETURN 2>/dev/null || true
+          iptables -w -t mangle -I nixos-fw-rpfilter 1 -i ${lan} -p "$proto" --dport 6881 -j RETURN
+        done
+      '';
+      # qBittorrent always leaves through the home connection, also while the
+      # VPN is up: the main table is looked up before Proton's catch-all rule.
+      systemd.services.qbittorrent-direct-route = {
+        description = "Route qBittorrent around the VPN";
+        before = [ "podman-qbittorrent.service" ];
+        wantedBy = [ "multi-user.target" ];
+        path = [ pkgs.iproute2 ];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+        };
+        script = ''
+          ip rule del from ${ip} lookup main priority 31000 2>/dev/null || true
+          ip rule add from ${ip} lookup main priority 31000
+        '';
+        postStop = "ip rule del from ${ip} lookup main priority 31000 || true";
       };
     })
     (lib.mkIf (cfg.enable && vpn) {
@@ -78,8 +106,8 @@ in
           iptables -w -A qbt-vpn-only -d "$net" -j RETURN
         done
         iptables -w -A qbt-vpn-only -j REJECT
-        iptables -w -D FORWARD -s ${vpnIp} -j qbt-vpn-only 2>/dev/null || true
-        iptables -w -I FORWARD 1 -s ${vpnIp} -j qbt-vpn-only
+        iptables -w -D FORWARD -s ${ip} -j qbt-vpn-only 2>/dev/null || true
+        iptables -w -I FORWARD 1 -s ${ip} -j qbt-vpn-only
       '';
 
       # Proton hands out a random forwarded port on P2P servers (NAT-PMP via
@@ -127,7 +155,7 @@ in
               iptables -w -t nat -F "$chain"
               for proto in tcp udp; do
                 [ -n "$port" ] && iptables -w -t nat -A "$chain" -p "$proto" --dport "$port" \
-                  -j DNAT --to-destination "${vpnIp}:$port"
+                  -j DNAT --to-destination "${ip}:$port"
               done
               echo "Forwarded port: ''${port:-none}"
               mapped=$port

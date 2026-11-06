@@ -3,6 +3,23 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# qBittorrent around the VPN — 2026-11-06
+
+User asked to route qBittorrent without the VPN. On the PL#56 Proton server
+upload was 4.5 Mbit/s against 103 Mbit/s on the bare line.
+- `hosts/erebor`: `my.torrentVpn.enable = false`. The peer port is back to
+  6881 on br0 and the Proton port-forward service is gone.
+- `modules/services/qbittorrent.nix`: the container keeps its fixed IP
+  10.88.255.250 in both modes. In direct mode, `qbittorrent-direct-route` adds
+  `ip rule from 10.88.255.250 lookup main` (priority 31000, before Proton's
+  catch-all), so the container leaves through br0 even while Proton is
+  connected. The firewall lets 6881 on br0 past the reverse-path filter, which
+  would otherwise drop peers while Proton holds the route, and removes the
+  leftover VPN-only FORWARD rule.
+
+`nix flake check` passed; `erebor-diff`: different (new service, vpn-port
+service and libnatpmp removed, firewall and container unit changed).
+
 # Proton VPN WireGuard on the br0 bridge — 2026-11-06
 
 Proton VPN (WireGuard) failed to connect: while connecting, the app always
