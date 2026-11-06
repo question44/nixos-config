@@ -30,7 +30,10 @@ the earlier touch-only greeter login is withdrawn. The `login` unix rule uses
 prompted twice, which the lock screen rejects (seen on generation 309, which
 had the U2F move without the guard). Set Noctalia
 `lockscreen.allow_empty_password` so an empty submit reaches PAM.
-`nix flake check` passes. ACTIVATION: pending.
+`nix flake check` passes. Activated as generation 310. pamtester with an empty
+password: service `login` without a TTY (lock screen path) asked once, cued and
+succeeded on a touch; `greetd` and `login` with `tty=tty3` failed without a
+touch prompt. Untested: the Noctalia lock screen UI itself.
 # YubiKey touch login at the greeter — 2026-11-06
 
 User asked to log in from noctalia-greeter with the YubiKey alone. Added a
