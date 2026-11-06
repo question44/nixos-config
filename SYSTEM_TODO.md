@@ -265,7 +265,7 @@ Flake/dry/full builds, test/switch activation, full GPU/input/ports healthcheck
 and pairing-page HTTP 200 passed. Actual client pairing/streaming and logged-out
 operation were not tested. No reboot performed.
 
-**Evidence:** [implementation record](SYSTEM_CHANGELOG.md#completed-headless-moonshine-installation--2026-10-31).
+**Evidence:** [implementation record](changelog/2026-10.md#completed-headless-moonshine-installation--2026-10-31).
 
 <a id="sys-052"></a>
 
@@ -276,7 +276,7 @@ operation were not tested. No reboot performed.
 Generation 230 persistently enables write access to all four disks. Actual
 create/read/delete tests passed inside qBittorrent as UID 1000; services,
 mount UUIDs, EFI entries and GRUB recovery verified. No reboot performed.
-See the [implementation record](SYSTEM_CHANGELOG.md#completed-qbittorrent-external-disk-write-access--2026-10-30).
+See the [implementation record](changelog/2026-10.md#completed-qbittorrent-external-disk-write-access--2026-10-30).
 
 <a id="sys-051"></a>
 
@@ -306,7 +306,7 @@ health, browser sign-in renders and WebSocket upgrade returns HTTP 101.
 Services are healthy. The optional Moria alias route works with local resolve;
 its existing DNS points to a different host, so use the Erebor address.
 
-**Evidence:** [implementation record](SYSTEM_CHANGELOG.md#completed-ai-chat-through-caddy--2026-10-27).
+**Evidence:** [implementation record](changelog/2026-10.md#completed-ai-chat-through-caddy--2026-10-27).
 
 <a id="sys-049"></a>
 
@@ -322,7 +322,7 @@ welcome page and health passed, and no units failed. User creates their own
 UI account for first use; authenticated UI chat/search and UVM loading after
 a future reboot were not acceptance-tested.
 
-**Evidence:** [implementation record](SYSTEM_CHANGELOG.md#completed-local-gpu-chat-and-web-search--2026-10-27).
+**Evidence:** [implementation record](changelog/2026-10.md#completed-local-gpu-chat-and-web-search--2026-10-27).
 
 <a id="sys-045"></a>
 
@@ -391,7 +391,7 @@ Direct uncached host OS confirmation runs alongside NanoKVM. Live NixOS header,
 controls and services available in 194–226ms versus 6562ms before, on the tested
 connection. Generation 224 activated; 30 API tests, flake/dry/full builds,
 latency/fallback/cancellation/gating browser checks and live HTTPS/PWA passed.
-**Evidence:** [Fast NixOS confirmation](SYSTEM_CHANGELOG.md#completed-confirm-nixos-without-waiting-for-nanokvm-power-sampling--2026-10-25).
+**Evidence:** [Fast NixOS confirmation](changelog/2026-10.md#completed-confirm-nixos-without-waiting-for-nanokvm-power-sampling--2026-10-25).
 
 <a id="sys-043"></a>
 
@@ -404,7 +404,7 @@ cached PWA and verify `Awake · Windows`, disabled NixOS actions/service links, 
 to `Awake · NixOS` after a normal NixOS boot. Do not reboot solely for this check.
 Native Windows Tailscale identity confirmed by user; detection/gating and cached
 shell behavior are covered by mocked tests. Live Windows boot remains untested.
-**Evidence:** [SYS-042 deployment](SYSTEM_CHANGELOG.md#completed-detect-running-os-and-gate-unsupported-dashboard-actions--2026-10-25).
+**Evidence:** [SYS-042 deployment](changelog/2026-10.md#completed-detect-running-os-and-gate-unsupported-dashboard-actions--2026-10-25).
 
 <a id="sys-042"></a>
 
@@ -418,8 +418,8 @@ NixOS, including confirmation/send and keyboard guards; Wake uses power state.
 Generation 223 deployed with flake/dry/full builds, 18 unit tests, mocked browser
 state/gating/cache checks and live NixOS HTTPS/offline verification.
 Real Windows acceptance is SYS-043.
-**Evidence:** [OS detection and action gating](SYSTEM_CHANGELOG.md#completed-detect-running-os-and-gate-unsupported-dashboard-actions--2026-10-25),
-[service navigation gating](SYSTEM_CHANGELOG.md#completed-gate-service-navigation-by-detected-os--2026-10-25).
+**Evidence:** [OS detection and action gating](changelog/2026-10.md#completed-detect-running-os-and-gate-unsupported-dashboard-actions--2026-10-25),
+[service navigation gating](changelog/2026-10.md#completed-gate-service-navigation-by-detected-os--2026-10-25).
 
 <a id="sys-041"></a>
 
@@ -431,7 +431,7 @@ Colored LED and readable status moved beside host name; duplicate System card
 removed. Wake up enables only for confirmed asleep/off. Flake/dry/full builds,
 responsive/status/offline browser checks and live HTTPS validation before and
 after generation 221 activation passed. No real ATX/sleep commands issued.
-**Evidence:** [Header LED and wake gating](SYSTEM_CHANGELOG.md#completed-show-header-power-led-and-gate-wake-by-detected-state--2026-10-25).
+**Evidence:** [Header LED and wake gating](changelog/2026-10.md#completed-show-header-power-led-and-gate-wake-by-detected-state--2026-10-25).
 
 <a id="sys-039"></a>
 
@@ -444,7 +444,7 @@ generation 220, with NanoKVM loopback helper behind owner-restricted Tailscale
 Serve. Wake up is disabled while awake. Flake/dry/full builds, eleven GPIO/HTTP
 tests, mocked browser checks and live HTTPS/offline checks passed before and
 after switch. Real sleep/off wake acceptance is tracked separately as SYS-040.
-**Evidence:** [NanoKVM wake and power status](SYSTEM_CHANGELOG.md#completed-add-nanokvm-atx-wake-and-power-status--2026-10-25).
+**Evidence:** [NanoKVM wake and power status](changelog/2026-10.md#completed-add-nanokvm-atx-wake-and-power-status--2026-10-25).
 
 <a id="sys-040"></a>
 
@@ -458,7 +458,7 @@ or off, exactly one short ATX press, and dashboard/control service recovery.
 Also verify host-off start when convenient, without changing boot selection.
 User confirmed ATX wiring and independent NanoKVM power. GPIO/power-on safety
 is covered by SYS-039 software tests; real sleep/off wake remains untested.
-**Evidence:** [Deployment and verification](SYSTEM_CHANGELOG.md#completed-add-nanokvm-atx-wake-and-power-status--2026-10-25).
+**Evidence:** [Deployment and verification](changelog/2026-10.md#completed-add-nanokvm-atx-wake-and-power-status--2026-10-25).
 
 
 <a id="sys-038"></a>
@@ -471,7 +471,7 @@ Grouped live status and on/off actions in device cards, with reported-state
 highlighting and configured-action filtering. Deployed as generation 219.
 Flake checks, dry/full builds, mocked browser interaction and live HTTPS/PWA
 verification passed. No real device control commands issued for verification.
-**Evidence:** [Integrated device controls](SYSTEM_CHANGELOG.md#completed-integrate-device-status-and-actions--2026-10-25).
+**Evidence:** [Integrated device controls](changelog/2026-10.md#completed-integrate-device-status-and-actions--2026-10-25).
 
 <a id="sys-037"></a>
 
@@ -486,7 +486,7 @@ helper remain here. Standalone/parent checks, remote package build, 29 API tests
 9 host-helper tests, browser checks and full NixOS build passed. This task covers
 source/package extraction; no activation was requested or performed. Subsequent
 status feature deployment is recorded separately under SYS-036.
-**Evidence:** [Dashboard extraction](SYSTEM_CHANGELOG.md#completed-extract-dashboard-into-private-submodule-and-nix-packages--2026-10-25).
+**Evidence:** [Dashboard extraction](changelog/2026-10.md#completed-extract-dashboard-into-private-submodule-and-nix-packages--2026-10-25).
 
 <a id="sys-036"></a>
 
@@ -503,7 +503,7 @@ test activation and switch passed. Live browser verified both domains, matching
 API/UI states, periodic refresh, offline reload/config and reconnect before and
 after switch. Readings included Display Off and Ambilight Off, then On with a
 live stream. Validation issued no real control commands.
-**Evidence:** [Live device status](SYSTEM_CHANGELOG.md#completed-show-live-display-and-ambilight-status--2026-10-25).
+**Evidence:** [Live device status](changelog/2026-10.md#completed-show-live-display-and-ambilight-status--2026-10-25).
 
 <a id="sys-035"></a>
 
@@ -519,7 +519,7 @@ and docs under /api/control/. Twenty-four backend tests and real HTTP/browser
 integration with mocked dispatch passed, as did flake/dry/full builds and live
 HTTPS read-only/rejection checks before and after switch. No real control
 commands issued; Caddy/control service healthy, no failed units.
-**Evidence:** [FastAPI migration](SYSTEM_CHANGELOG.md#completed-migrate-dashboard-control-api-to-fastapi--2026-10-25).
+**Evidence:** [FastAPI migration](changelog/2026-10.md#completed-migrate-dashboard-control-api-to-fastapi--2026-10-25).
 
 <a id="sys-034"></a>
 
@@ -534,7 +534,7 @@ browser mock/cancel checks at 320–1000px, flake/dry/full builds and live UI ch
 passed. Helper prerequisites and control-service Polkit permission verified
 read-only. No reboot or real boot selection was executed; actual Windows boot
 remains untested. GRUB environment, protected EFI files and firmware unchanged.
-**Evidence:** [Windows reboot control](SYSTEM_CHANGELOG.md#completed-add-windows-reboot-dashboard-button--2026-10-25).
+**Evidence:** [Windows reboot control](changelog/2026-10.md#completed-add-windows-reboot-dashboard-button--2026-10-25).
 
 <a id="sys-033"></a>
 
@@ -549,7 +549,7 @@ Cancel focus, install callback, responsive layout, dark mode and offline reload.
 Live HTTPS on both domains verified before and after switch, including worker
 control after reload; no actual power/lighting commands sent. Caddy healthy,
 no failed units. Physical installation remains user-driven and was not tested.
-**Evidence:** [Angular migration](SYSTEM_CHANGELOG.md#completed-migrate-service-dashboard-to-angular--2026-10-24).
+**Evidence:** [Angular migration](changelog/2026-10.md#completed-migrate-service-dashboard-to-angular--2026-10-24).
 
 <a id="sys-032"></a>
 
@@ -561,7 +561,7 @@ Added and deployed HyperHDR service card in generation 213. Flake/full build,
 test activation and switch passed. Browser verified card/link and click through
 to HyperHDR Web Configuration, including dashboard reload after switch.
 Caddy healthy, no failed units; root/ESP UUIDs unchanged. No reboot.
-**Evidence:** [Dashboard card](SYSTEM_CHANGELOG.md#completed-add-hyperhdr-dashboard-card--2026-10-24).
+**Evidence:** [Dashboard card](changelog/2026-10.md#completed-add-hyperhdr-dashboard-card--2026-10-24).
 
 <a id="sys-031"></a>
 
@@ -574,7 +574,7 @@ adapt passed. Both HTTPS routes return UI 200 and WebSocket 101 with verified
 certificates through local Caddy; local aliases and erebor tailnet URL return
 200. Live/selected targets match; Caddy/HyperHDR active; no failed system/user
 units. Root/ESP UUIDs unchanged; no reboot performed.
-**Evidence:** [HyperHDR proxy](SYSTEM_CHANGELOG.md#completed-add-hyperhdr-to-caddy--2026-10-24).
+**Evidence:** [HyperHDR proxy](changelog/2026-10.md#completed-add-hyperhdr-to-caddy--2026-10-24).
 
 <a id="sys-030"></a>
 
@@ -588,7 +588,7 @@ and offline checks passed. Live HTTPS HTML/worker match built assets; browser
 verified responsive Material UI, manifest/icons, service links and controlling
 worker with cached bundle. Caddy healthy; no failed system/user units. Physical
 device installation is user-driven and was not performed. No reboot required.
-**Evidence:** [PWA and Material UI deployment](SYSTEM_CHANGELOG.md#completed-enable-service-dashboard-pwa-and-material-ui--2026-10-24).
+**Evidence:** [PWA and Material UI deployment](changelog/2026-10.md#completed-enable-service-dashboard-pwa-and-material-ui--2026-10-24).
 
 <a id="sys-029"></a>
 
@@ -607,7 +607,7 @@ Plymouth/login handoff and mounts/services. Windows/recovery chainloads not
 boot-tested. Recovery: firmware Linux Boot Manager 0004 or GRUB recovery menu.
 **Done when:** user confirms physical GRUB menu and Linux boot/handoff, with
 post-boot generation/mount/service checks recorded.
-**Evidence:** [GRUB installation](SYSTEM_CHANGELOG.md#completed-install-grub-with-current-wallpaper-menu-for-next-boot--2026-10-23).
+**Evidence:** [GRUB installation](changelog/2026-10.md#completed-install-grub-with-current-wallpaper-menu-for-next-boot--2026-10-23).
 
 <a id="sys-028"></a>
 
@@ -621,7 +621,7 @@ A separate `/run/current-system/sw/bin/noctalia` process is running (PID 3970
 at inspection). No shell processes restarted during Plymouth verification.
 **Done when:** establish the intended single startup owner, remove competing
 launch declaratively and verify shell functionality and service health.
-**Evidence:** [generation 208 post-boot check](SYSTEM_CHANGELOG.md#completed-install-bgrt-logo-and-faster-greeter-startup-for-next-boot--2026-10-23).
+**Evidence:** [generation 208 post-boot check](changelog/2026-10.md#completed-install-bgrt-logo-and-faster-greeter-startup-for-next-boot--2026-10-23).
 
 <a id="sys-027"></a>
 
@@ -639,9 +639,9 @@ entry checked, same kernel/initrd/theme as visually verified 208. Current
 boot remains 208 with diagnostics until next normal reboot. No extra reboot
 or live greeter restart performed. Recovery: 208 (BGRT with debug) or 205
 (no Plymouth), plus verified recovery snapshots in the records below.
-**Evidence:** [diagnostic cleanup](SYSTEM_CHANGELOG.md#completed-remove-temporary-plymouth-diagnostics-for-next-boot--2026-10-23),
-[BGRT/greeter installation and boot verification](SYSTEM_CHANGELOG.md#completed-install-bgrt-logo-and-faster-greeter-startup-for-next-boot--2026-10-23),
-[SimpleDRM diagnostics](SYSTEM_CHANGELOG.md#completed-install-plymouth-simpledrm-diagnostics-for-next-boot--2026-10-23).
+**Evidence:** [diagnostic cleanup](changelog/2026-10.md#completed-remove-temporary-plymouth-diagnostics-for-next-boot--2026-10-23),
+[BGRT/greeter installation and boot verification](changelog/2026-10.md#completed-install-bgrt-logo-and-faster-greeter-startup-for-next-boot--2026-10-23),
+[SimpleDRM diagnostics](changelog/2026-10.md#completed-install-plymouth-simpledrm-diagnostics-for-next-boot--2026-10-23).
 
 <a id="sys-026"></a>
 
@@ -653,7 +653,7 @@ Activated persistent generation 203; user notifier enabled/running. Simulated
 and real sudo touch requests show and dismiss the notification; user confirmed
 notification and sound. Authentication rules unchanged; no failed units.
 
-**Evidence:** [completed notifier](SYSTEM_CHANGELOG.md#completed-add-yubikey-touch-notification-and-sound--2026-10-23).
+**Evidence:** [completed notifier](changelog/2026-10.md#completed-add-yubikey-touch-notification-and-sound--2026-10-23).
 
 <a id="sys-025"></a>
 
@@ -666,7 +666,7 @@ containers; verified protected EFI hashes, shared data mounts and services.
 Btrfs completed reclamation; approximately 63.5 GiB free. Boot archives and
 NixOS recovery snapshot retained; partitions unchanged. No reboot performed.
 
-**Evidence:** [retirement record](SYSTEM_CHANGELOG.md#completed-retire-broken-fedora-installation--2026-10-23).
+**Evidence:** [retirement record](changelog/2026-10.md#completed-retire-broken-fedora-installation--2026-10-23).
 
 <a id="sys-024"></a>
 
@@ -680,7 +680,7 @@ no failed units, and phone paired/reachable; user confirmed access. Configuratio
 commit d9edff3. Fedora menu entry removed by isolated activation was restored and
 verified. Fedora was later intentionally retired under SYS-025.
 
-**Evidence:** [completed change](SYSTEM_CHANGELOG.md#completed-persist-kde-connect-lan-firewall-rules--2026-10-23).
+**Evidence:** [completed change](changelog/2026-10.md#completed-persist-kde-connect-lan-firewall-rules--2026-10-23).
 
 <a id="sys-001"></a>
 
@@ -694,8 +694,8 @@ at 02:13 Warsaw time and a complete directory listing shows them absent on
 Oct 22 at 17:33. Exact deletion time/cause remains unknown. User chose to
 retire Fedora, including the remaining root snapshot, under SYS-025.
 
-**Evidence:** [retirement record](SYSTEM_CHANGELOG.md#completed-retire-broken-fedora-installation--2026-10-23);
-[historical record](SYSTEM_CHANGELOG.md#record-sys-001-1).
+**Evidence:** [retirement record](changelog/2026-10.md#completed-retire-broken-fedora-installation--2026-10-23);
+[historical record](changelog/2026-10.md#record-sys-001-1).
 
 <a id="sys-002"></a>
 
@@ -707,7 +707,7 @@ Observed 2026-10-23: generation 198 boots Linux 6.18.57 / NVIDIA 615.78.08 witho
 
 **Done when:** With remote recovery available and work saved, exercise dashboard display off/on and confirm a usable picture on the physical AW3423DWF. Record physical confirmation and kernel-log results.
 
-**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-002-1). See also the [related record](SYSTEM_CHANGELOG.md#record-sys-002-2).
+**Evidence:** [historical record](changelog/2026-10.md#record-sys-002-1). See also the [related record](changelog/2026-10.md#record-sys-002-2).
 
 <a id="sys-003"></a>
 
@@ -719,7 +719,7 @@ Observed 2026-10-23: T3 is active with the declared library path; preview was no
 
 **Done when:** Open a browser preview through T3 and confirm it renders successfully. Record the result; deployed libraries alone do not verify preview.
 
-**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-003-1).
+**Evidence:** [historical record](changelog/2026-10.md#record-sys-003-1).
 
 <a id="sys-004"></a>
 
@@ -731,7 +731,7 @@ Observed 2026-10-23: deployment, seven tests, HTTPS ambilight actions and cross-
 
 **Done when:** When the user is ready for interruption, confirm dashboard sleep/resume and shutdown followed by successful startup. Record each separately; leave untested actions open.
 
-**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-004-1).
+**Evidence:** [historical record](changelog/2026-10.md#record-sys-004-1).
 
 ## Historical work to reconcile
 
@@ -750,7 +750,7 @@ Decided 2026-11-04 (user): display content. The wallpaper-only `ambilight` outpu
 
 **Done when:** Confirm the desired capture behavior before changing it. Verify either display-content response or wallpaper-only isolation, record the chosen behavior, and close or cancel the old request accordingly.
 
-**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-005-1).
+**Evidence:** [historical record](changelog/2026-10.md#record-sys-005-1).
 
 <a id="sys-006"></a>
 
@@ -762,7 +762,7 @@ Historical checkpoint describes Intel guest acceleration. Later GPU assignments 
 
 **Done when:** Compare current host/domain configuration with subsequent GPU changes. Close as superseded if replaced, otherwise identify and verify the specific missing acceptance check. Do not reapply old VFIO instructions.
 
-**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-006-1).
+**Evidence:** [historical record](changelog/2026-10.md#record-sys-006-1).
 
 <a id="sys-007"></a>
 
@@ -774,7 +774,7 @@ Guest installation and later acceleration work are recorded elsewhere in the cha
 
 **Done when:** Reconcile later VM setup/GPU records with the original acceptance criteria; close resolved or superseded work and retain only a specific remaining check.
 
-**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-007-1).
+**Evidence:** [historical record](changelog/2026-10.md#record-sys-007-1).
 
 <a id="sys-008"></a>
 
@@ -791,7 +791,7 @@ cut data allocation from 374.58 to 331.58 GiB; metadata then grew to 8.50 GiB
 
 **Done when:** Inspect current space and subsequent remediation records. Close the failed attempt with its outcome if no work remains; otherwise propose a current, bounded remediation. Do not retry balance from the old checkpoint.
 
-**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-008-1).
+**Evidence:** [historical record](changelog/2026-10.md#record-sys-008-1).
 
 <a id="sys-009"></a>
 
@@ -803,7 +803,7 @@ Historical build attempts failed with ENOSPC; later package/alias changes may su
 
 **Done when:** Check current declarative/deployed eza and aliases and later records. Close if present and verified, or state the precise missing work before implementing anything.
 
-**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-009-1).
+**Evidence:** [historical record](changelog/2026-10.md#record-sys-009-1).
 
 <a id="sys-011"></a>
 
@@ -815,7 +815,7 @@ Historical config validation/activation passed; fresh-session behavior was not c
 
 **Done when:** At a planned Niri login, check the initial workspace and ordinary app placement against current configuration, or close as superseded if that behavior was removed.
 
-**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-011-1).
+**Evidence:** [historical record](changelog/2026-10.md#record-sys-011-1).
 
 <a id="sys-012"></a>
 
@@ -827,7 +827,7 @@ Historical direct Discord launch passed; physical key delivery and indicator app
 
 **Done when:** Inspect current bindings, then confirm Right Ctrl+D opens Discord and the intended tab indicator is visible in the applicable session; close superseded parts explicitly.
 
-**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-012-1).
+**Evidence:** [historical record](changelog/2026-10.md#record-sys-012-1).
 
 <a id="sys-013"></a>
 
@@ -839,7 +839,7 @@ Umbriel is now running, but the old entry required chooser verification for both
 
 **Done when:** Inspect current session definitions and later login evidence; confirm Niri and Umbriel are available at a planned login or close as superseded by the current chooser design.
 
-**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-013-1).
+**Evidence:** [historical record](changelog/2026-10.md#record-sys-013-1).
 
 <a id="sys-014"></a>
 
@@ -851,7 +851,7 @@ Only an old requested-work record exists here; completion is not established.
 
 **Done when:** Inspect tracked workflow and validation evidence, then close if verified or define remaining work. Preserve the original secret-handling constraints; do not create archives or expose keys during review.
 
-**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-014-1).
+**Evidence:** [historical record](changelog/2026-10.md#record-sys-014-1).
 
 <a id="sys-015"></a>
 
@@ -863,7 +863,7 @@ Historical notes report missing device access/devices; later records show succes
 
 **Done when:** Inspect current service/device access and later shortcut results, then verify the current mappings or close superseded device-reconnect instructions. Do not reboot merely to satisfy the old checkpoint.
 
-**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-015-1). See also the [related record](SYSTEM_CHANGELOG.md#record-sys-015-2).
+**Evidence:** [historical record](changelog/2026-10.md#record-sys-015-1). See also the [related record](changelog/2026-10.md#record-sys-015-2).
 
 <a id="sys-016"></a>
 
@@ -875,7 +875,7 @@ Historical activation checks passed; deliberate logout/login and keyring unlock 
 
 **Done when:** Compare current PAM/linger configuration and later login evidence; verify the intended login/keyring behavior during a planned session transition or close superseded requirements. Do not read keyring secrets.
 
-**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-016-1).
+**Evidence:** [historical record](changelog/2026-10.md#record-sys-016-1).
 
 <a id="sys-017"></a>
 
@@ -887,7 +887,7 @@ Historical host/guest LAN probes passed. A later UEFI checkpoint states bridge p
 
 **Done when:** Close the old activation step using later evidence; verify whether playback from a separate physical LAN client remains relevant and untested, and record that result separately.
 
-**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-017-1).
+**Evidence:** [historical record](changelog/2026-10.md#record-sys-017-1).
 
 <a id="sys-018"></a>
 
@@ -899,7 +899,7 @@ The record contains a 2026-10-20 pre-reboot checkpoint; current NixOS has since 
 
 **Done when:** Check available evidence or user confirmation of the firmware visit and close the historical operation as completed or outcome unknown. Do not schedule another firmware reboot or rely on pruned generation 172.
 
-**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-018-1).
+**Evidence:** [historical record](changelog/2026-10.md#record-sys-018-1).
 
 <a id="sys-019"></a>
 
@@ -911,7 +911,7 @@ Historical build passed; installed-command verification was pending.
 
 **Done when:** Check the current declared package and installed lsof command, and close with observed evidence or a specific remaining task.
 
-**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-019-1).
+**Evidence:** [historical record](changelog/2026-10.md#record-sys-019-1).
 
 <a id="sys-020"></a>
 
@@ -923,7 +923,7 @@ Historical user-profile installation existed; declarative deployment and duplica
 
 **Done when:** Verify the current declarative/deployed browser and profile ownership. Close deployment with evidence; identify any redundant user-profile entry before considering removal.
 
-**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-020-1).
+**Evidence:** [historical record](changelog/2026-10.md#record-sys-020-1).
 
 <a id="sys-021"></a>
 
@@ -935,7 +935,7 @@ Later completed Mango records show activation and live use, so the old test-gene
 
 **Done when:** Reconcile later persistent activation and hardware-login evidence. Close resolved steps and retain only any specific missing chooser or input check; do not restart greetd as a review step.
 
-**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-021-1).
+**Evidence:** [historical record](changelog/2026-10.md#record-sys-021-1).
 
 <a id="sys-022"></a>
 
@@ -950,8 +950,8 @@ VM remains off. Recovery XML/NVRAM/TPM and read-only root snapshot ID 657
 retained. Other snapshots still hold 110.37 GiB of shared original disk blocks;
 removing those is outside this relocation. Main filesystem has about 63 GiB free.
 
-**Evidence:** [completed relocation](SYSTEM_CHANGELOG.md#completed-finish-windows-vm-relocation-to-crucial--2026-10-23);
-[historical record](SYSTEM_CHANGELOG.md#record-sys-022-1).
+**Evidence:** [completed relocation](changelog/2026-10.md#completed-finish-windows-vm-relocation-to-crucial--2026-10-23);
+[historical record](changelog/2026-10.md#record-sys-022-1).
 
 <a id="sys-023"></a>
 
@@ -963,7 +963,7 @@ Isolated compositor/NVENC tests passed; end-to-end Moonlight and persistent depl
 
 **Done when:** Inspect current deployed unit and any obsolete runtime drop-in; reconcile later activation evidence and verify Moonlight in a planned Mango session. Do not end the current session during review.
 
-**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-023-1).
+**Evidence:** [historical record](changelog/2026-10.md#record-sys-023-1).
 
 <a id="sys-028"></a>
 
@@ -994,7 +994,7 @@ Superseded by the completed 2026-10-20 replacement of background-apps with nativ
 
 **Closure:** No action. The former startup-helper verification no longer applies; do not restore the removed helper.
 
-**Evidence:** [historical record](SYSTEM_CHANGELOG.md#record-sys-010-1).
+**Evidence:** [historical record](changelog/2026-10.md#record-sys-010-1).
 
 ## Adding or closing a task
 

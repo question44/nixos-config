@@ -93,7 +93,15 @@ other:
   mount and version inventories in operational documents.
 - `SYSTEM_CHANGELOG.md` records dated changes: what changed and why, activation
   outcome/generation when applicable, validation evidence, and explicit limits.
-  Put new entries at the top. Record versions as dated evidence, not live state.
+  Put new entries directly below its header. Record versions as dated
+  evidence, not live state.
+- `SYSTEM_CHANGELOG.md` holds only the current month. The first entry of a new
+  month first moves the previous month's entries, unchanged and newest first,
+  to `changelog/YYYY-MM.md`, adds that file to the header's list of earlier
+  months, and rewrites links to moved entries (`SYSTEM_CHANGELOG.md#…` becomes
+  `changelog/YYYY-MM.md#…`; links inside the archive gain `../`). Check that
+  every link still resolves. Archived months are history: do not edit them
+  except to fix links.
 - `SYSTEM_TODO.md` is the single list of unfinished work. Give each task a stable
   `SYS-NNN` ID, status, review date, concrete completion condition and evidence
   links. Use OPEN for known work, ACTIVE for work underway, REVIEW for uncertain
