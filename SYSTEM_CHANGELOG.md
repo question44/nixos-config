@@ -26,6 +26,10 @@ by the reverse-path filter before de-NAT (destination 192.168.1.106, route
 back via proton0) and dropped. Fix: the rpfilter also lets through br0
 packets whose conntrack original source is 10.88.255.250.
 
+Activated generation 296 with Proton still connected: qBittorrent's exit IP
+is 83.10.5.5 (Orange), DNS works, `listen_port` 6881, and portchecker.io
+sees 83.10.5.5:6881 open.
+
 # Proton VPN WireGuard on the br0 bridge — 2026-11-06
 
 Proton VPN (WireGuard) failed to connect: while connecting, the app always
