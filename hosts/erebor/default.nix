@@ -59,6 +59,11 @@
       enable = true;
     };
     torrentVpn.enable = false;
+    timeMachine = {
+      enable = true;
+      path = "/srv/external/expansion/TimeMachine";
+      maxSize = "2T";
+    };
     streaming = {
       sunshine.enable = true;
       moonshine.enable = true;

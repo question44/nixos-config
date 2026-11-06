@@ -3,6 +3,21 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# [PENDING] Time Machine share on an ext4 Expansion disk — 2026-11-06
+
+User asked to back up the MacBook with Time Machine to the Expansion disk and
+chose to reformat it (was exFAT, label `Expansion`, UUID `7FF9-F492`, 45G of
+`Projects`) as ext4, since Samba's `vfs_fruit` needs xattrs. New
+`modules/timemachine.nix` (`my.timeMachine`): Samba share `TimeMachine`
+(SMB3, `fruit:time machine`, max 2T, user `janzon`, LAN + Tailscale only),
+Avahi `_adisk`/`_smb` advertisement on the LAN. Expansion now mounts ext4
+UUID `26efec95-f0a4-48ac-a696-5b71b21bdb48`; Windows can no longer read it.
+`nix flake check` passes. Prechecks: data copied with rsync to
+`/srv/external/bigdaddy/expansion-backup` and verified by sha256. Recovery:
+that copy stays until the restored data is checked; the previous generation
+mounts the old exFAT UUID (data gone after mkfs, so restore from bigdaddy).
+Next: mkfs on `ata-ST6000DM003-2U9186_ZR16G8LZ-part1`, activate, restore,
+user sets `smbpasswd -a janzon`.
 # GRUB theme: no dark box while the kernel loads — 2026-11-06
 
 User reported a black rectangle between choosing a GRUB entry and Plymouth.

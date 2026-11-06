@@ -37,18 +37,15 @@
       "dmask=0002"
     ];
   };
+  # ext4 so Samba can store the Mac's Time Machine metadata as xattrs.
   fileSystems."/srv/external/expansion" = {
-    device = "/dev/disk/by-uuid/7FF9-F492";
-    fsType = "exfat";
+    device = "/dev/disk/by-uuid/26efec95-f0a4-48ac-a696-5b71b21bdb48";
+    fsType = "ext4";
     options = [
       "rw"
       "nofail"
       "x-systemd.automount"
       "x-systemd.device-timeout=30s"
-      "uid=1000"
-      "gid=1000"
-      "fmask=0002"
-      "dmask=0002"
     ];
   };
   fileSystems."/srv/external/bigdaddy" = {
