@@ -19,7 +19,7 @@ entries directly below this header. Earlier months: [2026-10](changelog/2026-10.
   its route). Cockpit moved to `modules/services/cockpit.nix`, T3 Code to
   `modules/services/t3code.nix`. Erebor enables all of them; the template
   lists them commented out.
-- Verification (built, not yet activated): `nix store diff-closures` master →
+- Verification (before activation): `nix store diff-closures` master →
   branch is empty; only Caddyfile, hosts, caddy unit/reload trigger, etc,
   system-units and toplevel paths differ. Generated Caddyfile vs master as
   sorted, whitespace-normalized lines: identical except the Sunshine
@@ -29,6 +29,12 @@ entries directly below this header. Earlier months: [2026-10](changelog/2026-10.
   order/comment changes. `nix flake check` passes (template evaluates with
   everything off). Variant with `my.services.syncthing.enable = mkForce false`:
   no syncthing route, hosts names, port 8384 or container.
+- Activated 2026-11-06 with `scripts/erebor-rebuild switch` as generation
+  287; only `caddy.service` reloaded. No failed system or user units.
+  `curl -sI`: media 302, cloud carddav 301, sync/torrent/sys/code/ai 200,
+  unknown subdomain aborted, sunshine 502 (service disabled, as before);
+  jellyfin/nextcloud.localhost 302, syncthing/torrent.localhost 200,
+  hyperhdr.localhost 405, :8096 302, :8384 200.
 
 # `scripts/erebor-diff`: compare a branch's built system with master — 2026-11-06
 
