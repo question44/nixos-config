@@ -4,61 +4,66 @@
 { pkgs, config, lib, ... }:
 
 let
-  serviceType = lib.types.submodule ({ name, ... }: {
-    options = {
-      enable = lib.mkEnableOption "the ${name} service, with its web routes and LAN port";
-      port = lib.mkOption {
-        type = lib.types.port;
-        description = "Loopback port Caddy proxies to.";
-      };
-      localName = lib.mkOption {
-        type = lib.types.nullOr lib.types.str;
-        default = null;
-        example = "jellyfin";
-        description = "Bare name served on :80 as `<name>` and `<name>.localhost`, also added to /etc/hosts.";
-      };
-      publicName = lib.mkOption {
-        type = lib.types.nullOr lib.types.str;
-        default = null;
-        example = "media";
-        description = "Subdomain of my.network.domain served over HTTPS.";
-      };
-      lanPort = lib.mkOption {
-        type = lib.types.nullOr lib.types.port;
-        default = null;
-        description = "Plain-HTTP port Caddy listens on, opened on the LAN interface.";
-      };
-      proxy = {
-        headers = lib.mkOption {
-          type = lib.types.listOf lib.types.str;
-          default = [ ];
-          example = [ "Host localhost:18384" "-Authorization" ];
-          description = "`header_up` arguments for the local and public routes.";
+  serviceType = lib.types.submodule (
+    { name, ... }: {
+      options = {
+        enable = lib.mkEnableOption "the ${name} service, with its web routes and LAN port";
+        port = lib.mkOption {
+          type = lib.types.port;
+          description = "Loopback port Caddy proxies to.";
         };
-        lanHeaders = lib.mkOption {
-          type = lib.types.listOf lib.types.str;
-          default = config.my.services.${name}.proxy.headers;
-          defaultText = lib.literalExpression "proxy.headers";
-          description = "`header_up` arguments for the LAN port block.";
+        localName = lib.mkOption {
+          type = lib.types.nullOr lib.types.str;
+          default = null;
+          example = "jellyfin";
+          description = "Bare name served on :80 as `<name>` and `<name>.localhost`, also added to /etc/hosts.";
         };
-        https = lib.mkOption {
-          type = lib.types.bool;
-          default = false;
-          description = "The upstream speaks HTTPS.";
+        publicName = lib.mkOption {
+          type = lib.types.nullOr lib.types.str;
+          default = null;
+          example = "media";
+          description = "Subdomain of my.network.domain served over HTTPS.";
         };
-        tlsInsecure = lib.mkOption {
-          type = lib.types.bool;
-          default = false;
-          description = "Skip upstream certificate checks (self-signed loopback HTTPS).";
+        lanPort = lib.mkOption {
+          type = lib.types.nullOr lib.types.port;
+          default = null;
+          description = "Plain-HTTP port Caddy listens on, opened on the LAN interface.";
+        };
+        proxy = {
+          headers = lib.mkOption {
+            type = lib.types.listOf lib.types.str;
+            default = [ ];
+            example = [
+              "Host localhost:18384"
+              "-Authorization"
+            ];
+            description = "`header_up` arguments for the local and public routes.";
+          };
+          lanHeaders = lib.mkOption {
+            type = lib.types.listOf lib.types.str;
+            default = config.my.services.${name}.proxy.headers;
+            defaultText = lib.literalExpression "proxy.headers";
+            description = "`header_up` arguments for the LAN port block.";
+          };
+          https = lib.mkOption {
+            type = lib.types.bool;
+            default = false;
+            description = "The upstream speaks HTTPS.";
+          };
+          tlsInsecure = lib.mkOption {
+            type = lib.types.bool;
+            default = false;
+            description = "Skip upstream certificate checks (self-signed loopback HTTPS).";
+          };
+        };
+        extraConfig = lib.mkOption {
+          type = lib.types.lines;
+          default = "";
+          description = "Caddy directives placed before reverse_proxy in the public route.";
         };
       };
-      extraConfig = lib.mkOption {
-        type = lib.types.lines;
-        default = "";
-        description = "Caddy directives placed before reverse_proxy in the public route.";
-      };
-    };
-  });
+    }
+  );
 in
 {
   options.my = {
@@ -138,7 +143,10 @@ in
       addresses = lib.mkOption {
         type = lib.types.listOf lib.types.str;
         default = [ ];
-        example = [ "100.127.94.102" "192.168.1.97" ];
+        example = [
+          "100.127.94.102"
+          "192.168.1.97"
+        ];
         description = "The Mac's Tailscale and LAN addresses; sshd drops its sessions when it sleeps.";
       };
     };

@@ -1,7 +1,14 @@
 # Fish, Starship and command-line tools.
-{ config, lib, pkgs, ... }:
 {
-  xdg.configFile."fish/functions/shell_welcome.fish".source = pkgs.replaceVars ../fish/shell_welcome.fish { figlet = pkgs.figlet; };
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+{
+  xdg.configFile."fish/functions/shell_welcome.fish".source =
+    pkgs.replaceVars ../fish/shell_welcome.fish
+      { figlet = pkgs.figlet; };
   xdg.configFile."fastfetch/shell.jsonc".source = ../fastfetch/shell.jsonc;
   programs.bat.enable = true;
   programs.fish = {

@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   config = lib.mkIf config.my.yubikey.enable {
@@ -18,6 +23,5 @@
       ProtectSystem = "strict";
       ProtectHome = "read-only";
     };
-  };
   };
 }

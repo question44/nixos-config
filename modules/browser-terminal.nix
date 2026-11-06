@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   user = config.my.user.name;
   domain = config.my.network.domain;
@@ -18,7 +23,10 @@ in
     writeable = true;
     checkOrigin = true;
     indexFile = "${terminalAssets}/index.html";
-    entrypoint = [ "${pkgs.fish}/bin/fish" "--login" ];
+    entrypoint = [
+      "${pkgs.fish}/bin/fish"
+      "--login"
+    ];
     clientOptions = {
       titleFixed = "Erebor terminal";
       fontSize = "16";

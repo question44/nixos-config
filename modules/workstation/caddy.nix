@@ -1,11 +1,17 @@
 # Caddy reverse proxy for local names and *.erebor.jzon.pl.
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   domain = config.my.network.domain;
   dashboard = config.services.erebor-dashboard.package;
   # Spliced into the indented Caddyfile below; the text keeps its layout.
-  hyperhdrRoute = hosts: lib.optionalString config.my.ambilight.enable
-    "@hyperhdr host ${hosts}\n  handle @hyperhdr {\n    reverse_proxy 127.0.0.1:8090\n  }\n";
+  hyperhdrRoute =
+    hosts:
+    lib.optionalString config.my.ambilight.enable "@hyperhdr host ${hosts}\n  handle @hyperhdr {\n    reverse_proxy 127.0.0.1:8090\n  }\n";
 
   # Routes generated from my.services (modules/my.nix). Caddy reformats the
   # file, so indentation here does not matter.
@@ -13,27 +19,33 @@ let
   withLocal = lib.filter (s: s.localName != null) services;
   withLan = lib.filter (s: s.lanPort != null) services;
   withPublic = lib.filter (s: s.publicName != null) services;
-  proxy = s: headers:
+  proxy =
+    s: headers:
     let
       upstream = "${if s.proxy.https then "https://" else ""}127.0.0.1:${toString s.port}";
-      body = map (h: "header_up ${h}") headers
+      body =
+        map (h: "header_up ${h}") headers
         ++ lib.optional s.proxy.tlsInsecure "transport http {\ntls_insecure_skip_verify\n}";
     in
-    if body == [ ] then "reverse_proxy ${upstream}\n"
-    else "reverse_proxy ${upstream} {\n${lib.concatLines body}}\n";
+    if body == [ ] then
+      "reverse_proxy ${upstream}\n"
+    else
+      "reverse_proxy ${upstream} {\n${lib.concatLines body}}\n";
   route = matcher: hosts: body: ''
     @${matcher} host ${hosts}
     handle @${matcher} {
     ${body}}
   '';
-  localRoutes = lib.concatMapStrings (s:
-    route s.localName "${s.localName}.localhost ${s.localName}" (proxy s s.proxy.headers)) withLocal;
+  localRoutes = lib.concatMapStrings (
+    s: route s.localName "${s.localName}.localhost ${s.localName}" (proxy s s.proxy.headers)
+  ) withLocal;
   lanBlocks = lib.concatMapStrings (s: ''
     :${toString s.lanPort} {
     ${proxy s s.proxy.lanHeaders}}
   '') withLan;
-  publicRoutes = lib.concatMapStrings (s:
-    route s.publicName "${s.publicName}.${domain}" (s.extraConfig + proxy s s.proxy.headers)) withPublic;
+  publicRoutes = lib.concatMapStrings (
+    s: route s.publicName "${s.publicName}.${domain}" (s.extraConfig + proxy s s.proxy.headers)
+  ) withPublic;
 in
 {
   services.caddy = {

@@ -3,10 +3,10 @@
   config = lib.mkMerge [
     {
       my.services.jellyfin = {
-      port = 18096;
-      localName = "jellyfin";
-      publicName = "media";
-      lanPort = 8096;
+        port = 18096;
+        localName = "jellyfin";
+        publicName = "media";
+        lanPort = 8096;
       };
     }
     (lib.mkIf config.my.services.jellyfin.enable {

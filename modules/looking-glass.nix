@@ -3,14 +3,19 @@
 let
   user = config.my.user.name;
   client = pkgs.callPackage ../packages/looking-glass-idd-client.nix { };
-  kvmfr = (config.boot.kernelPackages.kvmfr.override {
-    looking-glass-client = client;
-  }).overrideAttrs {
-    sourceRoot = "looking-glass-${client.version}/module";
-  };
+  kvmfr =
+    (config.boot.kernelPackages.kvmfr.override {
+      looking-glass-client = client;
+    }).overrideAttrs
+      {
+        sourceRoot = "looking-glass-${client.version}/module";
+      };
   launcher = pkgs.writeShellApplication {
     name = "windows-looking-glass";
-    runtimeInputs = [ pkgs.libvirt client ];
+    runtimeInputs = [
+      pkgs.libvirt
+      client
+    ];
     text = ''
       if [ ! -c /dev/kvmfr0 ]; then
         echo "Looking Glass shared-memory device /dev/kvmfr0 is unavailable." >&2
@@ -67,7 +72,10 @@ in
       comment = "Open the Windows VM with NVIDIA graphics acceleration";
       exec = "windows-looking-glass";
       icon = "looking-glass";
-      categories = [ "System" "Emulator" ];
+      categories = [
+        "System"
+        "Emulator"
+      ];
     })
   ];
 }

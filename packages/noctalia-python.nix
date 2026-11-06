@@ -3,13 +3,15 @@
 
 pkgs.symlinkJoin {
   name = "noctalia-plugin-python";
-  paths = [ (pkgs.python3.withPackages (ps: [
-    ps.pygobject3
-    ps.pillow
-    ps.psutil
-    ps.speedtest-cli
-    ps.syncedlyrics
-  ])) ];
+  paths = [
+    (pkgs.python3.withPackages (ps: [
+      ps.pygobject3
+      ps.pillow
+      ps.psutil
+      ps.speedtest-cli
+      ps.syncedlyrics
+    ]))
+  ];
   nativeBuildInputs = [ pkgs.makeWrapper ];
   postBuild = ''
     wrapProgram "$out/bin/python3" \

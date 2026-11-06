@@ -1,5 +1,10 @@
 # Oo7 Secret Service: daemon, portal and greetd PAM unlock.
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   oo7Pam = pkgs.stdenv.mkDerivation (finalAttrs: {
     pname = "oo7-pam";
@@ -43,10 +48,16 @@ in
   services.dbus.packages = [ pkgs.oo7-server ];
   services.gnome.gnome-keyring.enable = false;
 
-  systemd.packages = [ pkgs.oo7-server pkgs.oo7-portal ];
+  systemd.packages = [
+    pkgs.oo7-server
+    pkgs.oo7-portal
+  ];
   systemd.user.services.oo7-daemon = {
     wantedBy = [ "default.target" ];
-    serviceConfig.ExecStart = lib.mkForce [ "" "/run/wrappers/bin/oo7-daemon" ];
+    serviceConfig.ExecStart = lib.mkForce [
+      ""
+      "/run/wrappers/bin/oo7-daemon"
+    ];
   };
 
   security.wrappers.oo7-daemon = {

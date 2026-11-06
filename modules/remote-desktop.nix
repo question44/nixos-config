@@ -1,9 +1,21 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   desktopPackages = with pkgs; [
-    xfce4-session xfce4-panel xfdesktop xfwm4 xfce4-settings
-    xfce4-appfinder xfce4-terminal thunar adwaita-icon-theme
+    xfce4-session
+    xfce4-panel
+    xfdesktop
+    xfwm4
+    xfce4-settings
+    xfce4-appfinder
+    xfce4-terminal
+    thunar
+    adwaita-icon-theme
   ];
   session = pkgs.writeShellScript "remote-desktop-session" ''
     # Keep the remote X11 session separate from the local Wayland session bus.

@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   user = config.my.user.name;
 in
@@ -12,11 +17,16 @@ in
       openFirewall = true;
       settings = {
         name = "Erebor Moonshine";
-        application = [ {
-          title = "Steam Big Picture";
-          steam_integration = true;
-          command = [ "${pkgs.steam}/bin/steam" "steam://open/bigpicture" ];
-        } ];
+        application = [
+          {
+            title = "Steam Big Picture";
+            steam_integration = true;
+            command = [
+              "${pkgs.steam}/bin/steam"
+              "steam://open/bigpicture"
+            ];
+          }
+        ];
       };
     };
   };

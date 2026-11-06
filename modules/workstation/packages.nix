@@ -1,5 +1,12 @@
 # Unfree allowlist, system packages, application menu and Flatpak.
-{ config, darkly, lib, pkgs, vicinae, ... }:
+{
+  config,
+  darkly,
+  lib,
+  pkgs,
+  vicinae,
+  ...
+}:
 let
   hyperhdr = pkgs.callPackage ../../packages/hyperhdr.nix { };
   aiUsagebar = pkgs.callPackage ../../packages/ai-usagebar.nix { };
@@ -16,7 +23,8 @@ let
   '';
 in
 {
-  nixpkgs.config.allowUnfreePredicate = pkg:
+  nixpkgs.config.allowUnfreePredicate =
+    pkg:
     builtins.elem (lib.getName pkg) [
       "nvidia-x11"
       "nvidia-kernel-modules"
@@ -48,93 +56,97 @@ in
       <Include><All/></Include>
     </Menu>
   '';
-  environment.systemPackages = with pkgs; [
-    lsof
-    google-authenticator
-    proton-vpn
-    oo7
-    nodejs
-    gh
-    awscli2
-    aws-sam-cli
-    gnupg
-    gnumake
-    kdePackages.dolphin
-    kdePackages.discover
-    kdePackages.konsole
-    kdePackages.gwenview
-    kdePackages.okular
-    kdePackages.ark
-    # System Monitor app; ksystemstats provides its D-Bus sensor backend outside Plasma.
-    kdePackages.plasma-systemmonitor
-    kdePackages.ksystemstats
-    kdePackages.kinfocenter
-    # Storage Device Health page; kded6 is D-Bus activated to run its SMART module.
-    kdePackages.plasma-disks
-    kdePackages.kded
-    smartmontools
-    (google-chrome.override { commandLineArgs = "--password-store=gnome-libsecret"; })
-    haruna
-    moonlight-qt
-    stremio-linux-shell
-    ddcutil
-    kdePackages.breeze
-    candy-icons
-    darkly.packages.${pkgs.stdenv.hostPlatform.system}.darkly-qt6
-    (discord.override { withVencord = true; })
-    vicinae.packages.${pkgs.stdenv.hostPlatform.system}.default
-    ghostty
-    xwayland-satellite
-    wl-clipboard
-    wlr-randr
-    pavucontrol
-    tuigreet
-    xremap
-  ] ++ lib.optionals config.my.ambilight.enable [
-    hyperhdr
-  ] ++ [
-    # Renderer for the janzon/wallpaper-engine Noctalia plugin.
-    linux-wallpaperengine
-    aiUsagebar
-    auroraNcs
-    ut2004.ut2004
-    ut2004.ut2004-import-rpm
-    ut2004.ut2004-setup
-    noctaliaPython
-    spotifyLauncher
-    cava
-    jq
-    playerctl
-    spotify-player
-    libnotify
-    gtk3
-    gtk-layer-shell
-    xdg-utils
-    bitwarden-cli
-    hyprpicker
-    efibootmgr
-    cryptsetup
-    grim
-    kdePackages.kdeconnect-kde
-    sshfs
-    qrencode
-    speedtest
-    slurp
-    tesseract
-    imagemagick
-    zbar
-    translate-shell
-    ffmpeg
-    gpu-screen-recorder
-    wl-screenrec
-    wf-recorder
-    bc
-    pulseaudio
-    mpv
-    noctaliaPkgConfig
-    pipewire.dev
-    sway
-  ];
+  environment.systemPackages =
+    with pkgs;
+    [
+      lsof
+      google-authenticator
+      proton-vpn
+      oo7
+      nodejs
+      gh
+      awscli2
+      aws-sam-cli
+      gnupg
+      gnumake
+      kdePackages.dolphin
+      kdePackages.discover
+      kdePackages.konsole
+      kdePackages.gwenview
+      kdePackages.okular
+      kdePackages.ark
+      # System Monitor app; ksystemstats provides its D-Bus sensor backend outside Plasma.
+      kdePackages.plasma-systemmonitor
+      kdePackages.ksystemstats
+      kdePackages.kinfocenter
+      # Storage Device Health page; kded6 is D-Bus activated to run its SMART module.
+      kdePackages.plasma-disks
+      kdePackages.kded
+      smartmontools
+      (google-chrome.override { commandLineArgs = "--password-store=gnome-libsecret"; })
+      haruna
+      moonlight-qt
+      stremio-linux-shell
+      ddcutil
+      kdePackages.breeze
+      candy-icons
+      darkly.packages.${pkgs.stdenv.hostPlatform.system}.darkly-qt6
+      (discord.override { withVencord = true; })
+      vicinae.packages.${pkgs.stdenv.hostPlatform.system}.default
+      ghostty
+      xwayland-satellite
+      wl-clipboard
+      wlr-randr
+      pavucontrol
+      tuigreet
+      xremap
+    ]
+    ++ lib.optionals config.my.ambilight.enable [
+      hyperhdr
+    ]
+    ++ [
+      # Renderer for the janzon/wallpaper-engine Noctalia plugin.
+      linux-wallpaperengine
+      aiUsagebar
+      auroraNcs
+      ut2004.ut2004
+      ut2004.ut2004-import-rpm
+      ut2004.ut2004-setup
+      noctaliaPython
+      spotifyLauncher
+      cava
+      jq
+      playerctl
+      spotify-player
+      libnotify
+      gtk3
+      gtk-layer-shell
+      xdg-utils
+      bitwarden-cli
+      hyprpicker
+      efibootmgr
+      cryptsetup
+      grim
+      kdePackages.kdeconnect-kde
+      sshfs
+      qrencode
+      speedtest
+      slurp
+      tesseract
+      imagemagick
+      zbar
+      translate-shell
+      ffmpeg
+      gpu-screen-recorder
+      wl-screenrec
+      wf-recorder
+      bc
+      pulseaudio
+      mpv
+      noctaliaPkgConfig
+      pipewire.dev
+      sway
+    ];
 
   services.flatpak.enable = true;
   systemd.services.flatpak-flathub = {

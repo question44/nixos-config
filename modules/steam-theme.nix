@@ -29,12 +29,16 @@ in
       settings="$HOME/.config/millennium/config.json"
       run ${pkgs.coreutils}/bin/mkdir -p "$(dirname "$settings")"
       if [ ! -e "$settings" ]; then
-        run ${pkgs.coreutils}/bin/install -m 600 ${pkgs.writeText "millennium-noctalia-config.json" (builtins.toJSON {
-          themes = {
-            activeTheme = "Material-Theme";
-            conditions.Material-Theme.Color = "Matugen";
-          };
-        })} "$settings"
+        run ${pkgs.coreutils}/bin/install -m 600 ${
+          pkgs.writeText "millennium-noctalia-config.json" (
+            builtins.toJSON {
+              themes = {
+                activeTheme = "Material-Theme";
+                conditions.Material-Theme.Color = "Matugen";
+              };
+            }
+          )
+        } "$settings"
       fi
     '';
   };

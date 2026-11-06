@@ -32,7 +32,10 @@
         "Telink IQUNIX 2.4GHz"
         {
           name = "RDR IQUNIX MQ80 KB";
-          usb = { vendor = "320f"; product = "5055"; };
+          usb = {
+            vendor = "320f";
+            product = "5055";
+          };
         }
         "Logitech G502 X LS"
       ];
@@ -43,13 +46,18 @@
     };
     macApproval = {
       enable = true;
-      addresses = [ "100.127.94.102" "192.168.1.97" ];
+      addresses = [
+        "100.127.94.102"
+        "192.168.1.97"
+      ];
     };
     nanokvm = {
       enable = true;
       url = "https://kvm-37ff.tail517bdc.ts.net:8443";
     };
-    niri = { enable = true; };
+    niri = {
+      enable = true;
+    };
     streaming = {
       sunshine.enable = true;
       moonshine.enable = true;

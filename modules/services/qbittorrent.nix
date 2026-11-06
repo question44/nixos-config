@@ -3,18 +3,18 @@
   config = lib.mkMerge [
     {
       my.services.qbittorrent = {
-      port = 18081;
-      localName = "torrent";
-      publicName = "torrent";
-      lanPort = 8082;
-      # The Web UI checks Host/Origin/Referer against its public name.
-      proxy.headers = [
-        "Host torrent.${config.my.network.domain}"
-        "Origin https://torrent.${config.my.network.domain}"
-        "Referer https://torrent.${config.my.network.domain}/"
-        "-Authorization"
-      ];
-      proxy.lanHeaders = [ ];
+        port = 18081;
+        localName = "torrent";
+        publicName = "torrent";
+        lanPort = 8082;
+        # The Web UI checks Host/Origin/Referer against its public name.
+        proxy.headers = [
+          "Host torrent.${config.my.network.domain}"
+          "Origin https://torrent.${config.my.network.domain}"
+          "Referer https://torrent.${config.my.network.domain}/"
+          "-Authorization"
+        ];
+        proxy.lanHeaders = [ ];
       };
     }
     (lib.mkIf config.my.services.qbittorrent.enable {

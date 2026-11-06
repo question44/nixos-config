@@ -1,21 +1,22 @@
-{ lib
-, bash
-, coreutils
-, curl
-, cpio
-, fetchurl
-, gnutar
-, jq
-, libglvnd
-, llvmPackages
-, openal
-, p7zip
-, rpm
-, sdl3
-, stdenv
-, symlinkJoin
-, unshield
-, writeShellApplication
+{
+  lib,
+  bash,
+  coreutils,
+  curl,
+  cpio,
+  fetchurl,
+  gnutar,
+  jq,
+  libglvnd,
+  llvmPackages,
+  openal,
+  p7zip,
+  rpm,
+  sdl3,
+  stdenv,
+  symlinkJoin,
+  unshield,
+  writeShellApplication,
 }:
 
 let
@@ -85,7 +86,11 @@ let
 
   ut2004-import-rpm = writeShellApplication {
     name = "ut2004-import-rpm";
-    runtimeInputs = [ coreutils cpio rpm ];
+    runtimeInputs = [
+      coreutils
+      cpio
+      rpm
+    ];
     text = ''
       if [ "$#" -ne 1 ]; then
         echo "Usage: ut2004-import-rpm /path/to/unreal-tournament-2004-*.rpm" >&2

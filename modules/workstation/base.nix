@@ -1,16 +1,26 @@
 # Settings every workstation shares: Nix, networking, locale, the main user,
 # polkit and desktop plumbing. Host-specific values come from my.* options.
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   user = config.my.user.name;
   lan = config.my.network.lanInterface;
   services = lib.filter (s: s.enable) (lib.attrValues config.my.services);
-  localNames = lib.concatMap (s: [ s.localName "${s.localName}.localhost" ])
-    (lib.filter (s: s.localName != null) services);
+  localNames = lib.concatMap (s: [
+    s.localName
+    "${s.localName}.localhost"
+  ]) (lib.filter (s: s.localName != null) services);
   lanPorts = lib.concatMap (s: lib.optional (s.lanPort != null) s.lanPort) services;
 in
 {
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
   nix.settings.auto-optimise-store = true;
   nix.gc = {
     automatic = true;
@@ -22,16 +32,37 @@ in
   networking.hosts = {
     "127.0.0.1" = [
       config.networking.hostName
-    ] ++ localNames;
+    ]
+    ++ localNames;
   };
   # SSH is reachable from the LAN and the tailnet only.
   networking.firewall.interfaces.${lan} = {
-    allowedTCPPorts = [ 22 80 ] ++ lanPorts ++ [ 22000 ];
+    allowedTCPPorts = [
+      22
+      80
+    ]
+    ++ lanPorts
+    ++ [ 22000 ];
     allowedUDPPorts = [ 22000 ];
-    allowedTCPPortRanges = [ { from = 1714; to = 1764; } ];
-    allowedUDPPortRanges = [ { from = 1714; to = 1764; } ];
+    allowedTCPPortRanges = [
+      {
+        from = 1714;
+        to = 1764;
+      }
+    ];
+    allowedUDPPortRanges = [
+      {
+        from = 1714;
+        to = 1764;
+      }
+    ];
   };
-  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 22 80 443 22000 ];
+  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [
+    22
+    80
+    443
+    22000
+  ];
   networking.firewall.interfaces.tailscale0.allowedUDPPorts = [ 22000 ];
   services.tailscale.enable = true;
   hardware.i2c.enable = true;
@@ -45,7 +76,13 @@ in
     description = config.my.user.description;
     shell = pkgs.fish;
     linger = true;
-    extraGroups = [ "networkmanager" "wheel" "video" "audio" "input" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "video"
+      "audio"
+      "input"
+    ];
   };
 
   programs.fish.enable = true;

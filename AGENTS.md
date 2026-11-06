@@ -178,5 +178,7 @@ other:
   user changes.
 - After a verified important system change, commit the relevant configuration
   and changelog changes in Git before declaring the work complete.
+- Run `nix fmt` before committing (nixfmt, RFC 166 style; it formats every
+  `.nix` file outside `apps/`). `nix flake check` fails on unformatted files.
 - Keep commits focused and descriptive; check `git status` after committing
   and leave unrelated user changes untouched.

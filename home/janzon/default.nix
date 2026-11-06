@@ -1,6 +1,15 @@
 # Home Manager configuration for janzon, split by topic so parallel
 # changes rarely touch the same file.
-{ config, lib, pkgs, umbriel, monstar, claude-desktop-nix, zen-browser, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  umbriel,
+  monstar,
+  claude-desktop-nix,
+  zen-browser,
+  ...
+}:
 let
   zenPackages = zen-browser.packages.${pkgs.stdenv.hostPlatform.system};
   zenBrowser = zenPackages.default;

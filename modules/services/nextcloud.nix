@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   domain = config.my.network.domain;
 in
@@ -6,16 +11,16 @@ in
   config = lib.mkMerge [
     {
       my.services.nextcloud = {
-      port = 18089;
-      localName = "nextcloud";
-      publicName = "cloud";
-      lanPort = 8095;
-      extraConfig = ''
-        @carddav path /.well-known/carddav
-        redir @carddav /remote.php/dav 301
-        @caldav path /.well-known/caldav
-        redir @caldav /remote.php/dav 301
-      '';
+        port = 18089;
+        localName = "nextcloud";
+        publicName = "cloud";
+        lanPort = 8095;
+        extraConfig = ''
+          @carddav path /.well-known/carddav
+          redir @carddav /remote.php/dav 301
+          @caldav path /.well-known/caldav
+          redir @caldav /remote.php/dav 301
+        '';
       };
     }
     (lib.mkIf config.my.services.nextcloud.enable {
@@ -32,7 +37,10 @@ in
         };
         nextcloud = {
           image = "docker.io/library/nextcloud:34.0.2-apache";
-          dependsOn = [ "nextcloud-db" "nextcloud-redis" ];
+          dependsOn = [
+            "nextcloud-db"
+            "nextcloud-redis"
+          ];
           ports = [ "127.0.0.1:18089:80" ];
           volumes = [
             "/srv/nextcloud/html:/var/www/html"
