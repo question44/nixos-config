@@ -256,7 +256,7 @@ index 0000000..7de6d9f
 +  std::uint64_t m_generation = 0;
 +};
 diff --git a/src/shell/lockscreen/lock_screen.cpp b/src/shell/lockscreen/lock_screen.cpp
-index ad0a0dc..71c3302 100644
+index ad0a0dc..f7ddff8 100644
 --- a/src/shell/lockscreen/lock_screen.cpp
 +++ b/src/shell/lockscreen/lock_screen.cpp
 @@ -28,6 +28,7 @@
@@ -267,26 +267,38 @@ index ad0a0dc..71c3302 100644
  #include <ctime>
  #include <string>
  #include <thread>
-@@ -135,6 +136,18 @@ bool LockScreen::initialize(
+@@ -135,6 +136,22 @@ bool LockScreen::initialize(
        handleFingerprintStatus(message, isError);
      });
    }
 +  if (const char* helper = std::getenv("NOCTALIA_SECURITY_KEY_HELPER"); helper != nullptr && *helper != '\0') {
 +    m_securityKey = std::make_unique<SecurityKeyAuthenticator>(helper);
 +    m_securityKey->setAuthenticatedCallback([this] {
++      m_securityKeyWaiting = false;
 +      m_status = i18n::tr("lockscreen.unlocked");
 +      m_statusIsError = false;
 +      updatePromptOnSurfaces();
 +      unlock();
 +    });
 +    m_securityKey->setStatusCallback([this](const std::string& message, bool isError) {
-+      handleFingerprintStatus(message, isError);
++      // Any info line from the helper means pam_u2f is waiting for a touch.
++      m_securityKeyWaiting = !message.empty() && !isError;
++      handleFingerprintStatus(m_securityKeyWaiting ? std::string("Touch your security key") : message, isError);
++      updatePromptOnSurfaces();
 +    });
 +  }
    return true;
  }
  
-@@ -1517,6 +1530,9 @@ void LockScreen::handleAuthResult(std::uint64_t generation, const PamAuthenticat
+@@ -1384,6 +1401,7 @@ void LockScreen::clearInstances() { m_instances.clear(); }
+ void LockScreen::updatePromptOnSurfaces() {
+   for (auto& instance : m_instances) {
+     instance.surface->setPromptState(m_user, m_password, m_status, m_statusIsError, m_authenticating);
++    instance.surface->setSecurityKeyWaiting(m_securityKeyWaiting);
+   }
+ }
+ 
+@@ -1517,6 +1535,9 @@ void LockScreen::handleAuthResult(std::uint64_t generation, const PamAuthenticat
  }
  
  void LockScreen::startFingerprint() {
@@ -296,18 +308,19 @@ index ad0a0dc..71c3302 100644
    if (m_fingerprint == nullptr) {
      return;
    }
-@@ -1527,6 +1543,9 @@ void LockScreen::startFingerprint() {
+@@ -1527,6 +1548,10 @@ void LockScreen::startFingerprint() {
  }
  
  void LockScreen::stopFingerprint() {
 +  if (m_securityKey != nullptr) {
 +    m_securityKey->stop();
 +  }
++  m_securityKeyWaiting = false;
    if (m_fingerprint != nullptr) {
      m_fingerprint->stop();
    }
 diff --git a/src/shell/lockscreen/lock_screen.h b/src/shell/lockscreen/lock_screen.h
-index dd3be2e..a8db481 100644
+index dd3be2e..4372599 100644
 --- a/src/shell/lockscreen/lock_screen.h
 +++ b/src/shell/lockscreen/lock_screen.h
 @@ -1,6 +1,7 @@
@@ -318,11 +331,107 @@ index dd3be2e..a8db481 100644
  #include "capture/screencopy_capture.h"
  #include "core/timer_manager.h"
  #include "shell/render/lockscreen_transition_types.h"
-@@ -172,6 +173,7 @@ private:
+@@ -172,6 +173,8 @@ private:
    std::unordered_map<wl_output*, ScreencopyImage> m_desktopCaptures;
    PamAuthenticator m_authenticator;
    std::unique_ptr<FingerprintAuthenticator> m_fingerprint;
 +  std::unique_ptr<SecurityKeyAuthenticator> m_securityKey;
++  bool m_securityKeyWaiting = false;
    std::string m_user;
    std::string m_password;
    std::string m_status;
+diff --git a/src/shell/lockscreen/lock_surface.cpp b/src/shell/lockscreen/lock_surface.cpp
+index 87de82e..50c0fd1 100644
+--- a/src/shell/lockscreen/lock_surface.cpp
++++ b/src/shell/lockscreen/lock_surface.cpp
+@@ -513,6 +513,15 @@ LockSurface::LockSurface(WaylandConnection& connection, ConfigService* config) :
+           }
+       )
+   );
++  m_authPanel->addChild(
++      ui::glyph({
++          .out = &m_authGlyph,
++          .glyph = "key",
++          .glyphSize = Style::fontSizeCaption,
++          .color = colorSpecFromRole(ColorRole::Primary),
++      })
++  );
++  m_authGlyph->setVisible(false);
+   m_authPanel->addChild(
+       ui::label({
+           .out = &m_authLabel,
+@@ -808,6 +817,14 @@ void LockSurface::setKeyboardIndicators(
+   requestUpdate();
+ }
+ 
++void LockSurface::setSecurityKeyWaiting(bool waiting) {
++  if (m_securityKeyWaiting == waiting) {
++    return;
++  }
++  m_securityKeyWaiting = waiting;
++  requestLayout();
++}
++
+ void LockSurface::setWallpaperPath(std::string wallpaperPath) {
+   if (m_wallpaperPath == wallpaperPath) {
+     return;
+@@ -1347,6 +1364,9 @@ void LockSurface::layoutScene(std::uint32_t width, std::uint32_t height) {
+     if (m_layoutChip != nullptr) {
+       m_layoutChip->setVisible(false);
+     }
++    if (m_authGlyph != nullptr) {
++      m_authGlyph->setVisible(false);
++    }
+     if (m_authPanel != nullptr) {
+       m_authPanel->setVisible(false);
+     }
+@@ -1701,7 +1721,17 @@ void LockSurface::layoutScene(std::uint32_t width, std::uint32_t height) {
+       m_authPanel->setMaxWidth(authW);
+       m_authPanel->setMinHeight(authH);
+       m_authPanel->setMaxHeight(authH);
+-      m_authLabel->setMaxWidth(labelMaxW);
++      const bool showKeyGlyph = m_authGlyph != nullptr && m_securityKeyWaiting && !statusError;
++      float keyGlyphW = 0.0F;
++      if (m_authGlyph != nullptr) {
++        m_authGlyph->setVisible(showKeyGlyph);
++        if (showKeyGlyph) {
++          m_authGlyph->setGlyphSize(authFontSize * 1.25F);
++          keyGlyphW = authFontSize * 1.25F + Style::spaceXs;
++        }
++      }
++      m_authLabel->setFlexGrow(showKeyGlyph ? 0.0F : 1.0F);
++      m_authLabel->setMaxWidth(std::max(0.0F, labelMaxW - keyGlyphW));
+ 
+       const float authGap = Style::spaceSm;
+       const float authX = panelX;
+@@ -1738,6 +1768,9 @@ void LockSurface::updateCopy() {
+     const bool show = m_locked && !m_blackout && !text.empty() && isLoginBoxEnabled();
+     m_authPanel->setVisible(show);
+     m_authLabel->setVisible(show);
++    if (m_authGlyph != nullptr && (!show || isError || !m_securityKeyWaiting)) {
++      m_authGlyph->setVisible(false);
++    }
+     if (show) {
+       m_authLabel->setText(text);
+       m_authLabel->setColor(colorSpecFromRole(isError ? ColorRole::Error : ColorRole::OnSurfaceVariant));
+diff --git a/src/shell/lockscreen/lock_surface.h b/src/shell/lockscreen/lock_surface.h
+index e23ceca..6bfc2ff 100644
+--- a/src/shell/lockscreen/lock_surface.h
++++ b/src/shell/lockscreen/lock_surface.h
+@@ -58,6 +58,7 @@ public:
+   void setLockedState(bool locked);
+   void setPromptState(std::string user, std::string password, std::string status, bool error, bool authenticating);
+   void setKeyboardIndicators(bool capsLock, bool hasMultipleLayouts, bool layoutSwitchable, std::string layoutLabel);
++  void setSecurityKeyWaiting(bool waiting);
+   void setTextureCache(SharedTextureCache* cache) noexcept { m_textureCache = cache; }
+   void setWallpaperPath(std::string wallpaperPath);
+   void setWallpaperFillMode(WallpaperFillMode fillMode);
+@@ -190,6 +191,8 @@ private:
+   std::array<ForecastColumn, 5> m_forecastColumns{};
+   Flex* m_authPanel = nullptr;
+   Label* m_authLabel = nullptr;
++  Glyph* m_authGlyph = nullptr;
++  bool m_securityKeyWaiting = false;
+   Flex* m_loginContentRow = nullptr;
+   Input* m_passwordField = nullptr;
+   Button* m_passwordRevealButton = nullptr;

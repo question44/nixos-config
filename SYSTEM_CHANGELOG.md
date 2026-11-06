@@ -16,6 +16,13 @@ theme). Activated as generation 308: `/boot/theme` holds `terminal_c.png`
 (matches the repo) and `terminal-box: "terminal_*.png"`; GRUB lists
 generation 308, Windows and systemd-boot recovery entries and their EFI files
 are intact; no failed units. Untested: the visual result needs a reboot.
+# Key icon on the lock screen while the YubiKey waits — 2026-11-06
+
+User asked for a visible cue that the lock screen awaits a key touch. The
+Noctalia patch now shows a `key` glyph (primary colour) in front of the status
+line, and replaces pam_u2f's cue text with "Touch your security key", while
+the helper reports a pending touch; it hides on password typing, errors, stop
+and unlock. `nix flake check` passes. ACTIVATION: pending.
 # Noctalia lock screen unlocks on a YubiKey touch — 2026-11-06
 
 User wanted the key to unlock the lock screen without the empty-password
