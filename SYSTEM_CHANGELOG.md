@@ -3,6 +3,18 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Noctalia started once under Umbriel — 2026-11-06
+
+Umbriel's `autostart` and `noctalia.service` both launched Noctalia, so the
+unit always failed with "already running" (seen on 2026-11-05 too) and the
+`Super+Shift+F6` restart bind could not take over the bar. Removed `noctalia`
+from Umbriel's autostart so the systemd unit starts it, as under Niri
+(`erebor-diff`: different, only the deployed Umbriel config). Activated as
+generation 305, then stopped the autostarted instance and started the unit:
+`noctalia.service` is active and owns the process, `umbriel layers` shows the
+bar, dock and wallpaper on DP-1 and HDMI-A-1, and no system or user units are
+failed. Untested: a fresh login, where the unit alone must bring the bar up.
+
 # Move to nixos-unstable — 2026-11-06
 
 [SYS-072](SYSTEM_TODO.md#sys-072). User asked to move the whole system from
