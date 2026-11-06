@@ -18,6 +18,11 @@ plasma-integration first in `QT_PLUGIN_PATH`; with it, an isolated test
 launch in the Umbriel session loaded both. `erebor-diff` tier: different
 (fooyin added).
 
+Activated generation 299 with no failed system or user units;
+`/run/current-system/sw/bin/fooyin` is the wrapped 0.14.1 and
+`org.fooyin.fooyin.desktop` is in the application menu. Not yet launched
+from the menu after activation.
+
 # Tauon music player — 2026-11-06
 
 User asked to install Tauon after trying several players; they need CUE
