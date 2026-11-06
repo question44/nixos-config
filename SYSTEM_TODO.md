@@ -16,6 +16,19 @@ instead of copying their instructions. No review task authorizes a reboot,
 activation, storage change, secret archive or graphical-session interruption.
 Earlier approvals remain bounded by their original scope and safety preconditions.
 
+<a id="sys-072"></a>
+
+### SYS-072 — Move erebor to nixos-unstable
+
+**Status:** ACTIVE · **Review:** 2026-11-13
+
+User asked to move the whole system from nixos-26.05 to nixos-unstable, mainly
+to replace Qt 6.11 with Qt 6.12 everywhere. Completion: the system and Home
+Manager evaluate from unstable, the generation is activated and booted with no
+failed units, the desktop session, NVIDIA, Sunshine and Vicinae work, and no
+Qt 6.11 remains in the system closure. Recovery: boot generation 301 (last
+26.05 generation) from GRUB.
+
 <a id="sys-071"></a>
 
 ### SYS-071 — Dashboard per-user layout edit mode
