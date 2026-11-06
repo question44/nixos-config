@@ -3,7 +3,7 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
-# [PENDING] Time Machine share on an ext4 Expansion disk — 2026-11-06
+# Time Machine share on an ext4 Expansion disk — 2026-11-06
 
 User asked to back up the MacBook with Time Machine to the Expansion disk and
 chose to reformat it (was exFAT, label `Expansion`, UUID `7FF9-F492`, 45G of
@@ -16,8 +16,22 @@ UUID `26efec95-f0a4-48ac-a696-5b71b21bdb48`; Windows can no longer read it.
 `/srv/external/bigdaddy/expansion-backup` and verified by sha256. Recovery:
 that copy stays until the restored data is checked; the previous generation
 mounts the old exFAT UUID (data gone after mkfs, so restore from bigdaddy).
-Next: mkfs on `ata-ST6000DM003-2U9186_ZR16G8LZ-part1`, activate, restore,
-user sets `smbpasswd -a janzon`.
+Outcome: mkfs ran at 22:50 (outside the agent session, whose sudo was
+blocked by no-new-privileges); the share went live with generation 312.
+smbd skipped `tailscale0` under `bind interfaces only` (point-to-point /32,
+no peer address), so that is now off and the firewall (445 only on `br0` and
+`tailscale0`) does the limiting: generation 313, `erebor-diff`: different
+(`smb.conf` only). Verified: `/srv/external/expansion` is ext4 (5.5T),
+`TimeMachine/` is `janzon:users` 0700, smbd listens on `*:445` and answers on
+the Tailscale address, `testparm -s` shows the share with `fruit:time
+machine = yes` and max 2T, `avahi-browse` shows `_adisk._tcp` with
+`adVN=TimeMachine`; the 45G (2545 files) were restored from bigdaddy and all
+pass `sha256sum -c`; qbittorrent, jellyfin and nextcloud are running; no
+failed units. The bigdaddy copy is kept until the user deletes it. Limit:
+Avahi names itself `erebor-2` (host name conflict; Moonshine and HyperHDR run
+their own mDNS responders), so the Mac lists the disk as `erebor-2`; both
+names resolve to 192.168.1.106. Untested: a Mac backup (user still sets
+`smbpasswd -a janzon`).
 # GRUB theme: no dark box while the kernel loads — 2026-11-06
 
 User reported a black rectangle between choosing a GRUB entry and Plymouth.
