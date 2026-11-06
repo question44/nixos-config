@@ -17,6 +17,9 @@ longer applies. Remove the override once nixpkgs ships >= 1.15.16.
 `nix flake check` passes; `erebor-diff`: different (Discord/Vencord only
 expected). Verified before activation: the built Discord ran with Vencord
 1.15.16 through all plugin stages, gateway READY, messages loaded.
+Outcome: activated as generation 314, no failed units. Discord launched
+from `discord.desktop` loads `vencord-1.15.16/patcher.js`, runs all plugin
+stages and reaches gateway READY with no `i.A` error.
 # Time Machine share on an ext4 Expansion disk — 2026-11-06
 
 User asked to back up the MacBook with Time Machine to the Expansion disk and
