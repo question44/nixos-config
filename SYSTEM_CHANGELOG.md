@@ -20,6 +20,10 @@ with lynxpresence, but 9.1.3 imports `pypresence` and its
 override adds pypresence 4.6.2 from PyPI to Tauon's Python path. The wrapper
 imports it; Rich Presence itself was not tried against Discord.
 
+Activated generation 298 with no failed system or user units;
+`/run/current-system/sw/bin/tauon` is the overridden build and
+`tauonmb.desktop` is in the application menu.
+
 # janzon's packages installed system-wide — 2026-11-06
 
 User asked to install the packages from `home/janzon/default.nix` for every
