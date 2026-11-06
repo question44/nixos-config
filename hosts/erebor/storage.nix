@@ -64,4 +64,10 @@
   environment.etc."crypttab".text = ''
     bigdaddy UUID=35aa0d36-fe4f-45ce-8843-2c0387d1475a /etc/cryptsetup-keys.d/bigdaddy.key luks,noauto,nofail,x-systemd.device-timeout=30s
   '';
+  # Read 8 MiB ahead on spinning disks and the volumes on them, so seeding
+  # from them needs fewer seeks. The SATA drives already report this size;
+  # the USB Expansion drive and bigdaddy on it default to 1 MiB.
+  services.udev.extraRules = ''
+    ACTION=="add|change", SUBSYSTEM=="block", ENV{DEVTYPE}=="disk", KERNEL=="sd[a-z]*|dm-[0-9]*", ATTR{queue/rotational}=="1", ATTR{bdi/read_ahead_kb}="8192"
+  '';
 }

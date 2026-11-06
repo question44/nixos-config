@@ -3,6 +3,17 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# 8 MiB readahead on spinning disks — 2026-11-06
+
+User asked for disk caching for seeding from HDDs. qBittorrent 5.x relies on
+the page cache, so larger readahead is the lever.
+- `hosts/erebor/storage.nix`: a udev rule sets `bdi/read_ahead_kb` to 8192 on
+  rotational `sd*` and `dm-*` disks. The SATA Seagates already reported
+  8192; the USB Expansion drive and `bigdaddy` on it were at 1024.
+
+`scripts/erebor-diff`: different (only the new udev rule). `nix flake check`
+passed.
+
 # qBittorrent peer port reachable — 2026-11-06
 
 User asked to open the qBittorrent peer port so other peers can connect for
