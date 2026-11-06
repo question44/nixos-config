@@ -39,6 +39,16 @@ boot menu remain. Next: activate with `switch`, check units, then reboot with
 the user's agreement and verify boot, login unlock, NVIDIA, Sunshine and the
 Windows VM.
 
+Activated generation 302 with `switch`; GRUB 2.14 installed without errors.
+No failed system or user units; caddy, ollama, open-webui, moonshine, the
+podman containers, libvirtd, greetd, Noctalia, PipeWire, portals and HyperHDR
+are active; `nvidia-smi` reports 615.78.08. `/etc/pam.d/login` has
+unix-early, pam_oo7 (auth, password, session `auto_start`) and greetd
+substacks it; oo7-daemon owns `org.freedesktop.secrets` with `cap_ipc_lock`.
+Still running kernel 6.18.59 and the 26.05 initrd until reboot. Next: reboot
+with the user's agreement, then verify boot, login unlock, Sunshine and the
+Windows VM.
+
 # fooyin file dialog fix — 2026-11-06
 
 User could not browse for files to add to fooyin's library. The unstable KDE

@@ -28,6 +28,8 @@ Manager evaluate from unstable, the generation is activated and booted with no
 failed units, the desktop session, NVIDIA, Sunshine and Vicinae work, and no
 Qt 6.11 remains in the system closure. Recovery: boot generation 301 (last
 26.05 generation) from GRUB.
+Checkpoint: generation 302 activated, not yet booted. **Evidence:**
+[Move to nixos-unstable](SYSTEM_CHANGELOG.md#pending-move-to-nixos-unstable--2026-11-06).
 
 <a id="sys-071"></a>
 
