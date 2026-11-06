@@ -16,6 +16,23 @@ theme). Activated as generation 308: `/boot/theme` holds `terminal_c.png`
 (matches the repo) and `terminal-box: "terminal_*.png"`; GRUB lists
 generation 308, Windows and systemd-boot recovery entries and their EFI files
 are intact; no failed units. Untested: the visual result needs a reboot.
+# Noctalia lock screen unlocks on a YubiKey touch — 2026-11-06
+
+User wanted the key to unlock the lock screen without the empty-password
+submit. Noctalia is now built from its flake input with
+`patches/noctalia-security-key-unlock.patch`: while locked it runs
+`packages/noctalia-key-auth` (path in `NOCTALIA_SECURITY_KEY_HELPER` on the
+`noctalia` user service), started and stopped alongside fingerprint
+verification; a password submit kills it, a failed one restarts it. The helper
+exits 3 without touching PAM when no FIDO device is present (retried every
+2 s), otherwise runs the new `noctalia-key` PAM stack, which holds only
+pam_u2f with sudo's key file. The `login` stack is back to password only (the
+U2F rule, the lock-screen guard and `use_first_pass` from the entry below are
+removed) and Noctalia `lockscreen.allow_empty_password` is unset again, so the
+greeter, console and lock-screen password paths are as before. `noctalia`
+joined the flake `specialArgs`. Upstream changes to the lock screen may stop
+the patch applying; the build then fails rather than dropping the feature.
+`nix flake check` passes; `erebor-diff`: different. ACTIVATION: pending.
 # YubiKey touch unlocks only the lock screen — 2026-11-06
 
 User asked to unlock the session with the YubiKey, then narrowed it to

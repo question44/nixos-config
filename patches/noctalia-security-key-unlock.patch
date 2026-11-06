@@ -1,0 +1,328 @@
+diff --git a/meson.build b/meson.build
+index cf2d5d1..d3ba3a5 100644
+--- a/meson.build
++++ b/meson.build
+@@ -425,6 +425,7 @@ _noctalia_sources = files(
+   'src/app/single_instance_lock.cpp',
+   'src/auth/fingerprint_authenticator.cpp',
+   'src/auth/pam_authenticator.cpp',
++  'src/auth/security_key_authenticator.cpp',
+   'src/calendar/caldav_client.cpp',
+   'src/calendar/caldav_discovery.cpp',
+   'src/calendar/calendar_cache.cpp',
+diff --git a/src/auth/security_key_authenticator.cpp b/src/auth/security_key_authenticator.cpp
+new file mode 100644
+index 0000000..1a6e6e5
+--- /dev/null
++++ b/src/auth/security_key_authenticator.cpp
+@@ -0,0 +1,181 @@
++#include "auth/security_key_authenticator.h"
++
++#include "core/deferred_call.h"
++#include "core/log.h"
++
++#include <cerrno>
++#include <chrono>
++#include <csignal>
++#include <cstring>
++#include <fcntl.h>
++#include <spawn.h>
++#include <string>
++#include <sys/wait.h>
++#include <thread>
++#include <unistd.h>
++#include <utility>
++
++extern char** environ;
++
++namespace {
++  constexpr Logger kLog("securitykey");
++  constexpr auto kRetryDelay = std::chrono::milliseconds(2000);
++  constexpr int kExitNoDevice = 3;
++} // namespace
++
++SecurityKeyAuthenticator::SecurityKeyAuthenticator(std::string helperPath) : m_helperPath(std::move(helperPath)) {}
++
++SecurityKeyAuthenticator::~SecurityKeyAuthenticator() {
++  stop();
++  m_aliveToken.reset();
++}
++
++void SecurityKeyAuthenticator::setAuthenticatedCallback(AuthenticatedCallback callback) {
++  m_onAuthenticated = std::move(callback);
++}
++
++void SecurityKeyAuthenticator::setStatusCallback(StatusCallback callback) { m_onStatus = std::move(callback); }
++
++void SecurityKeyAuthenticator::start() {
++  if (m_active) {
++    return;
++  }
++  m_active = true;
++  launch();
++}
++
++void SecurityKeyAuthenticator::stop() {
++  if (!m_active && m_pid <= 0) {
++    return;
++  }
++  m_active = false;
++  ++m_generation;
++  m_retryTimer.stop();
++  if (m_pid > 0) {
++    // The reaper thread collects it.
++    ::kill(m_pid, SIGTERM);
++    m_pid = -1;
++  }
++}
++
++void SecurityKeyAuthenticator::launch() {
++  if (!m_active || m_pid > 0) {
++    return;
++  }
++
++  int fds[2];
++  if (::pipe2(fds, O_CLOEXEC) != 0) {
++    kLog.warn("pipe failed: {}", std::strerror(errno));
++    scheduleRetry();
++    return;
++  }
++
++  posix_spawn_file_actions_t actions;
++  posix_spawn_file_actions_init(&actions);
++  posix_spawn_file_actions_addopen(&actions, STDIN_FILENO, "/dev/null", O_RDONLY, 0);
++  posix_spawn_file_actions_adddup2(&actions, fds[1], STDOUT_FILENO);
++
++  char* argv[] = {m_helperPath.data(), nullptr};
++  pid_t pid = -1;
++  const int rc = ::posix_spawn(&pid, m_helperPath.c_str(), &actions, nullptr, argv, environ);
++  posix_spawn_file_actions_destroy(&actions);
++  ::close(fds[1]);
++
++  if (rc != 0) {
++    ::close(fds[0]);
++    kLog.warn("cannot start helper '{}': {}", m_helperPath, std::strerror(rc));
++    scheduleRetry();
++    return;
++  }
++
++  m_pid = pid;
++  const std::uint64_t generation = m_generation;
++  std::weak_ptr<int> alive = m_aliveToken;
++  const int readFd = fds[0];
++
++  // Reads the helper's status lines and reaps it; never touches `this`
++  // directly, only through deferred calls guarded by the alive token.
++  std::thread([this, alive, generation, readFd, pid] {
++    std::string buffer;
++    char chunk[256];
++    for (;;) {
++      const ssize_t n = ::read(readFd, chunk, sizeof(chunk));
++      if (n < 0 && errno == EINTR) {
++        continue;
++      }
++      if (n <= 0) {
++        break;
++      }
++      buffer.append(chunk, static_cast<std::size_t>(n));
++      std::size_t pos;
++      while ((pos = buffer.find('\n')) != std::string::npos) {
++        std::string line = buffer.substr(0, pos);
++        buffer.erase(0, pos + 1);
++        DeferredCall::callLater([this, alive, generation, line = std::move(line)] {
++          if (alive.lock()) {
++            handleLine(generation, line);
++          }
++        });
++      }
++    }
++    ::close(readFd);
++
++    int status = 0;
++    while (::waitpid(pid, &status, 0) < 0 && errno == EINTR) {
++    }
++    DeferredCall::callLater([this, alive, generation, status] {
++      if (alive.lock()) {
++        handleExit(generation, status);
++      }
++    });
++  }).detach();
++}
++
++void SecurityKeyAuthenticator::scheduleRetry() {
++  if (!m_active) {
++    return;
++  }
++  m_retryTimer.start(kRetryDelay, [this] { launch(); });
++}
++
++void SecurityKeyAuthenticator::handleLine(std::uint64_t generation, const std::string& line) {
++  if (generation != m_generation || !m_active) {
++    return;
++  }
++  if (line.rfind("info: ", 0) == 0) {
++    emitStatus(line.substr(6), false);
++  } else if (line.rfind("error: ", 0) == 0) {
++    kLog.debug("helper: {}", line.substr(7));
++  }
++}
++
++void SecurityKeyAuthenticator::handleExit(std::uint64_t generation, int waitStatus) {
++  if (generation != m_generation || !m_active) {
++    return;
++  }
++  m_pid = -1;
++
++  const int code = WIFEXITED(waitStatus) ? WEXITSTATUS(waitStatus) : -1;
++  if (code == 0) {
++    kLog.info("security key accepted");
++    m_active = false;
++    if (m_onAuthenticated) {
++      m_onAuthenticated();
++    }
++    return;
++  }
++  if (code != kExitNoDevice) {
++    kLog.debug("helper exited with status {}", code);
++  }
++  if (m_showingStatus) {
++    emitStatus({}, false);
++  }
++  scheduleRetry();
++}
++
++void SecurityKeyAuthenticator::emitStatus(const std::string& message, bool isError) {
++  m_showingStatus = !message.empty();
++  if (m_onStatus) {
++    m_onStatus(message, isError);
++  }
++}
+diff --git a/src/auth/security_key_authenticator.h b/src/auth/security_key_authenticator.h
+new file mode 100644
+index 0000000..7de6d9f
+--- /dev/null
++++ b/src/auth/security_key_authenticator.h
+@@ -0,0 +1,52 @@
++#pragma once
++
++#include "core/timer_manager.h"
++
++#include <cstdint>
++#include <functional>
++#include <memory>
++#include <string>
++#include <sys/types.h>
++
++// Unlocks with a security-key touch while the lock screen is up. A helper
++// program (path from NOCTALIA_SECURITY_KEY_HELPER) runs its own PAM stack and
++// exits 0 on success; running it as a separate process lets the lock screen
++// cancel a pending touch by killing it. Helper protocol: stdout lines
++// "info: <text>" / "error: <text>"; exit 0 = authenticated, 3 = no key
++// present, anything else = failed (retried).
++class SecurityKeyAuthenticator {
++public:
++  using AuthenticatedCallback = std::function<void()>;
++  using StatusCallback = std::function<void(const std::string& message, bool isError)>;
++
++  explicit SecurityKeyAuthenticator(std::string helperPath);
++  ~SecurityKeyAuthenticator();
++
++  SecurityKeyAuthenticator(const SecurityKeyAuthenticator&) = delete;
++  SecurityKeyAuthenticator& operator=(const SecurityKeyAuthenticator&) = delete;
++
++  void setAuthenticatedCallback(AuthenticatedCallback callback);
++  void setStatusCallback(StatusCallback callback);
++
++  void start();
++  void stop();
++
++private:
++  void launch();
++  void scheduleRetry();
++  void handleLine(std::uint64_t generation, const std::string& line);
++  void handleExit(std::uint64_t generation, int waitStatus);
++  void emitStatus(const std::string& message, bool isError);
++
++  std::string m_helperPath;
++  AuthenticatedCallback m_onAuthenticated;
++  StatusCallback m_onStatus;
++  Timer m_retryTimer;
++  // Deferred calls hold a weak_ptr to this; it dies with the object, and both
++  // run on the main thread, so a live token means `this` is valid.
++  std::shared_ptr<int> m_aliveToken = std::make_shared<int>(0);
++  pid_t m_pid = -1;
++  bool m_active = false;
++  bool m_showingStatus = false;
++  std::uint64_t m_generation = 0;
++};
+diff --git a/src/shell/lockscreen/lock_screen.cpp b/src/shell/lockscreen/lock_screen.cpp
+index ad0a0dc..71c3302 100644
+--- a/src/shell/lockscreen/lock_screen.cpp
++++ b/src/shell/lockscreen/lock_screen.cpp
+@@ -28,6 +28,7 @@
+ #include <algorithm>
+ #include <chrono>
+ #include <cmath>
++#include <cstdlib>
+ #include <ctime>
+ #include <string>
+ #include <thread>
+@@ -135,6 +136,18 @@ bool LockScreen::initialize(
+       handleFingerprintStatus(message, isError);
+     });
+   }
++  if (const char* helper = std::getenv("NOCTALIA_SECURITY_KEY_HELPER"); helper != nullptr && *helper != '\0') {
++    m_securityKey = std::make_unique<SecurityKeyAuthenticator>(helper);
++    m_securityKey->setAuthenticatedCallback([this] {
++      m_status = i18n::tr("lockscreen.unlocked");
++      m_statusIsError = false;
++      updatePromptOnSurfaces();
++      unlock();
++    });
++    m_securityKey->setStatusCallback([this](const std::string& message, bool isError) {
++      handleFingerprintStatus(message, isError);
++    });
++  }
+   return true;
+ }
+ 
+@@ -1517,6 +1530,9 @@ void LockScreen::handleAuthResult(std::uint64_t generation, const PamAuthenticat
+ }
+ 
+ void LockScreen::startFingerprint() {
++  if (m_securityKey != nullptr) {
++    m_securityKey->start();
++  }
+   if (m_fingerprint == nullptr) {
+     return;
+   }
+@@ -1527,6 +1543,9 @@ void LockScreen::startFingerprint() {
+ }
+ 
+ void LockScreen::stopFingerprint() {
++  if (m_securityKey != nullptr) {
++    m_securityKey->stop();
++  }
+   if (m_fingerprint != nullptr) {
+     m_fingerprint->stop();
+   }
+diff --git a/src/shell/lockscreen/lock_screen.h b/src/shell/lockscreen/lock_screen.h
+index dd3be2e..a8db481 100644
+--- a/src/shell/lockscreen/lock_screen.h
++++ b/src/shell/lockscreen/lock_screen.h
+@@ -1,6 +1,7 @@
+ #pragma once
+ 
+ #include "auth/pam_authenticator.h"
++#include "auth/security_key_authenticator.h"
+ #include "capture/screencopy_capture.h"
+ #include "core/timer_manager.h"
+ #include "shell/render/lockscreen_transition_types.h"
+@@ -172,6 +173,7 @@ private:
+   std::unordered_map<wl_output*, ScreencopyImage> m_desktopCaptures;
+   PamAuthenticator m_authenticator;
+   std::unique_ptr<FingerprintAuthenticator> m_fingerprint;
++  std::unique_ptr<SecurityKeyAuthenticator> m_securityKey;
+   std::string m_user;
+   std::string m_password;
+   std::string m_status;

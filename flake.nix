@@ -83,6 +83,7 @@
               monstar
               claude-desktop-nix
               zen-browser
+              noctalia
               ;
           };
           modules = [

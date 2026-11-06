@@ -178,7 +178,6 @@ enabled = true
 auto_locate = true
 
 [lockscreen]
-allow_empty_password = true
 blur_intensity = 0.4
 tint_intensity = 0.0
 transition_duration = 1200
