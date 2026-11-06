@@ -48,6 +48,29 @@ substacks it; oo7-daemon owns `org.freedesktop.secrets` with `cap_ipc_lock`.
 Still running kernel 6.18.59 and the 26.05 initrd until reboot. Next: reboot
 with the user's agreement, then verify boot, login unlock, Sunshine and the
 Windows VM.
+# Build limits and systemd-oomd — 2026-11-06
+
+erebor froze around 20:00: a full-system `nix build` ran with `max-jobs = 20`
+and `cores = 0` (up to ~400 compile processes on 20 CPUs), filled RAM and zram,
+and pushed memory PSI full avg300 to ~30% and I/O to ~40%. systemd-oomd watched
+no cgroups, so the kernel OOM killer fired three times (20:06-20:16) and killed
+claude-desktop and steamwebhelper (oom_score_adj 300) instead of compilers.
+
+- Nix: `max-jobs = 4`, `cores = 6`, batch CPU / idle IO scheduling;
+  nix-daemon `MemoryHigh=60%`, `MemoryMax=75%`, `OOMScoreAdjust=500`
+  (inherited by builders). On erebor, `AllowedCPUs=2-19` keeps P-core 0
+  (CPUs 0-1) free of builds, as the user asked.
+- oomd: system.slice and `user@.service` monitored at 80% memory pressure.
+  Root-owned `user.slice`/`-.slice` are deliberately not monitored, because
+  oomd ignores a user unit's `ManagedOOMPreference` there. Session core
+  (umbriel, xremap, pipewire, wireplumber, dbus-broker) is `omit`; noctalia,
+  portals, oo7 and yubikey-touch-notify are `avoid`.
+- New `essential [--omit] <cmd>` launches a command in a transient user scope
+  with that preference until it exits (tested on the built path: scope gets
+  `user.oomd_avoid`).
+
+Not changed: the 2 GB NVMe swap partition (storage; left for the user to decide).
+`scripts/erebor-diff` tier: different (intended unit changes only).
 
 # fooyin file dialog fix — 2026-11-06
 

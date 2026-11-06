@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 
 {
   imports = [
@@ -76,6 +76,36 @@
 
   # Shut down windows11 before toggling GPU ownership.
   virtualisation.windowsGpuPassthrough.enable = false;
+
+  # Keep P-core 0 (CPUs 0-1) free of Nix builds so the desktop stays responsive.
+  systemd.services.nix-daemon.serviceConfig.AllowedCPUs = "2-19";
+
+  # systemd-oomd never kills the session core; desktop helpers go last.
+  systemd.user.services =
+    lib.genAttrs
+      [
+        "umbriel"
+        "xremap"
+        "pipewire"
+        "pipewire-pulse"
+        "wireplumber"
+        "dbus-broker"
+      ]
+      (_: {
+        serviceConfig.ManagedOOMPreference = "omit";
+      })
+    //
+      lib.genAttrs
+        [
+          "noctalia"
+          "oo7-daemon"
+          "xdg-desktop-portal"
+          "xdg-desktop-portal-umbriel"
+          "yubikey-touch-notify"
+        ]
+        (_: {
+          serviceConfig.ManagedOOMPreference = "avoid";
+        });
 
   networking.hostName = "erebor";
 

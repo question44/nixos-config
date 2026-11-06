@@ -22,6 +22,28 @@ in
     "flakes"
   ];
   nix.settings.auto-optimise-store = true;
+  # Bound build parallelism (at most max-jobs × cores compile threads) and let
+  # builds yield to the desktop. Unbounded builds froze erebor on 2026-11-06.
+  nix.settings.max-jobs = 4;
+  nix.settings.cores = 6;
+  nix.daemonCPUSchedPolicy = "batch";
+  nix.daemonIOSchedClass = "idle";
+  # Builders run in the daemon's cgroup: throttle them before RAM runs out,
+  # and make them the kernel OOM killer's first choice over desktop apps.
+  systemd.services.nix-daemon.serviceConfig = {
+    MemoryHigh = "60%";
+    MemoryMax = "75%";
+    OOMScoreAdjust = 500;
+  };
+  # Kill the worst cgroup under sustained memory pressure instead of thrashing.
+  # User sessions are monitored at user@.service, not at the root-owned
+  # user.slice or -.slice: oomd honours a user unit's ManagedOOMPreference only
+  # when the monitored ancestor has the same owner.
+  systemd.oomd.enableSystemSlice = true;
+  systemd.services."user@".serviceConfig = {
+    ManagedOOMMemoryPressure = "kill";
+    ManagedOOMMemoryPressureLimit = "80%";
+  };
   nix.gc = {
     automatic = true;
     dates = "weekly";
