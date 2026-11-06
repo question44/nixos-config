@@ -3,7 +3,7 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
-# [PENDING] Move to nixos-unstable — 2026-11-06
+# Move to nixos-unstable — 2026-11-06
 
 [SYS-072](SYSTEM_TODO.md#sys-072). User asked to move the whole system from
 nixos-26.05 to nixos-unstable (`1d060086`, 2026-11-03), mainly to replace Qt
@@ -48,6 +48,24 @@ substacks it; oo7-daemon owns `org.freedesktop.secrets` with `cap_ipc_lock`.
 Still running kernel 6.18.59 and the 26.05 initrd until reboot. Next: reboot
 with the user's agreement, then verify boot, login unlock, Sunshine and the
 Windows VM.
+
+Rebooted into generation 303 (unstable plus the build limits below): kernel
+6.18.60, the systemd initrd and GRUB 2.14 boot normally, and `/`, `/home` and
+`/boot` mount from the expected Btrfs subvolumes and ESP. oo7 unlocked the
+`Login` collection through the PAM listener at greetd login. NVIDIA
+615.78.08, moonshine (port 47989), Vicinae, libvirtd, caddy, ollama and the
+Nextcloud containers are running; the system closure has no Qt 6.11. The only
+failed unit is `noctalia.service`, which exits with "already running" because
+Umbriel's autostart launches Noctalia first; this predates the upgrade.
+
+The `windows11` domain still referenced the 26.05 OVMF store paths, which are
+no longer in the system closure and would disappear on garbage collection.
+`windows-vm-gpu` now also sets the loader and NVRAM template to
+`/etc/windows-vm/OVMF_CODE.fd` and `OVMF_VARS.ms.fd` (`erebor-diff`:
+different, only that unit and the new `/etc` file). Activated as generation
+304; the domain now uses the 202608 firmware, and the previous XML is in
+`/var/lib/windows-vm-recovery/gpu-toggle/20261106T200135129191Z/`. Untested:
+booting Windows on the new firmware (its NVRAM and TPM are unchanged).
 # Build limits and systemd-oomd — 2026-11-06
 
 erebor froze around 20:00: a full-system `nix build` ran with `max-jobs = 20`

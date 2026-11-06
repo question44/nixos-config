@@ -20,7 +20,7 @@ Earlier approvals remain bounded by their original scope and safety precondition
 
 ### SYS-072 — Move erebor to nixos-unstable
 
-**Status:** ACTIVE · **Review:** 2026-11-13
+**Status:** DONE (2026-11-06) · **Review:** —
 
 User asked to move the whole system from nixos-26.05 to nixos-unstable, mainly
 to replace Qt 6.11 with Qt 6.12 everywhere. Completion: the system and Home
@@ -28,8 +28,11 @@ Manager evaluate from unstable, the generation is activated and booted with no
 failed units, the desktop session, NVIDIA, Sunshine and Vicinae work, and no
 Qt 6.11 remains in the system closure. Recovery: boot generation 301 (last
 26.05 generation) from GRUB.
-Checkpoint: generation 302 activated, not yet booted. **Evidence:**
-[Move to nixos-unstable](SYSTEM_CHANGELOG.md#pending-move-to-nixos-unstable--2026-11-06).
+Done: generation 303 booted with no new failed units; desktop, oo7 login
+unlock, NVIDIA, moonshine and Vicinae work; no Qt 6.11 in the closure. The
+Windows VM firmware paths were fixed in generation 304; booting Windows on
+the new firmware is untested. **Evidence:**
+[Move to nixos-unstable](SYSTEM_CHANGELOG.md#move-to-nixos-unstable--2026-11-06).
 
 <a id="sys-071"></a>
 
