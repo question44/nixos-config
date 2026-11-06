@@ -15,6 +15,9 @@ allow 6881.
 
 `scripts/erebor-diff`: equivalent (only firewall and container unit store
 paths differ). `nix flake check` passed.
+Activated generation 290; no failed units. Verified: host listens on
+6881 TCP/UDP, `nixos-fw` accepts 6881 TCP/UDP on br0, Web UI answers. The router
+forward and an external reachability check are not done.
 
 # Approval reason for sudo/Polkit; Oxygen YubiKey sound — 2026-11-06
 
