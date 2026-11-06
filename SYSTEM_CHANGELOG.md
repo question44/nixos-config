@@ -21,6 +21,11 @@ user instead of only janzon, so root and any future user get them too.
 `nix flake check` passed; `erebor-diff`: different (packages move from the
 per-user profile to system-path; their MIME cache entries move with them).
 
+Activated generation 297 with no failed system or user units. All moved
+binaries resolve from `/run/current-system/sw/bin`, the old `~/.local/bin`
+links are gone, `gdbus introspect` on the session bus works and `kdialog`
+reports 26.04.3. Phone Connect itself was not exercised.
+
 # qBittorrent around the VPN — 2026-11-06
 
 User asked to route qBittorrent without the VPN. On the PL#56 Proton server
