@@ -42,6 +42,7 @@
     };
     macApproval = {
       enable = true;
+      addresses = [ "100.127.94.102" "192.168.1.97" ];
     };
     nanokvm = {
       enable = true;

@@ -1,5 +1,8 @@
 # OpenSSH with public key, or TOTP plus password.
-{ lib, ... }:
+{ config, lib, ... }:
+let
+  mac = config.my.macApproval;
+in
 {
   services.openssh = {
     enable = true;
@@ -11,6 +14,14 @@
       KbdInteractiveAuthentication = true;
       AuthenticationMethods = "publickey keyboard-interactive";
     };
+    # A sleeping MacBook keeps its session half-open (macOS answers TCP
+    # keepalives while asleep), which stalls sudo's Mac approval step. sshd
+    # cannot match on keys, so match the MacBook's Tailscale and LAN addresses.
+    extraConfig = lib.mkIf (mac.enable && mac.addresses != [ ]) ''
+      Match Address ${lib.concatStringsSep "," mac.addresses}
+        ClientAliveInterval 60
+        ClientAliveCountMax 3
+    '';
   };
   # Each user provisions ~/.google_authenticator by running google-authenticator.
   security.pam.services.sshd = {

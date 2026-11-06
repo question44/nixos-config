@@ -36,6 +36,13 @@ Validation: the Home Manager step left the system derivation byte-identical.
 After the host split, the only change was the position of moonshine and helium
 in the package list; the built system-path trees are identical (12198 entries).
 Caddyfile, udev rules and units otherwise match. Not activated.
+# Umbriel optimized blur — 2026-11-06
+
+User asked to enable optimized blur. `blur_optimized` set to true on the
+Noctalia, Vicinae and window rules in `home/umbriel/config.toml`, so blur uses
+the cached wallpaper instead of live content behind each surface. Activated
+generation 283 (`gn5xfw3p…`); no failed units; deployed config has the change.
+User confirmed the result looks good.
 
 # Parallel-agent workflow: worktrees, locked rebuilds, union merges — 2026-11-06
 
@@ -51,6 +58,34 @@ User runs several agents on this repo at once and asked for fewer conflicts.
 Validation: created a test worktree; switch from it was refused; dry-build
 from it passed; a second rebuild waited on the held lock; test worktree
 removed. Nothing activated (the scripts are not deployed).
+
+# MacBook approval tunnel: sleep hooks and Tailscale — 2026-11-06
+
+Mac-side only (no erebor generation). User asked for both follow-ups to the
+keepalive change. Installed Homebrew sleepwatcher; `~/.sleep` boots out
+`com.janzon.erebor-ssh` and `~/.wakeup` bootstraps it. The Mac's ssh config now
+uses erebor's Tailscale IP (100.108.216.80) when its utun has 100.127.94.102,
+else the LAN IP; backup at `~/.ssh/config.bak-2026-11-06`.
+
+Verified: tunnel connects from 100.127.94.102 and refreshes agent.sock; running
+the sleep hook removed erebor's tunnel session at once, and the wake hook
+restored it within 5 s. User confirmed a real lid-close: sudo's YubiKey
+prompt came without delay. The
+erebor Match keeps the LAN IP for the fallback path.
+
+# SSH keepalives for the MacBook — 2026-11-06
+
+sudo's YubiKey prompt was delayed because pam_rssh first asked a forwarded
+agent in a MacBook SSH session that had been half-open since 2026-11-05 21:17.
+The Mac was asleep (macOS answers TCP keepalives while asleep), so the request
+waited for the 30 s timeout. sshd now sets `ClientAliveInterval 60` and
+`ClientAliveCountMax 3` in a `Match Address` block for the MacBook's Tailscale
+(100.127.94.102) and LAN (192.168.1.97) addresses. sshd can't match on keys.
+
+Activated generation 282 (`vbq1lhc1…`). Verified: no failed units, sshd
+active, generated sshd_config ends with the Match block. Limits: sessions
+opened before the reload keep the old settings; the LAN IP comes from DHCP
+(private Wi-Fi address) and may change.
 
 # Setuid sudo first in xremap and ttyd PATH — 2026-11-06
 

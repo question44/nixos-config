@@ -52,6 +52,12 @@
 
     macApproval = {
       enable = lib.mkEnableOption "sudo and polkit approval through a forwarded Mac SSH agent";
+      addresses = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [ ];
+        example = [ "100.127.94.102" "192.168.1.97" ];
+        description = "The Mac's Tailscale and LAN addresses; sshd drops its sessions when it sleeps.";
+      };
     };
 
     nanokvm = {

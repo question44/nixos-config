@@ -33,19 +33,19 @@ noise = 0.05
 match.namespace = "^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd)$"
 blur = true
 blur_ignore_alpha = 0.5
-blur_optimized = false
+blur_optimized = true
 
 [[layer_rule]]
 match.namespace = "^vicinae$"
 blur = true
-blur_optimized = false
+blur_optimized = true
 
 [[window_rule]]
 blur = true
 # Qt menus, context menus, and combo boxes are descendant XDG popups rather
 # than toplevel windows, so they need this explicit opt-in.
 blur_popups = true
-blur_optimized = false
+blur_optimized = true
 
 # These destinations apply only while Sunshine's virtual monitor exists.
 [[window_rule]]
