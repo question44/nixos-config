@@ -30,6 +30,21 @@ other:
   agent. Leave them out of your commits and do not reset them;
   `erebor-rebuild` lists them before activating.
 
+## Repository layout and other machines
+
+- `hosts/<name>/` holds only what is specific to one machine: hardware,
+  boot, storage, and its `my.*` values. `hosts/template/` is the starting
+  point for a new machine and is evaluated (never deployed) as
+  `nixosConfigurations.template`, which proves optional features switch off.
+- `modules/my.nix` declares the per-machine settings (user, domain, LAN
+  interface, and feature toggles such as ambilight, YubiKey, Mac approval and
+  NanoKVM). Shared modules read `config.my.*`; do not hard-code erebor's user,
+  domain, addresses or device names in them.
+- `modules/workstation/` is the shared desktop profile; `home/janzon/` is the
+  Home Manager configuration, split by topic.
+- Hardware-specific modules (`xremap`, `nvidia`, `windows-vm`,
+  `looking-glass`) are imported per host.
+
 ## Before changing the system
 
 - Read the relevant Nix files and modules before editing them.

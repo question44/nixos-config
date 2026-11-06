@@ -44,14 +44,15 @@
   };
 
   outputs = { self, nixpkgs, claude-desktop-nix, moonshine, monstar, dashboard, noctalia, noctalia-greeter, umbriel, millennium, helium, zen-browser, darkly, vicinae, home-manager, ... }:
-    {
-      nixosConfigurations.erebor = nixpkgs.lib.nixosSystem {
+    let
+      # Each host is hosts/<name>: hardware plus my.* settings (modules/my.nix).
+      mkHost = name: nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = { inherit darkly vicinae; };
         modules = [
           moonshine.nixosModules.default
           ./modules/moonshine.nix
-          ./hosts/erebor/default.nix
+          (./hosts + "/${name}")
           noctalia-greeter.nixosModules.default
           noctalia.nixosModules.default
           umbriel.nixosModules.default
@@ -75,6 +76,13 @@
             home-manager.users.${config.my.user} = import ./home/janzon;
           })
         ];
+      };
+    in
+    {
+      nixosConfigurations = {
+        erebor = mkHost "erebor";
+        # Evaluated, never deployed: proves the optional features switch off.
+        template = mkHost "template";
       };
     };
 }

@@ -69,7 +69,7 @@ in
             }
           ];
           actions.update-props = {
-            "target.object" = "alsa_output.usb-iFi__by_AMR__iFi__by_AMR__HD_USB_Audio_0003-00.analog-stereo";
+            "target.object" = config.my.ambilight.musicSink;
             "stream.capture.sink" = true;
           };
         }
