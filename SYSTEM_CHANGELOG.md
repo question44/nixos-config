@@ -3,6 +3,24 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# janzon's packages installed system-wide — 2026-11-06
+
+User asked to install the packages from `home/janzon/default.nix` for every
+user instead of only janzon, so root and any future user get them too.
+- `modules/workstation/packages.nix` now holds everything that was in
+  `home.packages` (zen, monstar, claude-desktop with its libsecret flag,
+  claude-code, editors, CLI tools, Dolphin thumbnailer plugins and helpers,
+  umbriel-display-mode).
+- The `~/.local/bin` wrappers became system packages: `gdbus` (only that
+  binary from `glib.bin`) and the `kdialog` wrapper with kio-extras.
+  Noctalia's PATH already includes `/run/current-system/sw/bin`.
+- `flake.nix` passes monstar, claude-desktop-nix and zen-browser to the NixOS
+  modules instead of Home Manager. Cursor, session variables and
+  `sessionEditor` stay in Home Manager.
+
+`nix flake check` passed; `erebor-diff`: different (packages move from the
+per-user profile to system-path; their MIME cache entries move with them).
+
 # qBittorrent around the VPN — 2026-11-06
 
 User asked to route qBittorrent without the VPN. On the PL#56 Proton server

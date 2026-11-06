@@ -5,6 +5,9 @@
   lib,
   pkgs,
   vicinae,
+  monstar,
+  claude-desktop-nix,
+  zen-browser,
   ...
 }:
 let
@@ -16,6 +19,25 @@ let
   noctaliaPkgConfig = pkgs.writeShellScriptBin "pkg-config" ''
     export PKG_CONFIG_PATH="${pkgs.pipewire.dev}/lib/pkgconfig''${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
     exec ${pkgs.pkg-config}/bin/pkg-config "$@"
+  '';
+
+  system = pkgs.stdenv.hostPlatform.system;
+  claudeDesktop = claude-desktop-nix.packages.${system}.default.overrideAttrs (old: {
+    postFixup = (old.postFixup or "") + ''
+      wrapProgram "$out/bin/claude-desktop" \
+        --add-flags "--password-store=gnome-libsecret"
+    '';
+  });
+  # Phone Connect invokes gdbus through Noctalia's PATH; only gdbus, not all of glib.bin.
+  gdbus = pkgs.runCommand "gdbus" { } ''
+    mkdir -p $out/bin
+    ln -s ${pkgs.glib.bin}/bin/gdbus $out/bin/gdbus
+  '';
+  # KDialog needs KIO's thumbnail worker and image providers too.
+  kdialog = pkgs.writeShellScriptBin "kdialog" ''
+    export QT_PLUGIN_PATH="${pkgs.kdePackages.kio-extras}/lib/qt-6/plugins''${QT_PLUGIN_PATH:+:$QT_PLUGIN_PATH}"
+    export XDG_DATA_DIRS="${pkgs.kdePackages.kio-extras}/share:''${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+    exec ${pkgs.kdePackages.kdialog}/bin/kdialog "$@"
   '';
 
   spotifyLauncher = pkgs.writeShellScriptBin "spotify-launcher" ''
@@ -146,6 +168,41 @@ in
       noctaliaPkgConfig
       pipewire.dev
       sway
+    ]
+    ++ [
+      zen-browser.packages.${system}.default
+      monstar.packages.${system}.default
+      (callPackage ../../packages/umbriel-display-mode.nix { })
+      claudeDesktop
+      claude-code
+      zed-editor
+      neovim
+      fd
+      ripgrep
+      btop
+      fastfetch
+      fortune
+      cowsay
+      toilet
+      eza
+      git
+      curl
+      lazygit
+      gcc
+      tree-sitter
+      gdbus
+      kdialog
+      # Qt image decoders for Dolphin's thumbnailer (WebP, AVIF, HEIC, JXL, ...).
+      kdePackages.qtimageformats
+      kdePackages.kimageformats
+      kdePackages.qtsvg
+      # Extra KIO thumbnailers: video, PDF/PS/RAW/Blender/mobi, gettext.
+      kdePackages.ffmpegthumbs
+      kdePackages.kdegraphics-thumbnailers
+      kdePackages.kdesdk-thumbnailers
+      # Helpers the kio-extras comic (.cbr) and DjVu thumbnailers execute.
+      unrar
+      djvulibre
     ];
 
   services.flatpak.enable = true;

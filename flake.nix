@@ -72,7 +72,15 @@
         name:
         nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
-          specialArgs = { inherit darkly vicinae; };
+          specialArgs = {
+            inherit
+              darkly
+              vicinae
+              monstar
+              claude-desktop-nix
+              zen-browser
+              ;
+          };
           modules = [
             moonshine.nixosModules.default
             ./modules/moonshine.nix
@@ -97,9 +105,6 @@
               home-manager.extraSpecialArgs = {
                 inherit
                   umbriel
-                  monstar
-                  claude-desktop-nix
-                  zen-browser
                   darkly
                   vicinae
                   ;
