@@ -3,6 +3,20 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Discord: Vencord 1.15.16 override — 2026-11-06
+
+User reported Discord hanging on "Starting...". Cause: Discord's Nov 4
+rspack update broke Vencord 1.15.13 (nixpkgs' version); its webpack patcher
+threw `TypeError: i.A is not a constructor` and the client never loaded.
+Plain Discord 1.0.168 without Vencord loaded fine. Vencord v1.15.16 ("Fix
+all plugins for new rspack update") is not yet in nixpkgs, so
+`modules/workstation/packages.nix` overrides `vencord` to 1.15.16 for the
+Discord package. The nixpkgs `fix-deps.patch`/`postPatch` (pin
+`@types/react` 19) are dropped: upstream now pins 19.2.3 and the patch no
+longer applies. Remove the override once nixpkgs ships >= 1.15.16.
+`nix flake check` passes; `erebor-diff`: different (Discord/Vencord only
+expected). Verified before activation: the built Discord ran with Vencord
+1.15.16 through all plugin stages, gateway READY, messages loaded.
 # Time Machine share on an ext4 Expansion disk — 2026-11-06
 
 User asked to back up the MacBook with Time Machine to the Expansion disk and

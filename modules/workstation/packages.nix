@@ -155,7 +155,29 @@ in
       kdePackages.breeze
       candy-icons
       darkly.packages.${pkgs.stdenv.hostPlatform.system}.darkly-qt6
-      (discord.override { withVencord = true; })
+      (discord.override {
+        withVencord = true;
+        # nixpkgs still ships Vencord 1.15.13, which hangs Discord on "Starting..."
+        # after Discord's Nov 2026 rspack update; 1.15.16 fixes it. Drop this
+        # override once nixpkgs packages 1.15.16 or newer.
+        vencord = vencord.overrideAttrs (
+          finalAttrs: old: {
+            version = "1.15.16";
+            src = old.src.override {
+              tag = "v${finalAttrs.version}";
+              hash = "sha256-aUJubLJpyLAZWiOezqFxPY6oVPgWVPQpajFqrJvrO9U=";
+            };
+            # Upstream now pins @types/react 19, so the nixpkgs lockfile fix
+            # is obsolete and no longer applies.
+            patches = [ ];
+            postPatch = "";
+            pnpmDeps = old.pnpmDeps.overrideAttrs {
+              inherit (finalAttrs) src patches postPatch;
+              outputHash = "sha256-HS8uZNepvDefjrsG3buVLFCVv7sHvazcwdpcT3EQ/78=";
+            };
+          }
+        );
+      })
       vicinae.packages.${pkgs.stdenv.hostPlatform.system}.default
       ghostty
       xwayland-satellite
