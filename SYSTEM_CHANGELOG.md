@@ -29,6 +29,9 @@ forwarding, replacing the home-IP port 6881 set up earlier today.
   (nat chain `qbt-vpn-port`) and sets qBittorrent's listen port through the
   API from inside the container (`WebUI\LocalHostAuth=false` in
   qBittorrent.conf, set by hand; requests via the proxy come from 10.88.0.1).
+- The container uses Proton's DNS (10.2.0.1, `--dns`), reachable only through
+  the tunnel. It had inherited Tailscale's 100.100.100.100, which the chain
+  rejects.
 - Port 6881 is no longer published or opened; the router's 6881 forward is
   unused. WireGuard only (`proton0`); Proton's own kill switch crashes on
   the br0 bridge and must stay off.

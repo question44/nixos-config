@@ -39,7 +39,11 @@ in
           "6881:6881/tcp"
           "6881:6881/udp"
         ];
-        extraOptions = lib.optional vpn "--ip=${vpnIp}";
+        # With the VPN, DNS also goes only through the tunnel (Proton's resolver).
+        extraOptions = lib.optionals vpn [
+          "--ip=${vpnIp}"
+          "--dns=10.2.0.1"
+        ];
         volumes = [
           "/srv/qbittorrent/config:/config"
           "/srv/torrents:/downloads"
