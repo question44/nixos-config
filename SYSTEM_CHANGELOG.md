@@ -23,7 +23,8 @@ else the LAN IP; backup at `~/.ssh/config.bak-2026-11-06`.
 
 Verified: tunnel connects from 100.127.94.102 and refreshes agent.sock; running
 the sleep hook removed erebor's tunnel session at once, and the wake hook
-restored it within 5 s. Not yet observed across a real lid-close sleep. The
+restored it within 5 s. User confirmed a real lid-close: sudo's YubiKey
+prompt came without delay. The
 erebor Match keeps the LAN IP for the fallback path.
 
 # SSH keepalives for the MacBook — 2026-11-06
