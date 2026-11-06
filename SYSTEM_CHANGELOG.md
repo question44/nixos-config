@@ -3,6 +3,21 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# fooyin from nixos-unstable — 2026-11-06
+
+User asked to install fooyin from nixos-unstable: 26.05 ships 0.9.2, unstable
+and upstream are at 0.14.1. Added a `nixpkgs-unstable` flake input and a
+`pkgs.unstable` overlay (it reuses the system's `nixpkgs.config`), so single
+packages can come from unstable; the base system stays on 26.05.
+
+Unstable fooyin is built with Qt 6.12, the system with Qt 6.11. Launched with
+the session's environment it ran, but the session's Darkly failed to load
+(undefined `QtPrivate_6_11_2` private-API symbol). The wrapper in
+`modules/workstation/packages.nix` puts unstable Darkly and
+plasma-integration first in `QT_PLUGIN_PATH`; with it, an isolated test
+launch in the Umbriel session loaded both. `erebor-diff` tier: different
+(fooyin added).
+
 # Tauon music player — 2026-11-06
 
 User asked to install Tauon after trying several players; they need CUE

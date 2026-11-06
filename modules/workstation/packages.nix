@@ -21,6 +21,23 @@ let
     exec ${pkgs.pkg-config}/bin/pkg-config "$@"
   '';
 
+  # Stable 26.05 ships fooyin 0.9.2; unstable tracks upstream releases. It is
+  # built with a newer Qt, so the session's Darkly and KDE platform theme fail
+  # to load in it; put builds for its own Qt first.
+  fooyin = pkgs.symlinkJoin {
+    name = "fooyin-${pkgs.unstable.fooyin.version}";
+    paths = [ pkgs.unstable.fooyin ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram $out/bin/fooyin --prefix QT_PLUGIN_PATH : ${
+        lib.makeSearchPath "lib/qt-6/plugins" [
+          pkgs.unstable.darkly
+          pkgs.unstable.kdePackages.plasma-integration
+        ]
+      }
+    '';
+  };
+
   system = pkgs.stdenv.hostPlatform.system;
   claudeDesktop = claude-desktop-nix.packages.${system}.default.overrideAttrs (old: {
     postFixup = (old.postFixup or "") + ''
@@ -182,6 +199,8 @@ in
       mpv
       # Music player; reads CUE sheets for single-file album rips.
       tauon
+      # From nixos-unstable; see the wrapper above.
+      fooyin
       noctaliaPkgConfig
       pipewire.dev
       sway

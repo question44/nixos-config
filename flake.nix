@@ -14,6 +14,8 @@
     monstar.url = "github:rockorager/monstar/406c48eb938a065997bf5378457d7ca24fbfcea5";
     claude-desktop-nix.url = "github:tomsch/claude-desktop-nix";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
+    # Individual packages that need newer versions than the stable release.
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     noctalia.url = "github:noctalia-dev/noctalia-shell";
     noctalia-greeter = {
       url = "github:noctalia-dev/noctalia-greeter";
@@ -47,6 +49,7 @@
     {
       self,
       nixpkgs,
+      nixpkgs-unstable,
       claude-desktop-nix,
       moonshine,
       monstar,
@@ -95,7 +98,16 @@
             vicinae.nixosModules.default
             home-manager.nixosModules.home-manager
             ({ config, ... }: {
-              nixpkgs.overlays = [ millennium.overlays.default ];
+              nixpkgs.overlays = [
+                millennium.overlays.default
+                # pkgs.unstable.<name> takes one package from nixos-unstable.
+                (final: _prev: {
+                  unstable = import nixpkgs-unstable {
+                    inherit (final.stdenv.hostPlatform) system;
+                    inherit (config.nixpkgs) config;
+                  };
+                })
+              ];
               # Home Manager uses the modern profile CLI during system activation.
               systemd.services."home-manager-${config.my.user.name}".environment.NIX_CONFIG =
                 "experimental-features = nix-command flakes";
