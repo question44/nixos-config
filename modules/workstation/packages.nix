@@ -40,6 +40,21 @@ let
     exec ${pkgs.kdePackages.kdialog}/bin/kdialog "$@"
   '';
 
+  # Tauon imports pypresence for Discord Rich Presence, but nixpkgs ships it with
+  # lynxpresence; nixpkgs' pypresence predates the StatusDisplayType it needs.
+  tauon = pkgs.tauon.overridePythonAttrs (old: {
+    pythonPath = old.pythonPath ++ [
+      (pkgs.python3Packages.pypresence.overridePythonAttrs {
+        version = "4.6.2";
+        src = pkgs.fetchPypi {
+          pname = "pypresence";
+          version = "4.6.2";
+          hash = "sha256-fn6T3g6UpCMUMA720V3SxExk73S3x0kkO8Imviq5Boc=";
+        };
+      })
+    ];
+  });
+
   spotifyLauncher = pkgs.writeShellScriptBin "spotify-launcher" ''
     exec /run/current-system/sw/bin/spotify "$@"
   '';
@@ -165,6 +180,8 @@ in
       bc
       pulseaudio
       mpv
+      # Music player; reads CUE sheets for single-file album rips.
+      tauon
       noctaliaPkgConfig
       pipewire.dev
       sway

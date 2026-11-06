@@ -3,6 +3,23 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Tauon music player — 2026-11-06
+
+User asked to install Tauon after trying several players; they need CUE
+sheet support for single-file album rips. Added `tauon` to
+`modules/workstation/packages.nix`.
+
+The nixpkgs build works unmodified. It crashed when launched from the Claude
+desktop app's shell only because that shell exports an `LD_LIBRARY_PATH`
+with other glib/pango/GTK builds; without it, Tauon read a CUE sheet and
+played the album.
+
+User also asked for pypresence (Discord Rich Presence). nixpkgs builds Tauon
+with lynxpresence, but 9.1.3 imports `pypresence` and its
+`StatusDisplayType`, which nixpkgs' pypresence 4.3.0-unstable lacks, so the
+override adds pypresence 4.6.2 from PyPI to Tauon's Python path. The wrapper
+imports it; Rich Presence itself was not tried against Discord.
+
 # janzon's packages installed system-wide — 2026-11-06
 
 User asked to install the packages from `home/janzon/default.nix` for every
