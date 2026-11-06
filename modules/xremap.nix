@@ -13,21 +13,29 @@ in
       description = "Input device names xremap grabs (see `xremap --list-devices`).";
     };
     restartOnUsb = lib.mkOption {
-      type = lib.types.nullOr (lib.types.submodule {
-        options.vendor = lib.mkOption { type = lib.types.str; };
-        options.product = lib.mkOption { type = lib.types.str; };
+      type = lib.types.listOf (lib.types.submodule {
+        options.vendor = lib.mkOption {
+          type = lib.types.str;
+          example = "320f";
+          description = "USB vendor ID (`lsusb`, before the colon).";
+        };
+        options.product = lib.mkOption {
+          type = lib.types.str;
+          example = "5055";
+          description = "USB product ID (`lsusb`, after the colon).";
+        };
       });
-      default = null;
-      description = "USB receiver whose hot-plug restarts xremap, so it grabs the new device.";
+      default = [ ];
+      description = "USB devices whose hot-plug restarts xremap, so it grabs the new device.";
     };
   };
 
   config = {
   services.udev.extraRules = ''
     KERNEL=="uinput", GROUP="input", MODE="0660", TAG+="uaccess"
-  '' + lib.optionalString (cfg.restartOnUsb != null) ''
-    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="${cfg.restartOnUsb.vendor}", ATTR{idProduct}=="${cfg.restartOnUsb.product}", TAG+="systemd", ENV{SYSTEMD_USER_WANTS}+="xremap-restart.service"
-  '';
+  '' + lib.concatMapStrings (usb: ''
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="${usb.vendor}", ATTR{idProduct}=="${usb.product}", TAG+="systemd", ENV{SYSTEMD_USER_WANTS}+="xremap-restart.service"
+  '') cfg.restartOnUsb;
 
   systemd.user.services.xremap = {
     description = "xremap key remapper";

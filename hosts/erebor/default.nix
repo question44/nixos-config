@@ -29,7 +29,9 @@
     };
     xremap = {
       devices = [ "Telink IQUNIX 2.4GHz" "RDR IQUNIX MQ80 KB" "Logitech G502 X LS" ];
-      restartOnUsb = { vendor = "320f"; product = "5055"; };
+      restartOnUsb = [
+        { vendor = "320f"; product = "5055"; }
+      ];
     };
     yubikey = {
       enable = true;
