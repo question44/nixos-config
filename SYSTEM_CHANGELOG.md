@@ -3,6 +3,28 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Avahi keeps erebor.local: NanoKVM USB gadget unmanaged — 2026-11-06
+
+The Mac listed the Time Machine disk as `erebor-2`: avahi-daemon logged "Host
+name conflict, retrying with erebor-2" on every start. Cause (from mDNS
+queries on `br0`): NetworkManager's automatic "Wired connection 1" gave the
+NanoKVM's USB Ethernet gadget (`enp0s20f0u11u3`, rndis, 3346:1009) the
+address 10.55.254.100. HyperHDR then answered `erebor.local` A with
+10.55.254.100, and KDE Connect answered AAAA with that link's fe80 address.
+Moonshine was not involved. `hosts/erebor/default.nix` adds a udev rule
+setting `NM_UNMANAGED=1` for that USB device; the KVM is still reached over
+Tailscale (`my.nanokvm.url`), but the 10.55.254.0/24 USB path is gone.
+`nix flake check` passes. Outcome: activated as generation 315; after
+`udevadm trigger` and an Avahi restart the journal shows "Host name is
+erebor.local", `avahi-browse -rt _adisk._tcp` lists host `erebor.local`
+(192.168.1.106), and only correct addresses answer for `erebor.local`.
+HyperHDR (`_hyperhdr-http`, web 200), KDE Connect (phone reachable),
+Moonshine (`/serverinfo` 200) and the NanoKVM URL still work. Limits:
+Moonshine advertises no `_nvstream` service over mDNS; whether it did before
+was not checked. NetworkManager shows the link as disconnected rather than
+unmanaged until it is replugged or NetworkManager restarts. The Mac's view
+of the name was not checked.
+
 # Discord: Vencord 1.15.16 override — 2026-11-06
 
 User reported Discord hanging on "Starting...". Cause: Discord's Nov 4
