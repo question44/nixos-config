@@ -3,6 +3,16 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# GRUB theme: no dark box while the kernel loads — 2026-11-06
+
+User reported a black rectangle between choosing a GRUB entry and Plymouth.
+Cause: the theme's `terminal-box` used the dark `panel_c.png` tile. GRUB
+draws that box (6%/20%, 88%×65%) when it leaves the menu to run `linux` and
+`initrd`, and `gfxpayload=keep` holds that frame until Plymouth. The terminal
+box now uses a fully transparent `terminal_c.png`; the menu panel is
+unchanged. Trade-off: the `e`/`c` editor text sits directly on the wallpaper.
+`nix flake check` passes; `erebor-diff`: different (only the `grub-redhead`
+theme). ACTIVATION: pending.
 # YubiKey touch login at the greeter — 2026-11-06
 
 User asked to log in from noctalia-greeter with the YubiKey alone. Added a
