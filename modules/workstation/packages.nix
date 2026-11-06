@@ -77,6 +77,27 @@ let
   spotifyLauncher = pkgs.writeShellScriptBin "spotify-launcher" ''
     exec /run/current-system/sw/bin/spotify "$@"
   '';
+
+  # essential [--omit] <command> [args]: run a command in its own user scope
+  # that systemd-oomd kills last (avoid) or never (--omit) until it exits.
+  essential = pkgs.writeShellApplication {
+    name = "essential";
+    runtimeInputs = [ pkgs.systemd ];
+    text = ''
+      pref=avoid
+      if [ "''${1:-}" = --omit ]; then
+        pref=omit
+        shift
+      fi
+      if [ $# -eq 0 ]; then
+        echo "usage: essential [--omit] <command> [args...]" >&2
+        exit 2
+      fi
+      exec systemd-run --user --scope --quiet --collect \
+        --unit="essential-$(basename "$1")-$$" \
+        -p ManagedOOMPreference="$pref" -- "$@"
+    '';
+  };
 in
 {
   nixpkgs.config.allowUnfreePredicate =
@@ -115,6 +136,7 @@ in
   environment.systemPackages =
     with pkgs;
     [
+      essential
       lsof
       google-authenticator
       proton-vpn
