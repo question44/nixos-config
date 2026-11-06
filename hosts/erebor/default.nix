@@ -112,6 +112,13 @@
           serviceConfig.ManagedOOMPreference = "avoid";
         });
 
+  # Keep NetworkManager off the NanoKVM's USB Ethernet gadget (reached over
+  # Tailscale instead). With an address on it, HyperHDR and KDE Connect announce
+  # erebor.local with that address over mDNS, so Avahi renames itself erebor-2.
+  services.udev.extraRules = ''
+    ACTION!="remove", SUBSYSTEM=="net", ATTRS{idVendor}=="3346", ATTRS{idProduct}=="1009", ENV{NM_UNMANAGED}="1"
+  '';
+
   networking.hostName = "erebor";
 
   system.stateVersion = "26.05";
