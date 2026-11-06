@@ -28,9 +28,13 @@
       wledUrl = "http://192.168.1.118";
     };
     xremap = {
-      devices = [ "Telink IQUNIX 2.4GHz" "RDR IQUNIX MQ80 KB" "Logitech G502 X LS" ];
-      restartOnUsb = [
-        { vendor = "320f"; product = "5055"; }
+      devices = [
+        "Telink IQUNIX 2.4GHz"
+        {
+          name = "RDR IQUNIX MQ80 KB";
+          usb = { vendor = "320f"; product = "5055"; };
+        }
+        "Logitech G502 X LS"
       ];
     };
     yubikey = {

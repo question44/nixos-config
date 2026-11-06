@@ -3,30 +3,41 @@
 let
   user = config.my.user.name;
   cfg = config.my.xremap;
-  deviceArgs = lib.concatMapStrings (d: "--device \"${d}\" ") cfg.devices;
+  deviceArgs = lib.concatMapStrings (d: "--device \"${d.name}\" ") cfg.devices;
+  hotplugUsb = lib.unique (lib.filter (usb: usb != null) (map (d: d.usb) cfg.devices));
 in
 {
   options.my.xremap = {
     devices = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
+      # A plain string is shorthand for { name = "..."; }.
+      type = lib.types.listOf (lib.types.coercedTo lib.types.str (name: { inherit name; })
+        (lib.types.submodule {
+          options = {
+            name = lib.mkOption {
+              type = lib.types.str;
+              example = "RDR IQUNIX MQ80 KB";
+              description = "Input device name xremap grabs (see `xremap --list-devices`).";
+            };
+            usb = lib.mkOption {
+              type = lib.types.nullOr (lib.types.submodule {
+                options.vendor = lib.mkOption {
+                  type = lib.types.str;
+                  example = "320f";
+                  description = "USB vendor ID (`lsusb`, before the colon).";
+                };
+                options.product = lib.mkOption {
+                  type = lib.types.str;
+                  example = "5055";
+                  description = "USB product ID (`lsusb`, after the colon).";
+                };
+              });
+              default = null;
+              description = "When set, plugging this USB device in restarts xremap so it grabs the device again.";
+            };
+          };
+        }));
       default = [ ];
-      description = "Input device names xremap grabs (see `xremap --list-devices`).";
-    };
-    restartOnUsb = lib.mkOption {
-      type = lib.types.listOf (lib.types.submodule {
-        options.vendor = lib.mkOption {
-          type = lib.types.str;
-          example = "320f";
-          description = "USB vendor ID (`lsusb`, before the colon).";
-        };
-        options.product = lib.mkOption {
-          type = lib.types.str;
-          example = "5055";
-          description = "USB product ID (`lsusb`, after the colon).";
-        };
-      });
-      default = [ ];
-      description = "USB devices whose hot-plug restarts xremap, so it grabs the new device.";
+      description = "Devices xremap remaps.";
     };
   };
 
@@ -35,7 +46,7 @@ in
     KERNEL=="uinput", GROUP="input", MODE="0660", TAG+="uaccess"
   '' + lib.concatMapStrings (usb: ''
     ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="${usb.vendor}", ATTR{idProduct}=="${usb.product}", TAG+="systemd", ENV{SYSTEMD_USER_WANTS}+="xremap-restart.service"
-  '') cfg.restartOnUsb;
+  '') hotplugUsb;
 
   systemd.user.services.xremap = {
     description = "xremap key remapper";

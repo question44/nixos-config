@@ -9,7 +9,7 @@
     ./hardware-configuration.nix
     ../../modules/workstation
     # Optional hardware-specific modules used by erebor:
-    # ../../modules/xremap.nix          # needs my.xremap.devices
+    # ../../modules/xremap.nix          # set my.xremap.devices
     # ../../modules/nvidia.nix
     # ../../modules/windows-vm.nix
     # ../../modules/looking-glass.nix
