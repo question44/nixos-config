@@ -1,7 +1,10 @@
 # Caddy reverse proxy for local names and *.erebor.jzon.pl.
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 let
   dashboard = config.services.erebor-dashboard.package;
+  # Spliced into the indented Caddyfile below; the text keeps its layout.
+  hyperhdrRoute = hosts: lib.optionalString config.my.ambilight.enable
+    "@hyperhdr host ${hosts}\n  handle @hyperhdr {\n    reverse_proxy 127.0.0.1:8090\n  }\n";
 in
 {
   services.caddy = {
@@ -44,11 +47,7 @@ in
           reverse_proxy 127.0.0.1:18096
         }
 
-        @hyperhdr host hyperhdr.localhost hyperhdr
-        handle @hyperhdr {
-          reverse_proxy 127.0.0.1:8090
-        }
-
+        ${hyperhdrRoute "hyperhdr.localhost hyperhdr"}
         @nextcloud host nextcloud.localhost nextcloud
         handle @nextcloud {
           reverse_proxy 127.0.0.1:18089
@@ -156,11 +155,7 @@ in
           }
         }
 
-        @hyperhdr host hyperhdr.erebor.jzon.pl
-        handle @hyperhdr {
-          reverse_proxy 127.0.0.1:8090
-        }
-
+        ${hyperhdrRoute "hyperhdr.erebor.jzon.pl"}
         @sunshine host sunshine.erebor.jzon.pl
         handle @sunshine {
           reverse_proxy https://127.0.0.1:47990 {

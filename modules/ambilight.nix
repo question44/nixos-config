@@ -1,7 +1,7 @@
 # HyperHDR ambient lighting through PipeWire screen capture.
-{ pkgs, ... }:
+{ config, lib, pkgs, ... }:
 let
-  hyperhdr = pkgs.callPackage ../../packages/hyperhdr.nix { };
+  hyperhdr = pkgs.callPackage ../packages/hyperhdr.nix { };
   hyperhdrPortalCheck = pkgs.writeShellScript "hyperhdr-portal-check" ''
     if ${pkgs.systemd}/bin/busctl --user get-property \
       org.freedesktop.portal.Desktop /org/freedesktop/portal/desktop \
@@ -17,6 +17,7 @@ let
   '';
 in
 {
+  config = lib.mkIf config.my.ambilight.enable {
   systemd.user.services.hyperhdr = {
     description = "HyperHDR ambient lighting with PipeWire screen capture";
     after = [
@@ -46,4 +47,5 @@ in
       RestrictNamespaces = true;
     };
   };
+};
 }

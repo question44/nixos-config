@@ -1,4 +1,13 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
+let
+  my = config.my;
+  ambilightActions = [ "ambilight-on" "ambilight-off" ];
+  # Drop buttons for hardware this machine does not have.
+  keepAction = a:
+    (my.ambilight.enable || !(lib.elem a ambilightActions))
+    && (my.nanokvm.enable || a != "wake");
+  baseSettings = builtins.fromJSON (builtins.readFile ../home/dashboard-settings.json);
+in
 {
   # Only this fixed operation can write the GRUB one-time selection.
   systemd.services.dashboard-reboot-windows = {
@@ -36,15 +45,20 @@
 
   services.erebor-dashboard = {
     enable = true;
-    settings = builtins.fromJSON (builtins.readFile ../home/dashboard-settings.json);
+    settings = baseSettings // {
+      actions = lib.filter keepAction baseSettings.actions;
+    } // lib.optionalAttrs my.nanokvm.enable {
+      wakeUrl = "${my.nanokvm.url}/wake";
+      outletUrl = "${my.nanokvm.url}/outlet";
+    };
     control = {
       enable = true;
       user = "janzon";
       allowedHosts = [ "erebor" "localhost" "127.0.0.1" "erebor.local" "erebor.jzon.pl" ];
-      enabledActions = [ "display-on" "display-off" "screen-dp" "screen-hdmi" "ambilight-on" "ambilight-off"
+      enabledActions = lib.filter keepAction [ "display-on" "display-off" "screen-dp" "screen-hdmi" "ambilight-on" "ambilight-off"
         "profile-performance" "profile-balanced" "profile-power-saver"
         "sleep" "power-off" "reboot-windows" "moonshine-pair" ];
-      wledUrl = "http://192.168.1.118";
+      wledUrl = lib.mkIf (my.ambilight.enable && my.wledUrl != null) my.wledUrl;
       # The same helper backs the Noctalia bar's screen switch.
       extraPackages = [ pkgs.niri config.programs.umbriel.package
         (pkgs.callPackage ../packages/umbriel-display-mode.nix { }) ];

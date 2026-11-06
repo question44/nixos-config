@@ -7,12 +7,13 @@
     ./storage.nix
     ./input.nix
     ./session.nix
-    ./hyperhdr.nix
     ./t3code.nix
     ./keyring.nix
     ./ssh.nix
     ./caddy.nix
     ./packages.nix
+    ../../modules/my.nix
+    ../../modules/ambilight.nix
     ../../modules/mac-approval.nix
     ../../modules/spotify.nix
     ../../modules/sunshine.nix
@@ -31,6 +32,19 @@
     ../../modules/windows-vm.nix
     ../../modules/looking-glass.nix
   ];
+
+  my = {
+    user = "janzon";
+    domain = "erebor.jzon.pl";
+    ambilight.enable = true;
+    wledUrl = "http://192.168.1.118";
+    yubikey.enable = true;
+    macApproval.enable = true;
+    nanokvm = {
+      enable = true;
+      url = "https://kvm-37ff.tail517bdc.ts.net:8443";
+    };
+  };
 
   # Shut down windows11 before toggling GPU ownership.
   virtualisation.windowsGpuPassthrough.enable = false;

@@ -1,5 +1,5 @@
 # Unfree allowlist, system packages, application menu and Flatpak.
-{ darkly, lib, pkgs, vicinae, ... }:
+{ config, darkly, lib, pkgs, vicinae, ... }:
 let
   hyperhdr = pkgs.callPackage ../../packages/hyperhdr.nix { };
   aiUsagebar = pkgs.callPackage ../../packages/ai-usagebar.nix { };
@@ -90,7 +90,9 @@ in
     pavucontrol
     tuigreet
     xremap
+  ] ++ lib.optionals config.my.ambilight.enable [
     hyperhdr
+  ] ++ [
     # Renderer for the janzon/wallpaper-engine Noctalia plugin.
     linux-wallpaperengine
     aiUsagebar

@@ -1,5 +1,5 @@
 # Graphical session: greeter, compositors, Noctalia, portals, audio and Helium.
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 let
   noctaliaPython = pkgs.callPackage ../../packages/noctalia-python.nix { };
 in
@@ -58,7 +58,7 @@ in
     alsa.support32Bit = true;
     pulse.enable = true;
     wireplumber.enable = true;
-    extraConfig.client."90-hyperhdr-music" = {
+    extraConfig.client."90-hyperhdr-music" = lib.mkIf config.my.ambilight.enable {
       "stream.rules" = [
         {
           matches = [
