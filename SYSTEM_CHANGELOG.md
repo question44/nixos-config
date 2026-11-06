@@ -1,4 +1,18 @@
-# Dashboard terminal opacity 0.8 — 2026-11-05
+# Setuid sudo first in xremap and ttyd PATH — 2026-11-06
+
+User often hit "sudo … must be owned by uid 0 and have the setuid bit set".
+Cause: xremap (user service, `--allow-launch`) and ttyd set `path` to
+`system.path` + Home Manager path. That PATH starts with the store system-path
+(non-setuid sudo), omits `/run/wrappers/bin`, and is inherited by everything
+xremap launches. A monstar terminal had `SYSTEMD_EXEC_PID` = xremap's PID and
+the same PATH. Both services now force a PATH of `/run/wrappers/bin` followed
+by profile links (no store paths, so it doesn't go stale after rebuilds).
+
+Activated generation 281 (`iarx1yjm…`). Verified: no failed system or user
+units; xremap and ttyd active; xremap's PATH starts with `/run/wrappers/bin`
+and resolves `sudo` to the setuid wrapper; ttyd's unit has the same PATH.
+Limits: terminals that were already open keep the old PATH until reopened.
+
 
 SYS-071 follow-up. User asked for 0.8 instead of 0.95. Dashboard `eb1bf67`
 changes the `--term-opacity` default. The first activation attempt failed at

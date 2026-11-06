@@ -278,7 +278,9 @@ in
 
   systemd.user.services.xremap = {
     description = "xremap key remapper";
-    path = [ config.system.path config.home-manager.users.janzon.home.path ];
+    # Apps launched by xremap inherit this PATH. Keep the setuid wrappers first
+    # and use profile links, not store paths, so sudo works and survives rebuilds.
+    environment.PATH = lib.mkForce "/run/wrappers/bin:/home/janzon/.local/bin:/home/janzon/.nix-profile/bin:/etc/profiles/per-user/janzon/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin";
     after = [ "graphical-session.target" ];
     partOf = [ "graphical-session.target" ];
     wantedBy = [ "graphical-session.target" ];

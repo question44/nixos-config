@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 let
   terminalAssets = pkgs.callPackage ../packages/ttyd-web-assets.nix { };
 in
@@ -31,8 +31,9 @@ in
   };
 
   systemd.services.ttyd = {
-    path = [ config.system.path config.home-manager.users.janzon.home.path ];
     environment = {
+      # Shells inherit this PATH: setuid wrappers first, profile links not store paths.
+      PATH = lib.mkForce "/run/wrappers/bin:/home/janzon/.local/bin:/home/janzon/.nix-profile/bin:/etc/profiles/per-user/janzon/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin";
       HOME = "/home/janzon";
       XDG_RUNTIME_DIR = "/run/user/1000";
     };
