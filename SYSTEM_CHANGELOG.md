@@ -31,6 +31,11 @@ darkly 0.5.42 → 0.5.43, plus the above. Limits: the Windows VM needs the
 matching B7-895 IDD installed inside Windows before Looking Glass works
 again; the new kvmfr module loads at the next boot.
 
+Activated with `switch` as generation 306. No failed system or user units;
+noctalia, umbriel, xdg-desktop-portal-umbriel, browser-desktop and
+dashboard-control active. Verified ai-usagebar 1.48.2 and Looking Glass client
+B7-895-432f4a0c installed. Windows IDD and Looking Glass session untested.
+
 # Move to nixos-unstable — 2026-11-06
 
 [SYS-072](SYSTEM_TODO.md#sys-072). User asked to move the whole system from
