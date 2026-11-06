@@ -3,6 +3,16 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# `desktop-password` also sets the Time Machine password — 2026-11-07
+
+User asked to set the Samba password with `desktop-password`, one password
+for the browser desktop, browser terminal (same Caddy auth file) and the Time
+Machine share. When `services.samba` is enabled the script now runs
+`smbpasswd -s -a` for the user after the HTTPS login check passes; if that
+fails it restores the previous desktop password. `nix flake check` passes;
+`erebor-diff`: different (only `desktop-password`). Activated as generation
+316; the deployed script contains the Samba step and parses; no failed
+units. Untested: a real run (needs the user's password) and a Mac login.
 # Avahi keeps erebor.local: NanoKVM USB gadget unmanaged — 2026-11-06
 
 The Mac listed the Time Machine disk as `erebor-2`: avahi-daemon logged "Host
