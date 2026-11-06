@@ -43,40 +43,71 @@
     };
   };
 
-  outputs = { self, nixpkgs, claude-desktop-nix, moonshine, monstar, dashboard, noctalia, noctalia-greeter, umbriel, millennium, helium, zen-browser, darkly, vicinae, home-manager, ... }:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      claude-desktop-nix,
+      moonshine,
+      monstar,
+      dashboard,
+      noctalia,
+      noctalia-greeter,
+      umbriel,
+      millennium,
+      helium,
+      zen-browser,
+      darkly,
+      vicinae,
+      home-manager,
+      ...
+    }:
     let
+      pkgs = nixpkgs.legacyPackages.x86_64-linux;
+      inherit (pkgs) lib;
+      # Every .nix file the repo formats; the dashboard submodule is its own repo.
+      nixFiles = lib.fileset.difference (lib.fileset.fileFilter (f: f.hasExt "nix") ./.) ./apps;
       # Each host is hosts/<name>: hardware plus my.* settings (modules/my.nix).
-      mkHost = name: nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        specialArgs = { inherit darkly vicinae; };
-        modules = [
-          moonshine.nixosModules.default
-          ./modules/moonshine.nix
-          (./hosts + "/${name}")
-          noctalia-greeter.nixosModules.default
-          noctalia.nixosModules.default
-          umbriel.nixosModules.default
-          dashboard.nixosModules.default
-          ./modules/dashboard-control.nix
-          helium.nixosModules.default
-          # Privileged input-server wrapper for vicinae paste and snippets.
-          vicinae.nixosModules.default
-          home-manager.nixosModules.home-manager
-          ({ config, ... }: {
-            nixpkgs.overlays = [ millennium.overlays.default ];
-            # Home Manager uses the modern profile CLI during system activation.
-            systemd.services."home-manager-${config.my.user.name}".environment.NIX_CONFIG =
-              "experimental-features = nix-command flakes";
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.backupFileExtension = "backup";
-            home-manager.extraSpecialArgs = {
-              inherit umbriel monstar claude-desktop-nix zen-browser darkly vicinae;
-            };
-            home-manager.users.${config.my.user.name} = import ./home/janzon;
-          })
-        ];
-      };
+      mkHost =
+        name:
+        nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          specialArgs = { inherit darkly vicinae; };
+          modules = [
+            moonshine.nixosModules.default
+            ./modules/moonshine.nix
+            (./hosts + "/${name}")
+            noctalia-greeter.nixosModules.default
+            noctalia.nixosModules.default
+            umbriel.nixosModules.default
+            dashboard.nixosModules.default
+            ./modules/dashboard-control.nix
+            helium.nixosModules.default
+            # Privileged input-server wrapper for vicinae paste and snippets.
+            vicinae.nixosModules.default
+            home-manager.nixosModules.home-manager
+            ({ config, ... }: {
+              nixpkgs.overlays = [ millennium.overlays.default ];
+              # Home Manager uses the modern profile CLI during system activation.
+              systemd.services."home-manager-${config.my.user.name}".environment.NIX_CONFIG =
+                "experimental-features = nix-command flakes";
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.backupFileExtension = "backup";
+              home-manager.extraSpecialArgs = {
+                inherit
+                  umbriel
+                  monstar
+                  claude-desktop-nix
+                  zen-browser
+                  darkly
+                  vicinae
+                  ;
+              };
+              home-manager.users.${config.my.user.name} = import ./home/janzon;
+            })
+          ];
+        };
     in
     {
       nixosConfigurations = {
@@ -84,5 +115,31 @@
         # Evaluated, never deployed: proves the optional features switch off.
         template = mkHost "template";
       };
+
+      # `nix fmt` formats the whole repo, or only the files given.
+      formatter.x86_64-linux = pkgs.writeShellScriptBin "erebor-fmt" ''
+        if [ "$#" -eq 0 ]; then
+          cd "$(${pkgs.git}/bin/git rev-parse --show-toplevel)"
+          ${pkgs.git}/bin/git ls-files -z -- '*.nix' ':!:apps/**' \
+            | ${pkgs.findutils}/bin/xargs -0 ${pkgs.nixfmt}/bin/nixfmt
+        else
+          exec ${pkgs.nixfmt}/bin/nixfmt "$@"
+        fi
+      '';
+
+      # Rebuilds only when a .nix file changes.
+      checks.x86_64-linux.format =
+        pkgs.runCommand "erebor-format-check"
+          {
+            src = lib.fileset.toSource {
+              root = ./.;
+              fileset = nixFiles;
+            };
+          }
+          ''
+            cd "$src"
+            find . -name '*.nix' -print0 | xargs -0 ${pkgs.nixfmt}/bin/nixfmt --check
+            touch "$out"
+          '';
     };
 }
