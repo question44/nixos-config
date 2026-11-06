@@ -2,7 +2,9 @@
 # Ctrl+Alt+Super chords are emitted by the existing xremap CapsLock layer.
 
 [general]
-autostart = ["noctalia", "/home/janzon/.local/bin/umbriel-scratchpad-hint"]
+# Noctalia is started by its systemd user service (graphical-session.target),
+# as under Niri; launching it here too made the unit fail as "already running".
+autostart = ["/home/janzon/.local/bin/umbriel-scratchpad-hint"]
 
 [environment]
 QT_QPA_PLATFORMTHEME = "kde"
