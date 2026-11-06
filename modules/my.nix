@@ -86,6 +86,10 @@ in
       enable = lib.mkEnableOption "Niri as a second compositor next to Umbriel";
     };
 
+    torrentVpn = {
+      enable = lib.mkEnableOption "qBittorrent only through the Proton VPN tunnel, on Proton's forwarded port";
+    };
+
     streaming = {
       sunshine.enable = lib.mkEnableOption "the Sunshine game-streaming setup (wrapper, output helper, route)";
       moonshine.enable = lib.mkEnableOption "the Moonshine game-streaming server";

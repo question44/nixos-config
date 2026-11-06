@@ -3,6 +3,26 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# qBittorrent through Proton VPN — 2026-11-06
+
+User asked to route qBittorrent through Proton VPN with Proton's port
+forwarding, replacing the home-IP port 6881 set up earlier today.
+- `my.torrentVpn.enable` (on for erebor): the container gets the fixed address
+  10.88.255.250. Firewall chain `qbt-vpn-only` (FORWARD) lets it reach only
+  `proton0` and private networks; with the VPN down its internet traffic is
+  rejected. The chain is not removed when the firewall stops (fails closed).
+- `qbittorrent-vpn-port.service`: every 45 s asks Proton for the forwarded
+  port (NAT-PMP via 10.2.0.1), DNATs it from `proton0` to the container
+  (nat chain `qbt-vpn-port`) and sets qBittorrent's listen port through the
+  API from inside the container (`WebUI\LocalHostAuth=false` in
+  qBittorrent.conf, set by hand; requests via the proxy come from 10.88.0.1).
+- Port 6881 is no longer published or opened; the router's 6881 forward is
+  unused. WireGuard only (`proton0`); Proton's own kill switch crashes on
+  the br0 bridge and must stay off.
+
+`scripts/erebor-diff`: different (new service, firewall and container unit).
+`nix flake check` passed.
+
 # `erebor-diff` compares rebuilt store paths — 2026-11-06
 
 User asked to fix a gap in `scripts/erebor-diff`: "equivalent" masked store

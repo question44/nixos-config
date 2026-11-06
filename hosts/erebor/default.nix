@@ -58,6 +58,7 @@
     niri = {
       enable = true;
     };
+    torrentVpn.enable = true;
     streaming = {
       sunshine.enable = true;
       moonshine.enable = true;

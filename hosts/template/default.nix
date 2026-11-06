@@ -36,6 +36,7 @@
     # macApproval = { enable = true; };
     # nanokvm = { enable = true; url = "https://<kvm-name>:8443"; };
     # niri = { enable = true; };             # second compositor next to Umbriel
+    # torrentVpn = { enable = true; };       # qBittorrent only via Proton VPN
     # streaming = {
     #   sunshine.enable = true;              # also serves sunshine.<domain>
     #   moonshine.enable = true;
