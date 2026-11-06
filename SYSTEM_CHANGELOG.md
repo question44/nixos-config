@@ -12,7 +12,9 @@ rule is spelled out in `modules/mac-approval.nix` rather than via `.u2f.enable`.
 The typed password still works without the key. Trade-off accepted: a touch
 login passes no password to `pam_oo7`, so the Oo7 keyring stays locked until
 first unlocked. `nix flake check` passes; `erebor-diff`: different (only
-`/etc/pam.d/greetd`; sudo PAM unchanged). ACTIVATION: pending.
+`/etc/pam.d/greetd`; sudo PAM unchanged). Activated as generation 307;
+`pamtester greetd janzon authenticate` showed the touch cue and succeeded on a
+touch with no password. Untested: the greeter UI itself (next login).
 # Noctalia started once under Umbriel — 2026-11-06
 
 Umbriel's `autostart` and `noctalia.service` both launched Noctalia, so the
