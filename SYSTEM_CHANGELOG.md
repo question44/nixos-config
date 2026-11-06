@@ -3,6 +3,16 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# YubiKey touch login at the greeter — 2026-11-06
+
+User asked to log in from noctalia-greeter with the YubiKey alone. Added a
+`sufficient` pam_u2f rule (same key file and `cue` as sudo) to greetd's auth
+stack before `substack login`; greetd sets `useDefaultRules = false`, so the
+rule is spelled out in `modules/mac-approval.nix` rather than via `.u2f.enable`.
+The typed password still works without the key. Trade-off accepted: a touch
+login passes no password to `pam_oo7`, so the Oo7 keyring stays locked until
+first unlocked. `nix flake check` passes; `erebor-diff`: different (only
+`/etc/pam.d/greetd`; sudo PAM unchanged). ACTIVATION: pending.
 # Noctalia started once under Umbriel — 2026-11-06
 
 Umbriel's `autostart` and `noctalia.service` both launched Noctalia, so the
