@@ -13,6 +13,9 @@ the page cache, so larger readahead is the lever.
 
 `scripts/erebor-diff`: different (only the new udev rule). `nix flake check`
 passed.
+Activated generation 291; no failed units. After `udevadm trigger --action=change`
+on sda and dm-0, `read_ahead_kb` is 8192 on sda, sdc, sdd and dm-0. Effect on
+upload speed is not measured.
 
 # qBittorrent peer port reachable — 2026-11-06
 
