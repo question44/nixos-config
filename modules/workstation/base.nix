@@ -118,6 +118,18 @@ in
   # SMART disk health monitoring; warnings go to logged-in terminals (wall).
   services.smartd.enable = true;
 
+  # Compressed swap in RAM, used before any disk swap (priority 5 vs. -2).
+  # Swapping to zram is cheap, so swappiness is raised and readahead disabled.
+  zramSwap = {
+    enable = true;
+    algorithm = "zstd";
+    memoryPercent = 50;
+  };
+  boot.kernel.sysctl = {
+    "vm.swappiness" = 180;
+    "vm.page-cluster" = 0;
+  };
+
   programs.dconf.enable = true;
 
   services.xserver.enable = false;

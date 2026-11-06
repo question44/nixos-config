@@ -3,6 +3,19 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# zram swap and swappiness — 2026-11-06
+
+User asked to enable zram and retune swappiness after the 2 GiB swap
+partition filled with idle pages (open-webui, jellyfin, Xwayland servers
+leaked by Moonshine sessions) while 22 GiB RAM was still available.
+- Shared workstation module: `zramSwap` (zstd, 50 % of RAM), plus
+  `vm.swappiness=180` and `vm.page-cluster=0`, the usual settings for
+  swap held in RAM.
+- The NVMe swap partition is not declared in Nix (`swapDevices = [ ]`); systemd-gpt-auto-generator
+  activates it automatically and it stays as lower-priority overflow (−2 vs. zram 5).
+
+`scripts/erebor-diff`: different (zram generator unit, sysctl). `nix flake check` passed.
+
 # qBittorrent through Proton VPN — 2026-11-06
 
 User asked to route qBittorrent through Proton VPN with Proton's port
