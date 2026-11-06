@@ -20,7 +20,12 @@
     (lib.mkIf config.my.services.qbittorrent.enable {
       virtualisation.oci-containers.containers.qbittorrent = {
         image = "docker.io/linuxserver/qbittorrent:latest";
-        ports = [ "127.0.0.1:18081:8080" ];
+        ports = [
+          "127.0.0.1:18081:8080"
+          # Peer port, so other peers can connect to us for seeding.
+          "6881:6881/tcp"
+          "6881:6881/udp"
+        ];
         volumes = [
           "/srv/qbittorrent/config:/config"
           "/srv/torrents:/downloads"
@@ -37,6 +42,10 @@
           WEBUI_PORT = "8080";
           TORRENTING_PORT = "6881";
         };
+      };
+      networking.firewall.interfaces.${config.my.network.lanInterface} = {
+        allowedTCPPorts = [ 6881 ];
+        allowedUDPPorts = [ 6881 ];
       };
     })
   ];

@@ -3,6 +3,19 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# qBittorrent peer port reachable — 2026-11-06
+
+User asked to open the qBittorrent peer port so other peers can connect for
+seeding. The container published only the Web UI, and the LAN firewall did not
+allow 6881.
+- `modules/services/qbittorrent.nix`: publish `6881/tcp` and `6881/udp` and
+  allow both on the LAN interface (only when qBittorrent is enabled).
+- The router still needs a manual 6881 TCP/UDP forward to 192.168.1.106;
+  UPnP cannot work from the podman bridge.
+
+`scripts/erebor-diff`: equivalent (only firewall and container unit store
+paths differ). `nix flake check` passed.
+
 # Approval reason for sudo/Polkit; Oxygen YubiKey sound — 2026-11-06
 
 User asked to know why a Touch ID / YubiKey approval was triggered, and for
