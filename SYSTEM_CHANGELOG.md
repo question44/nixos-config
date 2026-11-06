@@ -37,7 +37,10 @@ User asked for a visible cue that the lock screen awaits a key touch. The
 Noctalia patch now shows a `key` glyph (primary colour) in front of the status
 line, and replaces pam_u2f's cue text with "Touch your security key", while
 the helper reports a pending touch; it hides on password typing, errors, stop
-and unlock. `nix flake check` passes. ACTIVATION: pending.
+and unlock. `nix flake check` passes. Activated as generation 312 (run by the
+user outside the agent session, whose sudo was blocked by no-new-privileges);
+the restarted `noctalia` is the patched build with the helper path set.
+Untested: the icon on a real lock.
 # Noctalia lock screen unlocks on a YubiKey touch — 2026-11-06
 
 User wanted the key to unlock the lock screen without the empty-password
