@@ -20,6 +20,12 @@ upload was 4.5 Mbit/s against 103 Mbit/s on the bare line.
 `nix flake check` passed; `erebor-diff`: different (new service, vpn-port
 service and libnatpmp removed, firewall and container unit changed).
 
+Activated generation 295: the rule was in place but qBittorrent could not
+reach the internet. Replies on br0 to the masqueraded container are checked
+by the reverse-path filter before de-NAT (destination 192.168.1.106, route
+back via proton0) and dropped. Fix: the rpfilter also lets through br0
+packets whose conntrack original source is 10.88.255.250.
+
 # Proton VPN WireGuard on the br0 bridge — 2026-11-06
 
 Proton VPN (WireGuard) failed to connect: while connecting, the app always

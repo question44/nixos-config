@@ -66,8 +66,9 @@ in
         allowedUDPPorts = [ 6881 ];
       };
       # While the Proton VPN app is connected it sends everything through
-      # proton0. Peers arrive on the LAN side, though, so the reverse-path
-      # filter would drop them; let the peer port through.
+      # proton0. Peers and replies to qBittorrent's own connections arrive on
+      # the LAN side, though, so the reverse-path filter would drop them; let
+      # the peer port and that conntrack traffic through.
       # Also drops the VPN-only rule left over from VPN mode.
       networking.firewall.extraCommands = ''
         iptables -w -D FORWARD -s ${ip} -j qbt-vpn-only 2>/dev/null || true
@@ -75,6 +76,8 @@ in
           iptables -w -t mangle -D nixos-fw-rpfilter -i ${lan} -p "$proto" --dport 6881 -j RETURN 2>/dev/null || true
           iptables -w -t mangle -I nixos-fw-rpfilter 1 -i ${lan} -p "$proto" --dport 6881 -j RETURN
         done
+        iptables -w -t mangle -D nixos-fw-rpfilter -i ${lan} -m conntrack --ctorigsrc ${ip} -j RETURN 2>/dev/null || true
+        iptables -w -t mangle -I nixos-fw-rpfilter 1 -i ${lan} -m conntrack --ctorigsrc ${ip} -j RETURN
       '';
       # qBittorrent always leaves through the home connection, also while the
       # VPN is up: the main table is looked up before Proton's catch-all rule.
