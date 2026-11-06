@@ -41,10 +41,10 @@ The full declarations, with descriptions, are in
 | `my.streaming.moonshine.enable` | The Moonshine game-streaming server. |
 | `my.ambilight.{enable, musicSink, wledUrl}` | HyperHDR ambient lighting, the PipeWire sink it captures for music effects, and the WLED controller. |
 | `my.yubikey.{enable, sound}` | YubiKey touch for sudo, and the sound played while it waits. |
-| `my.macApproval.{enable, addresses}` | Approving sudo and polkit through a forwarded Mac SSH agent. See [MAC_APPROVAL.md](MAC_APPROVAL.md). |
+| `my.macApproval.{enable, addresses}` | Approving sudo and polkit through a forwarded Mac SSH agent. See [docs/mac-approval.md](docs/mac-approval.md). |
 | `my.nanokvm.{enable, url}` | NanoKVM wake and outlet readings in the dashboard. |
 | `my.xremap.devices` | Input devices that xremap remaps, given by name and optionally USB IDs (`modules/xremap.nix`). |
-| `virtualisation.windowsGpuPassthrough.enable` | Passes the RTX 4090 to the `windows11` VM instead of the host (`modules/windows-vm.nix`). Shut the VM down before toggling. See [WINDOWS_VM.md](WINDOWS_VM.md). |
+| `virtualisation.windowsGpuPassthrough.enable` | Passes the RTX 4090 to the `windows11` VM instead of the host (`modules/windows-vm.nix`). Shut the VM down before toggling. See [docs/windows-vm.md](docs/windows-vm.md). |
 
 Upstream options (anything from NixOS or Home Manager) work as usual. Search
 them on [search.nixos.org](https://search.nixos.org/options) or in the
@@ -91,6 +91,6 @@ Other helpers:
 | [SYSTEM_CHANGELOG.md](SYSTEM_CHANGELOG.md) | Dated changes for the current month, with verification. Older months are in `changelog/`. |
 | [SYSTEM_TODO.md](SYSTEM_TODO.md) | Unfinished work, as `SYS-NNN` tasks. |
 | [SYSTEM_CONTEXT.md](SYSTEM_CONTEXT.md) | State that isn't declared in Nix: manual setup, recovery paths, verified pitfalls. |
-| [WINDOWS_VM.md](WINDOWS_VM.md) | Windows 11 VM, GPU passthrough and Looking Glass. |
-| [MAC_APPROVAL.md](MAC_APPROVAL.md) | How sudo is approved from the MacBook. |
-| [NOCTALIA_SETTINGS.md](NOCTALIA_SETTINGS.md) | Moving settings made in Noctalia's settings window into the flake. |
+| [docs/windows-vm.md](docs/windows-vm.md) | Windows 11 VM, GPU passthrough and Looking Glass. |
+| [docs/mac-approval.md](docs/mac-approval.md) | How sudo is approved from the MacBook. |
+| [docs/noctalia-settings.md](docs/noctalia-settings.md) | Moving settings made in Noctalia's settings window into the flake. |

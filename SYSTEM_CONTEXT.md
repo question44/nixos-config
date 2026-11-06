@@ -83,7 +83,7 @@ Unfinished work and verification checks belong in
   `/srv/external/crucial/windows11.qcow2`. The live local image was removed;
   NixOS recovery snapshots retain its blocks. Older domain XML must have its
   source path updated before reuse, or be paired with a restored original
-  disk/NVRAM/TPM. See [Windows VM recovery](WINDOWS_VM.md#disk-location-and-recovery).
+  disk/NVRAM/TPM. See [Windows VM recovery](docs/windows-vm.md#disk-location-and-recovery).
 
 - Interactive sudo supports YubiKey authentication through a PTY; noninteractive
   sudo can report that a password is required even when a YubiKey is available.
@@ -109,4 +109,4 @@ Unfinished work and verification checks belong in
   test activation alone leaves an already-running daemon on its old config.
 - Windows Looking Glass IDD needs **Force indirect copy** on this UHD 770:
   direct transport produced missing strips/blocks even with full-frame copies.
-  The guest registry workaround and recovery locations are in WINDOWS_VM.md.
+  The guest registry workaround and recovery locations are in [docs/windows-vm.md](docs/windows-vm.md).

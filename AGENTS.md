@@ -161,7 +161,7 @@ other:
   Noctalia's settings window override it from
   `~/.local/state/noctalia/settings.toml`. When the user asks to sync or save
   their Noctalia settings into the config, follow
-  [NOCTALIA_SETTINGS.md](NOCTALIA_SETTINGS.md).
+  [docs/noctalia-settings.md](docs/noctalia-settings.md).
 
 ## Niri configuration workflow
 

@@ -9,7 +9,7 @@ later edit to the Nix file.
 To sync, fold the overrides into `home/noctalia/config.toml`, activate, then
 trim `settings.toml` back to what belongs outside Git. The effective
 configuration must not change. Follow the worktree, build and activation rules
-in [AGENTS.md](AGENTS.md).
+in [AGENTS.md](../AGENTS.md).
 
 ## What stays out of the repo
 
