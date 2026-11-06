@@ -1,4 +1,7 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
+let
+  domain = config.my.network.domain;
+in
 {
   virtualisation.oci-containers.containers = {
     nextcloud-db = {
@@ -29,7 +32,7 @@
         POSTGRES_HOST = "nextcloud-db";
         REDIS_HOST = "nextcloud-redis";
         NEXTCLOUD_DATA_DIR = "/var/www/data";
-        NEXTCLOUD_TRUSTED_DOMAINS = "erebor cloud.erebor.jzon.pl localhost 127.0.0.1";
+        NEXTCLOUD_TRUSTED_DOMAINS = "erebor cloud.${domain} localhost 127.0.0.1";
         PHP_UPLOAD_LIMIT = "10G";
         PHP_MEMORY_LIMIT = "1G";
       };

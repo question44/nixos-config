@@ -1,6 +1,7 @@
 { config, pkgs, ... }:
 
 let
+  user = config.my.user.name;
   client = pkgs.callPackage ../packages/looking-glass-idd-client.nix { };
   kvmfr = (config.boot.kernelPackages.kvmfr.override {
     looking-glass-client = client;
@@ -31,7 +32,7 @@ in
     options kvmfr static_size_mb=128
   '';
   services.udev.extraRules = ''
-    SUBSYSTEM=="kvmfr", OWNER="janzon", GROUP="kvm", MODE="0660"
+    SUBSYSTEM=="kvmfr", OWNER="${user}", GROUP="kvm", MODE="0660"
   '';
   virtualisation.libvirtd.qemu.verbatimConfig = ''
     namespaces = []

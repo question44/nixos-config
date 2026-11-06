@@ -1,4 +1,8 @@
 { config, pkgs, ... }:
+let
+  user = config.my.user.name;
+  domain = config.my.network.domain;
+in
 {
   # Runtime file contains the password hash, never the Nix store or repository.
   systemd.tmpfiles.rules = [
@@ -18,7 +22,7 @@
 
     if os.geteuid() != 0:
         raise SystemExit("Run sudo desktop-password in your local terminal.")
-    password = getpass.getpass("New desktop password for janzon: ")
+    password = getpass.getpass("New desktop password for ${user}: ")
     if not password or password != getpass.getpass("Confirm desktop password: "):
         raise SystemExit("Passwords are empty or do not match; nothing changed.")
     if len(password.encode()) > 72:
@@ -44,15 +48,15 @@
         finally:
             if os.path.exists(name):
                 os.unlink(name)
-    save(("basic_auth {\n  janzon " + password_hash + "\n}\n").encode())
+    save(("basic_auth {\n  ${user} " + password_hash + "\n}\n").encode())
     result = subprocess.run(["${pkgs.systemd}/bin/systemctl", "reload", "caddy"])
     if result.returncode:
         save(previous)
         raise SystemExit("Caddy reload failed; previous password configuration restored.")
-    authorization = base64.b64encode(("janzon:" + password).encode()).decode()
+    authorization = base64.b64encode(("${user}:" + password).encode()).decode()
     del password
     request = urllib.request.Request(
-        "https://desktop.erebor.jzon.pl/vnc.html",
+        "https://desktop.${domain}/vnc.html",
         headers={"Authorization": "Basic " + authorization})
     try:
         with urllib.request.urlopen(request, timeout=10) as response:
@@ -62,7 +66,7 @@
         save(previous)
         subprocess.run(["${pkgs.systemd}/bin/systemctl", "reload", "caddy"])
         raise SystemExit("Password verification failed; previous configuration restored.")
-    print("Desktop password saved and HTTPS login verified. Username: janzon")
+    print("Desktop password saved and HTTPS login verified. Username: ${user}")
   '') ];
 
   # The browser endpoint is authenticated by tailnet membership. Neither the
@@ -89,7 +93,7 @@
 
   services.caddy.extraConfig = ''
     (browser_desktop) {
-      @desktop_host host desktop.erebor.jzon.pl
+      @desktop_host host desktop.${domain}
       handle @desktop_host {
         @tailnet remote_ip 127.0.0.1 ::1 100.64.0.0/10 fd7a:115c:a1e0::/48
         handle @tailnet {

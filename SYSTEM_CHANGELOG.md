@@ -1,3 +1,41 @@
+# Portable configuration: per-host my.* options and a template host — 2026-11-06
+
+User wants to set up similar machines without erebor's ambilight, YubiKey or
+NanoKVM, and with different addresses.
+- `modules/my.nix`: every setting is a group (`my.user.*`, `my.network.*`,
+  `my.ambilight.*`, ...) so new options can be added without renaming. It holds
+  user, domain, LAN interface, xremap devices, and toggles for
+  ambilight (with its WLED URL and music sink), YubiKey, Mac approval and
+  NanoKVM (the dashboard's wake/outlet URLs and buttons follow these).
+- Shared parts moved to `modules/workstation/` (base, session, keyring, ssh,
+  caddy, packages, t3code) and `modules/services/`; `hosts/erebor/` keeps
+  hardware, boot, storage and its settings. `flake.nix` builds hosts with
+  `mkHost`.
+- `hosts/template/` evaluates as `nixosConfigurations.template` with every
+  optional feature off.
+
+Validation: each step compared erebor's build with the previous commit. The
+toggles and the user/domain options left the system derivation byte-identical.
+Moving modules changed only merge order: same closure (diff-closures empty),
+identical system-path tree, and every differing /etc file has the same content
+after normalizing store hashes and ordering (dbus service dirs, polkit rules,
+tmpfiles). The template evaluates. Not activated.
+
+# Split flake.nix and the erebor host file into topic modules — 2026-11-06
+
+Pure refactor so parallel agents rarely edit the same file.
+- janzon's Home Manager config moved from `flake.nix` to `home/janzon/`
+  (default, shell, desktop, apps, compositor); flake inputs reach it through
+  `home-manager.extraSpecialArgs`.
+- `hosts/erebor/default.nix` (816 lines) split into boot, storage, input,
+  session, hyperhdr, t3code, keyring, ssh, caddy and packages modules. They are
+  imported first to keep the original merge order. Noctalia's Python moved to
+  `packages/noctalia-python.nix`.
+
+Validation: the Home Manager step left the system derivation byte-identical.
+After the host split, the only change was the position of moonshine and helium
+in the package list; the built system-path trees are identical (12198 entries).
+Caddyfile, udev rules and units otherwise match. Not activated.
 # Umbriel optimized blur — 2026-11-06
 
 User asked to enable optimized blur. `blur_optimized` set to true on the

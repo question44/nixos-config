@@ -1,6 +1,7 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 let
+  user = config.my.user.name;
   material = pkgs.fetchFromGitHub {
     owner = "kuska1";
     repo = "Material-Theme";
@@ -16,7 +17,7 @@ let
 in
 {
   programs.steam.package = pkgs.millennium-steam;
-  home-manager.users.janzon = { config, lib, ... }: {
+  home-manager.users.${user} = { config, lib, ... }: {
     home.file.".local/share/Steam/steamui/skins/Material-Theme" = {
       source = theme;
       recursive = true;

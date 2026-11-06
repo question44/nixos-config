@@ -1,6 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
+  user = config.my.user.name;
   passthrough = config.virtualisation.windowsGpuPassthrough.enable;
   igdOvmf = pkgs.callPackage ../packages/ovmf-vfio-igd.nix { };
 in
@@ -70,7 +71,7 @@ in
       };
     };
     programs.virt-manager.enable = true;
-    users.users.janzon.extraGroups = [ "libvirtd" "kvm" ];
+    users.users.${user}.extraGroups = [ "libvirtd" "kvm" ];
     systemd.tmpfiles.rules = [ "d /var/lib/libvirt/images 0755 root root -" ];
     # Retain the existing guest firmware and NVRAM during the GPU migration.
     environment.etc."windows-vm/OVMF_CODE.fd".source = "${igdOvmf.fd}/FV/OVMF_CODE.fd";
