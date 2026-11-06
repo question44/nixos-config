@@ -1,9 +1,12 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
+let
+  user = config.my.user;
+in
 {
-  users.users.janzon.extraGroups = [ "moonshine" ];
+  users.users.${user}.extraGroups = [ "moonshine" ];
   services.moonshine = {
     enable = true;
-    user = "janzon";
+    user = "${user}";
     uid = 1000;
     openFirewall = true;
     settings = {

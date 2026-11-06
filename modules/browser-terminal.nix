@@ -1,5 +1,7 @@
 { config, lib, pkgs, ... }:
 let
+  user = config.my.user;
+  domain = config.my.domain;
   terminalAssets = pkgs.callPackage ../packages/ttyd-web-assets.nix { };
 in
 {
@@ -12,7 +14,7 @@ in
     enable = true;
     interface = "127.0.0.1";
     port = 17681;
-    user = "janzon";
+    user = "${user}";
     writeable = true;
     checkOrigin = true;
     indexFile = "${terminalAssets}/index.html";
@@ -33,12 +35,12 @@ in
   systemd.services.ttyd = {
     environment = {
       # Shells inherit this PATH: setuid wrappers first, profile links not store paths.
-      PATH = lib.mkForce "/run/wrappers/bin:/home/janzon/.local/bin:/home/janzon/.nix-profile/bin:/etc/profiles/per-user/janzon/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin";
-      HOME = "/home/janzon";
+      PATH = lib.mkForce "/run/wrappers/bin:/home/${user}/.local/bin:/home/${user}/.nix-profile/bin:/etc/profiles/per-user/${user}/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin";
+      HOME = "/home/${user}";
       XDG_RUNTIME_DIR = "/run/user/1000";
     };
     serviceConfig = {
-      WorkingDirectory = "/home/janzon";
+      WorkingDirectory = "/home/${user}";
       Restart = "on-failure";
       RestartSec = 5;
       UMask = "0077";
@@ -47,7 +49,7 @@ in
 
   services.caddy.extraConfig = ''
     (browser_terminal) {
-      @terminal_host host terminal.erebor.jzon.pl
+      @terminal_host host terminal.${domain}
       handle @terminal_host {
         @terminal_tailnet remote_ip 127.0.0.1 ::1 100.64.0.0/10 fd7a:115c:a1e0::/48
         handle @terminal_tailnet {
@@ -56,11 +58,11 @@ in
             import /var/lib/desktop-auth/auth.caddy
             @terminal_bad_origin {
               header Origin *
-              not header Origin https://terminal.erebor.jzon.pl
+              not header Origin https://terminal.${domain}
             }
             respond @terminal_bad_origin "Invalid terminal origin." 403
             # The dashboard on erebor.jzon.pl may show the terminal in an in-page window.
-            header Content-Security-Policy "frame-ancestors 'self' https://erebor.jzon.pl"
+            header Content-Security-Policy "frame-ancestors 'self' https://${domain}"
             handle /fonts/* {
               root * ${terminalAssets}
               file_server

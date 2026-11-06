@@ -1,6 +1,7 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 let
+  user = config.my.user;
   comfy = pkgs.fetchFromGitHub {
     owner = "Comfy-Themes";
     repo = "Spicetify";
@@ -58,7 +59,7 @@ let
 in
 {
   environment.systemPackages = [ spotify pkgs.spicetify-cli ];
-  home-manager.users.janzon = { lib, ... }: {
+  home-manager.users.${user} = { lib, ... }: {
     xdg.configFile."spicetify/Themes/Comfy/user.css".source = "${comfy}/Comfy/app.css";
     xdg.configFile."spicetify/Themes/Comfy/theme.js".source = "${comfy}/Comfy/theme.script.js";
     xdg.configFile."spicetify/Themes/Comfy/assets".source = "${comfy}/Comfy/assets";

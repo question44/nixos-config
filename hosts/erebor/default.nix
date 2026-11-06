@@ -1,4 +1,8 @@
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
+let
+  user = config.my.user;
+  domain = config.my.domain;
+in
 
 {
   imports = [
@@ -80,8 +84,8 @@
     enable = true;
     openFirewall = false;
     allowed-origins = [
-      "https://sys.erebor.jzon.pl"
-      "wss://sys.erebor.jzon.pl"
+      "https://sys.${domain}"
+      "wss://sys.${domain}"
     ];
     settings.WebService = {
       AllowUnencrypted = true;
@@ -95,7 +99,7 @@
   console.keyMap = "pl";
 
   users.defaultUserShell = pkgs.fish;
-  users.users.janzon = {
+  users.users.${user} = {
     isNormalUser = true;
     description = "Janzon";
     shell = pkgs.fish;

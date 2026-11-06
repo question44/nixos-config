@@ -1,6 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
+  domain = config.my.domain;
   sunshine = pkgs.sunshine.override {
     cudaSupport = true;
     cudaPackages = pkgs.cudaPackages;
@@ -30,7 +31,7 @@ in
       origin_web_ui_allowed = "lan";
       csrf_allowed_origins = lib.concatStringsSep "," [
         "https://192.168.1.106:47990"
-        "https://sunshine.erebor.jzon.pl"
+        "https://sunshine.${domain}"
       ];
       global_prep_cmd = builtins.toJSON [ {
         do = "${output}/bin/sunshine-output create";

@@ -1,5 +1,5 @@
 # Fish, Starship and command-line tools.
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 {
   xdg.configFile."fish/functions/shell_welcome.fish".source = pkgs.replaceVars ../fish/shell_welcome.fish { figlet = pkgs.figlet; };
   xdg.configFile."fastfetch/shell.jsonc".source = ../fastfetch/shell.jsonc;
@@ -22,7 +22,7 @@
     shellAliases = {
       cat = "bat --style=plain --paging=never";
       catn = "bat --style=numbers --paging=never";
-      t3pair = "t3 pair --base-dir /home/janzon/.t3/server";
+      t3pair = "t3 pair --base-dir ${config.home.homeDirectory}/.t3/server";
       ls = "eza --group-directories-first --icons=auto";
       ll = "eza --long --header --group-directories-first --icons=auto";
       la = "eza --all --group-directories-first --icons=auto";

@@ -1,5 +1,8 @@
 # uinput access and the xremap key remapper.
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
+let
+  user = config.my.user;
+in
 {
   services.udev.extraRules = ''
     KERNEL=="uinput", GROUP="input", MODE="0660", TAG+="uaccess"
@@ -10,12 +13,12 @@
     description = "xremap key remapper";
     # Apps launched by xremap inherit this PATH. Keep the setuid wrappers first
     # and use profile links, not store paths, so sudo works and survives rebuilds.
-    environment.PATH = lib.mkForce "/run/wrappers/bin:/home/janzon/.local/bin:/home/janzon/.nix-profile/bin:/etc/profiles/per-user/janzon/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin";
+    environment.PATH = lib.mkForce "/run/wrappers/bin:/home/${user}/.local/bin:/home/${user}/.nix-profile/bin:/etc/profiles/per-user/${user}/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin";
     after = [ "graphical-session.target" ];
     partOf = [ "graphical-session.target" ];
     wantedBy = [ "graphical-session.target" ];
     serviceConfig = {
-      ExecStart = "${pkgs.xremap}/bin/xremap --allow-launch true --mouse --device \"Telink IQUNIX 2.4GHz\" --device \"RDR IQUNIX MQ80 KB\" --device \"Logitech G502 X LS\" /home/janzon/.config/xremap/config.yml";
+      ExecStart = "${pkgs.xremap}/bin/xremap --allow-launch true --mouse --device \"Telink IQUNIX 2.4GHz\" --device \"RDR IQUNIX MQ80 KB\" --device \"Logitech G502 X LS\" /home/${user}/.config/xremap/config.yml";
       Restart = "on-failure";
     };
   };

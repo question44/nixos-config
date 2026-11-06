@@ -1,5 +1,5 @@
 # Qt/GTK theming, Dolphin, XDG directories and default applications.
-{ lib, pkgs, darkly, ... }:
+{ config, lib, pkgs, darkly, ... }:
 {
   qt = {
     enable = true;
@@ -45,7 +45,7 @@
   xdg.userDirs = {
     enable = true;
     createDirectories = true;
-    projects = "/home/janzon/Projects";
+    projects = "${config.home.homeDirectory}/Projects";
   };
   xdg.mimeApps = {
     enable = true;

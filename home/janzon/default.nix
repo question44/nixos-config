@@ -1,6 +1,6 @@
 # Home Manager configuration for janzon, split by topic so parallel
 # changes rarely touch the same file.
-{ lib, pkgs, umbriel, monstar, claude-desktop-nix, zen-browser, ... }:
+{ config, lib, pkgs, umbriel, monstar, claude-desktop-nix, zen-browser, ... }:
 let
   zenPackages = zen-browser.packages.${pkgs.stdenv.hostPlatform.system};
   zenBrowser = zenPackages.default;
@@ -84,6 +84,6 @@ in
     VISUAL = "${sessionEditor}/bin/session-editor";
     GIT_EDITOR = "${sessionEditor}/bin/session-editor";
     QT_STYLE_OVERRIDE = "Darkly";
-    STARSHIP_CONFIG = lib.mkForce "/home/janzon/.config/noctalia/starship.toml";
+    STARSHIP_CONFIG = lib.mkForce "${config.home.homeDirectory}/.config/noctalia/starship.toml";
   };
 }

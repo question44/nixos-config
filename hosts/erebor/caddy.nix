@@ -1,6 +1,7 @@
 # Caddy reverse proxy for local names and *.erebor.jzon.pl.
 { config, lib, pkgs, ... }:
 let
+  domain = config.my.domain;
   dashboard = config.services.erebor-dashboard.package;
   # Spliced into the indented Caddyfile below; the text keeps its layout.
   hyperhdrRoute = hosts: lib.optionalString config.my.ambilight.enable
@@ -39,7 +40,7 @@ in
       }
 
       :80 {
-        @domain host erebor.jzon.pl *.erebor.jzon.pl
+        @domain host ${domain} *.${domain}
         redir @domain https://{host}{uri} permanent
 
         @jellyfin host jellyfin.localhost jellyfin
@@ -64,9 +65,9 @@ in
         @torrent host torrent.localhost torrent
         handle @torrent {
           reverse_proxy 127.0.0.1:18081 {
-            header_up Host torrent.erebor.jzon.pl
-            header_up Origin https://torrent.erebor.jzon.pl
-            header_up Referer https://torrent.erebor.jzon.pl/
+            header_up Host torrent.${domain}
+            header_up Origin https://torrent.${domain}
+            header_up Referer https://torrent.${domain}/
             header_up -Authorization
           }
         }
@@ -97,33 +98,33 @@ in
         reverse_proxy 127.0.0.1:18081
       }
 
-      erebor.jzon.pl {
+      ${domain} {
         import ovh_tls
         import dashboard_controls
         @legacy_desktop path /desktop /desktop/*
-        redir @legacy_desktop https://desktop.erebor.jzon.pl/ 308
+        redir @legacy_desktop https://desktop.${domain}/ 308
         encode gzip
         root * ${dashboard}
         file_server
       }
 
-      *.erebor.jzon.pl {
+      *.${domain} {
         import ovh_tls
         import browser_desktop
         import browser_terminal
         encode gzip
 
-        @code host code.erebor.jzon.pl
+        @code host code.${domain}
         handle @code {
           reverse_proxy 127.0.0.1:3773
         }
 
-        @ai host ai.erebor.jzon.pl
+        @ai host ai.${domain}
         handle @ai {
           reverse_proxy 127.0.0.1:3000
         }
 
-        @cloud host cloud.erebor.jzon.pl
+        @cloud host cloud.${domain}
         handle @cloud {
           @carddav path /.well-known/carddav
           redir @carddav /remote.php/dav 301
@@ -132,12 +133,12 @@ in
           reverse_proxy 127.0.0.1:18089
         }
 
-        @media host media.erebor.jzon.pl
+        @media host media.${domain}
         handle @media {
           reverse_proxy 127.0.0.1:18096
         }
 
-        @sync host sync.erebor.jzon.pl
+        @sync host sync.${domain}
         handle @sync {
           reverse_proxy 127.0.0.1:18384 {
             header_up Host localhost:18384
@@ -145,18 +146,18 @@ in
           }
         }
 
-        @torrent host torrent.erebor.jzon.pl
+        @torrent host torrent.${domain}
         handle @torrent {
           reverse_proxy 127.0.0.1:18081 {
-            header_up Host torrent.erebor.jzon.pl
-            header_up Origin https://torrent.erebor.jzon.pl
-            header_up Referer https://torrent.erebor.jzon.pl/
+            header_up Host torrent.${domain}
+            header_up Origin https://torrent.${domain}
+            header_up Referer https://torrent.${domain}/
             header_up -Authorization
           }
         }
 
-        ${hyperhdrRoute "hyperhdr.erebor.jzon.pl"}
-        @sunshine host sunshine.erebor.jzon.pl
+        ${hyperhdrRoute "hyperhdr.${domain}"}
+        @sunshine host sunshine.${domain}
         handle @sunshine {
           reverse_proxy https://127.0.0.1:47990 {
             # Sunshine serves a self-signed certificate on this loopback hop.
@@ -166,7 +167,7 @@ in
           }
         }
 
-        @sys host sys.erebor.jzon.pl
+        @sys host sys.${domain}
         handle @sys {
           reverse_proxy 127.0.0.1:9090
         }

@@ -1,5 +1,7 @@
 { config, lib, pkgs, ... }:
 let
+  user = config.my.user;
+  domain = config.my.domain;
   my = config.my;
   ambilightActions = [ "ambilight-on" "ambilight-off" ];
   # Drop buttons for hardware this machine does not have.
@@ -29,14 +31,14 @@ in
   };
   security.polkit.extraConfig = ''
     polkit.addRule(function(action, subject) {
-      if (subject.user == "janzon" &&
+      if (subject.user == "${user}" &&
           action.id == "org.freedesktop.systemd1.manage-units" &&
           action.lookup("unit") == "dashboard-reboot-windows.service" &&
           action.lookup("verb") == "start") {
         return polkit.Result.YES;
       }
       // The dashboard API runs outside an active session, which the default policy requires.
-      if (subject.user == "janzon" &&
+      if (subject.user == "${user}" &&
           action.id == "org.freedesktop.UPower.PowerProfiles.switch-profile") {
         return polkit.Result.YES;
       }
@@ -53,8 +55,8 @@ in
     };
     control = {
       enable = true;
-      user = "janzon";
-      allowedHosts = [ "erebor" "localhost" "127.0.0.1" "erebor.local" "erebor.jzon.pl" ];
+      user = "${user}";
+      allowedHosts = [ "${config.networking.hostName}" "localhost" "127.0.0.1" "${config.networking.hostName}.local" "${domain}" ];
       enabledActions = lib.filter keepAction [ "display-on" "display-off" "screen-dp" "screen-hdmi" "ambilight-on" "ambilight-off"
         "profile-performance" "profile-balanced" "profile-power-saver"
         "sleep" "power-off" "reboot-windows" "moonshine-pair" ];

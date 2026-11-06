@@ -1,6 +1,7 @@
 # Graphical session: greeter, compositors, Noctalia, portals, audio and Helium.
 { config, lib, pkgs, ... }:
 let
+  user = config.my.user;
   noctaliaPython = pkgs.callPackage ../../packages/noctalia-python.nix { };
 in
 {
@@ -11,7 +12,7 @@ in
     wantedBy = [ "graphical-session.target" ];
     path = [ pkgs.playerctl ];
     serviceConfig = {
-      ExecStart = "${noctaliaPython}/bin/python3 -B /home/janzon/.local/state/noctalia/plugins/materialized/community/spotify-lyrics/spotify_lyrics_daemon.py";
+      ExecStart = "${noctaliaPython}/bin/python3 -B /home/${user}/.local/state/noctalia/plugins/materialized/community/spotify-lyrics/spotify_lyrics_daemon.py";
       Restart = "on-failure";
       RestartSec = 5;
     };
@@ -22,7 +23,7 @@ in
     partOf = [ "graphical-session.target" ];
     wantedBy = [ "graphical-session.target" ];
     serviceConfig = {
-      ExecStart = "${pkgs.swaybg}/bin/swaybg -o DP-1 -i /home/janzon/Pictures/wallhaven-vpeq6l.jpg -m fill";
+      ExecStart = "${pkgs.swaybg}/bin/swaybg -o DP-1 -i /home/${user}/Pictures/wallhaven-vpeq6l.jpg -m fill";
       Restart = "on-failure";
       RestartSec = 2;
     };
@@ -33,7 +34,7 @@ in
     wants = [ "xdg-desktop-portal-gnome.service" ];
     # The host app registry resolves desktop-file Exec= commands via PATH;
     # without the system/user profiles it rejects apps like vicinae.
-    path = [ "/run/current-system/sw" "/etc/profiles/per-user/janzon" ];
+    path = [ "/run/current-system/sw" "/etc/profiles/per-user/${user}" ];
   };
 
   # A graphical greeter does not need Type=idle's console-output delay.
@@ -41,10 +42,10 @@ in
 
   services.displayManager.noctalia-greeter = {
     enable = true;
-    passwordless-sync-users = [ "janzon" ];
+    passwordless-sync-users = [ "${user}" ];
     settings = {
       appearance.scheme = "Synced";
-      user.default = "janzon";
+      user.default = "${user}";
       session.default = "umbriel";
       idle.timeout = 60;
     };
@@ -103,7 +104,7 @@ in
   # Preserve the rendered color across rebuilds; this must stay a writable file.
   systemd.tmpfiles.settings."10-noctalia-chromium".
     "/etc/chromium/policies/managed/noctalia-color.json".f = {
-      user = "janzon";
+      user = "${user}";
       group = "users";
       mode = "0644";
       argument = "{}";
