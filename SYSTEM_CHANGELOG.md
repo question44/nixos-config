@@ -13,6 +13,19 @@ Validation: created a test worktree; switch from it was refused; dry-build
 from it passed; a second rebuild waited on the held lock; test worktree
 removed. Nothing activated (the scripts are not deployed).
 
+# MacBook approval tunnel: sleep hooks and Tailscale — 2026-11-06
+
+Mac-side only (no erebor generation). User asked for both follow-ups to the
+keepalive change. Installed Homebrew sleepwatcher; `~/.sleep` boots out
+`com.janzon.erebor-ssh` and `~/.wakeup` bootstraps it. The Mac's ssh config now
+uses erebor's Tailscale IP (100.108.216.80) when its utun has 100.127.94.102,
+else the LAN IP; backup at `~/.ssh/config.bak-2026-11-06`.
+
+Verified: tunnel connects from 100.127.94.102 and refreshes agent.sock; running
+the sleep hook removed erebor's tunnel session at once, and the wake hook
+restored it within 5 s. Not yet observed across a real lid-close sleep. The
+erebor Match keeps the LAN IP for the fallback path.
+
 # SSH keepalives for the MacBook — 2026-11-06
 
 sudo's YubiKey prompt was delayed because pam_rssh first asked a forwarded
