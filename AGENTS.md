@@ -13,6 +13,9 @@ other:
   `~/nixos-wt/<task>` on branch `agent/<task>`. Edit, check and build there
   with `scripts/erebor-rebuild build`. Do not edit `/etc/nixos` directly while
   another agent may be working in it.
+- Before merging a refactor, run `scripts/erebor-diff` in your worktree (it
+  compares the built system with `master`) and quote its tier (identical,
+  equivalent or different) in the changelog entry.
 - Activate only from `/etc/nixos` on `master`, through
   `scripts/erebor-rebuild test|switch`. It refuses other checkouts, holds a
   lock so only one rebuild runs at a time, and uses the setuid sudo.

@@ -1,0 +1,121 @@
+#!/usr/bin/env bash
+# Does a branch or worktree change the built system compared with master?
+#   scripts/erebor-diff [--host NAME] [base-ref] [target]
+# base-ref defaults to master; target is a checkout directory or a git ref and
+# defaults to the current checkout (uncommitted changes included).
+# Exit: 0 identical (same drvPath), 1 equivalent (same closure, system-path and
+# /etc up to store hashes and line order), 2 different, 3 error.
+set -euo pipefail
+
+usage() { echo "usage: erebor-diff [--host NAME] [base-ref] [target]" >&2; exit 3; }
+
+host=erebor
+args=()
+while (($#)); do
+  case $1 in
+    --host) host=${2:?}; shift 2 ;;
+    --host=*) host=${1#*=}; shift ;;
+    -h | --help) usage ;;
+    *) args+=("$1"); shift ;;
+  esac
+done
+((${#args[@]} <= 2)) || usage
+base_ref=${args[0]:-master}
+target=${args[1]:-.}
+
+trap 'echo "erebor-diff: failed at line $LINENO" >&2; exit 3' ERR
+
+repo=$(git rev-parse --show-toplevel)
+tmp=$(mktemp -d "${TMPDIR:-/tmp}/erebor-diff.XXXXXX")
+worktrees=()
+# shellcheck disable=SC2329 # run by the EXIT trap
+cleanup() {
+  for wt in "${worktrees[@]}"; do git -C "$repo" worktree remove --force "$wt" 2>/dev/null || true; done
+  rm -rf "$tmp"
+}
+trap cleanup EXIT
+
+# Check out a ref into a temporary detached worktree; prints its path.
+checkout() {
+  local dir
+  dir=$tmp/wt-$(( ${#worktrees[@]} ))
+  git -C "$repo" worktree add --quiet --detach "$dir" "$1" >&2
+  git -C "$dir" submodule --quiet update --init >&2
+  echo "$dir"
+}
+
+base_dir=$(checkout "$base_ref"); worktrees+=("$base_dir")
+if [[ -d $target ]]; then
+  target_dir=$(cd "$target" && git rev-parse --show-toplevel)
+else
+  target_dir=$(checkout "$target"); worktrees+=("$target_dir")
+fi
+
+attr="nixosConfigurations.$host.config.system.build.toplevel"
+drv() { nix eval --raw "$1#$attr.drvPath"; }
+build() { nix build --no-link --print-out-paths "$1#$attr"; }
+
+base_drv=$(drv "$base_dir")
+target_drv=$(drv "$target_dir")
+echo "base   ($base_ref): $base_drv"
+echo "target ($target): $target_drv"
+if [[ $base_drv == "$target_drv" ]]; then
+  echo "identical: same drvPath"
+  exit 0
+fi
+
+echo "Building both systems..."
+base_out=$(build "$base_dir")
+target_out=$(build "$target_dir")
+
+different=0
+
+closure=$(nix store diff-closures "$base_out" "$target_out")
+if [[ -n $closure ]]; then
+  different=1
+  echo; echo "Closure diff:"; echo "$closure"
+fi
+
+tree() ( cd "$1/sw" && find . \( -type l -o -type f \) -printf '%p -> %l\n' | sort )
+if ! diff -u <(tree "$base_out") <(tree "$target_out") >"$tmp/sw.diff"; then
+  different=1
+  echo; echo "system-path tree differs:"; head -40 "$tmp/sw.diff"
+fi
+
+# /etc content with store hashes masked; XML split at tags, lines sorted.
+normalize() {
+  sed -E 's,/nix/store/[0-9a-z]{32}-,/nix/store/HASH-,g; s,>,>\n,g; s,<,\n<,g' "$1" | sort
+}
+etc_files() ( cd "$1/etc" && find -L . -type f | sort )
+etc_files "$base_out" >"$tmp/etc.base"
+etc_files "$target_out" >"$tmp/etc.target"
+only=$(comm -3 "$tmp/etc.base" "$tmp/etc.target")
+if [[ -n $only ]]; then
+  different=1
+  echo; echo "/etc files present on one side only (left: base, right: target):"; echo "$only"
+fi
+hash_only=()
+while read -r f; do
+  a=$base_out/etc/$f b=$target_out/etc/$f
+  cmp -s "$a" "$b" && continue
+  if cmp -s <(normalize "$a") <(normalize "$b"); then
+    hash_only+=("${f#./}")
+  else
+    different=1
+    echo; echo "/etc/${f#./} changed:"
+    diff -u --label base --label target "$a" "$b" | head -30 || true
+  fi
+done < <(comm -12 "$tmp/etc.base" "$tmp/etc.target")
+
+if ((${#hash_only[@]})); then
+  echo; echo "/etc files differing only in store hashes or order:"
+  printf '  %s\n' "${hash_only[@]}"
+fi
+
+echo
+if ((different)); then
+  echo "different"
+  exit 2
+fi
+echo "equivalent: same closure, system-path and normalized /etc"
+exit 1

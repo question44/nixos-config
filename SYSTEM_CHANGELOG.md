@@ -1,3 +1,18 @@
+# `scripts/erebor-diff`: compare a branch's built system with master — 2026-11-06
+
+Automates the per-step check used during the host/module refactor.
+`scripts/erebor-diff [--host NAME] [base-ref] [target]` builds the toplevel of
+both (base from a temporary detached worktree with submodules) and reports
+identical (same drvPath, exit 0), equivalent (empty diff-closures, same
+system-path tree, /etc equal after masking store hashes and sorting lines;
+exit 1), different (exit 2) or error (exit 3). AGENTS.md asks for it before
+merging a refactor.
+
+Validation: master vs master → identical; a commit reordering erebor's
+imports → equivalent; a commit adding `hello` → different (closure and
+system-path diff shown); an evaluation error → exit 3 with worktrees removed.
+`bash -n` and shellcheck pass. Nothing deployed; no activation.
+
 # Portable configuration: per-host my.* options and a template host — 2026-11-06
 
 User wants to set up similar machines without erebor's ambilight, YubiKey or
