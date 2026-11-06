@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# Build or activate erebor, one agent at a time.
+#   scripts/erebor-rebuild build|dry-build   any checkout or worktree
+#   scripts/erebor-rebuild test|switch       /etc/nixos on master only
+# Activation from a branch would silently roll back everything else on master.
+set -euo pipefail
+
+mode=${1:?usage: erebor-rebuild build|dry-build|test|switch}
+repo=$(git rev-parse --show-toplevel)
+
+case $mode in
+  build | dry-build) ;;
+  test | switch)
+    [[ $repo == /etc/nixos ]] || { echo "Activate only from /etc/nixos, not $repo." >&2; exit 1; }
+    branch=$(git -C "$repo" branch --show-current)
+    [[ $branch == master ]] || { echo "Activate only from master (on $branch)." >&2; exit 1; }
+    ;;
+  *) echo "Unknown mode: $mode" >&2; exit 1 ;;
+esac
+
+# The setuid sudo; an inherited PATH may put the plain store sudo first.
+export PATH=/run/wrappers/bin:$PATH
+
+lock=${XDG_RUNTIME_DIR:-/tmp}/erebor-rebuild.lock
+exec 9>"$lock"
+if ! flock -n 9; then
+  echo "Another rebuild holds $lock; waiting..." >&2
+  flock 9
+fi
+
+if [[ $mode == test || $mode == switch ]]; then
+  dirty=$(git -C "$repo" status --short)
+  if [[ -n $dirty ]]; then
+    echo "Uncommitted changes will be activated too:" >&2
+    echo "$dirty" >&2
+  fi
+  nix flake check "$repo"
+  nixos-rebuild "$mode" --sudo --flake "$repo#erebor"
+  echo "Active generation: $(readlink /nix/var/nix/profiles/system)"
+else
+  nixos-rebuild "$mode" --flake "$repo#erebor"
+fi

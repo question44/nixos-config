@@ -4,6 +4,32 @@ This repository is the authoritative declarative configuration for the
 installed NixOS system. Maintain the system incrementally, preserve the
 working Windows installation, and verify every material change.
 
+## Parallel agents
+
+Several agents may change this repository at once. To avoid overwriting each
+other:
+
+- Work in your own worktree: `scripts/erebor-worktree <task>` creates
+  `~/nixos-wt/<task>` on branch `agent/<task>`. Edit, check and build there
+  with `scripts/erebor-rebuild build`. Do not edit `/etc/nixos` directly while
+  another agent may be working in it.
+- Activate only from `/etc/nixos` on `master`, through
+  `scripts/erebor-rebuild test|switch`. It refuses other checkouts, holds a
+  lock so only one rebuild runs at a time, and uses the setuid sudo.
+  Activating any other tree rolls back changes that are on `master` but not in
+  that tree.
+- To land work: commit on your branch, run `git -C /etc/nixos merge
+  agent/<task>` (rebase first if it does not merge cleanly), activate, verify,
+  then `git worktree remove --force ~/nixos-wt/<task>` and delete the branch.
+- `SYSTEM_CHANGELOG.md` and `SYSTEM_TODO.md` merge with `merge=union`, which
+  keeps both sides. After a merge, check that edits to the same entry did not
+  leave duplicated lines.
+- To claim a new `SYS-NNN` ID, commit the task stub to `master` first, so two
+  agents never pick the same number.
+- Uncommitted changes in `/etc/nixos` that you did not make belong to another
+  agent. Leave them out of your commits and do not reset them;
+  `erebor-rebuild` lists them before activating.
+
 ## Before changing the system
 
 - Read the relevant Nix files and modules before editing them.
@@ -91,6 +117,17 @@ working Windows installation, and verify every material change.
 - Add services, packages, dotfiles, containers, and personal data only when
   explicitly requested. Prefer one change at a time with build, activation,
   and live verification.
+
+## Umbriel configuration workflow
+
+- Umbriel is the primary compositor session (`XDG_CURRENT_DESKTOP=umbriel`);
+  Niri is still configured but is not the main session. Desktop and keybind
+  changes normally belong in Umbriel.
+- The canonical configuration is `/etc/nixos/home/umbriel/config.toml`, deployed
+  by Home Manager (`programs.umbriel.settings`). Do not edit the deployed copy.
+- Umbriel watches its config file. After activation, confirm the change took
+  effect with its inspection commands (for example `umbriel submap`,
+  `umbriel outputs`) or by trying the behavior.
 
 ## Niri configuration workflow
 

@@ -1,3 +1,18 @@
+# Parallel-agent workflow: worktrees, locked rebuilds, union merges — 2026-11-06
+
+User runs several agents on this repo at once and asked for fewer conflicts.
+- `scripts/erebor-worktree <task>` gives each agent `~/nixos-wt/<task>` on
+  branch `agent/<task>`, with the dashboard submodule initialized.
+- `scripts/erebor-rebuild` builds from any checkout, but activates only from
+  `/etc/nixos` on master. It holds a flock in `$XDG_RUNTIME_DIR`, uses
+  `/run/wrappers/bin/sudo`, and lists uncommitted changes before activating.
+- `.gitattributes`: `merge=union` for SYSTEM_CHANGELOG.md and SYSTEM_TODO.md.
+- AGENTS.md: new Parallel agents and Umbriel workflow sections.
+
+Validation: created a test worktree; switch from it was refused; dry-build
+from it passed; a second rebuild waited on the held lock; test worktree
+removed. Nothing activated (the scripts are not deployed).
+
 # Setuid sudo first in xremap and ttyd PATH — 2026-11-06
 
 User often hit "sudo … must be owned by uid 0 and have the setuid bit set".

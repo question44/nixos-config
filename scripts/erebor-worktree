@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Give one agent task its own branch and checkout of /etc/nixos.
+#   scripts/erebor-worktree <task>   creates ~/nixos-wt/<task> on branch agent/<task>
+set -euo pipefail
+
+task=${1:?usage: erebor-worktree <task-name>}
+[[ $task =~ ^[a-z0-9][a-z0-9-]*$ ]] || { echo "Use lowercase letters, digits and dashes." >&2; exit 1; }
+dir=$HOME/nixos-wt/$task
+
+git -C /etc/nixos worktree add -b "agent/$task" "$dir" master
+# The flake builds the dashboard from its submodule.
+git -C "$dir" submodule update --init
+echo "$dir"
