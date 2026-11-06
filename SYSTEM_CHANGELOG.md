@@ -10,8 +10,12 @@ platform theme in the fooyin wrapper opens KDE's file dialog with unstable
 KIO 6.31, but no KIO worker plugins were in fooyin's `QT_PLUGIN_PATH`;
 unwrapped `kioclient` from the same KIO reproduced it ("Unknown protocol
 'file'"). Added unstable `kdePackages.kio` to the wrapper; with its plugin
-directory the same command lists `/srv`. `erebor-diff` tier: different
-(fooyin wrapper only).
+directory the same command lists `/srv`.
+
+Activated generation 300 with no failed system or user units;
+`nix store diff-closures` against generation 299 shows no version changes
+(only the fooyin wrapper changed). The dialog itself was not tried in fooyin
+after activation.
 
 # fooyin from nixos-unstable — 2026-11-06
 
