@@ -1,4 +1,4 @@
-"""Synchronize only the RTX 4090 PCI assignments of the existing domain."""
+"""Synchronize the RTX 4090 PCI assignments and firmware paths of the existing domain."""
 
 import datetime
 import pathlib
@@ -15,8 +15,24 @@ def virsh(*args):
     )
 
 
-def reconcile(xml, enabled):
+def reconcile(xml, enabled, loader, vars_template):
     root = ET.fromstring(xml)
+    changed = False
+    # Point at stable /etc paths so firmware updates and garbage collection
+    # never leave the domain referencing a removed store path.
+    for element, attribute, value in (
+        (root.find("os/loader"), None, loader),
+        (root.find("os/nvram"), "template", vars_template),
+    ):
+        if element is None:
+            continue
+        current = element.text if attribute is None else element.get(attribute)
+        if current != value:
+            if attribute is None:
+                element.text = value
+            else:
+                element.set(attribute, value)
+            changed = True
     devices = root.find("devices")
     assigned = {}
     for device in devices.findall("hostdev"):
@@ -29,7 +45,7 @@ def reconcile(xml, enabled):
                 raise RuntimeError("Duplicate NVIDIA assignment; inspect domain manually")
             assigned[pci[3]] = device
     if set(assigned) == ({0, 1} if enabled else set()):
-        return None
+        return ET.tostring(root, encoding="unicode") if changed else None
     for device in assigned.values():
         devices.remove(device)
     if enabled:
@@ -42,16 +58,17 @@ def reconcile(xml, enabled):
 
 
 def main():
-    if sys.argv[1:] not in (["on"], ["off"]):
-        raise SystemExit("Usage: windows-vm-gpu.py on|off")
+    if len(sys.argv) != 4 or sys.argv[1] not in ("on", "off"):
+        raise SystemExit("Usage: windows-vm-gpu.py on|off LOADER VARS_TEMPLATE")
+    enabled, loader, vars_template = sys.argv[1] == "on", sys.argv[2], sys.argv[3]
     if "windows11" not in virsh("list", "--all", "--name").splitlines():
         return
     original = virsh("dumpxml", "windows11", "--inactive")
-    updated = reconcile(original, sys.argv[1] == "on")
+    updated = reconcile(original, enabled, loader, vars_template)
     if updated is None:
         return
     if virsh("domstate", "windows11").strip() != "shut off":
-        raise SystemExit("Shut down windows11 before changing GPU passthrough")
+        raise SystemExit("Shut down windows11 before changing GPU passthrough or firmware")
     stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
     backup = pathlib.Path("/var/lib/windows-vm-recovery/gpu-toggle") / stamp
     backup.mkdir(parents=True, mode=0o700)
@@ -59,9 +76,9 @@ def main():
     target = backup / "windows11-updated.xml"
     target.write_text(updated)
     virsh("define", "--validate", str(target))
-    if reconcile(virsh("dumpxml", "windows11", "--inactive"), sys.argv[1] == "on") is not None:
-        raise SystemExit("GPU assignment did not persist")
-    print(f"GPU passthrough {sys.argv[1]}; recovery XML: {backup / 'windows11.xml'}")
+    if reconcile(virsh("dumpxml", "windows11", "--inactive"), enabled, loader, vars_template) is not None:
+        raise SystemExit("GPU assignment or firmware paths did not persist")
+    print(f"GPU passthrough {sys.argv[1]}, firmware {loader}; recovery XML: {backup / 'windows11.xml'}")
 
 
 if __name__ == "__main__":

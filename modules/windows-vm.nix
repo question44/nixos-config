@@ -33,7 +33,11 @@ in
         serviceConfig.RemainAfterExit = true;
         script = "${pkgs.python3}/bin/python3 ${../scripts/windows-vm-gpu.py} ${
           if passthrough then "on" else "off"
-        }";
+        } /etc/windows-vm/OVMF_CODE.fd /etc/windows-vm/OVMF_VARS.ms.fd";
+        restartTriggers = [
+          config.environment.etc."windows-vm/OVMF_CODE.fd".source
+          config.environment.etc."windows-vm/OVMF_VARS.ms.fd".source
+        ];
       };
 
       # Put the host and guests on the wired LAN. Keep the physical MAC and
@@ -88,6 +92,8 @@ in
       systemd.tmpfiles.rules = [ "d /var/lib/libvirt/images 0755 root root -" ];
       # Retain the existing guest firmware and NVRAM during the GPU migration.
       environment.etc."windows-vm/OVMF_CODE.fd".source = "${igdOvmf.fd}/FV/OVMF_CODE.fd";
+      # Only used if the guest's NVRAM is ever recreated.
+      environment.etc."windows-vm/OVMF_VARS.ms.fd".source = "${pkgs.OVMF.fd}/FV/OVMF_VARS.ms.fd";
 
       environment.systemPackages = with pkgs; [
         virt-viewer
