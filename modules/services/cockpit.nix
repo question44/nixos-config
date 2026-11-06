@@ -7,8 +7,8 @@ in
   config = lib.mkMerge [
     {
       my.services.cockpit = {
-      port = 9090;
-      publicName = "sys";
+        port = 9090;
+        publicName = "sys";
       };
     }
     (lib.mkIf config.my.services.cockpit.enable {

@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   domain = config.my.network.domain;
@@ -9,9 +14,9 @@ in
   config = lib.mkMerge [
     {
       my.services.ollama = {
-      # Open WebUI in front of Ollama.
-      port = 3000;
-      publicName = "ai";
+        # Open WebUI in front of Ollama.
+        port = 3000;
+        publicName = "ai";
       };
     }
     (lib.mkIf config.my.services.ollama.enable {
@@ -37,17 +42,19 @@ in
 
       # fpdf2 2.8.9: one PDF fixture hash differs with the pinned image stack.
       # Keep the remaining upstream checks enabled (1780 passed before this override).
-      nixpkgs.overlays = [ (_final: prev: {
-        pythonPackagesExtensions = (prev.pythonPackagesExtensions or [ ]) ++ [
-          (_pythonFinal: pythonPrev: {
-            fpdf2 = pythonPrev.fpdf2.overridePythonAttrs (old: {
-              disabledTests = (old.disabledTests or [ ]) ++ [
-                "test_image_with_explicit_dimensions"
-              ];
-            });
-          })
-        ];
-      }) ];
+      nixpkgs.overlays = [
+        (_final: prev: {
+          pythonPackagesExtensions = (prev.pythonPackagesExtensions or [ ]) ++ [
+            (_pythonFinal: pythonPrev: {
+              fpdf2 = pythonPrev.fpdf2.overridePythonAttrs (old: {
+                disabledTests = (old.disabledTests or [ ]) ++ [
+                  "test_image_with_explicit_dimensions"
+                ];
+              });
+            })
+          ];
+        })
+      ];
 
       services.open-webui = {
         enable = true;
@@ -80,7 +87,12 @@ in
           # These default engines returned CAPTCHAs/rate limits on this connection;
           # Bing was verified to return live results without an API key.
           use_default_settings.engines.keep_only = [ "bing" ];
-          engines = [ { name = "bing"; disabled = false; } ];
+          engines = [
+            {
+              name = "bing";
+              disabled = false;
+            }
+          ];
           server = {
             bind_address = "127.0.0.1";
             port = 8888;
@@ -88,7 +100,10 @@ in
             limiter = false;
           };
           search = {
-            formats = [ "html" "json" ];
+            formats = [
+              "html"
+              "json"
+            ];
             safe_search = 0;
           };
         };

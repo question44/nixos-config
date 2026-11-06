@@ -10,7 +10,12 @@ let
   };
   prepare = pkgs.writeShellApplication {
     name = "spotify-noctalia-prepare";
-    runtimeInputs = [ pkgs.coreutils pkgs.gnused pkgs.util-linux pkgs.spicetify-cli ];
+    runtimeInputs = [
+      pkgs.coreutils
+      pkgs.gnused
+      pkgs.util-linux
+      pkgs.spicetify-cli
+    ];
     text = ''
       config_dir="''${XDG_CONFIG_HOME:-$HOME/.config}"
       data_dir="''${XDG_DATA_HOME:-$HOME/.local/share}/spotify-noctalia"
@@ -47,7 +52,11 @@ let
   };
   spotify = pkgs.symlinkJoin {
     name = "spotify-noctalia-${pkgs.spotify.version}";
-    paths = [ launcher pkgs.spotify prepare ];
+    paths = [
+      launcher
+      pkgs.spotify
+      prepare
+    ];
     postBuild = ''
       # Use our launcher even when the desktop entry specifies an absolute path.
       rm "$out/share/applications/spotify.desktop"
@@ -58,7 +67,10 @@ let
   };
 in
 {
-  environment.systemPackages = [ spotify pkgs.spicetify-cli ];
+  environment.systemPackages = [
+    spotify
+    pkgs.spicetify-cli
+  ];
   home-manager.users.${user} = { lib, ... }: {
     xdg.configFile."spicetify/Themes/Comfy/user.css".source = "${comfy}/Comfy/app.css";
     xdg.configFile."spicetify/Themes/Comfy/theme.js".source = "${comfy}/Comfy/theme.script.js";

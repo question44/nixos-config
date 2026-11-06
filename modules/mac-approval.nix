@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   user = config.my.user.name;
@@ -18,79 +23,82 @@ let
   boundedMacApproval = {
     modulePath = lib.mkForce "${pkgs.pam}/lib/security/pam_exec.so";
     settings = lib.mkForce { };
-    args = lib.mkForce [ "quiet" "seteuid" (toString macApprovalWithTimeout) ];
+    args = lib.mkForce [
+      "quiet"
+      "seteuid"
+      (toString macApprovalWithTimeout)
+    ];
   };
 in
 {
   imports = [ ./yubikey-touch-notify.nix ];
 
   config = lib.mkMerge [
-  (lib.mkIf mac {
-  # Key material is provisioned locally, outside Git and the Nix store.
-  # Never trust a key file writable by the account gaining privileges.
-  security.pam.rssh = {
-    enable = true;
-    settings = {
-      auth_key_file = "/etc/security/mac-approval/$user.keys";
-      ssh_agent_addr = "/run/mac-approval/${user}/agent.sock";
-    };
-  };
+    (lib.mkIf mac {
+      # Key material is provisioned locally, outside Git and the Nix store.
+      # Never trust a key file writable by the account gaining privileges.
+      security.pam.rssh = {
+        enable = true;
+        settings = {
+          auth_key_file = "/etc/security/mac-approval/$user.keys";
+          ssh_agent_addr = "/run/mac-approval/${user}/agent.sock";
+        };
+      };
 
-  # Either forwarded Mac Touch ID approval or a local YubiKey touch is enough
-  # for sudo. The sufficient PAM rules retain Unix password recovery.
-  security.pam.services.sudo.rssh = true;
-  security.pam.services.polkit-1.rssh = true;
-  # Preserve the generated order and sufficient control. Timeout/failure
-  # continues to U2F (sudo only), then the existing Unix password rule.
-  security.pam.services.sudo.rules.auth.rssh = boundedMacApproval;
-  security.pam.services.polkit-1.rules.auth.rssh = boundedMacApproval;
+      # Either forwarded Mac Touch ID approval or a local YubiKey touch is enough
+      # for sudo. The sufficient PAM rules retain Unix password recovery.
+      security.pam.services.sudo.rssh = true;
+      security.pam.services.polkit-1.rssh = true;
+      # Preserve the generated order and sufficient control. Timeout/failure
+      # continues to U2F (sudo only), then the existing Unix password rule.
+      security.pam.services.sudo.rules.auth.rssh = boundedMacApproval;
+      security.pam.services.polkit-1.rules.auth.rssh = boundedMacApproval;
 
-  # A diagnostic service verifies Mac approval without granting privileges
-  # or allowing a password to hide an unavailable signing agent. Keep this
-  # service unwrapped: the bounded helper invokes it, so wrapping it recurses.
-  security.pam.services.mac-approval-check = {
-    rssh = true;
-    unixAuth = false;
-  };
+      # A diagnostic service verifies Mac approval without granting privileges
+      # or allowing a password to hide an unavailable signing agent. Keep this
+      # service unwrapped: the bounded helper invokes it, so wrapping it recurses.
+      security.pam.services.mac-approval-check = {
+        rssh = true;
+        unixAuth = false;
+      };
 
-  # OpenSSH puts forwarded sockets here. Polkit's PAM helper hides /home;
-  # expose only this socket directory while retaining its other protections.
-  systemd.services."polkit-agent-helper@".serviceConfig = {
-    ProtectHome = "tmpfs";
-    BindReadOnlyPaths = [ "-/home/${user}/.ssh/agent" ];
-  };
-  })
+      # OpenSSH puts forwarded sockets here. Polkit's PAM helper hides /home;
+      # expose only this socket directory while retaining its other protections.
+      systemd.services."polkit-agent-helper@".serviceConfig = {
+        ProtectHome = "tmpfs";
+        BindReadOnlyPaths = [ "-/home/${user}/.ssh/agent" ];
+      };
+    })
 
-  (lib.mkIf yubikey {
-  # The credential mapping is provisioned locally after touching the key; it
-  # is intentionally outside Git and the Nix store. A successful U2F
-  # assertion authenticates sudo without a Unix password; Unix password
-  # authentication remains the recovery path when the key is unavailable.
-  security.pam.u2f = {
-    control = "sufficient";
-    settings = {
-      authfile = "/etc/security/yubico/u2f_keys";
-      cue = true;
-    };
-  };
-  security.pam.services.sudo.u2f = {
-    enable = true;
-    control = "sufficient";
-  };
-  })
+    (lib.mkIf yubikey {
+      # The credential mapping is provisioned locally after touching the key; it
+      # is intentionally outside Git and the Nix store. A successful U2F
+      # assertion authenticates sudo without a Unix password; Unix password
+      # authentication remains the recovery path when the key is unavailable.
+      security.pam.u2f = {
+        control = "sufficient";
+        settings = {
+          authfile = "/etc/security/yubico/u2f_keys";
+          cue = true;
+        };
+      };
+      security.pam.services.sudo.u2f = {
+        enable = true;
+        control = "sufficient";
+      };
+    })
 
-  {
-  # Single lists keep the original entry order across both features.
-  systemd.tmpfiles.rules =
-    lib.optional mac "d /etc/security/mac-approval 0755 root root -"
-    ++ lib.optional yubikey "d /etc/security/yubico 0755 root root -"
-    ++ lib.optionals mac [
-      "d /run/mac-approval 0755 root root -"
-      "d /run/mac-approval/${user} 0700 ${user} users -"
-    ];
+    {
+      # Single lists keep the original entry order across both features.
+      systemd.tmpfiles.rules =
+        lib.optional mac "d /etc/security/mac-approval 0755 root root -"
+        ++ lib.optional yubikey "d /etc/security/yubico 0755 root root -"
+        ++ lib.optionals mac [
+          "d /run/mac-approval 0755 root root -"
+          "d /run/mac-approval/${user} 0700 ${user} users -"
+        ];
 
-  environment.systemPackages =
-    lib.optional mac pkgs.pamtester ++ lib.optional yubikey pkgs.pam_u2f;
-  }
+      environment.systemPackages = lib.optional mac pkgs.pamtester ++ lib.optional yubikey pkgs.pam_u2f;
+    }
   ];
 }

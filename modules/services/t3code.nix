@@ -1,5 +1,10 @@
 # T3 Code web server (served at code.erebor.jzon.pl).
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   user = config.my.user.name;
   t3codeStart = pkgs.writeShellScript "t3code-start" ''
@@ -11,8 +16,8 @@ in
   config = lib.mkMerge [
     {
       my.services.t3code = {
-      port = 3773;
-      publicName = "code";
+        port = 3773;
+        publicName = "code";
       };
     }
     (lib.mkIf config.my.services.t3code.enable {
@@ -28,12 +33,30 @@ in
           HOME = "/home/${user}";
           # T3 downloads an upstream Chromium binary. Its loader and dependency
           # check need these libraries in the server's environment on NixOS.
-          LD_LIBRARY_PATH = lib.makeLibraryPath (with pkgs; [
-            glib nspr nss at-spi2-core dbus
-            libx11 libxcomposite libxdamage libxext libxfixes libxrandr
-            libgbm expat libxcb libxkbcommon systemdLibs alsa-lib
-            fontconfig freetype
-          ]);
+          LD_LIBRARY_PATH = lib.makeLibraryPath (
+            with pkgs;
+            [
+              glib
+              nspr
+              nss
+              at-spi2-core
+              dbus
+              libx11
+              libxcomposite
+              libxdamage
+              libxext
+              libxfixes
+              libxrandr
+              libgbm
+              expat
+              libxcb
+              libxkbcommon
+              systemdLibs
+              alsa-lib
+              fontconfig
+              freetype
+            ]
+          );
         };
         serviceConfig = {
           WorkingDirectory = "/home/${user}/Projects";

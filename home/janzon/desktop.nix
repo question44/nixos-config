@@ -1,5 +1,11 @@
 # Qt/GTK theming, Dolphin, XDG directories and default applications.
-{ config, lib, pkgs, darkly, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  darkly,
+  ...
+}:
 {
   qt = {
     enable = true;
@@ -27,14 +33,32 @@
     run ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 \
       --file "$HOME/.config/dolphinrc" \
       --group PreviewSettings \
-      --key Plugins "${lib.concatStringsSep "," [
-        "appimagethumbnail" "audiothumbnail" "blenderthumbnail" "comicbookthumbnail"
-        "cursorthumbnail" "directorythumbnail" "djvuthumbnail" "ebookthumbnail"
-        "exrthumbnail" "ffmpegthumbs" "gsthumbnail" "imagethumbnail" "jpegthumbnail"
-        "kraorathumbnail" "mobithumbnail" "opendocumentthumbnail" "pothumbnail"
-        "rawthumbnail" "svgthumbnail" "textthumbnail" "windowsexethumbnail"
-        "windowsimagethumbnail"
-      ]}"
+      --key Plugins "${
+        lib.concatStringsSep "," [
+          "appimagethumbnail"
+          "audiothumbnail"
+          "blenderthumbnail"
+          "comicbookthumbnail"
+          "cursorthumbnail"
+          "directorythumbnail"
+          "djvuthumbnail"
+          "ebookthumbnail"
+          "exrthumbnail"
+          "ffmpegthumbs"
+          "gsthumbnail"
+          "imagethumbnail"
+          "jpegthumbnail"
+          "kraorathumbnail"
+          "mobithumbnail"
+          "opendocumentthumbnail"
+          "pothumbnail"
+          "rawthumbnail"
+          "svgthumbnail"
+          "textthumbnail"
+          "windowsexethumbnail"
+          "windowsimagethumbnail"
+        ]
+      }"
   '';
   home.activation.kdeIconTheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     run ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 \

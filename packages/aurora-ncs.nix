@@ -1,10 +1,11 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, cmake
-, ninja
-, qt6
-, kdePackages
+{
+  lib,
+  stdenv,
+  fetchFromGitHub,
+  cmake,
+  ninja,
+  qt6,
+  kdePackages,
 }:
 
 stdenv.mkDerivation {
@@ -19,7 +20,11 @@ stdenv.mkDerivation {
   };
   sourceRoot = "source/renderer";
 
-  nativeBuildInputs = [ cmake ninja qt6.wrapQtAppsHook ];
+  nativeBuildInputs = [
+    cmake
+    ninja
+    qt6.wrapQtAppsHook
+  ];
   buildInputs = [
     qt6.qtbase
     qt6.qtdeclarative

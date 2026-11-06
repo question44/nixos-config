@@ -1,5 +1,10 @@
 # HyperHDR ambient lighting through PipeWire screen capture.
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   hyperhdr = pkgs.callPackage ../packages/hyperhdr.nix { };
   hyperhdrPortalCheck = pkgs.writeShellScript "hyperhdr-portal-check" ''
@@ -18,34 +23,34 @@ let
 in
 {
   config = lib.mkIf config.my.ambilight.enable {
-  systemd.user.services.hyperhdr = {
-    description = "HyperHDR ambient lighting with PipeWire screen capture";
-    after = [
-      "graphical-session.target"
-      "pipewire.service"
-      "wireplumber.service"
-      "xdg-desktop-portal.service"
-      "xdg-desktop-portal-gnome.service"
-    ];
-    partOf = [ "graphical-session.target" ];
-    wantedBy = [ "graphical-session.target" ];
-    wants = [
-      "pipewire.service"
-      "wireplumber.service"
-      "xdg-desktop-portal.service"
-      "xdg-desktop-portal-gnome.service"
-    ];
-    serviceConfig = {
-      ExecStartPre = hyperhdrPortalCheck;
-      ExecStart = "${hyperhdr}/bin/hyperhdr --pipewire --desktop";
-      TimeoutStopSec = 5;
-      KillMode = "mixed";
-      Restart = "on-failure";
-      RestartSec = 5;
-      NoNewPrivileges = true;
-      ProtectControlGroups = true;
-      RestrictNamespaces = true;
+    systemd.user.services.hyperhdr = {
+      description = "HyperHDR ambient lighting with PipeWire screen capture";
+      after = [
+        "graphical-session.target"
+        "pipewire.service"
+        "wireplumber.service"
+        "xdg-desktop-portal.service"
+        "xdg-desktop-portal-gnome.service"
+      ];
+      partOf = [ "graphical-session.target" ];
+      wantedBy = [ "graphical-session.target" ];
+      wants = [
+        "pipewire.service"
+        "wireplumber.service"
+        "xdg-desktop-portal.service"
+        "xdg-desktop-portal-gnome.service"
+      ];
+      serviceConfig = {
+        ExecStartPre = hyperhdrPortalCheck;
+        ExecStart = "${hyperhdr}/bin/hyperhdr --pipewire --desktop";
+        TimeoutStopSec = 5;
+        KillMode = "mixed";
+        Restart = "on-failure";
+        RestartSec = 5;
+        NoNewPrivileges = true;
+        ProtectControlGroups = true;
+        RestrictNamespaces = true;
+      };
     };
   };
-};
 }

@@ -1,5 +1,12 @@
 # Umbriel and Niri, xremap, Vicinae, and the helper scripts they call.
-{ lib, pkgs, osConfig, umbriel, vicinae, ... }:
+{
+  lib,
+  pkgs,
+  osConfig,
+  umbriel,
+  vicinae,
+  ...
+}:
 let
   rcmdPython = pkgs.python3.withPackages (ps: [ ps.pygobject3 ]);
   rcmd = pkgs.writeShellScript "rcmd" ''

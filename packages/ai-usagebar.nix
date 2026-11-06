@@ -1,12 +1,13 @@
-{ lib
-, stdenvNoCC
-, fetchurl
-, autoPatchelfHook
-, gnutar
-, gzip
-, stdenv
-, openssl
-, zlib
+{
+  lib,
+  stdenvNoCC,
+  fetchurl,
+  autoPatchelfHook,
+  gnutar,
+  gzip,
+  stdenv,
+  openssl,
+  zlib,
 }:
 
 stdenvNoCC.mkDerivation rec {
@@ -19,8 +20,16 @@ stdenvNoCC.mkDerivation rec {
   };
 
   dontUnpack = true;
-  nativeBuildInputs = [ autoPatchelfHook gnutar gzip ];
-  buildInputs = [ stdenv.cc.cc.lib openssl zlib ];
+  nativeBuildInputs = [
+    autoPatchelfHook
+    gnutar
+    gzip
+  ];
+  buildInputs = [
+    stdenv.cc.cc.lib
+    openssl
+    zlib
+  ];
 
   installPhase = ''
     runHook preInstall

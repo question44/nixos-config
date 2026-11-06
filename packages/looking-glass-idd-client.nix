@@ -1,4 +1,11 @@
-{ looking-glass-client, fetchurl, fuse3, elfutils, libunwind, usbredir }:
+{
+  looking-glass-client,
+  fetchurl,
+  fuse3,
+  elfutils,
+  libunwind,
+  usbredir,
+}:
 
 # Keep this release in sync with the Windows IDD installer. B7 stable predates
 # the virtual-display and direct-input drivers required by this headless VM.
@@ -13,7 +20,12 @@ looking-glass-client.overrideAttrs (old: rec {
   postUnpack = ''
     export sourceRoot="looking-glass-${version}/client"
   '';
-  buildInputs = old.buildInputs ++ [ fuse3 elfutils libunwind usbredir ];
+  buildInputs = old.buildInputs ++ [
+    fuse3
+    elfutils
+    libunwind
+    usbredir
+  ];
   # This release installs its desktop entry and SVG icon itself.
   postInstall = "";
 })

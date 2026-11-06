@@ -1,5 +1,10 @@
 # Graphical session: greeter, compositors, Noctalia, portals, audio and Helium.
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   user = config.my.user.name;
   noctaliaPython = pkgs.callPackage ../../packages/noctalia-python.nix { };
@@ -8,7 +13,10 @@ lib.mkMerge [
   {
     systemd.user.services.noctalia-lyrics = {
       description = "Noctalia Spotify lyrics daemon";
-      after = [ "graphical-session.target" "noctalia.service" ];
+      after = [
+        "graphical-session.target"
+        "noctalia.service"
+      ];
       partOf = [ "graphical-session.target" ];
       wantedBy = [ "graphical-session.target" ];
       path = [ pkgs.playerctl ];
@@ -20,11 +28,17 @@ lib.mkMerge [
     };
 
     systemd.user.services.xdg-desktop-portal = {
-      after = [ "graphical-session.target" "xdg-desktop-portal-gnome.service" ];
+      after = [
+        "graphical-session.target"
+        "xdg-desktop-portal-gnome.service"
+      ];
       wants = [ "xdg-desktop-portal-gnome.service" ];
       # The host app registry resolves desktop-file Exec= commands via PATH;
       # without the system/user profiles it rejects apps like vicinae.
-      path = [ "/run/current-system/sw" "/etc/profiles/per-user/${user}" ];
+      path = [
+        "/run/current-system/sw"
+        "/etc/profiles/per-user/${user}"
+      ];
     };
 
     # A graphical greeter does not need Type=idle's console-output delay.
@@ -40,7 +54,6 @@ lib.mkMerge [
         idle.timeout = 60;
       };
     };
-
 
     services.pipewire = {
       enable = true;
@@ -68,7 +81,11 @@ lib.mkMerge [
 
     xdg.portal = {
       enable = true;
-      extraPortals = [ pkgs.oo7-portal pkgs.xdg-desktop-portal-gnome pkgs.xdg-desktop-portal-gtk ];
+      extraPortals = [
+        pkgs.oo7-portal
+        pkgs.xdg-desktop-portal-gnome
+        pkgs.xdg-desktop-portal-gtk
+      ];
     };
 
     programs.umbriel.enable = true;
@@ -81,8 +98,8 @@ lib.mkMerge [
 
     # Noctalia updates this policy with the current palette for Helium.
     # Preserve the rendered color across rebuilds; this must stay a writable file.
-    systemd.tmpfiles.settings."10-noctalia-chromium".
-      "/etc/chromium/policies/managed/noctalia-color.json".f = {
+    systemd.tmpfiles.settings."10-noctalia-chromium"."/etc/chromium/policies/managed/noctalia-color.json".f =
+      {
         user = "${user}";
         group = "users";
         mode = "0644";
