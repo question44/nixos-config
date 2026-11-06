@@ -15,6 +15,8 @@ leaked by Moonshine sessions) while 22 GiB RAM was still available.
   activates it automatically and it stays as lower-priority overflow (−2 vs. zram 5).
 
 `scripts/erebor-diff`: different (zram generator unit, sysctl). `nix flake check` passed.
+Activated as generation 293: `/dev/zram0` swap active (zstd, 15.6 GiB, prio 5),
+`vm.swappiness=180`, `vm.page-cluster=0`; no failed units.
 
 # qBittorrent through Proton VPN — 2026-11-06
 
