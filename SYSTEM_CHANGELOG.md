@@ -21,6 +21,10 @@ Oxygen's `dialog-question` as the YubiKey sound.
 Activated generation 288; no failed units. The first live sudo wrote no reason:
 pam_exec runs as the calling user unless given `seteuid`, so the step now
 uses it (same as the Mac step).
+Activated generation 289. Verified: `sudo -k; sudo id -u` wrote
+`/run/auth-reason/janzon` (0600, janzon) with `sudo id -u`, and the notifier
+showed its prompt at the same moment. Whether the notification text looked
+right is for the user to confirm. The Mac-side tunnel change is not done.
 
 Validation: `nix flake check` passed (format check included; template
 evaluates). PAM stacks inspected for both features and for YubiKey only.
