@@ -53,6 +53,10 @@ Kept out of the repo, in a trimmed `settings.toml` (old copy saved as
 the wallpaper favorites. Plugins still download from the sources in the
 config; their code is not pinned.
 
+Activated generation 301 with no failed user units; after `noctalia msg
+config-reload` the live export differs from before only in the dropped
+default keys and float rounding.
+
 # Tauon music player — 2026-11-06
 
 User asked to install Tauon after trying several players; they need CUE
