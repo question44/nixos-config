@@ -32,7 +32,10 @@ removed) and Noctalia `lockscreen.allow_empty_password` is unset again, so the
 greeter, console and lock-screen password paths are as before. `noctalia`
 joined the flake `specialArgs`. Upstream changes to the lock screen may stop
 the patch applying; the build then fails rather than dropping the feature.
-`nix flake check` passes; `erebor-diff`: different. ACTIVATION: pending.
+`nix flake check` passes; `erebor-diff`: different. Activated as generation
+311: the restarted `noctalia` service carries the helper path, `/etc/pam.d/login`
+has no U2F rule, and `noctalia-key-auth` run by hand cued a touch and exited 0.
+Untested: a real lock/unlock cycle and cancelling via password submit.
 # YubiKey touch unlocks only the lock screen — 2026-11-06
 
 User asked to unlock the session with the YubiKey, then narrowed it to
