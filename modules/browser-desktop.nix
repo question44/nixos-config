@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 let
-  user = config.my.user;
-  domain = config.my.domain;
+  user = config.my.user.name;
+  domain = config.my.network.domain;
 in
 {
   # Runtime file contains the password hash, never the Nix store or repository.

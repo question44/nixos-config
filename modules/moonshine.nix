@@ -1,6 +1,6 @@
 { config, pkgs, ... }:
 let
-  user = config.my.user;
+  user = config.my.user.name;
 in
 {
   users.users.${user}.extraGroups = [ "moonshine" ];

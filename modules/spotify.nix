@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 let
-  user = config.my.user;
+  user = config.my.user.name;
   comfy = pkgs.fetchFromGitHub {
     owner = "Comfy-Themes";
     repo = "Spicetify";

@@ -1,7 +1,7 @@
 # uinput access and the xremap key remapper.
 { config, lib, pkgs, ... }:
 let
-  user = config.my.user;
+  user = config.my.user.name;
   cfg = config.my.xremap;
   deviceArgs = lib.concatMapStrings (d: "--device \"${d}\" ") cfg.devices;
 in

@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  user = config.my.user;
+  user = config.my.user.name;
   passthrough = config.virtualisation.windowsGpuPassthrough.enable;
   igdOvmf = pkgs.callPackage ../packages/ovmf-vfio-igd.nix { };
 in

@@ -18,14 +18,22 @@
   networking.hostName = "template";
 
   my = {
-    user = "janzon";
-    domain = "template.example.com";
-    lanInterface = "enp1s0";
+    user = {
+      name = "janzon";
+      description = "Janzon";
+    };
+    network = {
+      domain = "template.example.com";
+      lanInterface = "enp1s0";
+    };
     # Everything below defaults to off; enable what this machine has.
-    # ambilight = { enable = true; musicSink = "alsa_output.…"; };
-    # wledUrl = "http://192.168.1.x";
-    # yubikey.enable = true;
-    # macApproval.enable = true;
+    # ambilight = {
+    #   enable = true;
+    #   musicSink = "alsa_output.…";
+    #   wledUrl = "http://192.168.1.x";
+    # };
+    # yubikey = { enable = true; };
+    # macApproval = { enable = true; };
     # nanokvm = { enable = true; url = "https://<kvm-name>:8443"; };
   };
 

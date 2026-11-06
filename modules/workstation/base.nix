@@ -2,9 +2,9 @@
 # polkit and desktop plumbing. Host-specific values come from my.* options.
 { config, lib, pkgs, ... }:
 let
-  user = config.my.user;
-  domain = config.my.domain;
-  lan = config.my.lanInterface;
+  user = config.my.user.name;
+  domain = config.my.network.domain;
+  lan = config.my.network.lanInterface;
 in
 {
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -56,7 +56,7 @@ in
   users.defaultUserShell = pkgs.fish;
   users.users.${user} = {
     isNormalUser = true;
-    description = "Janzon";
+    description = config.my.user.description;
     shell = pkgs.fish;
     linger = true;
     extraGroups = [ "networkmanager" "wheel" "video" "audio" "input" ];

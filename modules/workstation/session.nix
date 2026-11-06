@@ -1,7 +1,7 @@
 # Graphical session: greeter, compositors, Noctalia, portals, audio and Helium.
 { config, lib, pkgs, ... }:
 let
-  user = config.my.user;
+  user = config.my.user.name;
   noctaliaPython = pkgs.callPackage ../../packages/noctalia-python.nix { };
 in
 {

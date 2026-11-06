@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 let
-  user = config.my.user;
+  user = config.my.user.name;
   material = pkgs.fetchFromGitHub {
     owner = "kuska1";
     repo = "Material-Theme";

@@ -2,7 +2,9 @@
 
 User wants to set up similar machines without erebor's ambilight, YubiKey or
 NanoKVM, and with different addresses.
-- `modules/my.nix`: user, domain, LAN interface, xremap devices, and toggles for
+- `modules/my.nix`: every setting is a group (`my.user.*`, `my.network.*`,
+  `my.ambilight.*`, ...) so new options can be added without renaming. It holds
+  user, domain, LAN interface, xremap devices, and toggles for
   ambilight (with its WLED URL and music sink), YubiKey, Mac approval and
   NanoKVM (the dashboard's wake/outlet URLs and buttons follow these).
 - Shared parts moved to `modules/workstation/` (base, session, keyring, ssh,

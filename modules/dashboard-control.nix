@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 let
-  user = config.my.user;
-  domain = config.my.domain;
+  user = config.my.user.name;
+  domain = config.my.network.domain;
   my = config.my;
   ambilightActions = [ "ambilight-on" "ambilight-off" ];
   # Drop buttons for hardware this machine does not have.
@@ -60,7 +60,7 @@ in
       enabledActions = lib.filter keepAction [ "display-on" "display-off" "screen-dp" "screen-hdmi" "ambilight-on" "ambilight-off"
         "profile-performance" "profile-balanced" "profile-power-saver"
         "sleep" "power-off" "reboot-windows" "moonshine-pair" ];
-      wledUrl = lib.mkIf (my.ambilight.enable && my.wledUrl != null) my.wledUrl;
+      wledUrl = lib.mkIf (my.ambilight.enable && my.ambilight.wledUrl != null) my.ambilight.wledUrl;
       # The same helper backs the Noctalia bar's screen switch.
       extraPackages = [ pkgs.niri config.programs.umbriel.package
         (pkgs.callPackage ../packages/umbriel-display-mode.nix { }) ];

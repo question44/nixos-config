@@ -1,6 +1,6 @@
 { config, pkgs, ... }:
 let
-  domain = config.my.domain;
+  domain = config.my.network.domain;
 in
 {
   virtualisation.oci-containers.containers = {

@@ -1,7 +1,7 @@
 # Caddy reverse proxy for local names and *.erebor.jzon.pl.
 { config, lib, pkgs, ... }:
 let
-  domain = config.my.domain;
+  domain = config.my.network.domain;
   dashboard = config.services.erebor-dashboard.package;
   # Spliced into the indented Caddyfile below; the text keeps its layout.
   hyperhdrRoute = hosts: lib.optionalString config.my.ambilight.enable

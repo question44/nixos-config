@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  domain = config.my.domain;
+  domain = config.my.network.domain;
   sunshine = pkgs.sunshine.override {
     cudaSupport = true;
     cudaPackages = pkgs.cudaPackages;

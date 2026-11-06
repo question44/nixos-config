@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 let
-  domain = config.my.domain;
+  domain = config.my.network.domain;
   # RTX 4090 (Ada): avoid compiling runners for unrelated GPU generations.
   ollama = pkgs.ollama-cuda.override { cudaArches = [ "sm_89" ]; };
 in

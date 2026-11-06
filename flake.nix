@@ -65,7 +65,7 @@
           ({ config, ... }: {
             nixpkgs.overlays = [ millennium.overlays.default ];
             # Home Manager uses the modern profile CLI during system activation.
-            systemd.services."home-manager-${config.my.user}".environment.NIX_CONFIG =
+            systemd.services."home-manager-${config.my.user.name}".environment.NIX_CONFIG =
               "experimental-features = nix-command flakes";
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -73,7 +73,7 @@
             home-manager.extraSpecialArgs = {
               inherit umbriel monstar claude-desktop-nix zen-browser darkly vicinae;
             };
-            home-manager.users.${config.my.user} = import ./home/janzon;
+            home-manager.users.${config.my.user.name} = import ./home/janzon;
           })
         ];
       };

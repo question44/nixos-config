@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  user = config.my.user;
+  user = config.my.user.name;
   mac = config.my.macApproval.enable;
   yubikey = config.my.yubikey.enable;
   # Bound the existing signature-only PAM service, without timing out the

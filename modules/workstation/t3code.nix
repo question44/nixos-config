@@ -1,7 +1,7 @@
 # T3 Code web server (served at code.erebor.jzon.pl).
 { config, lib, pkgs, ... }:
 let
-  user = config.my.user;
+  user = config.my.user.name;
   t3codeStart = pkgs.writeShellScript "t3code-start" ''
     export PATH="/home/${user}/.local/bin:$PATH"
     exec /home/${user}/.local/bin/t3 serve --mode web --host 127.0.0.1 --port 3773 --base-dir /home/${user}/.t3/server

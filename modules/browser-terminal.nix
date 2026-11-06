@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 let
-  user = config.my.user;
-  domain = config.my.domain;
+  user = config.my.user.name;
+  domain = config.my.network.domain;
   terminalAssets = pkgs.callPackage ../packages/ttyd-web-assets.nix { };
 in
 {
