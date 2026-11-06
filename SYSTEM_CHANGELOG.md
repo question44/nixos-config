@@ -1,3 +1,19 @@
+# Split flake.nix and the erebor host file into topic modules — 2026-11-06
+
+Pure refactor so parallel agents rarely edit the same file.
+- janzon's Home Manager config moved from `flake.nix` to `home/janzon/`
+  (default, shell, desktop, apps, compositor); flake inputs reach it through
+  `home-manager.extraSpecialArgs`.
+- `hosts/erebor/default.nix` (816 lines) split into boot, storage, input,
+  session, hyperhdr, t3code, keyring, ssh, caddy and packages modules. They are
+  imported first to keep the original merge order. Noctalia's Python moved to
+  `packages/noctalia-python.nix`.
+
+Validation: the Home Manager step left the system derivation byte-identical.
+After the host split, the only change was the position of moonshine and helium
+in the package list; the built system-path trees are identical (12198 entries).
+Caddyfile, udev rules and units otherwise match. Not activated.
+
 # Parallel-agent workflow: worktrees, locked rebuilds, union merges — 2026-11-06
 
 User runs several agents on this repo at once and asked for fewer conflicts.

@@ -1,0 +1,185 @@
+# Caddy reverse proxy for local names and *.erebor.jzon.pl.
+{ config, pkgs, ... }:
+let
+  dashboard = config.services.erebor-dashboard.package;
+in
+{
+  services.caddy = {
+    enable = true;
+    package = pkgs.caddy.withPlugins {
+      plugins = [ "github.com/caddy-dns/ovh@v1.1.0" ];
+      hash = "sha256-Yakgn5FnLaZqfHzX0cxG/1Ypg/dyKS+n8OPFlIPpdBo=";
+    };
+    environmentFile = "/etc/caddy/ovh.env";
+    globalConfig = "auto_https disable_redirects";
+    extraConfig = ''
+      (dashboard_controls) {
+        handle /api/control* {
+          @trusted remote_ip private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
+          handle @trusted {
+            reverse_proxy 127.0.0.1:18090
+          }
+          respond "Controls are available on the local network and tailnet only." 403
+        }
+      }
+
+      (ovh_tls) {
+        tls {
+          dns ovh {
+            endpoint {$OVH_ENDPOINT}
+            application_key {$OVH_APPLICATION_KEY}
+            application_secret {$OVH_APPLICATION_SECRET}
+            consumer_key {$OVH_CONSUMER_KEY}
+          }
+          resolvers 1.1.1.1 9.9.9.9
+        }
+      }
+
+      :80 {
+        @domain host erebor.jzon.pl *.erebor.jzon.pl
+        redir @domain https://{host}{uri} permanent
+
+        @jellyfin host jellyfin.localhost jellyfin
+        handle @jellyfin {
+          reverse_proxy 127.0.0.1:18096
+        }
+
+        @hyperhdr host hyperhdr.localhost hyperhdr
+        handle @hyperhdr {
+          reverse_proxy 127.0.0.1:8090
+        }
+
+        @nextcloud host nextcloud.localhost nextcloud
+        handle @nextcloud {
+          reverse_proxy 127.0.0.1:18089
+        }
+
+        @syncthing host syncthing.localhost syncthing
+        handle @syncthing {
+          reverse_proxy 127.0.0.1:18384 {
+            header_up Host localhost:18384
+            header_up Origin http://localhost:18384
+          }
+        }
+
+        @torrent host torrent.localhost torrent
+        handle @torrent {
+          reverse_proxy 127.0.0.1:18081 {
+            header_up Host torrent.erebor.jzon.pl
+            header_up Origin https://torrent.erebor.jzon.pl
+            header_up Referer https://torrent.erebor.jzon.pl/
+            header_up -Authorization
+          }
+        }
+
+        handle {
+          import dashboard_controls
+          root * ${dashboard}
+          file_server
+        }
+      }
+
+      :8096 {
+        reverse_proxy 127.0.0.1:18096
+      }
+
+      :8095 {
+        reverse_proxy 127.0.0.1:18089
+      }
+
+      :8384 {
+        reverse_proxy 127.0.0.1:18384 {
+          header_up Host localhost:18384
+          header_up Origin http://localhost:18384
+        }
+      }
+
+      :8082 {
+        reverse_proxy 127.0.0.1:18081
+      }
+
+      erebor.jzon.pl {
+        import ovh_tls
+        import dashboard_controls
+        @legacy_desktop path /desktop /desktop/*
+        redir @legacy_desktop https://desktop.erebor.jzon.pl/ 308
+        encode gzip
+        root * ${dashboard}
+        file_server
+      }
+
+      *.erebor.jzon.pl {
+        import ovh_tls
+        import browser_desktop
+        import browser_terminal
+        encode gzip
+
+        @code host code.erebor.jzon.pl
+        handle @code {
+          reverse_proxy 127.0.0.1:3773
+        }
+
+        @ai host ai.erebor.jzon.pl
+        handle @ai {
+          reverse_proxy 127.0.0.1:3000
+        }
+
+        @cloud host cloud.erebor.jzon.pl
+        handle @cloud {
+          @carddav path /.well-known/carddav
+          redir @carddav /remote.php/dav 301
+          @caldav path /.well-known/caldav
+          redir @caldav /remote.php/dav 301
+          reverse_proxy 127.0.0.1:18089
+        }
+
+        @media host media.erebor.jzon.pl
+        handle @media {
+          reverse_proxy 127.0.0.1:18096
+        }
+
+        @sync host sync.erebor.jzon.pl
+        handle @sync {
+          reverse_proxy 127.0.0.1:18384 {
+            header_up Host localhost:18384
+            header_up Origin http://localhost:18384
+          }
+        }
+
+        @torrent host torrent.erebor.jzon.pl
+        handle @torrent {
+          reverse_proxy 127.0.0.1:18081 {
+            header_up Host torrent.erebor.jzon.pl
+            header_up Origin https://torrent.erebor.jzon.pl
+            header_up Referer https://torrent.erebor.jzon.pl/
+            header_up -Authorization
+          }
+        }
+
+        @hyperhdr host hyperhdr.erebor.jzon.pl
+        handle @hyperhdr {
+          reverse_proxy 127.0.0.1:8090
+        }
+
+        @sunshine host sunshine.erebor.jzon.pl
+        handle @sunshine {
+          reverse_proxy https://127.0.0.1:47990 {
+            # Sunshine serves a self-signed certificate on this loopback hop.
+            transport http {
+              tls_insecure_skip_verify
+            }
+          }
+        }
+
+        @sys host sys.erebor.jzon.pl
+        handle @sys {
+          reverse_proxy 127.0.0.1:9090
+        }
+
+        handle {
+          abort
+        }
+      }
+    '';
+  };
+}
