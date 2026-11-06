@@ -17,6 +17,8 @@ it never considered br0, which has the gateway.
   the NetworkManager OpenVPN plugin is not installed. Not changed.
 
 `nix flake check` passed; the built package contains the patch.
+Activated generation 294. After restarting the app, WireGuard connected to a
+P2P server (host exit IP 146.70.161.186); no crash in the app log.
 
 # zram swap and swappiness — 2026-11-06
 
@@ -55,6 +57,12 @@ forwarding, replacing the home-IP port 6881 set up earlier today.
 
 `scripts/erebor-diff`: different (new service, firewall and container unit).
 `nix flake check` passed.
+Activated generations 292 (VPN routing) and 293 (DNS). VPN off: the container's
+internet traffic is refused, LAN reachable, API works, Web UI still needs a
+login. VPN on (generation 294): the service mapped Proton's port 44832 (same
+as the app reports), qBittorrent switched from 6881, and portchecker.io found
+146.70.161.186:44832 open. qBittorrent's own exit IP was not checked directly
+(sudo timed out); the kill switch only lets it out through proton0.
 
 # `erebor-diff` compares rebuilt store paths — 2026-11-06
 
