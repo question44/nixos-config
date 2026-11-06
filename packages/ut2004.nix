@@ -32,8 +32,8 @@ let
   };
 
   installer = fetchurl {
-    url = "https://raw.githubusercontent.com/OldUnreal/FullGameInstallers/de3635efbb8ad2b1d077fde47bb1332b544d6006/Linux/install-ut2004.sh";
-    hash = "sha256-znmXrejRi9P/ObuFdMqN2r3SVNmXNDKMig/Bu4NjHcY=";
+    url = "https://raw.githubusercontent.com/OldUnreal/FullGameInstallers/34e9dec087aa4ba4c75ce6c0a98dee7967215ee7/Linux/install-ut2004.sh";
+    hash = "sha256-7F8s1tn3asEISH7IzHUd3ZEgdxuYQCUhQg/y34yxna0=";
   };
 
   runtimeLibraryPath = lib.makeLibraryPath [

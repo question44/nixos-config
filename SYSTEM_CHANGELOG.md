@@ -14,6 +14,22 @@ generation 305, then stopped the autostarted instance and started the unit:
 `noctalia.service` is active and owns the process, `umbriel layers` shows the
 bar, dock and wallpaper on DP-1 and HDMI-A-1, and no system or user units are
 failed. Untested: a fresh login, where the unit alone must bring the bar up.
+# Update flake inputs and pinned packages — 2026-11-06
+
+User asked to update everything with a newer upstream. `nix flake update`
+moved claude-desktop-nix, darkly, helium, noctalia, noctalia-greeter, umbriel,
+xdg-desktop-portal-umbriel and vicinae; the system nixpkgs (`1d060086`) was
+already current. Pinned sources bumped: ai-usagebar 1.38.0 → 1.48.2, Looking
+Glass client and kvmfr B7-829-cdba29f2 → B7-895-432f4a0c (Windows IDD link in
+`docs/windows-vm.md` updated to match), UT2004 installer script
+`de3635ef` → `34e9dec0` (installer 1.2.2 → 1.3.2). HyperHDR stays on the
+v22.0.0.0 release; trzsz, aurora-ncs and VfioIgdPkg were current.
+
+`nix flake check` passes; `scripts/erebor-diff` tier: different. Closure
+changes: claude-desktop 4.4212.0 → 4.23118.0, helium 0.20.2.1 → 0.21.1.1,
+darkly 0.5.42 → 0.5.43, plus the above. Limits: the Windows VM needs the
+matching B7-895 IDD installed inside Windows before Looking Glass works
+again; the new kvmfr module loads at the next boot.
 
 # Move to nixos-unstable — 2026-11-06
 
