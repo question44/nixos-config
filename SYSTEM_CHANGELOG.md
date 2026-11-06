@@ -3,6 +3,16 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# fooyin file dialog fix — 2026-11-06
+
+User could not browse for files to add to fooyin's library. The unstable KDE
+platform theme in the fooyin wrapper opens KDE's file dialog with unstable
+KIO 6.31, but no KIO worker plugins were in fooyin's `QT_PLUGIN_PATH`;
+unwrapped `kioclient` from the same KIO reproduced it ("Unknown protocol
+'file'"). Added unstable `kdePackages.kio` to the wrapper; with its plugin
+directory the same command lists `/srv`. `erebor-diff` tier: different
+(fooyin wrapper only).
+
 # fooyin from nixos-unstable — 2026-11-06
 
 User asked to install fooyin from nixos-unstable: 26.05 ships 0.9.2, unstable

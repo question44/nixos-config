@@ -23,7 +23,8 @@ let
 
   # Stable 26.05 ships fooyin 0.9.2; unstable tracks upstream releases. It is
   # built with a newer Qt, so the session's Darkly and KDE platform theme fail
-  # to load in it; put builds for its own Qt first.
+  # to load in it; put builds for its own Qt first. The theme's KDE file
+  # dialog also needs KIO's worker plugins (kio_file) from the same KIO.
   fooyin = pkgs.symlinkJoin {
     name = "fooyin-${pkgs.unstable.fooyin.version}";
     paths = [ pkgs.unstable.fooyin ];
@@ -33,6 +34,7 @@ let
         lib.makeSearchPath "lib/qt-6/plugins" [
           pkgs.unstable.darkly
           pkgs.unstable.kdePackages.plasma-integration
+          pkgs.unstable.kdePackages.kio
         ]
       }
     '';
