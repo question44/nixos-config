@@ -72,6 +72,14 @@ claude-desktop and steamwebhelper (oom_score_adj 300) instead of compilers.
 Not changed: the 2 GB NVMe swap partition (storage; left for the user to decide).
 `scripts/erebor-diff` tier: different (intended unit changes only).
 
+Activated generation 303 (on top of the nixos-unstable switch, gen 302); no
+failed system or user units. Live: nix `max-jobs 4`/`cores 6`, nix-daemon
+cpuset `2-19`, MemoryHigh/Max 20.1/25.1 GB, OOMScoreAdjust 500, batch/idle
+scheduling; session units carry `user.oomd_omit`/`user.oomd_avoid`. user@1000
+was not restarted, so systemd-oomd was restarted to pick it up; `oomctl` then
+lists `/system.slice` and `user@1000.service` at 80%. Not exercised under real
+memory pressure.
+
 # fooyin file dialog fix — 2026-11-06
 
 User could not browse for files to add to fooyin's library. The unstable KDE
