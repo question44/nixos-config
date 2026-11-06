@@ -13,6 +13,20 @@ Validation: created a test worktree; switch from it was refused; dry-build
 from it passed; a second rebuild waited on the held lock; test worktree
 removed. Nothing activated (the scripts are not deployed).
 
+# SSH keepalives for the MacBook — 2026-11-06
+
+sudo's YubiKey prompt was delayed because pam_rssh first asked a forwarded
+agent in a MacBook SSH session that had been half-open since 2026-11-05 21:17.
+The Mac was asleep (macOS answers TCP keepalives while asleep), so the request
+waited for the 30 s timeout. sshd now sets `ClientAliveInterval 60` and
+`ClientAliveCountMax 3` in a `Match Address` block for the MacBook's Tailscale
+(100.127.94.102) and LAN (192.168.1.97) addresses. sshd can't match on keys.
+
+Activated generation 282 (`vbq1lhc1…`). Verified: no failed units, sshd
+active, generated sshd_config ends with the Match block. Limits: sessions
+opened before the reload keep the old settings; the LAN IP comes from DHCP
+(private Wi-Fi address) and may change.
+
 # Setuid sudo first in xremap and ttyd PATH — 2026-11-06
 
 User often hit "sudo … must be owned by uid 0 and have the setuid bit set".

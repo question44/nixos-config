@@ -414,6 +414,14 @@ in
       KbdInteractiveAuthentication = true;
       AuthenticationMethods = "publickey keyboard-interactive";
     };
+    # A sleeping MacBook keeps its session half-open (macOS answers TCP
+    # keepalives while asleep), which stalls sudo's Mac approval step. sshd
+    # cannot match on keys, so match the MacBook's Tailscale and LAN addresses.
+    extraConfig = ''
+      Match Address 100.127.94.102,192.168.1.97
+        ClientAliveInterval 60
+        ClientAliveCountMax 3
+    '';
   };
   # Each user provisions ~/.google_authenticator by running google-authenticator.
   security.pam.services.sshd = {
