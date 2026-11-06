@@ -36,6 +36,22 @@ Activated generation 299 with no failed system or user units;
 `/run/current-system/sw/bin/fooyin` is the wrapped 0.14.1 and
 `org.fooyin.fooyin.desktop` is in the application menu. Not yet launched
 from the menu after activation.
+# Noctalia settings moved into the flake — 2026-11-06
+
+User asked to put their current Noctalia settings into the NixOS config.
+Settings changed in Noctalia's settings window go to
+`~/.local/state/noctalia/settings.toml`, which overrides the Nix-managed
+`config.toml`, so the repo copy had fallen behind. `home/noctalia/config.toml`
+is now Noctalia's merged export of both (`noctalia config export` with only
+`config.toml` in the config dir, so the Starship TOMLs there were left out),
+with floats rounded, 9 keys that equal built-in defaults and 8 settings blocks
+for widgets on no bar removed. The full effective export differs from the live
+one only in those widgets and float rounding below 1e-7.
+
+Kept out of the repo, in a trimmed `settings.toml` (old copy saved as
+`settings.toml.bak-nix-import`): the Wallhaven API key, the last wallpaper and
+the wallpaper favorites. Plugins still download from the sources in the
+config; their code is not pinned.
 
 # Tauon music player — 2026-11-06
 
