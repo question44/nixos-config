@@ -61,8 +61,9 @@ Activated generations 292 (VPN routing) and 293 (DNS). VPN off: the container's
 internet traffic is refused, LAN reachable, API works, Web UI still needs a
 login. VPN on (generation 294): the service mapped Proton's port 44832 (same
 as the app reports), qBittorrent switched from 6881, and portchecker.io found
-146.70.161.186:44832 open. qBittorrent's own exit IP was not checked directly
-(sudo timed out); the kill switch only lets it out through proton0.
+146.70.161.186:44832 open. From inside the container: exit IP 146.70.161.186,
+DNS resolves through 10.2.0.1, listen_port 44832, connection_status
+"connected".
 
 # `erebor-diff` compares rebuilt store paths — 2026-11-06
 
