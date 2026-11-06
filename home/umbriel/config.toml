@@ -267,3 +267,8 @@ default_output = "sunshine"
 "XF86AudioNext" = { action = "spawn playerctl next", allow_when_locked = true }
 "XF86MonBrightnessUp" = { action = "spawn brightnessctl --class=backlight set +10%", allow_when_locked = true }
 "XF86MonBrightnessDown" = { action = "spawn brightnessctl --class=backlight set 10%-", allow_when_locked = true }
+
+# Noctalia renders its theme to the writable ~/.config/umbriel/noctalia.toml;
+# keeping this include here makes its apply.sh hook a no-op.
+[include.optional]
+files = ["noctalia.toml"]

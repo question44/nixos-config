@@ -3,6 +3,24 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Noctalia theme colours reach Umbriel; read-only config no longer breaks the hook — 2026-11-06
+
+- Noctalia's Umbriel template hook (`templates/umbriel/apply.sh`) tried to
+  `cp` an `[include.optional] files = ["noctalia.toml"]` entry into
+  `~/.config/umbriel/config.toml`, which Home Manager deploys read-only, so it
+  failed on every theme change and Umbriel never loaded Noctalia's colours.
+- `home/umbriel/config.toml` now ends with that include itself. Noctalia keeps
+  writing the colours to the writable `~/.config/umbriel/noctalia.toml`, and
+  `apply.sh` finds nothing to change (it only copies when its rewrite differs).
+  The canonical config has no `[colors]`, so nothing is overridden.
+- Activated as generation 286. Check: `apply.sh` against a read-only copy exits
+  0 and leaves it byte-identical; `umbriel config validate` ok; two
+  `noctalia msg theme-mode-toggle` runs each logged Umbriel `config reloaded
+  (sections: colors, window rules ...)` and no Umbriel hook failure. Theme mode
+  ends where it started.
+- Not fixed: Noctalia's cava and fastfetch template hooks still fail because
+  `~/.config/cava/config` and `~/.config/fastfetch/config.jsonc` do not exist.
+
 # Monthly change log files; config split activated — 2026-11-06
 
 - `SYSTEM_CHANGELOG.md` now holds only the current month. October 2026 (248
