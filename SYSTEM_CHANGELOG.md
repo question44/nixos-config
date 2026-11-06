@@ -3,6 +3,20 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# nixfmt formatting: `nix fmt` and a format check — 2026-11-06
+
+- `flake.nix` adds `formatter.x86_64-linux` (`nix fmt` runs nixfmt 1.5.0, RFC
+  166 style, on every tracked `.nix` file outside `apps/`, or on the files
+  given) and `checks.x86_64-linux.format`, which runs `nixfmt --check` on a
+  source filtered to `.nix` files, so it rebuilds only when one changes.
+- One reformat-only commit covers 44 files; AGENTS.md asks for `nix fmt`
+  before committing.
+
+Validation: `scripts/erebor-diff` against master reports **identical** (same
+drvPath) for both erebor and template. The check fails on an unformatted file
+(tested) and passes on the reformatted tree; `nix flake check` passes. No
+activation needed.
+
 # Service registry generates Caddy routes, hosts and LAN ports; workstation parts switchable — 2026-11-06
 
 - `my.services.<name>` (`modules/my.nix`) describes each web service:
