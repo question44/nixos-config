@@ -4,7 +4,7 @@ User asked to enable optimized blur. `blur_optimized` set to true on the
 Noctalia, Vicinae and window rules in `home/umbriel/config.toml`, so blur uses
 the cached wallpaper instead of live content behind each surface. Activated
 generation 283 (`gn5xfw3p…`); no failed units; deployed config has the change.
-Visual result not yet confirmed by the user.
+User confirmed the result looks good.
 
 # Parallel-agent workflow: worktrees, locked rebuilds, union merges — 2026-11-06
 
