@@ -1,7 +1,7 @@
 # Per-machine settings. Each host sets these in hosts/<name>/default.nix;
 # shared modules read them instead of hard-coding erebor's values.
 # Every setting is a group, so a new option can join it without renaming.
-{ config, lib, ... }:
+{ pkgs, config, lib, ... }:
 
 let
   serviceType = lib.types.submodule ({ name, ... }: {
@@ -124,6 +124,13 @@ in
 
     yubikey = {
       enable = lib.mkEnableOption "YubiKey (pam_u2f) touch for sudo, with a touch notification";
+      sound = lib.mkOption {
+        type = lib.types.str;
+        default = "${pkgs.sound-theme-freedesktop}/share/sounds/freedesktop/stereo/dialog-information.oga";
+        defaultText = lib.literalExpression ''"''${pkgs.sound-theme-freedesktop}/share/sounds/freedesktop/stereo/dialog-information.oga"'';
+        example = lib.literalExpression ''"''${pkgs.kdePackages.oxygen-sounds}/share/sounds/oxygen/stereo/dialog-question.ogg"'';
+        description = "Sound played (with pw-play) while the YubiKey waits for a touch.";
+      };
     };
 
     macApproval = {

@@ -7,6 +7,7 @@ import signal
 import struct
 import subprocess
 import sys
+import time
 
 
 OPEN = 0x20
@@ -14,12 +15,26 @@ CLOSE = 0x08 | 0x10
 OVERFLOW = 0x4000
 EVENT = struct.Struct("iIII")
 pending_name = b"pam-u2f-authpending"
+# Written by the PAM reason step just before the touch request.
+reason_dir = "/run/auth-reason"
 stopping = False
 
 
 def stop(_signum, _frame):
     global stopping
     stopping = True
+
+
+def current_reason():
+    """The recorded reason for this user's request, if it is recent."""
+    try:
+        with open(os.path.join(reason_dir, os.environ.get("USER", "")), encoding="utf-8") as f:
+            stamp, _, what = f.readline().rstrip("\n").partition("\t")
+        if what and time.time() - int(stamp) < 120:
+            return what
+    except (OSError, ValueError):
+        pass
+    return None
 
 
 def run(*args):
@@ -38,7 +53,7 @@ class Prompt:
                 "notify-send", "--print-id", "--app-name=YubiKey",
                 "--urgency=critical", "--expire-time=0", "--icon=dialog-password",
                 "--hint=boolean:transient:true", "--hint=boolean:suppress-sound:true",
-                "Touch your YubiKey", "Authentication is waiting for your touch.",
+                "Touch your YubiKey", current_reason() or "Authentication is waiting for your touch.",
             )
             self.notification_id = int(result.stdout.strip())
             print(f"Touch requested; notification {self.notification_id}", flush=True)

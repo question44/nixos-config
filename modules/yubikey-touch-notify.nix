@@ -11,7 +11,7 @@
     wantedBy = [ "graphical-session.target" ];
     path = [ pkgs.libnotify pkgs.glib pkgs.pipewire ];
     serviceConfig = {
-      ExecStart = "${pkgs.python3}/bin/python3 -u ${./yubikey-touch-notify.py} ${pkgs.sound-theme-freedesktop}/share/sounds/freedesktop/stereo/dialog-information.oga";
+      ExecStart = "${pkgs.python3}/bin/python3 -u ${./yubikey-touch-notify.py} ${config.my.yubikey.sound}";
       Restart = "on-failure";
       RestartSec = 2;
       NoNewPrivileges = true;

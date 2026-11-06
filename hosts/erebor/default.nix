@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
   imports = [
@@ -39,6 +39,7 @@
     };
     yubikey = {
       enable = true;
+      sound = "${pkgs.kdePackages.oxygen-sounds}/share/sounds/oxygen/stereo/dialog-question.ogg";
     };
     macApproval = {
       enable = true;
