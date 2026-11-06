@@ -16,16 +16,21 @@ theme). Activated as generation 308: `/boot/theme` holds `terminal_c.png`
 (matches the repo) and `terminal-box: "terminal_*.png"`; GRUB lists
 generation 308, Windows and systemd-boot recovery entries and their EFI files
 are intact; no failed units. Untested: the visual result needs a reboot.
-# YubiKey touch unlock on the login stack and lock screen — 2026-11-06
+# YubiKey touch unlocks only the lock screen — 2026-11-06
 
-User asked to unlock the session with the YubiKey too. The Noctalia lock
-screen authenticates against `login`, so the greetd-only U2F rule moved to the
-`login` stack, after the `pam_unix` password rule: a typed password now
-succeeds without first waiting for a touch (the previous greetd rule ran U2F
-first), and an empty or wrong password falls through to the touch. greetd
-(substack), the lock screen and the console share it. Set Noctalia
+User asked to unlock the session with the YubiKey, then narrowed it to
+unlocking an existing session only. The Noctalia lock screen hard-codes the
+`login` stack, which greetd (substack) and console login share, so U2F moved
+from greetd to `login`, after the password rule (a typed password no longer
+waits for a touch), behind a `pam_succeed_if service = login tty !~ ?*` guard:
+the lock screen sets no PAM_TTY, the greeter runs as `greetd`, console login
+has a TTY. Fresh logins need the password again, which also unlocks Oo7, so
+the earlier touch-only greeter login is withdrawn. The `login` unix rule uses
+`use_first_pass`: unix-early stores no empty token, so `try_first_pass`
+prompted twice, which the lock screen rejects (seen on generation 309, which
+had the U2F move without the guard). Set Noctalia
 `lockscreen.allow_empty_password` so an empty submit reaches PAM.
-`nix flake check` passes; `erebor-diff`: different. ACTIVATION: pending.
+`nix flake check` passes. ACTIVATION: pending.
 # YubiKey touch login at the greeter — 2026-11-06
 
 User asked to log in from noctalia-greeter with the YubiKey alone. Added a

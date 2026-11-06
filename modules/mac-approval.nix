@@ -89,17 +89,41 @@ in
         enable = true;
         control = "sufficient";
       };
-      # Key-touch login on the `login` stack, which greetd (substack), the
-      # Noctalia lock screen and the console use. It runs after the password
-      # check, so a typed password succeeds without waiting for a touch; an
-      # empty or wrong password falls through to the touch. A touch login
-      # leaves the Oo7 keyring locked (no password reaches pam_oo7).
+      # Key touch only unlocks an existing session. The Noctalia lock screen
+      # hard-codes the `login` stack, which greetd (substack) and the console
+      # share; the lock screen runs as service `login` with no PAM_TTY, the
+      # greeter as `greetd` and console login with a TTY, so a guard skips U2F
+      # for those. Fresh logins need the password, which also unlocks Oo7.
+      # U2F runs after the password rule, so a typed password never waits for
+      # a touch; an empty submit falls through to the touch.
       security.pam.services.login = {
         u2f = {
           enable = true;
           control = "sufficient";
         };
+        rules.auth.u2f-lock-only = {
+          order = config.security.pam.services.login.rules.auth.u2f.order - 5;
+          control = "[success=ignore default=1]";
+          modulePath = "${pkgs.linux-pam}/lib/security/pam_succeed_if.so";
+          args = [
+            "quiet"
+            "service"
+            "="
+            "login"
+            "tty"
+            "!~"
+            "?*"
+          ];
+        };
         rules.auth.u2f.order = config.security.pam.services.login.rules.auth.unix.order + 10;
+        # unix-early stores no token for an empty password, so try_first_pass
+        # would prompt a second time; the lock screen answers only one prompt.
+        rules.auth.unix.settings =
+          lib.mkIf config.security.pam.services.login.rules.auth.unix-early.enable
+            {
+              try_first_pass = lib.mkForce false;
+              use_first_pass = true;
+            };
       };
     })
 
