@@ -89,6 +89,9 @@ default_output = "sunshine"
 "Ctrl+Alt+Shift+Super+A" = "column-move-left"
 "Ctrl+Alt+Shift+Super+S" = "window-move-down"
 "Ctrl+Alt+Shift+Super+D" = "column-move-right"
+# Pull the neighbouring window into the focused slot and focus it.
+"Ctrl+Alt+Super+H" = { action = "spawn sh -c 'umbriel msg window-focus-left && umbriel msg window-swap-right'", repeat = false }
+"Ctrl+Alt+Super+L" = { action = "spawn sh -c 'umbriel msg window-focus-right && umbriel msg window-swap-left'", repeat = false }
 "Ctrl+Alt+Super+Home" = "column-focus-first"
 "Ctrl+Alt+Super+End" = "column-focus-last"
 "Ctrl+Alt+Shift+Super+Home" = "column-move-to-first"
