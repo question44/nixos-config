@@ -3,6 +3,42 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# [PENDING] Move to nixos-unstable — 2026-11-06
+
+[SYS-072](SYSTEM_TODO.md#sys-072). User asked to move the whole system from
+nixos-26.05 to nixos-unstable (`1d060086`, 2026-11-03), mainly to replace Qt
+6.11 with 6.12 everywhere. Home Manager now follows its master branch and
+Vicinae follows the system nixpkgs (it had its own copy of Qt 6.11).
+
+Changes needed on unstable:
+- `boot.initrd.verbose` removed: scripted stage 1 is gone, so the initrd is
+  now systemd-based. Only `initrd.kernelModules` lists are set, which work
+  unchanged.
+- Unfree allowlist: CUDA is split further (`cccl`, `cuda_compat`,
+  `cuda_crt`, `cuda_nvrtc`, `libnvvm`) and Discord adds `discord-unwrapped`.
+- `keyring.nix` uses the new `services.oo7` module. greetd's PAM now only
+  substacks `login`, so the old greetd rules (positioned after `unix`) had no
+  anchor; the module puts pam_oo7 (with an early pam_unix) on `login`. The
+  daemon still runs through the `cap_ipc_lock` wrapper.
+- `OVMFFull` is now a fixed wrapper around `OVMF`; `ovmf-vfio-igd.nix` passes
+  OVMFFull's options to `OVMF` itself, still without the MS vars template.
+- Caddy plugin source hash updated.
+- The fooyin Qt wrapper and the `nixpkgs-unstable` input are removed.
+
+Built (`nix flake check` passes). Open WebUI's frontend was killed once while
+building alongside Ollama/CUDA and built on its own. The new closure has no
+Qt 6.11 (Qt 6.12, plus Qt 5 for zbar). Versions: kernel 6.18.59 → 6.18.60,
+NVIDIA unchanged at 615.78.08, systemd 262, glibc 2.44, GRUB 2.12 → 2.14,
+Mesa 26.2.6, libvirt 12.8.0.
+
+Checkpoint before activation: live generation 301 (26.05). Risks: the new
+GRUB and the systemd initrd take effect only at the next boot; oo7 unlock at
+greetd login and the Windows VM firmware are untested until used. Recovery:
+pick generation 301 in GRUB; the "systemd-boot recovery" entry and firmware
+boot menu remain. Next: activate with `switch`, check units, then reboot with
+the user's agreement and verify boot, login unlock, NVIDIA, Sunshine and the
+Windows VM.
+
 # fooyin file dialog fix — 2026-11-06
 
 User could not browse for files to add to fooyin's library. The unstable KDE

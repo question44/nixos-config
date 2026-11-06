@@ -1,4 +1,4 @@
-{ OVMFFull, fetchFromGitHub }:
+{ OVMF, fetchFromGitHub }:
 
 let
   # QEMU's IGD assignment documentation references this implementation for
@@ -13,14 +13,22 @@ in
 
 # Keep the guest's existing Microsoft-keyed NVRAM. Only replace its CODE
 # image; embedding this driver also avoids an unsigned PCI option ROM.
-(OVMFFull.override { msVarsTemplate = false; }).overrideAttrs (old: {
-  pname = "OVMF-vfio-igd";
-  postPatch = (old.postPatch or "") + ''
-    cp -r ${vfioIgdPkg} VfioIgdPkg
-    chmod -R u+w VfioIgdPkg
-    grep -q '# DXE Phase modules' OvmfPkg/OvmfPkgX64.dsc
-    grep -q '# DXE Phase modules' OvmfPkg/OvmfPkgX64.fdf
-    sed -i '/# DXE Phase modules/a\  VfioIgdPkg/IgdAssignmentDxe/IgdAssignment.inf' OvmfPkg/OvmfPkgX64.dsc
-    sed -i '/# DXE Phase modules/a\INF VfioIgdPkg/IgdAssignmentDxe/IgdAssignment.inf' OvmfPkg/OvmfPkgX64.fdf
-  '';
-})
+# OVMFFull's options, without its Microsoft-keyed vars template.
+(OVMF.override {
+  secureBoot = true;
+  httpSupport = true;
+  tpmSupport = true;
+  tlsSupport = true;
+  msVarsTemplate = false;
+}).overrideAttrs
+  (old: {
+    pname = "OVMF-vfio-igd";
+    postPatch = (old.postPatch or "") + ''
+      cp -r ${vfioIgdPkg} VfioIgdPkg
+      chmod -R u+w VfioIgdPkg
+      grep -q '# DXE Phase modules' OvmfPkg/OvmfPkgX64.dsc
+      grep -q '# DXE Phase modules' OvmfPkg/OvmfPkgX64.fdf
+      sed -i '/# DXE Phase modules/a\  VfioIgdPkg/IgdAssignmentDxe/IgdAssignment.inf' OvmfPkg/OvmfPkgX64.dsc
+      sed -i '/# DXE Phase modules/a\INF VfioIgdPkg/IgdAssignmentDxe/IgdAssignment.inf' OvmfPkg/OvmfPkgX64.fdf
+    '';
+  })
