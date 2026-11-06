@@ -12,7 +12,10 @@ draws that box (6%/20%, 88%×65%) when it leaves the menu to run `linux` and
 box now uses a fully transparent `terminal_c.png`; the menu panel is
 unchanged. Trade-off: the `e`/`c` editor text sits directly on the wallpaper.
 `nix flake check` passes; `erebor-diff`: different (only the `grub-redhead`
-theme). ACTIVATION: pending.
+theme). Activated as generation 308: `/boot/theme` holds `terminal_c.png`
+(matches the repo) and `terminal-box: "terminal_*.png"`; GRUB lists
+generation 308, Windows and systemd-boot recovery entries and their EFI files
+are intact; no failed units. Untested: the visual result needs a reboot.
 # YubiKey touch login at the greeter — 2026-11-06
 
 User asked to log in from noctalia-greeter with the YubiKey alone. Added a
