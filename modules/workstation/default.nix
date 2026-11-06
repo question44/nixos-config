@@ -20,6 +20,7 @@
     ../services/jellyfin.nix
     ../services/syncthing.nix
     ../services/qbittorrent.nix
+    ../proton-vpn-bridge.nix
     ../services/nextcloud.nix
     ../services/ollama.nix
     ../services/t3code.nix

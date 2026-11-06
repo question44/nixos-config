@@ -3,6 +3,21 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Proton VPN WireGuard on the br0 bridge — 2026-11-06
+
+Proton VPN (WireGuard) failed to connect: while connecting, the app always
+adds a route to the VPN server on each ethernet/Wi-Fi device, whatever the kill
+switch setting, and crashed on `enp4s0` (a br0 port without IPv4 settings);
+it never considered br0, which has the gateway.
+- `modules/proton-vpn-bridge.nix` + `.patch`: patches
+  `proton-vpn-api-core` 5.0.1 `get_physical_devices` to skip devices whose
+  connection has no IPv4 settings and to include bridges that have a gateway
+  (so not podman0 or virbr0).
+- OpenVPN also fails ("Support for given configuration is not implemented"):
+  the NetworkManager OpenVPN plugin is not installed. Not changed.
+
+`nix flake check` passed; the built package contains the patch.
+
 # zram swap and swappiness — 2026-11-06
 
 User asked to enable zram and retune swappiness after the 2 GiB swap

@@ -1,0 +1,34 @@
+--- a/proton/vpn/backend/networkmanager/killswitch/wireguard/nmclient.py
++++ b/proton/vpn/backend/networkmanager/killswitch/wireguard/nmclient.py
+@@ -215,14 +215,23 @@
+         return future_conn_activated
+ 
+     def get_physical_devices(self) -> List[NM.Device]:
+-        """Returns all the active ethernet/wifi devices."""
+-        return [
+-            device for device in self._nm_client.get_devices() if (
+-                device.get_device_type() in (NM.DeviceType.ETHERNET, NM.DeviceType.WIFI)
+-                and device.get_state() is NM.DeviceState.ACTIVATED
+-                and device.get_active_connection()  # Maybe this is redundant.
+-            )
+-        ]
++        """Returns all the active ethernet/wifi devices, and bridges with a gateway."""
++        def _is_uplink(device):
++            if device.get_state() is not NM.DeviceState.ACTIVATED:
++                return False
++            active_connection = device.get_active_connection()
++            if not active_connection:
++                return False
++            # Bridge ports have no IP settings of their own; their bridge has them.
++            if active_connection.get_connection().get_setting_ip4_config() is None:
++                return False
++            if device.get_device_type() == NM.DeviceType.BRIDGE:
++                # Only bridges that carry the uplink, not container or VM bridges.
++                ip4_config = device.get_ip4_config()
++                return bool(ip4_config and ip4_config.get_gateway())
++            return device.get_device_type() in (NM.DeviceType.ETHERNET, NM.DeviceType.WIFI)
++
++        return [device for device in self._nm_client.get_devices() if _is_uplink(device)]
+ 
+     def _is_ethernet_or_wifi_connection(self, active_connection: NM.ActiveConnection):
+         return active_connection.props.type in (
