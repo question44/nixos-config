@@ -31,7 +31,9 @@ in
           "server string" = config.networking.hostName;
           "server min protocol" = "SMB3";
           "interfaces" = "lo ${config.my.network.lanInterface} tailscale0";
-          "bind interfaces only" = "yes";
+          # smbd cannot bind tailscale0 (point-to-point /32, no peer address), so
+          # listen on all addresses; the firewall limits 445 to the LAN and Tailscale.
+          "bind interfaces only" = "no";
           "security" = "user";
           "map to guest" = "never";
           "load printers" = "no";
