@@ -87,6 +87,13 @@ Unfinished work and verification checks belong in
 
 - Interactive sudo supports YubiKey authentication through a PTY; noninteractive
   sudo can report that a password is required even when a YubiKey is available.
+  Two YubiKeys are enrolled in `/etc/security/yubico/u2f_keys` (2026-11-06).
+- Mac approval comes from the MacBook (`Jans-MacBook-Pro`, user janzon, LAN
+  192.168.1.97): launchd agent `~/Library/LaunchAgents/com.janzon.erebor-ssh.plist`
+  (KeepAlive, 15 s throttle) runs `ssh -A erebor`, which symlinks the forwarded
+  Secretive agent to `/run/mac-approval/janzon/agent.sock`. With the Mac asleep,
+  macOS still answers TCP keepalives, so only sshd's ClientAlive Match drops the
+  session; launchd reconnects on wake.
 - The long-running Vicinae daemon does not pick up applications added by a
   `nixos-rebuild switch`; run `systemctl --user restart vicinae` to rescan
   (verified 2026-11-04 with Google Chrome).
