@@ -1,7 +1,12 @@
 # Per-machine settings. Each host sets these in hosts/<name>/default.nix;
 # shared modules read them instead of hard-coding erebor's values.
 # Every setting is a group, so a new option can join it without renaming.
-{ pkgs, config, lib, ... }:
+{
+  pkgs,
+  config,
+  lib,
+  ...
+}:
 
 let
   serviceType = lib.types.submodule (

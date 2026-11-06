@@ -3,6 +3,27 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Approval reason for sudo/Polkit; Oxygen YubiKey sound — 2026-11-06
+
+User asked to know why a Touch ID / YubiKey approval was triggered, and for
+Oxygen's `dialog-question` as the YubiKey sound.
+- `modules/approval-reason.nix`: an optional `pam_exec` step (order 10600,
+  before pam_rssh 10700 and pam_u2f 10900) in sudo and polkit-1 writes
+  `/run/auth-reason/<user>` (0600, owned by the user): a timestamp plus
+  `sudo <command>` or a generic Polkit line. It always exits 0, so it can't
+  block authentication. `auth-reason-stream` prints new reasons for the Mac
+  tunnel. MAC_APPROVAL.md shows the Mac-side `osascript` pipe; the Mac's
+  launchd tunnel is unchanged until the user updates it.
+- The YubiKey notification shows the reason if it is under 2 minutes old.
+- `my.yubikey.sound` (default: the previous freedesktop sound); erebor uses
+  Oxygen `dialog-question.ogg`.
+
+Validation: `nix flake check` passed (format check included; template
+evaluates). PAM stacks inspected for both features and for YubiKey only.
+`scripts/erebor-diff`: different, as intended; the only real changes are the two
+PAM lines, the notifier unit (new script and sound), the `/run/auth-reason`
+tmpfiles line and the `auth-reason-stream` package.
+
 # nixfmt formatting: `nix fmt` and a format check — 2026-11-06
 
 - `flake.nix` adds `formatter.x86_64-linux` (`nix fmt` runs nixfmt 1.5.0, RFC

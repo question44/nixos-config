@@ -1,6 +1,11 @@
 # Record why sudo or Polkit is asking for approval, so the YubiKey
 # notification and the Mac (through its approval tunnel) can show it.
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   enabled = config.my.yubikey.enable || config.my.macApproval.enable;
@@ -30,7 +35,12 @@ let
   # Streams new reasons, one line each. The Mac's approval tunnel runs it in
   # place of `sleep infinity` and turns each line into a macOS notification.
   reasonStream = pkgs.writeShellScriptBin "auth-reason-stream" ''
-    PATH=${lib.makeBinPath [ pkgs.coreutils pkgs.inotify-tools ]}
+    PATH=${
+      lib.makeBinPath [
+        pkgs.coreutils
+        pkgs.inotify-tools
+      ]
+    }
     file="${dir}/$(id -un)"
     last=""
     while true; do
@@ -46,17 +56,22 @@ let
     inherit order;
     control = "optional";
     modulePath = "${pkgs.pam}/lib/security/pam_exec.so";
-    args = [ "quiet" (toString recordReason) ];
+    args = [
+      "quiet"
+      (toString recordReason)
+    ];
   };
 in
 {
   config = lib.mkIf enabled {
     systemd.tmpfiles.rules = [ "d ${dir} 0755 root root -" ];
     # Before pam_rssh (Mac) and pam_u2f (YubiKey).
-    security.pam.services.sudo.rules.auth.reason =
-      reasonRule (config.security.pam.services.sudo.rules.auth.rssh.order - 100);
-    security.pam.services.polkit-1.rules.auth.reason =
-      reasonRule (config.security.pam.services.polkit-1.rules.auth.rssh.order - 100);
+    security.pam.services.sudo.rules.auth.reason = reasonRule (
+      config.security.pam.services.sudo.rules.auth.rssh.order - 100
+    );
+    security.pam.services.polkit-1.rules.auth.reason = reasonRule (
+      config.security.pam.services.polkit-1.rules.auth.rssh.order - 100
+    );
     environment.systemPackages = [ reasonStream ];
   };
 }

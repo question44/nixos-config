@@ -31,7 +31,10 @@ let
   };
 in
 {
-  imports = [ ./yubikey-touch-notify.nix ./approval-reason.nix ];
+  imports = [
+    ./yubikey-touch-notify.nix
+    ./approval-reason.nix
+  ];
 
   config = lib.mkMerge [
     (lib.mkIf mac {
