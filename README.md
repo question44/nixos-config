@@ -93,3 +93,4 @@ Other helpers:
 | [SYSTEM_CONTEXT.md](SYSTEM_CONTEXT.md) | State that isn't declared in Nix: manual setup, recovery paths, verified pitfalls. |
 | [WINDOWS_VM.md](WINDOWS_VM.md) | Windows 11 VM, GPU passthrough and Looking Glass. |
 | [MAC_APPROVAL.md](MAC_APPROVAL.md) | How sudo is approved from the MacBook. |
+| [NOCTALIA_SETTINGS.md](NOCTALIA_SETTINGS.md) | Moving settings made in Noctalia's settings window into the flake. |

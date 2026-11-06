@@ -155,6 +155,14 @@ other:
   effect with its inspection commands (for example `umbriel submap`,
   `umbriel outputs`) or by trying the behavior.
 
+## Noctalia settings
+
+- `home/noctalia/config.toml` is deployed by Home Manager; settings made in
+  Noctalia's settings window override it from
+  `~/.local/state/noctalia/settings.toml`. When the user asks to sync or save
+  their Noctalia settings into the config, follow
+  [NOCTALIA_SETTINGS.md](NOCTALIA_SETTINGS.md).
+
 ## Niri configuration workflow
 
 - The canonical Niri configuration is
