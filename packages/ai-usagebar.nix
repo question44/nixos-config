@@ -12,11 +12,11 @@
 
 stdenvNoCC.mkDerivation rec {
   pname = "ai-usagebar";
-  version = "1.38.0";
+  version = "1.48.2";
 
   src = fetchurl {
     url = "https://github.com/akitaonrails/ai-usagebar/releases/download/v${version}/ai-usagebar-linux-x86_64.tar.gz";
-    hash = "sha256-dODRAPaY6/UalNCC56Q4+WZFsYoIrQ3C6NQZbjU+3hQ=";
+    hash = "sha256-ySDWPC2tsCqWwu3VctTBrlQ3HjtrwIT9os/jJLllBw0=";
   };
 
   dontUnpack = true;

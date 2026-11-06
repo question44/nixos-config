@@ -149,7 +149,7 @@ run `windows-looking-glass`. This starts the existing guest if necessary.
 `Scroll Lock` toggles input capture; `Scroll Lock`+`F` toggles fullscreen;
 `Scroll Lock`+`Q` closes the client without shutting down Windows.
 
-Download the [matching Windows installer](https://looking-glass.io/artifact/B7-829-cdba29f2/idd).
+Download the [matching Windows installer](https://looking-glass.io/artifact/B7-895-432f4a0c/idd).
 Use `/S /ivshmem` for silent installation. Keep the IDD and Linux client at the same release.
 Guest diagnostic logs are in `C:\ProgramData\Looking Glass (IDD)`.
 
