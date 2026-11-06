@@ -6,6 +6,34 @@ let
   # Spliced into the indented Caddyfile below; the text keeps its layout.
   hyperhdrRoute = hosts: lib.optionalString config.my.ambilight.enable
     "@hyperhdr host ${hosts}\n  handle @hyperhdr {\n    reverse_proxy 127.0.0.1:8090\n  }\n";
+
+  # Routes generated from my.services (modules/my.nix). Caddy reformats the
+  # file, so indentation here does not matter.
+  services = lib.filter (s: s.enable) (lib.attrValues config.my.services);
+  withLocal = lib.filter (s: s.localName != null) services;
+  withLan = lib.filter (s: s.lanPort != null) services;
+  withPublic = lib.filter (s: s.publicName != null) services;
+  proxy = s: headers:
+    let
+      upstream = "${if s.proxy.https then "https://" else ""}127.0.0.1:${toString s.port}";
+      body = map (h: "header_up ${h}") headers
+        ++ lib.optional s.proxy.tlsInsecure "transport http {\ntls_insecure_skip_verify\n}";
+    in
+    if body == [ ] then "reverse_proxy ${upstream}\n"
+    else "reverse_proxy ${upstream} {\n${lib.concatLines body}}\n";
+  route = matcher: hosts: body: ''
+    @${matcher} host ${hosts}
+    handle @${matcher} {
+    ${body}}
+  '';
+  localRoutes = lib.concatMapStrings (s:
+    route s.localName "${s.localName}.localhost ${s.localName}" (proxy s s.proxy.headers)) withLocal;
+  lanBlocks = lib.concatMapStrings (s: ''
+    :${toString s.lanPort} {
+    ${proxy s s.proxy.lanHeaders}}
+  '') withLan;
+  publicRoutes = lib.concatMapStrings (s:
+    route s.publicName "${s.publicName}.${domain}" (s.extraConfig + proxy s s.proxy.headers)) withPublic;
 in
 {
   services.caddy = {
@@ -43,35 +71,8 @@ in
         @domain host ${domain} *.${domain}
         redir @domain https://{host}{uri} permanent
 
-        @jellyfin host jellyfin.localhost jellyfin
-        handle @jellyfin {
-          reverse_proxy 127.0.0.1:18096
-        }
-
+        ${localRoutes}
         ${hyperhdrRoute "hyperhdr.localhost hyperhdr"}
-        @nextcloud host nextcloud.localhost nextcloud
-        handle @nextcloud {
-          reverse_proxy 127.0.0.1:18089
-        }
-
-        @syncthing host syncthing.localhost syncthing
-        handle @syncthing {
-          reverse_proxy 127.0.0.1:18384 {
-            header_up Host localhost:18384
-            header_up Origin http://localhost:18384
-          }
-        }
-
-        @torrent host torrent.localhost torrent
-        handle @torrent {
-          reverse_proxy 127.0.0.1:18081 {
-            header_up Host torrent.${domain}
-            header_up Origin https://torrent.${domain}
-            header_up Referer https://torrent.${domain}/
-            header_up -Authorization
-          }
-        }
-
         handle {
           import dashboard_controls
           root * ${dashboard}
@@ -79,25 +80,7 @@ in
         }
       }
 
-      :8096 {
-        reverse_proxy 127.0.0.1:18096
-      }
-
-      :8095 {
-        reverse_proxy 127.0.0.1:18089
-      }
-
-      :8384 {
-        reverse_proxy 127.0.0.1:18384 {
-          header_up Host localhost:18384
-          header_up Origin http://localhost:18384
-        }
-      }
-
-      :8082 {
-        reverse_proxy 127.0.0.1:18081
-      }
-
+      ${lanBlocks}
       ${domain} {
         import ovh_tls
         import dashboard_controls
@@ -114,64 +97,8 @@ in
         import browser_terminal
         encode gzip
 
-        @code host code.${domain}
-        handle @code {
-          reverse_proxy 127.0.0.1:3773
-        }
-
-        @ai host ai.${domain}
-        handle @ai {
-          reverse_proxy 127.0.0.1:3000
-        }
-
-        @cloud host cloud.${domain}
-        handle @cloud {
-          @carddav path /.well-known/carddav
-          redir @carddav /remote.php/dav 301
-          @caldav path /.well-known/caldav
-          redir @caldav /remote.php/dav 301
-          reverse_proxy 127.0.0.1:18089
-        }
-
-        @media host media.${domain}
-        handle @media {
-          reverse_proxy 127.0.0.1:18096
-        }
-
-        @sync host sync.${domain}
-        handle @sync {
-          reverse_proxy 127.0.0.1:18384 {
-            header_up Host localhost:18384
-            header_up Origin http://localhost:18384
-          }
-        }
-
-        @torrent host torrent.${domain}
-        handle @torrent {
-          reverse_proxy 127.0.0.1:18081 {
-            header_up Host torrent.${domain}
-            header_up Origin https://torrent.${domain}
-            header_up Referer https://torrent.${domain}/
-            header_up -Authorization
-          }
-        }
-
+        ${publicRoutes}
         ${hyperhdrRoute "hyperhdr.${domain}"}
-        @sunshine host sunshine.${domain}
-        handle @sunshine {
-          reverse_proxy https://127.0.0.1:47990 {
-            # Sunshine serves a self-signed certificate on this loopback hop.
-            transport http {
-              tls_insecure_skip_verify
-            }
-          }
-        }
-
-        @sys host sys.${domain}
-        handle @sys {
-          reverse_proxy 127.0.0.1:9090
-        }
-
         handle {
           abort
         }

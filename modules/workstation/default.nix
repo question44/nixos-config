@@ -4,7 +4,6 @@
   imports = [
     ./base.nix
     ./session.nix
-    ./t3code.nix
     ./keyring.nix
     ./ssh.nix
     ./caddy.nix
@@ -23,6 +22,8 @@
     ../services/qbittorrent.nix
     ../services/nextcloud.nix
     ../services/ollama.nix
+    ../services/t3code.nix
+    ../services/cockpit.nix
     ../desktop.nix
   ];
 }

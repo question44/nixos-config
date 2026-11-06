@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   # Keep Intel graphics available alongside the optional host NVIDIA driver.
@@ -8,7 +8,9 @@
   services.xserver.videoDrivers = [ "modesetting" ];
   boot.initrd.kernelModules = [ "i915" ];
 
-  environment.etc."xdg/niri/config.kdl".source = ../home/niri/config.kdl;
+  environment.etc."xdg/niri/config.kdl" = lib.mkIf config.my.niri.enable {
+    source = ../home/niri/config.kdl;
+  };
 
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1";

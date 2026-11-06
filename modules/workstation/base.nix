@@ -3,8 +3,11 @@
 { config, lib, pkgs, ... }:
 let
   user = config.my.user.name;
-  domain = config.my.network.domain;
   lan = config.my.network.lanInterface;
+  services = lib.filter (s: s.enable) (lib.attrValues config.my.services);
+  localNames = lib.concatMap (s: [ s.localName "${s.localName}.localhost" ])
+    (lib.filter (s: s.localName != null) services);
+  lanPorts = lib.concatMap (s: lib.optional (s.lanPort != null) s.lanPort) services;
 in
 {
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -19,15 +22,11 @@ in
   networking.hosts = {
     "127.0.0.1" = [
       config.networking.hostName
-      "torrent" "torrent.localhost"
-      "jellyfin" "jellyfin.localhost"
-      "nextcloud" "nextcloud.localhost"
-      "syncthing" "syncthing.localhost"
-    ];
+    ] ++ localNames;
   };
   # SSH is reachable from the LAN and the tailnet only.
   networking.firewall.interfaces.${lan} = {
-    allowedTCPPorts = [ 22 80 8095 8096 8384 8082 22000 ];
+    allowedTCPPorts = [ 22 80 ] ++ lanPorts ++ [ 22000 ];
     allowedUDPPorts = [ 22000 ];
     allowedTCPPortRanges = [ { from = 1714; to = 1764; } ];
     allowedUDPPortRanges = [ { from = 1714; to = 1764; } ];
@@ -35,19 +34,6 @@ in
   networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 22 80 443 22000 ];
   networking.firewall.interfaces.tailscale0.allowedUDPPorts = [ 22000 ];
   services.tailscale.enable = true;
-  services.cockpit = {
-    enable = true;
-    openFirewall = false;
-    allowed-origins = [
-      "https://sys.${domain}"
-      "wss://sys.${domain}"
-    ];
-    settings.WebService = {
-      AllowUnencrypted = true;
-      LoginTo = false;
-      ProtocolHeader = "X-Forwarded-Proto";
-    };
-  };
   hardware.i2c.enable = true;
   time.timeZone = "Europe/Warsaw";
   i18n.defaultLocale = "en_US.UTF-8";

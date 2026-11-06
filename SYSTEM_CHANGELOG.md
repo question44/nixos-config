@@ -3,6 +3,33 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Service registry generates Caddy routes, hosts and LAN ports; workstation parts switchable — 2026-11-06
+
+- `my.services.<name>` (`modules/my.nix`) describes each web service:
+  `enable`, `port`, `localName`, `publicName`, `lanPort`,
+  `proxy.{headers,lanHeaders,https,tlsInsecure}` and `extraConfig`. Each
+  `modules/services/*.nix` declares its entry and only configures the service
+  when enabled. `caddy.nix` generates the `:80` local routes, LAN port blocks
+  and `*.<domain>` routes; `base.nix` generates the `networking.hosts` names
+  and the LAN TCP ports. Dashboard, `dashboard_controls`, browser imports,
+  hyperhdr and the final `abort` stay hand-written.
+- New toggles: `my.services.{jellyfin,nextcloud,syncthing,qbittorrent,ollama,
+  t3code,cockpit}.enable`, `my.niri.enable` (system and Home Manager Niri
+  parts), `my.streaming.{sunshine,moonshine}.enable` (`sunshine` also enables
+  its route). Cockpit moved to `modules/services/cockpit.nix`, T3 Code to
+  `modules/services/t3code.nix`. Erebor enables all of them; the template
+  lists them commented out.
+- Verification (built, not yet activated): `nix store diff-closures` master →
+  branch is empty; only Caddyfile, hosts, caddy unit/reload trigger, etc,
+  system-units and toplevel paths differ. Generated Caddyfile vs master as
+  sorted, whitespace-normalized lines: identical except the Sunshine
+  self-signed comment (now a Nix comment). `/etc/hosts`: same names, different
+  order on the 127.0.0.1 line. `caddy.service` identical after masking hashes.
+  `scripts/erebor-diff` reports "different" for exactly those two
+  order/comment changes. `nix flake check` passes (template evaluates with
+  everything off). Variant with `my.services.syncthing.enable = mkForce false`:
+  no syncthing route, hosts names, port 8384 or container.
+
 # `scripts/erebor-diff`: compare a branch's built system with master — 2026-11-06
 
 Automates the per-step check used during the host/module refactor.

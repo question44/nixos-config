@@ -48,6 +48,20 @@
       enable = true;
       url = "https://kvm-37ff.tail517bdc.ts.net:8443";
     };
+    niri = { enable = true; };
+    streaming = {
+      sunshine.enable = true;
+      moonshine.enable = true;
+    };
+    services = {
+      jellyfin.enable = true;
+      nextcloud.enable = true;
+      syncthing.enable = true;
+      qbittorrent.enable = true;
+      ollama.enable = true;
+      t3code.enable = true;
+      cockpit.enable = true;
+    };
   };
 
   # Shut down windows11 before toggling GPU ownership.

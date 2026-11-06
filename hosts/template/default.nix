@@ -35,6 +35,22 @@
     # yubikey = { enable = true; };
     # macApproval = { enable = true; };
     # nanokvm = { enable = true; url = "https://<kvm-name>:8443"; };
+    # niri = { enable = true; };             # second compositor next to Umbriel
+    # streaming = {
+    #   sunshine.enable = true;              # also serves sunshine.<domain>
+    #   moonshine.enable = true;
+    # };
+    # Web services: each adds its routes, /etc/hosts name and LAN port
+    # (see modules/services and my.services in modules/my.nix).
+    # services = {
+    #   jellyfin.enable = true;
+    #   nextcloud.enable = true;
+    #   syncthing.enable = true;
+    #   qbittorrent.enable = true;
+    #   ollama.enable = true;                # needs an NVIDIA GPU
+    #   t3code.enable = true;
+    #   cockpit.enable = true;
+    # };
   };
 
   boot.loader.systemd-boot.enable = true;
