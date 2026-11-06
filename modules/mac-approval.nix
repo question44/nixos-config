@@ -89,16 +89,17 @@ in
         enable = true;
         control = "sufficient";
       };
-      # Greeter login with a key touch alone; the password still works when
-      # the key is absent. greetd's stack is only `substack login`, so U2F must
-      # run before it; greetd sets useDefaultRules = false, so `.u2f.enable`
-      # has no effect and the rule is spelled out. A touch login leaves the Oo7
-      # keyring locked (no password reaches pam_oo7).
-      security.pam.services.greetd.rules.auth.u2f = {
-        order = config.security.pam.services.greetd.rules.auth.login.order - 10;
-        control = "sufficient";
-        modulePath = "${pkgs.pam_u2f}/lib/security/pam_u2f.so";
-        inherit (config.security.pam.u2f) settings;
+      # Key-touch login on the `login` stack, which greetd (substack), the
+      # Noctalia lock screen and the console use. It runs after the password
+      # check, so a typed password succeeds without waiting for a touch; an
+      # empty or wrong password falls through to the touch. A touch login
+      # leaves the Oo7 keyring locked (no password reaches pam_oo7).
+      security.pam.services.login = {
+        u2f = {
+          enable = true;
+          control = "sufficient";
+        };
+        rules.auth.u2f.order = config.security.pam.services.login.rules.auth.unix.order + 10;
       };
     })
 

@@ -3,6 +3,16 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# YubiKey touch unlock on the login stack and lock screen — 2026-11-06
+
+User asked to unlock the session with the YubiKey too. The Noctalia lock
+screen authenticates against `login`, so the greetd-only U2F rule moved to the
+`login` stack, after the `pam_unix` password rule: a typed password now
+succeeds without first waiting for a touch (the previous greetd rule ran U2F
+first), and an empty or wrong password falls through to the touch. greetd
+(substack), the lock screen and the console share it. Set Noctalia
+`lockscreen.allow_empty_password` so an empty submit reaches PAM.
+`nix flake check` passes; `erebor-diff`: different. ACTIVATION: pending.
 # YubiKey touch login at the greeter — 2026-11-06
 
 User asked to log in from noctalia-greeter with the YubiKey alone. Added a
