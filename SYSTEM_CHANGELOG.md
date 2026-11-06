@@ -3,6 +3,22 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# `erebor-diff` compares rebuilt store paths — 2026-11-06
+
+User asked to fix a gap in `scripts/erebor-diff`: "equivalent" masked store
+hashes in `/etc`, so content changes behind a hash were invisible. Changing
+one Umbriel blur value was reported as equivalent; so was the
+[qBittorrent port change](#qbittorrent-peer-port-reachable--2026-11-06),
+whose firewall rules live in a referenced store path.
+- When nothing else differs, every store path in only one closure is now
+  compared with its same-named counterpart, store hashes masked (line order
+  ignored as a fallback). Content changes print a diff and make the result
+  "different".
+
+Tested: the Umbriel edit is now "different" with the `hm_config.toml` diff;
+two commits whose probe `runCommand` differed only in its script (same output)
+remain "equivalent". `shellcheck` clean. Script only; no activation needed.
+
 # 8 MiB readahead on spinning disks — 2026-11-06
 
 User asked for disk caching for seeding from HDDs. qBittorrent 5.x relies on

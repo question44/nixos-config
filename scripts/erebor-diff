@@ -4,7 +4,8 @@
 # base-ref defaults to master; target is a checkout directory or a git ref and
 # defaults to the current checkout (uncommitted changes included).
 # Exit: 0 identical (same drvPath), 1 equivalent (same closure, system-path and
-# /etc up to store hashes and line order), 2 different, 3 error.
+# /etc, and every rebuilt store path matching its counterpart up to store
+# hashes and line order), 2 different, 3 error.
 set -euo pipefail
 
 usage() { echo "usage: erebor-diff [--host NAME] [base-ref] [target]" >&2; exit 3; }
@@ -112,10 +113,92 @@ if ((${#hash_only[@]})); then
   printf '  %s\n' "${hash_only[@]}"
 fi
 
+if ((different)); then
+  echo; echo "different"
+  exit 2
+fi
+
+# Masking hashes above also hides what they point to: a changed dotfile shows
+# in /etc only as a new hash in the home-manager unit. So compare every store
+# path that is in one closure but not the other with its same-named
+# counterpart, hashes masked. Only reached when nothing differs so far, since
+# a package change would mean rereading most of the closure.
+mask() { LC_ALL=C sed -E 's,/nix/store/[0-9a-z]{32}-,/nix/store/HASH-,g'; }
+# A store path's tree (name, type, mode, link target) and file contents.
+dump() {
+  local rel type mode link
+  # A non-whitespace separator: read would merge the root's empty name field.
+  find "$1" -printf '%P\037%y\037%m\037%l\n' | LC_ALL=C sort |
+    while IFS=$'\037' read -r rel type mode link; do
+      printf '== %s %s %s %s\n' "$rel" "$type" "$mode" "$link"
+      if [[ $type == f ]]; then cat "$1${rel:+/$rel}"; fi
+    done | mask
+}
+sha() { sha256sum | cut -c1-64; }
+declare -A strict_base strict_target loose_base loose_target names
+# Dumps the store paths read from stdin into $tmp/<side>/ and records, per
+# name, the digests of their contents as is and with lines sorted.
+# shellcheck disable=SC2004 # strict and loose are associative, keyed by name
+digest() {
+  local side=$1 p base name
+  local -n strict=strict_$side loose=loose_$side
+  mkdir "$tmp/$side"
+  while read -r p; do
+    base=${p#/nix/store/} name=${base:33}
+    names[$name]=1
+    dump "$p" >"$tmp/$side/$base"
+    strict[$name]+="$(sha <"$tmp/$side/$base") "
+    loose[$name]+="$(sed 's,>,>\n,g; s,<,\n<,g' "$tmp/$side/$base" | LC_ALL=C sort | sha) "
+  done
+}
+words() { tr ' ' '\n' <<<"$1" | grep . | sort | tr '\n' ' ' || true; }
+# Dumps on side $1 of the paths named $2.
+dumps_of() {
+  local f
+  for f in "$tmp/$1"/*; do
+    [[ -e $f && ${f##*/} == ????????????????????????????????-"$2" ]] && echo "$f"
+  done
+  return 0
+}
+
+nix path-info -r "$base_out" | sort >"$tmp/cl.base"
+nix path-info -r "$target_out" | sort >"$tmp/cl.target"
+digest base < <(comm -23 "$tmp/cl.base" "$tmp/cl.target")
+digest target < <(comm -13 "$tmp/cl.base" "$tmp/cl.target")
+
+rebuilt=0
+order_only=()
+for name in $(printf '%s\n' "${!names[@]}" | sort); do
+  a=$(words "${strict_base[$name]:-}") b=$(words "${strict_target[$name]:-}")
+  if [[ $a == "$b" ]]; then
+    rebuilt=$((rebuilt + 1))
+    continue
+  fi
+  if [[ $(words "${loose_base[$name]:-}") == "$(words "${loose_target[$name]:-}")" ]]; then
+    order_only+=("$name")
+    continue
+  fi
+  different=1
+  echo; echo "store path $name changed:"
+  mapfile -t old < <(dumps_of base "$name")
+  mapfile -t new < <(dumps_of target "$name")
+  if ((${#old[@]} == 1 && ${#new[@]} == 1)); then
+    diff -u --label base --label target "${old[0]}" "${new[0]}" | head -30 || true
+  else
+    echo "  ${#old[@]} path(s) in base, ${#new[@]} in target"
+  fi
+done
+
+if ((${#order_only[@]})); then
+  echo; echo "store paths differing only in line order:"
+  printf '  %s\n' "${order_only[@]}"
+fi
+echo; echo "$rebuilt rebuilt store path name(s) identical up to store hashes"
+
 echo
 if ((different)); then
   echo "different"
   exit 2
 fi
-echo "equivalent: same closure, system-path and normalized /etc"
+echo "equivalent: every rebuilt store path matches up to store hashes and line order"
 exit 1

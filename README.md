@@ -78,7 +78,9 @@ Other helpers:
 - `scripts/erebor-worktree <task>` creates `~/nixos-wt/<task>` on branch
   `agent/<task>`, so parallel changes don't collide.
 - `scripts/erebor-diff` reports whether a checkout changes the built system
-  compared with `master`: identical, equivalent, or different.
+  compared with `master`: identical (same derivation), equivalent (every
+  rebuilt store path matches its counterpart once store hashes are masked),
+  or different (with diffs of what changed).
 - `nix fmt` formats every `.nix` file outside `apps/`. Run it before
   committing; `nix flake check` fails on unformatted files.
 
