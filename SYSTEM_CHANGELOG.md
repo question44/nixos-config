@@ -14,8 +14,12 @@ the live data. `modules/ambilight.nix` adds `ExecStartPost`
 (`hyperhdr-restore-off`): if WLED reports `lor != 0` it disables LEDDEVICE and
 sets WLED `on=false, live=false, lor=2` again; with `lor=0` it does nothing.
 `nix flake check` passes; `erebor-diff`: different (only the hyperhdr unit).
-Limit: WLED forgets `lor` when it reboots or loses power, so "off" is not
-remembered across a WLED power cycle.
+Outcome: activated as generation 317. Test with the dashboard's off state
+(LEDDEVICE off, WLED `lor=2`) then `systemctl --user restart hyperhdr`: WLED
+stayed off (`on=false, lor=2`), LEDDEVICE stayed disabled, journal logged the
+restore. With the on state (`lor=0`) a restart left LEDDEVICE enabled and WLED
+receiving live UDP data from erebor. Limit: WLED forgets `lor` when it
+reboots or loses power, so "off" is not remembered across a WLED power cycle.
 
 # `desktop-password` also sets the Time Machine password — 2026-11-07
 
