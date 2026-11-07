@@ -3,6 +3,20 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Ambilight remembers "off" across HyperHDR restarts — 2026-11-07
+
+User reported the LEDs lit with WLED's own effect after HyperHDR restarted
+although the ambilight was switched off. Cause: the dashboard's
+`ambilight-off` disables HyperHDR's LEDDEVICE component only at runtime (not
+saved) and sets WLED `lor=2`; on restart HyperHDR re-enables LEDDEVICE and its
+WLED driver (`brightnessMax`) powers the strip on, while `lor=2` still blocks
+the live data. `modules/ambilight.nix` adds `ExecStartPost`
+(`hyperhdr-restore-off`): if WLED reports `lor != 0` it disables LEDDEVICE and
+sets WLED `on=false, live=false, lor=2` again; with `lor=0` it does nothing.
+`nix flake check` passes; `erebor-diff`: different (only the hyperhdr unit).
+Limit: WLED forgets `lor` when it reboots or loses power, so "off" is not
+remembered across a WLED power cycle.
+
 # `desktop-password` also sets the Time Machine password — 2026-11-07
 
 User asked to set the Samba password with `desktop-password`, one password
