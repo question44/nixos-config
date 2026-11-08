@@ -15,6 +15,7 @@
       "original": {
         "owner": "tomsch",
         "repo": "claude-desktop-nix",
+        "rev": "b16f4856da3a0b218d3ed0722df26b452039079f",
         "type": "github"
       }
     },
@@ -35,6 +36,7 @@
       "original": {
         "owner": "Bali10050",
         "repo": "Darkly",
+        "rev": "3f69ff222e3ad7dcb901a41be691020f70112ea6",
         "type": "github"
       }
     },
@@ -71,6 +73,7 @@
       "original": {
         "owner": "hercules-ci",
         "repo": "flake-parts",
+        "rev": "ea2630b7470978622c7689a1ff75d2b389175399",
         "type": "github"
       }
     },
@@ -91,6 +94,7 @@
       "original": {
         "owner": "oxcl",
         "repo": "nix-flake-helium-browser",
+        "rev": "9fe3f8f48c8c25b0d245d13d6c91d4cf77adc729",
         "type": "github"
       }
     },
@@ -126,6 +130,7 @@
       "original": {
         "owner": "vic",
         "repo": "import-tree",
+        "rev": "eb1b52eaecc57f7c136d07ae8a93e724dfecac46",
         "type": "github"
       }
     },
@@ -150,6 +155,7 @@
         "dir": "packages/nix",
         "owner": "SteamClientHomebrew",
         "repo": "Millennium",
+        "rev": "d6a7822a43744b6290a0e059bdd032d9b9a2ec94",
         "type": "github"
       }
     },
@@ -331,6 +337,7 @@
       "original": {
         "owner": "noctalia-dev",
         "repo": "noctalia-shell",
+        "rev": "f90f230f8116eff55e4e96a7a97756c2b00b7ac2",
         "type": "github"
       }
     },
@@ -351,6 +358,7 @@
       "original": {
         "owner": "noctalia-dev",
         "repo": "noctalia-greeter",
+        "rev": "effcb9ffc33f7120cbc6cfc6c6527e9da763a0e9",
         "type": "github"
       }
     },
@@ -449,6 +457,7 @@
       "original": {
         "owner": "noctalia-dev",
         "repo": "umbriel",
+        "rev": "c6ad18d5ed7e3f928e546e24a4a17719e0522ff6",
         "type": "github"
       }
     },
@@ -472,6 +481,7 @@
       "original": {
         "owner": "vicinaehq",
         "repo": "vicinae",
+        "rev": "0ed7dcce1f530067aa251d1beab1a57760e385b4",
         "type": "github"
       }
     },
@@ -513,6 +523,7 @@
       "original": {
         "owner": "youwen5",
         "repo": "zen-browser-flake",
+        "rev": "532b9a848c6b96d9f607e8856d1a458bdb7dcf66",
         "type": "github"
       }
     }

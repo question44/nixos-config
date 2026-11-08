@@ -3,6 +3,20 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Third-party flake inputs pinned to commits — 2026-11-08
+
+`noctalia`, `noctalia-greeter`, `umbriel`, `zen-browser`, `helium`,
+`darkly`, `vicinae`, `claude-desktop-nix`, `millennium`, `flake-parts` and
+`import-tree` now name the revision already in `flake.lock` (`moonshine` and
+`monstar` already did). `nix flake update` therefore moves only nixpkgs and
+home-manager; a pin moves only by editing its revision (or with
+`scripts/erebor-update-branch --pinned`, added later). The lock's locked
+revisions and hashes are unchanged; only the recorded originals changed.
+
+Validation: `nix fmt`, `nix flake check` and `scripts/erebor-rebuild build`
+pass. `erebor-diff` against the previous commit: identical for erebor and
+template. Not activated.
+
 # Eval tests for the design rules — 2026-11-08
 
 `modules/flake/tests.nix` adds `checks.x86_64-linux.eval-*`, run by `nix
