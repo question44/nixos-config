@@ -38,8 +38,8 @@ with `scripts/erebor-rebuild switch` as generation 322. Verified:
 Umbriel logged `config reloaded (sections: keybinds)` at 18:44 when the
 merge landed; `xremap` restarted and is active; all 596 action names in the
 keymap exist in Zed 1.26.2 (`--dump-all-actions`; three are accepted
-deprecated aliases). Not verified: physical key presses in Zed (xremap grabs
-the keyboard, so synthetic input cannot exercise it).
+deprecated aliases). The user confirmed the shortcuts work in Zed with the
+real keyboard; SYS-093 closed DONE.
 
 # rcmd app menu moved to a Vicinae extension — 2026-11-08
 
