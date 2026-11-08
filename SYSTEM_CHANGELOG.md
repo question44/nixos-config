@@ -3,6 +3,25 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Eval tests for the design rules — 2026-11-08
+
+`modules/flake/tests.nix` adds `checks.x86_64-linux.eval-*`, run by `nix
+flake check`: `secret-service` (Oo7 on, GNOME Keyring and KWallet PAM off on
+both hosts), `sessions` (Umbriel everywhere, Niri only with `my.niri`),
+`features-off` (the template has none of the optional feature units; erebor
+has all of them, which keeps the unit names honest), `firewall` (erebor's
+open ports frozen; changing exposure means updating the list in the same
+commit), `home-manager` (the main user is managed) and `my-assertions` (the
+template extended with a bad `my.*` value fails with a message naming the
+setting, and the plain template fails none). A deliberately wrong expected
+port was confirmed to fail the check. `dashboard-control.nix` now also checks
+`my.nanokvm.url != null`, so the assertion is reported instead of a null
+coercion error.
+
+Validation: `nix fmt`, `nix flake check` and `scripts/erebor-rebuild build`
+pass. `erebor-diff` against the previous commit: identical for erebor and
+template. Not activated.
+
 # Assertions and stricter types for `my.*` settings — 2026-11-08
 
 `modules/my.nix` now fails evaluation with a message naming the `my.*`

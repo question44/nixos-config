@@ -72,7 +72,7 @@
               // {
                 actions = lib.filter keepAction baseSettings.actions;
               }
-              // lib.optionalAttrs my.nanokvm.enable {
+              // lib.optionalAttrs (my.nanokvm.enable && my.nanokvm.url != null) {
                 wakeUrl = "${my.nanokvm.url}/wake";
                 outletUrl = "${my.nanokvm.url}/outlet";
               };
