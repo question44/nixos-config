@@ -139,11 +139,48 @@ certificate renewal or `caddy validate` authenticates with OVH after
 activation, `/etc/caddy/ovh.env` is deleted with the user's approval, and
 `/var/lib/searxng-secret/` is removed.
 
+<a id="sys-087"></a>
+
+### SYS-087 — Epic: guest-safe game streaming and hub-managed guest access
+
+**Status:** OPEN · **Review:** 2026-11-22 · **Children:** [SYS-075](#sys-075),
+[SYS-076](#sys-076), [SYS-077](#sys-077), [SYS-078](#sys-078),
+[SYS-079](#sys-079), [SYS-080](#sys-080)
+
+Goal (user, 2026-11-08): the owner streams games through Moonshine as usual.
+Occasional guests can stream games, and optionally install owned games, and
+use the services enabled for them in the hub. Guests include all tailnet
+members other than the owner, and friends who get erebor shared to them.
+Guests get no file browsing, no other software, no other devices and no admin
+services. The same Steam install and account serve the desktop and the stream
+(never at the same time). Adding, seeing and removing guests happens in the
+hub, which also documents the manual steps.
+
+| Order | Task | Delivers | Depends on |
+|---|---|---|---|
+| 1 | [SYS-075](#sys-075) | Pairing only through the hub (closes the remote PIN hole) | — |
+| 2 | [SYS-076](#sys-076) | Per-game tiles, sandboxed sessions, no Steam UI | — |
+| 3 | [SYS-077](#sys-077) | Hub decides access to every `*.erebor` service; admin sites owner-only | — |
+| 4 | [SYS-078](#sys-078) | Tailnet guest policy with tests; erebor guest firewall | 077 before guests use 443 |
+| 5 | [SYS-079](#sys-079) | Hub Access page, invites, removal, timed streaming switch | 075, 078 |
+| 6 | [SYS-080](#sys-080) | Hub-unlocked Steam Library tile for installs | 076, 079 |
+
+Milestone: when SYS-075 through SYS-078 are done, it is safe to let a guest
+in. SYS-079 and SYS-080 add convenience.
+
+Done when: every child is DONE, and one end-to-end check with a real guest
+account and device passes. The guest is invited from the hub, pairs, streams
+a game, and opens one allowed service. They are refused an owner-only
+service, SSH and another tailnet device, and see nothing outside the Steam
+folders. They lose all access after Remove, and the owner's desktop and
+devices are unchanged. Close the epic with that evidence; child tasks keep
+their own records.
+
 <a id="sys-075"></a>
 
 ### SYS-075 — Accept Moonshine PINs only from erebor itself
 
-**Status:** OPEN · **Review:** 2026-11-15
+**Status:** OPEN · **Review:** 2026-11-15 · **Epic:** [SYS-087](#sys-087)
 
 Security fix; do first. Found 2026-11-08 while reading the source of Moonshine
 0.16.1 (upstream `8247857`, same version as the installed package). `GET /pin`
@@ -177,7 +214,7 @@ Related: [SYS-069](#sys-069), [SYS-076](#sys-076).
 
 ### SYS-076 — Guest-safe Moonshine streaming: game tiles and session sandbox
 
-**Status:** OPEN · **Review:** 2026-11-22
+**Status:** OPEN · **Review:** 2026-11-22 · **Epic:** [SYS-087](#sys-087)
 
 User wants streamed sessions limited to games, with no file browsing or other
 software, for themselves and occasional guests. One Steam install is shared
@@ -231,7 +268,7 @@ application. Related: [SYS-053](#sys-053), [SYS-075](#sys-075).
 
 ### SYS-077 — Hub as gatekeeper for every `*.erebor` service
 
-**Status:** OPEN · **Review:** 2026-11-29
+**Status:** OPEN · **Review:** 2026-11-29 · **Epic:** [SYS-087](#sys-087)
 
 Guests (tailnet members and shared friends, [SYS-078](#sys-078)) will reach
 erebor's port 443, where every Caddy site lives (`modules/workstation/caddy.nix`).
@@ -270,7 +307,7 @@ change. Related: [SYS-068](#sys-068), [SYS-078](#sys-078).
 
 ### SYS-078 — Tailnet guest policy and erebor guest firewall
 
-**Status:** OPEN · **Review:** 2026-11-29
+**Status:** OPEN · **Review:** 2026-11-29 · **Epic:** [SYS-087](#sys-087)
 
 User decision 2026-11-08: everyone except the owner is a guest. Guests may
 only stream games and use the services enabled for them in the hub, with no
@@ -311,7 +348,7 @@ devices reach everything as before. Related: [SYS-077](#sys-077),
 
 ### SYS-079 — Hub Access page: guests, share invites, streaming switch
 
-**Status:** OPEN · **Review:** 2026-12-06
+**Status:** OPEN · **Review:** 2026-12-06 · **Epic:** [SYS-087](#sys-087)
 
 Make the hub the one place to add, see and remove guests. Tailscale API
 findings (OpenAPI spec, 2026-11-08):
@@ -357,7 +394,7 @@ token, never in the store or repo. Related: [SYS-068](#sys-068),
 
 ### SYS-080 — Hub-unlocked Steam Library tile for installing games
 
-**Status:** OPEN · **Review:** 2026-12-13
+**Status:** OPEN · **Review:** 2026-12-13 · **Epic:** [SYS-087](#sys-087)
 
 Let permitted guests install owned games from Moonlight. Moonshine lists only
 installed games, and a tile cannot be hidden from some clients
