@@ -47,7 +47,6 @@ in
         # yubikey = { enable = true; };
         # macApproval = { enable = true; };
         # nanokvm = { enable = true; url = "https://<kvm-name>:8443"; };
-        # niri = { enable = true; };             # second compositor next to Umbriel
         # torrentVpn = { enable = true; };       # qBittorrent only via Proton VPN
         # updateBranch = { enable = true; };     # weekly tested flake update branch
         # streaming = {

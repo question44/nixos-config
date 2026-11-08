@@ -1,13 +1,12 @@
 ---
 name: desktop-config
-description: Use when changing what the desktop shows or does - Umbriel keybinds, layout, outputs or window rules, Noctalia bar/widgets/theme, Niri config, or syncing Noctalia's settings-window changes into the repo.
+description: Use when changing what the desktop shows or does - Umbriel keybinds, layout, outputs or window rules, Noctalia bar/widgets/theme, or syncing Noctalia's settings-window changes into the repo.
 ---
 
-# Changing the desktop (Umbriel, Noctalia, Niri)
+# Changing the desktop (Umbriel, Noctalia)
 
-Umbriel is the primary compositor session (`XDG_CURRENT_DESKTOP=umbriel`).
-Niri is still configured but is not the main session. Desktop and keybind
-changes normally belong in Umbriel.
+Umbriel is the only compositor session (`XDG_CURRENT_DESKTOP=umbriel`);
+Niri was removed on 2026-11-08 (SYS-094).
 
 ## The live layer
 
@@ -18,26 +17,21 @@ These files are linked live: Home Manager points `~/.config/…` at the file in
 |---|---|---|
 | `home/umbriel/config.toml` | `~/.config/umbriel/config.toml` | `modules/umbriel.nix` |
 | `home/noctalia/config.toml` | `~/.config/noctalia/config.toml` | `modules/noctalia.nix` |
-| `home/niri/config.kdl` | `~/.config/niri/config.kdl` | `modules/niri.nix` |
 
 - Saving the file in `/etc/nixos` applies it; no rebuild or activation is
-  needed. Umbriel resolves the symlinks and watches the real file; Niri
-  reloads on save. A rebuild is needed only when the link itself, the helper
+  needed. Umbriel resolves the symlinks and watches the real file. A rebuild is needed only when the link itself, the helper
   scripts or other Nix code changes.
 - Edit the files in the repo, never the `~/.config` links.
 - Because `/etc/nixos` is the live copy, edit in your worktree, commit, and
   merge into `master` (parallel-agents skill). The merge is when the change
   goes live. Rollback is git (revert, or check out the previous version), not
   a previous generation.
-- `/etc/xdg/niri/config.kdl` is a store copy kept as a fallback.
 
 ## Rules
 
 1. Validate before trusting a reload. A config that fails to parse does not
-   crash the session: Umbriel and Niri keep the last good config (Niri shows
-   "Failed to parse the config file"). The edit silently does not apply.
-   - Niri: `niri validate -c home/niri/config.kdl` before merging, then
-     `niri msg action load-config-file`.
+   crash the session: Umbriel keeps the last good config. The edit silently
+   does not apply.
    - Noctalia: `noctalia config validate home/noctalia/config.toml`.
 2. Confirm it applied: Umbriel's inspection commands (`umbriel submap`,
    `umbriel outputs`, `umbriel windows --json`), or try the behavior.

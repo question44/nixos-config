@@ -26,7 +26,7 @@ order = [ "default", "stats" ]
         [bar.default.dead_zone.actions]
         back = "media previous"
         forward = "media next"
-        left = "exec niri msg action toggle-overview"
+        left = "exec umbriel msg overview-toggle"
         scroll_down = "exec /home/janzon/.local/bin/noctalia-bar-focus right"
         scroll_left = "workspace-switch prev"
         scroll_right = "workspace-switch next"
@@ -628,7 +628,6 @@ enabled = [
     "notoxus/media-island",
     "tausif/ncs-visualizer",
     "avivbintangaringga/nextboot-selector",
-    "teagar/niri-workspace-preview",
     "mgeldi/pixel-shift",
     "icefish/phone-connect",
     "weinguyen/procmon",
@@ -669,7 +668,6 @@ corner_radius_scale = 1.1
 external_ip_enabled = true
 font_family = "SF Pro"
 input_borders = false
-niri_overview_type_to_launch_enabled = true
 panel_anchor_bar = "default"
 password_style = "random"
 polkit_agent = true
@@ -763,7 +761,7 @@ source = "wallpaper"
 wallpaper_scheme = "m3-tonal-spot"
 
     [theme.templates]
-    builtin_ids = [ "btop", "cava", "gtk4", "ghostty", "kcolorscheme", "niri", "qt", "starship", "umbriel" ]
+    builtin_ids = [ "btop", "cava", "gtk4", "ghostty", "kcolorscheme", "qt", "starship", "umbriel" ]
     community_ids = [
         "claude-code",
         "codex",

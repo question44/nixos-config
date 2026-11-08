@@ -68,9 +68,6 @@ in
           enable = true;
           url = "https://kvm-37ff.tail517bdc.ts.net:8443";
         };
-        niri = {
-          enable = true;
-        };
         taskBoard = {
           enable = true;
           linkBase = "https://github.com/question44/nixos-config/blob/master/";

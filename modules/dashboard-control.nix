@@ -116,7 +116,6 @@
               wledUrl = lib.mkIf (my.ambilight.enable && my.ambilight.wledUrl != null) my.ambilight.wledUrl;
               # The same helper backs the Noctalia bar's screen switch.
               extraPackages = [
-                pkgs.niri
                 config.programs.umbriel.package
                 (pkgs.callPackage ../packages/umbriel-display-mode.nix { })
               ];

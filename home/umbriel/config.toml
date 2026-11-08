@@ -1,9 +1,9 @@
-# Umbriel counterpart to the active Niri keybindings.
+# Umbriel keybindings.
 # Ctrl+Alt+Super chords are emitted by the existing xremap CapsLock layer.
 
 [general]
-# Noctalia is started by its systemd user service (graphical-session.target),
-# as under Niri; launching it here too made the unit fail as "already running".
+# Noctalia is started by its systemd user service (graphical-session.target);
+# launching it here too made the unit fail as "already running".
 autostart = ["/home/janzon/.local/bin/umbriel-scratchpad-hint"]
 
 [environment]
