@@ -27,9 +27,9 @@ other:
 - `SYSTEM_CHANGELOG.md` merges with `merge=union`, which keeps both sides.
   After a merge, check that edits to the same entry did not leave duplicated
   lines.
-- To claim a new `SYS-NNN` ID, create it with `scripts/erebor-tasks new`
-  (which skips IDs used on any branch) and commit that file to `master` first,
-  so two agents never pick the same number.
+- Create a new task with `scripts/erebor-tasks new`, which reserves the ID
+  under a lock (no two agents on this machine get the same number), then
+  commit the file to `master` soon so others see the task.
 - Uncommitted changes in `/etc/nixos` that you did not make belong to another
   agent. Leave them out of your commits and do not reset them;
   `erebor-rebuild` lists them before activating.
@@ -114,9 +114,10 @@ other:
   Group related tasks under an epic (`children:` / `epic:`). Keep IDs after
   closure; consolidate duplicate tasks by linking their records.
 - On closing a task, shrink it to a stub (outcome, untested parts, link to the
-  changelog evidence). The first task closed in a new month first runs
+  changelog evidence). When the changelog rolls over to a new month, run
   `scripts/erebor-tasks archive`, which moves earlier months' closed tasks to
-  `tasks/archive/YYYY-MM/` and rewrites their links. Read `scripts/erebor-tasks`
+  `tasks/archive/YYYY-MM/` and rewrites their links (`nix flake check` fails
+  until it has run). Read `scripts/erebor-tasks`
   (the board) rather than every task file.
 - `SYSTEM_CONTEXT.md` holds only current non-declarative facts, recovery knowledge
   and verified pitfalls. Remove superseded facts; link tasks rather than copying

@@ -8,7 +8,9 @@ an earlier month are in `archive/YYYY-MM/`.
 See the board with `scripts/erebor-tasks` (open work, grouped by status, epics
 with their children). `scripts/erebor-tasks --all` adds closed tasks,
 `scripts/erebor-tasks show SYS-NNN` prints one. `nix flake check` runs
-`scripts/erebor-tasks check`.
+`scripts/erebor-tasks check` (IDs, headers, epics, links and their anchors)
+and the tests in `scripts/tests/`. `check` also warns about closed tasks that
+are long or have no changelog link.
 
 ## Statuses
 
@@ -30,7 +32,7 @@ preconditions.
 ```markdown
 ---
 status: OPEN            # OPEN, ACTIVE, REVIEW, DONE or CANCELLED
-review: 2026-11-22      # next review date; older tasks may have `reviewed:`
+review: 2026-11-22      # next review date (open statuses)
 closed: 2026-11-08      # DONE/CANCELLED only, instead of review
 epic: SYS-087           # optional parent epic
 children: SYS-075, SYS-076   # an epic's tasks
@@ -54,13 +56,15 @@ its own completion condition is met.
 
 ## Adding a task
 
-1. `scripts/erebor-tasks new "Title"` creates `tasks/SYS-NNN.md` with the next
-   ID not used on any branch.
+1. `scripts/erebor-tasks new "Title"` creates `tasks/SYS-NNN.md`. Under a lock
+   in the shared git directory it picks the next ID not used on any branch,
+   in any worktree's files, or in `.git/erebor-tasks-reserved`, and records
+   it there, so concurrent runs on this machine never get the same ID.
 2. Fill in what is wanted, the plan if known, and a concrete completion
    condition. For active work, record the next safe step and any recovery
    checkpoint.
-3. Commit the file to `master` right away to claim the ID, then continue on
-   your branch.
+3. Commit the file to `master` soon, so the task is visible to everyone, then
+   continue on your branch. An abandoned reservation only skips a number.
 
 ## Closing a task
 
@@ -76,18 +80,10 @@ its own completion condition is met.
 
 ## Monthly archive
 
-The first task closed in a new month first runs `scripts/erebor-tasks archive`.
-It moves tasks closed in earlier months, unchanged, to `archive/YYYY-MM/` and
-rewrites every link to them. Archived tasks are history: do not edit them
+Tasks closed in an earlier month than the one `SYSTEM_CHANGELOG.md`'s header
+names must be archived; `nix flake check` fails until they are. After the
+changelog rolls over to a new month, run `scripts/erebor-tasks archive`: it
+moves those tasks, unchanged, to `archive/YYYY-MM/` and rewrites every link
+to them. Archived tasks are history: do not edit them
 except to fix links. Tasks closed before the 2026-11-08 restructure were
 archived with their full text.
-
-## Branches that still edit `SYSTEM_TODO.md`
-
-`SYSTEM_TODO.md` was replaced by this directory on 2026-11-08 (SYS-088). A
-branch that changed it conflicts when merging `master` (modified on the
-branch, deleted on `master`). To carry its edits over: on the branch, take
-the branch's version of the old file, run
-`scripts/erebor-tasks migrate SYSTEM_TODO.md`, keep only the task files whose
-diff is the branch's own change (`git diff`), restore the others from
-`master`, delete `SYSTEM_TODO.md` and commit.

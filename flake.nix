@@ -152,7 +152,7 @@
             touch "$out"
           '';
 
-      # Task files under tasks/: IDs, headers, epics and links (tasks/README.md).
+      # Task files under tasks/ (tasks/README.md) and the erebor-tasks tests.
       checks.x86_64-linux.tasks =
         pkgs.runCommand "erebor-tasks-check"
           {
@@ -161,11 +161,19 @@
               fileset = lib.fileset.unions [
                 (lib.fileset.difference (lib.fileset.fileFilter (f: f.hasExt "md") ./.) ./apps)
                 ./scripts/erebor-tasks
+                ./scripts/tests
               ];
             };
+            nativeBuildInputs = [
+              pkgs.python3
+              pkgs.git
+            ];
           }
           ''
-            ${pkgs.python3}/bin/python3 "$src/scripts/erebor-tasks" check "$src"
+            python3 "$src/scripts/erebor-tasks" check "$src"
+            # The tests create throwaway git repositories.
+            export HOME=$TMPDIR
+            python3 -m unittest discover -s "$src/scripts/tests"
             touch "$out"
           '';
     };

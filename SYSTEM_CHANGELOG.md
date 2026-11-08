@@ -3,6 +3,32 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Task tools: ID reservations, anchor and archive checks, tests — 2026-11-08
+
+User asked to harden `scripts/erebor-tasks` ([SYS-090](tasks/SYS-090.md)).
+
+- **IDs:** `new` reserves the ID under `flock` in the shared git directory
+  (`.git/erebor-tasks.lock`, `.git/erebor-tasks-reserved`). `next` and `new`
+  also count uncommitted task files in every worktree. Without the lock, 8
+  simultaneous runs gave a duplicate SYS-003; with it, all IDs are distinct
+  (also a test).
+- **Check:**
+  - fails when a closed task outside `tasks/archive/` was closed before the
+    month named in this changelog's header;
+  - verifies `#anchor` parts of links from and into `tasks/`, using GitHub's
+    heading slugs and `<a id>` tags;
+  - warns about closed tasks longer than 15 lines or without a changelog link.
+  `archive` uses the same month.
+- **`reviewed:` dates:** the 23 open tasks that had only `reviewed:` now have
+  `review:` set 14 days later, so overdue reviews show on the board.
+  `reviewed:` is no longer accepted.
+- **Removed:** `migrate` and scanning for the old `SYSTEM_TODO.md`. The user
+  chose to convert the remaining branches directly.
+- **Tests:** 16 unit tests in `scripts/tests/`, run by
+  `checks.x86_64-linux.tasks`.
+
+`nix flake check` passes. No system change or activation.
+
 # Tasks: one file per task, with a monthly archive — 2026-11-08
 
 User asked to split the task list ([SYS-088](tasks/SYS-088.md)), because several
