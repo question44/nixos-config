@@ -75,11 +75,6 @@ default_output = "sunshine"
 "Ctrl+Alt+Super+Escape" = { action = "spawn noctalia msg session logout", repeat = false }
 "Ctrl+Alt+Super+X" = { action = "spawn noctalia msg session lock", repeat = false }
 "Ctrl+Alt+Super+Return" = { action = "spawn helium", repeat = false }
-"Mod+T" = { action = "spawn ghostty", repeat = false }
-"Mod+Return" = { action = "spawn ghostty", repeat = false }
-"Mod+D" = { action = "spawn noctalia msg panel-toggle launcher", repeat = false }
-"Super+Alt+L" = { action = "spawn noctalia msg session lock", repeat = false }
-"Super+Alt+S" = { action = "spawn sh -c 'pkill orca || exec orca'", repeat = false }
 
 # CapsLock navigation and window management layer
 "Ctrl+Alt+Super+T" = "column-toggle-tabbed"
@@ -145,36 +140,12 @@ default_output = "sunshine"
 
 # Standard window navigation
 "Mod+Shift+Slash" = { action = "cheatsheet-toggle", repeat = false }
-"Mod+O" = { action = "overview-toggle", repeat = false }
-"Mod+Q" = { action = "window-close", repeat = false }
-"Mod+Left" = "window-focus-left"
-"Mod+Down" = "window-focus-down"
-"Mod+Up" = "window-focus-up"
-"Mod+Right" = "window-focus-right"
 "Mod+H" = "window-focus-left"
-"Mod+J" = "window-focus-down"
-"Mod+K" = "window-focus-up"
-"Mod+L" = "window-focus-right"
-"Mod+Ctrl+Left" = "column-move-left"
-"Mod+Ctrl+Down" = "window-move-down"
-"Mod+Ctrl+Up" = "window-move-up"
-"Mod+Ctrl+Right" = "column-move-right"
 "Mod+Ctrl+H" = "column-move-left"
 "Mod+Ctrl+J" = "window-move-down"
 "Mod+Ctrl+K" = "window-move-up"
-"Mod+Ctrl+L" = "column-move-right"
-"Mod+Home" = "column-focus-first"
-"Mod+End" = "column-focus-last"
 "Mod+Ctrl+Home" = "column-move-to-first"
 "Mod+Ctrl+End" = "column-move-to-last"
-"Mod+Shift+Left" = "output-focus-left"
-"Mod+Shift+Down" = "output-focus-down"
-"Mod+Shift+Up" = "output-focus-up"
-"Mod+Shift+Right" = "output-focus-right"
-"Mod+Shift+H" = "output-focus-left"
-"Mod+Shift+J" = "output-focus-down"
-"Mod+Shift+K" = "output-focus-up"
-"Mod+Shift+L" = "output-focus-right"
 "Mod+Shift+Ctrl+Left" = "column-move-to-output-left"
 "Mod+Shift+Ctrl+Down" = "column-move-to-output-down"
 "Mod+Shift+Ctrl+Up" = "column-move-to-output-up"
@@ -185,18 +156,11 @@ default_output = "sunshine"
 "Mod+Shift+Ctrl+L" = "column-move-to-output-right"
 
 # Workspace navigation and moving columns
-"Mod+Page_Down" = "workspace-next"
-"Mod+Page_Up" = "workspace-previous"
-"Mod+U" = "workspace-next"
-"Mod+I" = "workspace-previous"
 "Mod+Ctrl+Page_Down" = "column-move-to-workspace-next"
 "Mod+Ctrl+Page_Up" = "column-move-to-workspace-previous"
 "Mod+Ctrl+U" = "column-move-to-workspace-next"
-"Mod+Ctrl+I" = "column-move-to-workspace-previous"
 "Mod+Shift+Page_Down" = "workspace-move-down"
 "Mod+Shift+Page_Up" = "workspace-move-up"
-"Mod+Shift+U" = "workspace-move-down"
-"Mod+Shift+I" = "workspace-move-up"
 "Mod+WheelDown" = { action = "window-focus-next", cooldown_ms = 150 }
 "Mod+WheelUp" = { action = "window-focus-previous", cooldown_ms = 150 }
 "Mod+Ctrl+WheelDown" = { action = "column-move-to-workspace-next", cooldown_ms = 150 }
@@ -209,13 +173,9 @@ default_output = "sunshine"
 "Mod+Shift+WheelUp" = "window-focus-left"
 "Mod+Ctrl+Shift+WheelDown" = "column-move-right"
 "Mod+Ctrl+Shift+WheelUp" = "column-move-left"
-"Mod+1" = "workspace-switch 1"
 "Mod+2" = "workspace-switch 2"
 "Mod+3" = "workspace-switch 3"
 "Mod+4" = "workspace-switch 4"
-"Mod+5" = "workspace-switch 5"
-"Mod+6" = "workspace-switch 6"
-"Mod+7" = "workspace-switch 7"
 "Mod+8" = "workspace-switch 8"
 "Mod+9" = "workspace-switch 9"
 "Mod+Ctrl+1" = "column-move-to-workspace 1"
@@ -229,31 +189,15 @@ default_output = "sunshine"
 "Mod+Ctrl+9" = "column-move-to-workspace 9"
 
 # Column layout and window sizing
-"Mod+BracketLeft" = "window-consume-or-expel-left"
-"Mod+BracketRight" = "window-consume-or-expel-right"
-"Mod+Comma" = "window-consume-from-right"
-"Mod+Period" = "window-consume-or-expel-right"
-"Mod+R" = "window-cycle-primary-extent"
-"Mod+Shift+R" = "window-cycle-primary-extent-back"
 "Mod+Ctrl+Shift+R" = "window-cycle-secondary-extent"
 "Mod+Ctrl+R" = "window-set-secondary-extent 0.5"
-"Mod+F" = "window-toggle-maximize"
-"Mod+Shift+F" = "window-toggle-fullscreen"
 "Mod+M" = "window-toggle-maximize-to-edges"
-"Mod+Ctrl+F" = "window-set-primary-extent 1.0"
-"Mod+C" = "column-center"
-"Mod+Ctrl+C" = "column-center"
 "Mod+Minus" = "window-modify-primary-extent -0.1"
-"Mod+Equal" = "window-modify-primary-extent 0.1"
 "Mod+Shift+Minus" = "window-modify-secondary-extent -0.1"
 "Mod+Shift+Equal" = "window-modify-secondary-extent 0.1"
-"Mod+V" = "window-toggle-floating"
-"Mod+Shift+V" = "window-focus-switch-floating"
-"Mod+W" = "column-toggle-tabbed"
 
 # Session, screenshots, media, volume, and brightness
 "Mod+Shift+Escape" = { action = "shortcuts-inhibit-toggle", allow_when_inhibited = true, repeat = false }
-"Mod+Shift+E" = { action = "session-quit", repeat = false }
 "Ctrl+Alt+Delete" = { action = "session-quit", repeat = false }
 "Print" = { action = "spawn noctalia msg screenshot-region", repeat = false }
 "Ctrl+Print" = { action = "spawn noctalia msg screenshot-fullscreen", repeat = false }

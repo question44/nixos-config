@@ -356,6 +356,7 @@ keymap:
   - name: Ctrl+A/E line navigation (non-terminal)
     application:
       not:
+        - dev.zed.Zed
         - com.moonlight_stream.Moonlight
         - moonlight
         - konsole
@@ -391,6 +392,7 @@ keymap:
   - name: "Preferences (general)"
     application:
       not:
+        - dev.zed.Zed
         - com.moonlight_stream.Moonlight
         - moonlight
         - com.mitchellh.ghostty
@@ -408,9 +410,10 @@ keymap:
       Super-comma: Ctrl-comma
       Super-shift-comma: Ctrl-Shift-comma
 
+  # Zed has its own macOS JetBrains keymap on Super (home/zed, SYS-093).
   - name: Mac-like shortcuts (global)
     application:
-      not: [com.moonlight_stream.Moonlight, moonlight]
+      not: [com.moonlight_stream.Moonlight, moonlight, dev.zed.Zed]
     remap:
       # Clipboard
       Super-c: Ctrl-c
