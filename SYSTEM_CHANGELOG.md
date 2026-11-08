@@ -3,6 +3,16 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Re-login after Niri removal; SYS-089 closed — 2026-11-08
+
+The user logged out and back in through the greeter at 19:13 (Umbriel
+session 26). `umbriel layers` shows no swaybg `wallpaper` surface, only
+`noctalia-wallpaper` (`redhead.png`) and `dropwall` on DP-1 and HDMI-A-1; no
+`swaybg` process. The Wallpaper Engine plugin loaded and its service started,
+but no scene ran because its assignments have been empty since 2026-11-04
+16:19, so the scene's startup on login is still untested. No configuration
+change.
+
 # Niri removed (SYS-094) — 2026-11-08
 
 At the user's request Niri is gone; Umbriel is the only compositor session.
