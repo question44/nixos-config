@@ -5,6 +5,7 @@
 
 import importlib.machinery
 import importlib.util
+import json
 import os
 import subprocess
 import sys
@@ -203,6 +204,32 @@ class ReservationTests(unittest.TestCase):
         first = self.repo.run("new", "One").stdout.splitlines()[0]
         os.remove(self.repo.root / first)  # abandoned: the reservation stays
         self.assertEqual(self.repo.run("next").stdout.strip(), "SYS-003")
+
+
+class BoardTests(unittest.TestCase):
+    def test_json_board(self):
+        repo = Repo()
+        repo.write("tasks/SYS-001.md", task(task_id="SYS-001", extra="children: SYS-002, SYS-003, SYS-004\n"))
+        repo.write("tasks/SYS-002.md", task("DONE", "closed: 2026-11-03", "epic: SYS-001\n", task_id="SYS-002"))
+        repo.write("tasks/SYS-003.md", task("ACTIVE", "review: 2026-11-01", "epic: SYS-001\n", task_id="SYS-003"))
+        repo.write("tasks/SYS-004.md", task("CANCELLED", "closed: 2026-11-03", "epic: SYS-001\n", task_id="SYS-004"))
+        repo.write("tasks/SYS-005.md", task("REVIEW", "review: 2026-11-10", "kind: check\n", task_id="SYS-005"))
+        board = et.board(repo.root, today="2026-11-08")
+        self.assertEqual(board["counts"], {"ACTIVE": 1, "OPEN": 1, "REVIEW": 1})
+        self.assertEqual(board["overdue"], 1)
+        self.assertEqual([(e["id"], e["done"], e["total"]) for e in board["epics"]], [("SYS-001", 1, 2)])
+        self.assertEqual([t["id"] for t in board["tasks"]], ["SYS-005", "SYS-003", "SYS-001"])
+        self.assertEqual(board["tasks"][1], {"id": "SYS-003", "title": "Title", "status": "ACTIVE",
+                                             "path": "tasks/SYS-003.md", "overdue": True,
+                                             "review": "2026-11-01", "epic": "SYS-001"})
+        self.assertEqual(board["tasks"][0]["kind"], "check")
+
+    def test_root_option_and_json_output(self):
+        repo = Repo()
+        repo.write("tasks/SYS-001.md", task())
+        out = subprocess.run([sys.executable, str(SCRIPT), "--root", str(repo.root), "list", "--json"],
+                             cwd="/", capture_output=True, text=True, check=True).stdout
+        self.assertEqual(json.loads(out)["tasks"][0]["path"], "tasks/SYS-001.md")
 
 
 if __name__ == "__main__":

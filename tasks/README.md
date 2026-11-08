@@ -7,7 +7,9 @@ an earlier month are in `archive/YYYY-MM/`.
 
 See the board with `scripts/erebor-tasks` (open work, grouped by status, epics
 with their children). `scripts/erebor-tasks --all` adds closed tasks,
-`scripts/erebor-tasks show SYS-NNN` prints one. `nix flake check` runs
+`scripts/erebor-tasks show SYS-NNN` prints one. `scripts/erebor-tasks list --json`
+prints counts, overdue reviews, epic progress and open tasks for the dashboard
+hub's admin-only Tasks card (`my.taskBoard`). `nix flake check` runs
 `scripts/erebor-tasks check` (IDs, headers, epics, links and their anchors)
 and the tests in `scripts/tests/`. `check` also warns about closed tasks that
 are long or have no changelog link.
