@@ -3,6 +3,29 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Caddy's OVH credentials from sops (SYS-074) — 2026-11-08
+
+Caddy's OVH DNS API credentials (for the `*.erebor.jzon.pl` certificates)
+moved from the hand-made root file `/etc/caddy/ovh.env` into
+`secrets/erebor.yaml` as `ovh_endpoint`, `ovh_application_key`,
+`ovh_application_secret` and `ovh_consumer_key`.
+`modules/workstation/caddy.nix` renders them with
+`sops.templates."caddy-ovh.env"` (owner `caddy`, restarts `caddy.service`)
+and points `services.caddy.environmentFile` at it.
+
+`scripts/erebor-diff`: different — only Caddy's `EnvironmentFile` (now
+`/run/secrets/rendered/caddy-ovh.env`) and the sops manifest. Leak check: none
+of the values appear in the git diff, the built `etc`, the sops manifest or
+the Caddy store paths. `nix flake check` passes. Activated with
+`scripts/erebor-rebuild test`, then `switch` as generation 325. Verified: the
+rendered file is `caddy:caddy 0400` and byte-identical to the old variables;
+the running Caddy has all four `OVH_*` variables; a signed read-only
+`GET /auth/currentCredential` with them returns HTTP 200 from OVH; Caddy is
+active and serves the Let's Encrypt certificate (valid to 2027-01-14) with no
+errors. The restart needed a SIGKILL after the stop timeout (old process).
+Not yet observed: an actual renewal through the new file. Open until the user
+approves deleting `/etc/caddy/ovh.env` and `/var/lib/searxng-secret/`.
+
 # Task board card in the dashboard hub (SYS-092) — 2026-11-08
 
 Optional follow-up to SYS-090: administrators get a read-only Tasks card in
