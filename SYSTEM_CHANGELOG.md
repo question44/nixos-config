@@ -14,6 +14,11 @@ polkit, so Dolphin itself keeps running as janzon.
 Validation: `nix fmt`, `nix flake check` and `scripts/erebor-rebuild build`
 pass. `erebor-diff` against `master`: different, as intended: only the
 `kio-admin` package and the system bus configuration that lists it.
+Activated as generation 319 with `scripts/erebor-rebuild switch`; no failed
+units. `org.kde.kio.admin` is activatable on the system bus, polkit lists
+`org.kde.kio.admin.commands`, and the `admin` KIO worker is installed. The
+polkit prompt comes from Noctalia's agent (`polkit_agent = true`). Not
+tested: opening an `admin:/` path in Dolphin and approving the prompt.
 
 # Activated: dendritic, sops, live-config and gpu-passthrough merge — 2026-11-08
 
