@@ -3,6 +3,26 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Starship: the Mac's powerline layout on erebor, in Noctalia colours — 2026-11-08
+
+`home/starship.toml` (deployed as `noctalia/starship-base.toml`, with the
+Noctalia palette appended at activation) now uses the layout of the Mac's
+powerline preset: its segments, separators, Nerd Font symbols, directory
+substitutions and language modules. `palette = "noctalia"` stays; each fixed
+colour became a palette name (mapping in the commit message), with segment
+text in `base` on the light accents and `text` on the dark time segment.
+Kept from the previous prompt: `nix_shell` and `container` (in the docker
+segment), `git_metrics` (in the git segment), `hostname`/`localip` over SSH
+(in the user segment), and `cmd_duration`, `jobs`, `env_var.VIMSHELL`,
+`sudo` and the vi-mode `character` symbols after the segments.
+
+Validation: with today's Noctalia palette appended, `starship print-config`
+and `starship prompt` run without warnings and render every segment.
+`nix flake check` and `scripts/erebor-rebuild build` pass. `erebor-diff`
+against the previous commit: different for erebor and template, as intended:
+only `hm_starship.toml` changes (and the Home Manager generation and its
+unit with it). Not activated.
+
 # Encrypted secrets with sops-nix; SearXNG's key moved into sops — 2026-11-08
 
 Adds the `sops-nix` input (pinned, follows nixpkgs) and the `secrets` aspect
