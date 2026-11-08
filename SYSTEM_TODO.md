@@ -16,6 +16,129 @@ instead of copying their instructions. No review task authorizes a reboot,
 activation, storage change, secret archive or graphical-session interruption.
 Earlier approvals remain bounded by their original scope and safety preconditions.
 
+<a id="sys-081"></a>
+
+### SYS-081 — Land the dendritic migration and the adoption stack
+
+**Status:** OPEN · **Review:** 2026-11-15
+
+Branches `agent/dendritic` (migration, equivalent to master) and `agent/adopt`
+(built on it: `my.*` assertions, eval tests, pinned inputs, live desktop
+configs, AGENTS.md skills, weekly update branch, sops-nix, Starship layout,
+the Mac's nix-darwin config, agent shell fix). Rebase `agent/adopt` on master,
+re-run `nix flake check`, `scripts/erebor-rebuild build` and `erebor-diff`,
+merge, then `scripts/erebor-rebuild switch`.
+
+Done when, after the switch: `~/.config/{umbriel,noctalia,niri}` files resolve
+into `/etc/nixos`; `/run/secrets/rendered/searxng.env` exists and SearXNG
+answers; `erebor-update-branch.timer` is listed; `t3code` restarted and a new
+agent's shell has git on PATH; the user has logged out and in once
+(CLAUDE_CODE_SHELL); the hand-added `env` in `~/.claude/settings.json` is
+removed; the personal age key `~/.config/sops/age/keys.txt` is backed up
+offline (user confirms). Then remove both worktrees and branches.
+
+<a id="sys-082"></a>
+
+### SYS-082 — Generated reference for the `my.*` options
+
+**Status:** OPEN · **Review:** 2026-12-08
+
+Generate `docs/my-options.md` from the option declarations with
+`pkgs.nixosOptionsDoc`, filtered to `my.*`, evaluated from the template host
+so defaults are not erebor's values; give computed defaults a `defaultText`;
+rewrite declaration links from `/nix/store/...` to repo paths. Add
+`nix run .#write-docs` and a flake check that fails when the committed file is
+stale. Replace the hand-written table in `README.md` (already missing
+`my.timeMachine`, `my.torrentVpn`, `my.services.*` fields, `my.flakePath`,
+`my.updateBranch`) with a link. Needs [SYS-081](#sys-081).
+
+Done when: the check fails on a stale file and passes after `write-docs`;
+erebor's `erebor-diff` tier is identical.
+
+<a id="sys-083"></a>
+
+### SYS-083 — Make the weekly update report decision-ready
+
+**Status:** OPEN · **Review:** 2026-12-08
+
+`scripts/erebor-update-branch` always reports tier "different" after a
+nixpkgs bump, which says nothing. Add to its report: a package version diff
+between master's system and the new build (`nvd diff`, or
+`nix store diff-closures`), and for every input pinned in `flake.nix` the
+upstream head and how many commits it is ahead of the pin (`git ls-remote`,
+no build). Consider moving the run from Sunday 03:00 to a time erebor is
+usually on and idle. Needs [SYS-081](#sys-081).
+
+Done when: one real timer run produced a branch whose report lists changed
+package versions and behind-by counts for pinned inputs.
+
+<a id="sys-084"></a>
+
+### SYS-084 — Syncthing via the NixOS module with a fixed identity
+
+**Status:** OPEN · **Review:** 2027-01-08
+
+Syncthing runs as the upstream container (`modules/services/syncthing.nix`,
+state in `/srv/syncthing/config/`) and is unused: no peers, one empty folder
+entry (checked 2026-11-08). Do this when the first peer or folder is wanted:
+replace the container with `services.syncthing`, move the existing
+`cert.pem`/`key.pem` into sops so the device ID stays, declare devices and
+folders with `overrideDevices`/`overrideFolders`, and keep the Caddy route
+and `my.services.syncthing` registry. On the Mac use Home Manager's
+`services.syncthing`. If still unused at review, disable
+`my.services.syncthing.enable` instead and close this.
+
+Done when: the device ID is unchanged after the switch and a declared folder
+syncs with one peer.
+
+<a id="sys-085"></a>
+
+### SYS-085 — Mac: zsh login shell, Nix fish in terminals
+
+**Status:** OPEN · **Review:** 2026-11-22
+
+On `darwinConfigurations.macbook`: keep `/bin/zsh` as the login shell with
+`programs.zsh.enable`; enable nix-darwin `programs.fish` and point Ghostty
+(`command`) and other terminals at `/etc/profiles/per-user/janzon/bin/fish`;
+drop the Homebrew `fish` entry (fisher stays; its plugins live in
+`~/.config/fish`). Keep Secretive's `SSH_AUTH_SOCK`. Do before the Mac's
+first apply ([SYS-086](#sys-086)). Needs [SYS-081](#sys-081).
+
+Done when: the Mac config evaluates; after apply, SSH commands run in zsh,
+new Ghostty windows open Nix fish with Starship, fisher and nvm working.
+
+<a id="sys-086"></a>
+
+### SYS-086 — Bootstrap the Mac with nix-darwin
+
+**Status:** OPEN · **Review:** 2026-11-22
+
+Follow `docs/mac.md`: install Determinate Nix, then the first
+`sudo nix run nix-darwin -- switch --flake .#macbook` (needs the user's
+password on the Mac). The first apply moves `~/.config/nvim` and
+`config.fish` to `*.backup`, enables Dock autohide and Touch ID for sudo, and
+removes no Homebrew app (`cleanup = "none"`). Needs [SYS-085](#sys-085).
+
+Done when: `darwin-rebuild switch` succeeds; nvim, Ghostty, fish and the
+Mac's Starship prompt work; Touch ID sudo works; no Homebrew app is gone.
+
+<a id="sys-074"></a>
+
+### SYS-074 — Move Caddy's OVH credentials into sops
+
+**Status:** OPEN · **Review:** 2026-12-08
+
+sops-nix is set up ([changelog](SYSTEM_CHANGELOG.md), `secrets` skill) and
+SearXNG's key already comes from `secrets/erebor.yaml`. Caddy still reads the
+OVH DNS API credentials from the root-owned `/etc/caddy/ovh.env`, which an
+agent cannot read without the user's touch approval. Follow "Moving an
+existing credential into sops" in `.claude/skills/secrets/SKILL.md`.
+
+Done when: Caddy's `environmentFile` is a `sops.templates` file, a
+certificate renewal or `caddy validate` authenticates with OVH after
+activation, `/etc/caddy/ovh.env` is deleted with the user's approval, and
+`/var/lib/searxng-secret/` is removed.
+
 <a id="sys-075"></a>
 
 ### SYS-075 — Accept Moonshine PINs only from erebor itself
