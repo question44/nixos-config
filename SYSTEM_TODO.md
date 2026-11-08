@@ -16,6 +16,46 @@ instead of copying their instructions. No review task authorizes a reboot,
 activation, storage change, secret archive or graphical-session interruption.
 Earlier approvals remain bounded by their original scope and safety preconditions.
 
+<a id="sys-073"></a>
+
+### SYS-073 — GPU passthrough as a GRUB specialisation
+
+**Status:** OPEN · **Review:** 2026-12-08
+
+Planned, not started. Make the RTX 4090 passthrough mode a boot-menu choice
+instead of an edit, rebuild and reboot: the erebor host gets
+`specialisation.gpu-passthrough.configuration.virtualisation.windowsGpuPassthrough.enable = true;`
+while its default stays `false`. GRUB then offers the default entry (NVIDIA on
+Linux) and a "gpu-passthrough" entry (vfio-pci on the 4090, Linux on the Intel
+UHD 770). The `windows-vm-gpu` service already reconciles the domain at each
+boot in either direction ([windows-vm.md](docs/windows-vm.md)).
+
+Plan:
+
+1. Prerequisite: a verified pre-change root snapshot. Snapper is not
+   configured, so either set it up first or use a manual read-only
+   `/btrfs-top` snapshot as earlier changes did.
+2. Make NVIDIA-dependent services follow the mode: Sunshine
+   (`encoder = "nvenc"`, CUDA build) and Ollama (`ollama-cuda`, `sm_89`) need
+   an Intel or CPU fallback, or must be off under passthrough. Check Moonshine
+   and anything else that assumes NVIDIA (not yet inspected).
+3. Check the Intel-only desktop: Umbriel output names (config and the HDR
+   toggle hard-code `DP-1`), refresh rate and HDR on the motherboard output.
+4. Add the specialisation; build both systems and confirm GRUB lists both
+   under the 15-generation limit. ESP had 5.1 GB free on 2026-11-08.
+5. Document the procedure in `docs/windows-vm.md`: shut down Windows, choose
+   the entry at boot, and move the monitor cable to the motherboard output
+   (or back). Live switching between specialisations is not supported, as the
+   GPU binds early in boot.
+
+Done when: the default entry boots unchanged; the gpu-passthrough entry boots
+with both NVIDIA functions on vfio-pci, Intel on i915 and the Linux desktop
+usable; `windows11` starts with the 4090 assigned; booting the default entry
+again returns the GPU to Linux with no failed units. Optional follow-up:
+retest Looking Glass with the 4090 in the guest. Recovery: choose the default
+GRUB entry; the domain backups under `/var/lib/windows-vm-recovery/` are
+unchanged. Related: [SYS-006](#sys-006).
+
 <a id="sys-072"></a>
 
 ### SYS-072 — Move erebor to nixos-unstable
