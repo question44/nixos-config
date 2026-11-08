@@ -2,6 +2,10 @@
 """Task board and checks for erebor's tasks/ directory.
 
   erebor-tasks [list] [--all]    board of open work (--all adds closed tasks)
+  erebor-tasks list --json       open tasks, counts, overdue reviews and epic
+                                 progress as JSON (for the dashboard hub)
+  erebor-tasks --root DIR ...    use DIR as the repository instead of the
+                                 directory containing the working directory
   erebor-tasks show SYS-NNN      print one task
   erebor-tasks next              next free ID: every branch, every worktree's
                                  files and the reservations
@@ -30,6 +34,7 @@ The ID comes from the file name; the title from the heading.
 """
 
 import datetime
+import json
 import os
 import re
 import subprocess
@@ -153,6 +158,10 @@ def rewrite_links(root, mapping):
 
 
 def cmd_list(root, args):
+    if "--json" in args:
+        json.dump(board(root), sys.stdout, indent=1)
+        print()
+        return
     tasks, _ = load_tasks(root)
     today = datetime.date.today().isoformat()
     show_all = "--all" in args
@@ -171,6 +180,41 @@ def cmd_list(root, args):
                 child = tasks.get(child_id)
                 if child and child.status in statuses:
                     print_task(child, today, indent="    └ ")
+
+
+def board(root, today=None):
+    """Open work for machine readers: every open task, counts per status,
+    overdue reviews and progress of open epics. Paths are repository-relative."""
+    tasks, _ = load_tasks(root)
+    today = today or datetime.date.today().isoformat()
+
+    def entry(task):
+        review = task.meta.get("review")
+        item = {"id": task.id, "title": task.title, "status": task.status,
+                "path": task.rel().as_posix(),
+                "overdue": bool(review) and review < today}
+        for key in ("review", "epic", "kind"):
+            if task.meta.get(key):
+                item[key] = task.meta[key]
+        return item
+
+    open_tasks = sorted((t for t in tasks.values() if t.status in OPEN), key=lambda t: -num(t.id))
+    epics = []
+    for task in open_tasks:
+        if not task.children:
+            continue
+        children = [tasks[c] for c in task.children if c in tasks]
+        counted = [c for c in children if c.status != "CANCELLED"]
+        epics.append({**entry(task), "done": sum(c.status == "DONE" for c in counted),
+                      "total": len(counted)})
+    items = [entry(t) for t in open_tasks]
+    return {
+        "today": today,
+        "counts": {status: sum(t.status == status for t in open_tasks) for status in OPEN},
+        "overdue": sum(item["overdue"] for item in items),
+        "epics": epics,
+        "tasks": items,
+    }
 
 
 def print_task(task, today, indent="  "):
@@ -492,6 +536,11 @@ def closed_task_warnings(root, tasks):
 
 def main():
     args = sys.argv[1:]
+    root = None
+    if args[:1] == ["--root"]:
+        if len(args) < 2:
+            sys.exit("usage: erebor-tasks --root DIR COMMAND ...")
+        root, args = Path(args[1]).resolve(), args[2:]
     command = args.pop(0) if args and not args[0].startswith("-") else "list"
     commands = {
         "list": cmd_list, "show": cmd_show, "next": cmd_next, "new": cmd_new,
@@ -502,7 +551,7 @@ def main():
     if command == "check" and args:
         root, args = Path(args[0]).resolve(), []  # e.g. the flake check's source copy
     else:
-        root = repo_root()
+        root = root or repo_root()
     commands[command](root, args)
 
 

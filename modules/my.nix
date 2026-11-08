@@ -108,6 +108,20 @@
           '';
         };
 
+        taskBoard = {
+          enable = lib.mkEnableOption ''
+            the read-only task card in the dashboard hub for administrators. The
+            control API runs `scripts/erebor-tasks list --json` on `flakePath`, so
+            the counts follow the checkout without a rebuild
+          '';
+          linkBase = lib.mkOption {
+            type = lib.types.nullOr urlType;
+            default = null;
+            example = "https://github.com/owner/nixos-config/blob/master/";
+            description = "URL prefix that makes task file paths (tasks/SYS-NNN.md) into links; null shows no links.";
+          };
+        };
+
         niri = {
           enable = lib.mkEnableOption "Niri as a second compositor next to Umbriel";
         };

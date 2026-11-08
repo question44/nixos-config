@@ -101,6 +101,18 @@
                 "reboot-windows"
                 "moonshine-pair"
               ];
+              # The board reads the live checkout; only the script itself is pinned.
+              tasks = lib.mkIf my.taskBoard.enable {
+                command = [
+                  (lib.getExe pkgs.python3)
+                  "${../scripts/erebor-tasks}"
+                  "--root"
+                  my.flakePath
+                  "list"
+                  "--json"
+                ];
+                linkBase = if my.taskBoard.linkBase == null then "" else my.taskBoard.linkBase;
+              };
               wledUrl = lib.mkIf (my.ambilight.enable && my.ambilight.wledUrl != null) my.ambilight.wledUrl;
               # The same helper backs the Noctalia bar's screen switch.
               extraPackages = [

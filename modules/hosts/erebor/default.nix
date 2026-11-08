@@ -71,6 +71,10 @@ in
         niri = {
           enable = true;
         };
+        taskBoard = {
+          enable = true;
+          linkBase = "https://github.com/question44/nixos-config/blob/master/";
+        };
         torrentVpn.enable = false;
         updateBranch.enable = true;
         timeMachine = {
