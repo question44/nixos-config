@@ -56,6 +56,13 @@ retest Looking Glass with the 4090 in the guest. Recovery: choose the default
 GRUB entry; the domain backups under `/var/lib/windows-vm-recovery/` are
 unchanged. Related: [SYS-006](#sys-006).
 
+Measured 2026-11-08 by building generation 317's config with the option
+forced on (not activated): the host's explicit `false` needs `lib.mkForce true`
+in the specialisation. Cost per generation: 111 MiB of extra store paths
+(55 MiB initrd without NVIDIA modules, plus kernel modules, hwdb and Steam's
+FHS root); unchanged paths are shared between generations. ESP: one extra
+55 MiB initrd per distinct initrd (default initrd 140 MiB, 5.1 GB free).
+
 <a id="sys-072"></a>
 
 ### SYS-072 — Move erebor to nixos-unstable
