@@ -34,9 +34,8 @@ REVIEW 18, 27 overdue, SYS-087 0 of 6; the deployed API code with that
 environment and a throwaway state directory gave an administrator the same
 counts and `…/blob/master/tasks/SYS-087.md` links, and a non-admin account no
 `taskBoard` flag and 403; unauthenticated `/api/control/tasks` on the live
-service is 401; Caddy serves the bundle with the folded card. Not observed:
-the rendered card in a signed-in browser (the in-app browser blocked the
-bundle). After the push, a clean build of `master` fetches the submodule
+service is 401; Caddy serves the bundle with the folded card. The user
+confirmed the rendered card works in the hub; SYS-092 closed DONE. After the push, a clean build of `master` fetches the submodule
 from GitHub and yields the running system.
 
 # Zed: macOS JetBrains keymap with Cmd on Super (SYS-093) — 2026-11-08
