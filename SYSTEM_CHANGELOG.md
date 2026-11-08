@@ -51,6 +51,8 @@ screenshots show the bar hidden over windows in smart mode and windows ending
 above it when pinned. Override backup:
 `settings.toml.bak-pin-persist`. `erebor-diff` against `master`: different,
 only the `noctalia-bar-autohide` file and the Home Manager unit that links it.
+Activated as generation 321 with `scripts/erebor-rebuild switch`; no failed
+units; the deployed button toggles the exclusive zone 0 ↔ 52.
 
 # Dolphin admin mode (kio-admin) — 2026-11-08
 
