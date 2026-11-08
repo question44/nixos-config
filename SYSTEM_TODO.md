@@ -37,9 +37,10 @@ activation, `/etc/caddy/ovh.env` is deleted with the user's approval, and
 
 ### SYS-073 — GPU passthrough as a GRUB specialisation
 
-**Status:** OPEN · **Review:** 2026-12-08
+**Status:** ACTIVE · **Review:** 2026-12-08
 
-Planned, not started. Make the RTX 4090 passthrough mode a boot-menu choice
+Implemented on branch `agent/gpu-specialisation`; built, not merged or
+activated. Make the RTX 4090 passthrough mode a boot-menu choice
 instead of an edit, rebuild and reboot: the erebor host gets
 `specialisation.gpu-passthrough.configuration.virtualisation.windowsGpuPassthrough.enable = true;`
 while its default stays `false`. GRUB then offers the default entry (NVIDIA on
@@ -72,6 +73,17 @@ again returns the GPU to Linux with no failed units. Optional follow-up:
 retest Looking Glass with the 4090 in the guest. Recovery: choose the default
 GRUB entry; the domain backups under `/var/lib/windows-vm-recovery/` are
 unchanged. Related: [SYS-006](#sys-006).
+
+Progress 2026-11-08: steps 2, 4 and 5 are done on the branch. Ollama (and its
+`nvidia_uvm` load) and Moonshine are off in gpu-passthrough; Sunshine, which
+is disabled, would use `vaapi` there. Both systems build and `nix flake check`
+passes; `erebor-diff` against the parent commit is "different" only through
+the new entry (the default system differs only in its revision string). The
+specialisation adds 142 MiB of store paths, including its own NixOS manual.
+**Blocker:** the Intel iGPU is not on the PCI bus (`lspci` lists only the
+RTX 4090; it was `8086:a780` at `0000:00:02.0` in October), so it is
+presumably disabled in firmware. Re-enable it before step 1 and before the
+first passthrough boot, then read the Intel output names for step 3.
 
 Measured 2026-11-08 by building generation 317's config with the option
 forced on (not activated): the host's explicit `false` needs `lib.mkForce true`

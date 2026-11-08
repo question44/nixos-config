@@ -2,13 +2,21 @@
 
 ## Current phase
 
-GPU ownership is controlled by
-`virtualisation.windowsGpuPassthrough.enable` in `modules/hosts/erebor/default.nix`.
-It is currently set to `false`; after activation this restores the RTX 4090
-to Linux alongside Intel UHD 770. With `true`, both NVIDIA functions are reserved for Windows
-and the host NVIDIA driver is disabled. Shut down `windows11` before changing
-this setting, rebuild NixOS, and reboot to apply early driver binding reliably.
-The `windows-vm-gpu` service synchronizes the existing domain's PCI assignments
+GPU ownership is chosen in the GRUB menu ([SYS-073](../SYSTEM_TODO.md#sys-073)).
+The default entry keeps the RTX 4090 on Linux
+(`virtualisation.windowsGpuPassthrough.enable = false` in
+`modules/hosts/erebor/default.nix`). Each generation also has a
+**gpu-passthrough** entry (`specialisation.gpu-passthrough`) that reserves both
+NVIDIA functions for Windows, disables the host NVIDIA driver and runs Linux on
+Intel UHD 770; Ollama and Moonshine are off there, and Sunshine, if
+re-enabled, would encode with VA-API.
+
+To switch: shut down `windows11`, reboot, pick the entry, and move the monitor
+cable (motherboard output for gpu-passthrough, RTX 4090 for the default).
+Switching a running system to the other specialisation is unsupported: the
+GPU binds early in boot. The gpu-passthrough entry needs the Intel iGPU
+enabled in firmware; without it Linux has no display, and the default entry is
+the way back. The `windows-vm-gpu` service synchronizes the existing domain's PCI assignments
 and backs up every changed XML under `/var/lib/windows-vm-recovery/gpu-toggle/`.
 It refuses to change the assignments while Windows is running. Disk, NVRAM,
 TPM, CPU, memory and networking settings are preserved.
