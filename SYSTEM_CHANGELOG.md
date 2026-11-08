@@ -3,6 +3,26 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Overdue task checks — 2026-11-08
+
+Read-only checks of the overdue OPEN tasks, plus user confirmations.
+
+- SYS-028 DONE: after the 19:13 and 19:16 logins, one Noctalia process owned by
+  `noctalia.service`, 0 restarts, no "already running".
+- SYS-046 CANCELLED: the host is back on the proprietary NVIDIA driver (open
+  kernel module 615.78.08 since 2026-10-26), so the NVK check no longer applies.
+- SYS-051 DONE: superseded by later activations (generation 326); its commits
+  are on origin/master.
+- SYS-029 DONE: BootCurrent 0000 (GRUB) on every boot in the journal
+  (2026-11-02 onward); the user confirmed Windows boots from the GRUB menu.
+- SYS-058 DONE: the browser desktop answers 401 with Basic auth; the user
+  confirmed the login works.
+- SYS-064 and SYS-003 DONE on user confirmation (Polkit/sudo password after
+  the Mac approval timeout; T3 browser preview).
+
+Still open and needing a planned interruption: SYS-002, SYS-004, SYS-040,
+SYS-043. No configuration change.
+
 # Re-login after Niri removal; SYS-089 closed — 2026-11-08
 
 The user logged out and back in through the greeter at 19:13 (Umbriel
