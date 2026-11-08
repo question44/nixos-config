@@ -72,6 +72,7 @@ in
           enable = true;
         };
         torrentVpn.enable = false;
+        updateBranch.enable = true;
         timeMachine = {
           enable = true;
           path = "/srv/external/expansion/TimeMachine";

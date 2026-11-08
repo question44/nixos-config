@@ -55,3 +55,15 @@ from overwriting each other.
 - Uncommitted changes in `/etc/nixos` that you did not make belong to another
   agent. Leave them out of your commits and do not reset them;
   `erebor-rebuild` lists them before activating.
+
+## The weekly update branch
+
+`erebor-update-branch.timer` (user unit, `my.updateBranch`) runs
+`scripts/erebor-update-branch` weekly: it recreates `~/nixos-wt/flake-update`
+on `agent/flake-update` from `master`, updates nixpkgs and home-manager,
+builds erebor, runs `erebor-diff` against `master`, and commits the lock with
+the report as the commit message (also in
+`~/.local/state/erebor-update/report.md`). It never activates. To bump the
+pinned third-party inputs too, run it by hand with `--pinned` and review each
+upstream change. Land the branch like any other once the user agrees; an
+unmerged branch is replaced by the next run.

@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+# Prepare a tested flake update on its own branch; never activates.
+#   scripts/erebor-update-branch [--pinned]
+# Recreates ~/nixos-wt/flake-update on agent/flake-update from master, updates
+# nixpkgs and home-manager (with --pinned also moves every github input pinned
+# to a commit in flake.nix to its default branch's head), builds erebor, runs
+# erebor-diff against master, and commits the lock with a report as the commit
+# message. The report is also written to $XDG_STATE_HOME/erebor-update/report.md.
+# To land it, review the report and use the parallel-agents skill.
+set -euo pipefail
+
+pinned=false
+case ${1:-} in
+  --pinned) pinned=true ;;
+  "") ;;
+  *) echo "usage: erebor-update-branch [--pinned]" >&2; exit 2 ;;
+esac
+
+repo=${EREBOR_REPO:-/etc/nixos}
+wt=$HOME/nixos-wt/flake-update
+branch=agent/flake-update
+state=${XDG_STATE_HOME:-$HOME/.local/state}/erebor-update
+report=$state/report.md
+mkdir -p "$state"
+
+notify() {
+  if command -v notify-send >/dev/null; then
+    notify-send --app-name="Flake update" "$1" "$2" || true
+  fi
+}
+fail() {
+  printf '# Flake update failed\n\n%s\n' "$1" >"$report"
+  notify "Flake update failed" "$1"
+  echo "$1" >&2
+  exit 1
+}
+trap 'fail "erebor-update-branch stopped at line $LINENO; see the journal."' ERR
+
+# Start from a fresh branch at master: last week's unmerged branch is replaced.
+if git -C "$repo" worktree list --porcelain | grep -qx "worktree $wt"; then
+  git -C "$repo" worktree remove --force "$wt"
+fi
+git -C "$repo" branch -D "$branch" >/dev/null 2>&1 || true
+git -C "$repo" worktree add --quiet -b "$branch" "$wt" master
+git -C "$wt" submodule --quiet update --init
+cd "$wt"
+
+before=$(mktemp)
+trap 'rm -f "$before"' EXIT
+cp flake.lock "$before"
+
+if $pinned; then
+  # Inputs written as github:<owner>/<repo>/<40-hex rev>[?query].
+  grep -oE 'github:[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+/[0-9a-f]{40}' flake.nix | sort -u |
+    while IFS=/ read -r owner name rev; do
+      owner=${owner#github:}
+      head=$(git ls-remote "https://github.com/$owner/$name" HEAD | cut -f1)
+      if [[ -n $head && $head != "$rev" ]]; then
+        sed -i "s|github:$owner/$name/$rev|github:$owner/$name/$head|" flake.nix
+      fi
+    done
+  nix flake lock
+fi
+nix flake update nixpkgs home-manager
+
+# Changed inputs, as "name: old → new" with short revisions.
+changes=$(jq -rn --slurpfile a "$before" --slurpfile b flake.lock '
+  def rev($lock; $input): $lock.nodes[$lock.nodes[$lock.root].inputs[$input] | if type == "array" then empty else . end].locked.rev? // null;
+  $b[0].nodes[$b[0].root].inputs | keys[]
+  | . as $input | rev($a[0]; $input) as $old | rev($b[0]; $input) as $new
+  | select($new != null and $old != $new)
+  | "- \($input): \(($old // "new")[0:12]) → \($new[0:12])"')
+
+if [[ -z $changes ]]; then
+  printf '# Flake update %s\n\nNothing changed.\n' "$(date +%F)" >"$report"
+  notify "Flake update" "No input changed this week."
+  exit 0
+fi
+
+build=passed
+scripts/erebor-rebuild build >"$state/build.log" 2>&1 || build="FAILED (see $state/build.log)"
+
+tier=unknown
+if [[ $build == passed ]]; then
+  set +e
+  scripts/erebor-diff master . >"$state/diff.log" 2>&1
+  case $? in
+    0) tier=identical ;;
+    1) tier=equivalent ;;
+    2) tier=different ;;
+    *) tier="error (see $state/diff.log)" ;;
+  esac
+  set -e
+fi
+rm -f result
+
+{
+  echo "Update flake inputs $(date +%F) (build $build, $tier)"
+  echo
+  echo "Changed inputs:"
+  echo "$changes"
+  echo
+  echo "Build: $build"
+  echo "erebor-diff against master: $tier"
+  echo
+  echo "Prepared by scripts/erebor-update-branch; not activated."
+} >"$report"
+
+git add flake.lock flake.nix
+git commit --quiet --file="$report"
+notify "Flake update ready" "Branch $branch: build $build, $tier. Report: $report"
+echo "$report"

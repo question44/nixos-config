@@ -3,6 +3,29 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Weekly tested flake update branch — 2026-11-08
+
+New `scripts/erebor-update-branch [--pinned]` and the `update-branch` aspect
+(`my.updateBranch.enable`, on for erebor). A user timer
+(`erebor-update-branch.timer`, Sundays 03:00 with up to 30 min random delay,
+`Persistent=true`) runs the script at idle CPU and I/O priority. It recreates
+`~/nixos-wt/flake-update` on `agent/flake-update` from `master`, runs `nix
+flake update nixpkgs home-manager` (with `--pinned`, by hand, it also moves
+each commit-pinned github input to its default branch's head), builds erebor
+with `erebor-rebuild build`, runs `erebor-diff` against `master`, commits the
+lock with the report (changed inputs old → new, build result, tier) as the
+message, writes the report to `~/.local/state/erebor-update/report.md`, and
+sends a desktop notification. It never activates. Documented in the
+`parallel-agents` skill. Not run yet: the first real run is the first timer
+firing after activation (or `systemctl --user start erebor-update-branch`).
+
+Validation: `nix fmt`, `nix flake check` and `scripts/erebor-rebuild build`
+pass; shellcheck passed through `writeShellApplication`; the report's jq
+filter was tested on a modified lock file. `erebor-diff` against the previous
+commit: different for erebor, as intended (only the new user service, timer
+and its `timers.target.wants` link, plus the script); identical for template.
+Not activated.
+
 # AGENTS.md procedures moved into skills — 2026-11-08
 
 `AGENTS.md` now holds the rules that always apply, the repository layout,

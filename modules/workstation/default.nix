@@ -41,6 +41,7 @@ in
       darkly
       niri
       home-manager
+      update-branch
     ];
   };
 }
