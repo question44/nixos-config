@@ -84,7 +84,7 @@
 
           services.searx = {
             enable = true;
-            environmentFile = "/var/lib/searxng-secret/environment";
+            environmentFile = config.sops.templates."searxng.env".path;
             settings = {
               # These default engines returned CAPTCHAs/rate limits on this connection;
               # Bing was verified to return live results without an API key.
@@ -111,23 +111,11 @@
             };
           };
 
-          # Generate the local service secret on the host, outside Git and the store.
-          systemd.services.searxng-secret = {
-            before = [ "searx-init.service" ];
-            requiredBy = [ "searx-init.service" ];
-            serviceConfig = {
-              Type = "oneshot";
-              RemainAfterExit = true;
-              StateDirectory = "searxng-secret";
-              StateDirectoryMode = "0700";
-              UMask = "0077";
-            };
-            script = ''
-              if [ ! -s /var/lib/searxng-secret/environment ]; then
-                printf 'SEARX_SECRET_KEY=%s\n' "$(${pkgs.openssl}/bin/openssl rand -hex 32)" \
-                  > /var/lib/searxng-secret/environment
-              fi
-            '';
+          # SearXNG's session secret, from secrets/<host>.yaml (sops).
+          sops.secrets.searxng_secret_key = { };
+          sops.templates."searxng.env" = {
+            content = "SEARX_SECRET_KEY=${config.sops.placeholder.searxng_secret_key}\n";
+            restartUnits = [ "searx.service" ];
           };
         })
       ];

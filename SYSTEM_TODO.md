@@ -16,6 +16,23 @@ instead of copying their instructions. No review task authorizes a reboot,
 activation, storage change, secret archive or graphical-session interruption.
 Earlier approvals remain bounded by their original scope and safety preconditions.
 
+<a id="sys-074"></a>
+
+### SYS-074 — Move Caddy's OVH credentials into sops
+
+**Status:** OPEN · **Review:** 2026-12-08
+
+sops-nix is set up ([changelog](SYSTEM_CHANGELOG.md), `secrets` skill) and
+SearXNG's key already comes from `secrets/erebor.yaml`. Caddy still reads the
+OVH DNS API credentials from the root-owned `/etc/caddy/ovh.env`, which an
+agent cannot read without the user's touch approval. Follow "Moving an
+existing credential into sops" in `.claude/skills/secrets/SKILL.md`.
+
+Done when: Caddy's `environmentFile` is a `sops.templates` file, a
+certificate renewal or `caddy validate` authenticates with OVH after
+activation, `/etc/caddy/ovh.env` is deleted with the user's approval, and
+`/var/lib/searxng-secret/` is removed.
+
 <a id="sys-073"></a>
 
 ### SYS-073 — GPU passthrough as a GRUB specialisation

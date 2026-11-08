@@ -190,6 +190,23 @@ let
       check (lib.elem erebor.my.user.name (lib.attrNames erebor.home-manager.users)) "erebor: no Home Manager config for my.user.name"
       ++ check (lib.elem template.my.user.name (lib.attrNames template.home-manager.users)) "template: no Home Manager config for my.user.name";
 
+    # Every secrets/*.yaml is sops-encrypted: each top-level value is ENC[…]
+    # and the file carries sops metadata.
+    secrets-encrypted = lib.concatMap (
+      name:
+      let
+        text = builtins.readFile (../../secrets + "/${name}");
+        lines = lib.splitString "\n" text;
+        topLevel = lib.filter (
+          l: builtins.match "[A-Za-z0-9_-]+:.*" l != null && !lib.hasPrefix "sops:" l
+        ) lines;
+      in
+      check (lib.hasInfix "\nsops:" text) "secrets/${name}: no sops metadata"
+      ++ map (l: "secrets/${name}: plaintext value: ${lib.head (lib.splitString ":" l)}") (
+        lib.filter (l: !lib.hasInfix "ENC[" l) topLevel
+      )
+    ) (lib.filter (lib.hasSuffix ".yaml") (lib.attrNames (builtins.readDir ../../secrets)));
+
     # The my.* assertions fire, naming the setting to fix.
     my-assertions =
       check (mentions "my.ambilight.musicSink" (failedWith {

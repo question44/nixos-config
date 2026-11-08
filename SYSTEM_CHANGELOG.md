@@ -3,6 +3,36 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Encrypted secrets with sops-nix; SearXNG's key moved into sops — 2026-11-08
+
+Adds the `sops-nix` input (pinned, follows nixpkgs) and the `secrets` aspect
+(`modules/secrets.nix`, in `workstation`): each host's
+`secrets/<hostname>.yaml` is its default sops file, decrypted at activation
+with the SSH host key into `/run/secrets`. `.sops.yaml` names two
+recipients: janzon's new personal age key (`~/.config/sops/age/keys.txt`,
+mode 600, generated today; needs an offline backup) and erebor's host key
+(`ssh-to-age` of `/etc/ssh/ssh_host_ed25519_key.pub`). SearXNG now reads
+`/run/secrets/rendered/searxng.env`, rendered from a newly generated
+`searxng_secret_key`; the `searxng-secret` generator unit is gone (the new key
+only invalidates SearXNG sessions). The eval test `secrets-encrypted` fails
+if any `secrets/*.yaml` value is not `ENC[…]` (confirmed with a planted
+plaintext line). AGENTS.md now allows secrets in the repo only
+sops-encrypted; the `secrets` skill documents the workflow. Caddy's OVH
+credentials stay in `/etc/caddy/ovh.env` for now: reading them needs sudo
+(SYS-074).
+
+Validation: `nix fmt`, `nix flake check` and `scripts/erebor-rebuild build`
+pass. Leak check: the decrypted value is in no tracked file, no git object,
+and none of the closure's top-level files nor the changed paths
+(`/etc`, `searxng.env`, `manifest.json`, `erebor.yaml`). `erebor-diff`
+against the previous commit: different for erebor, as intended: adds
+`sops-install-secrets`, the encrypted `erebor.yaml`, the manifest and the
+`searxng.env` template; drops `searxng-secret.service` and its `requires`
+link; `searx.service` and `searx-init.service` change `EnvironmentFile` to
+the rendered path. Template: identical (no secrets declared). Not activated;
+after activation check `/run/secrets/rendered/searxng.env` exists (root,
+0400) and that SearXNG answers on 127.0.0.1:8888.
+
 # Weekly tested flake update branch — 2026-11-08
 
 New `scripts/erebor-update-branch [--pinned]` and the `update-branch` aspect

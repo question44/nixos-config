@@ -35,6 +35,7 @@ before acting; each holds the full rules for its area.
 | `parallel-agents` | creating a worktree, comparing with `erebor-diff`, merging into `master`, claiming a `SYS-NNN` ID |
 | `activation-and-checkpoints` | activating, rebooting, or touching boot, ESP, storage, subvolumes or Windows |
 | `system-records` | writing `SYSTEM_CHANGELOG.md`, `SYSTEM_TODO.md` or `SYSTEM_CONTEXT.md`, month rollover, `[PENDING]` checkpoints |
+| `secrets` | a service needs a secret, adding or rotating one, changing recipients, moving an on-disk credential into sops |
 | `desktop-config` | changing Umbriel, Noctalia or Niri (their configs are live from `/etc/nixos`) |
 
 ## Repository layout and other machines
@@ -84,10 +85,12 @@ before acting; each holds the full rules for its area.
 
 ## Secrets and source control
 
-- Keep passwords, Wi-Fi credentials, browser profiles, tokens, private keys,
-  and other secrets out of this repository and the Nix store.
+- Secrets (passwords, tokens, API keys, private keys, Wi-Fi credentials) may
+  live in this repository only sops-encrypted in `secrets/*.yaml`; plaintext
+  never enters git, the Nix store, records or transcripts. Browser profiles
+  and personal data stay out entirely. Use the `secrets` skill.
 - Keep the flake lock file committed and review `git diff` before committing.
-- Do not commit generated secrets, machine-specific credentials, or unrelated
+- Do not commit unencrypted secrets, machine-specific credentials, or unrelated
   user changes.
 - After a verified important system change, commit the relevant configuration
   and changelog changes in Git before declaring the work complete.

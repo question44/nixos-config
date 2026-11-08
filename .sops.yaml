@@ -1,0 +1,13 @@
+# Who can decrypt secrets/*.yaml. After changing recipients, re-encrypt with
+# `sops updatekeys secrets/<file>.yaml` (see the secrets skill).
+keys:
+  # janzon's personal age key (~/.config/sops/age/keys.txt; back it up).
+  - &janzon age18fp73yrfvajjamu6efrajv0f7h0e5zv0zu5v59rctx77rhv9zesqrt3ryu
+  # erebor's SSH host key: ssh-to-age < /etc/ssh/ssh_host_ed25519_key.pub
+  - &erebor age1lp6dlr6tqs570scxghsvkdak39r5p7y8f400nzlmedx88qftt56swtem46
+creation_rules:
+  - path_regex: ^secrets/erebor\.yaml$
+    key_groups:
+      - age:
+          - *janzon
+          - *erebor

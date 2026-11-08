@@ -53,6 +53,10 @@
       url = "github:hercules-ci/flake-parts/ea2630b7470978622c7689a1ff75d2b389175399";
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
+    sops-nix = {
+      url = "github:Mic92/sops-nix/89a234ce2daf6e568a7d4b4fe250afdd23d84e20";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     import-tree.url = "github:vic/import-tree/eb1b52eaecc57f7c136d07ae8a93e724dfecac46";
   };
 

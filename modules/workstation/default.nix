@@ -42,6 +42,7 @@ in
       niri
       home-manager
       update-branch
+      secrets
     ];
   };
 }
