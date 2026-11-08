@@ -3,6 +3,39 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Activated: dendritic, sops, live-config and gpu-passthrough merge — 2026-11-08
+
+`master` fast-forwarded from `7faf39a` to `4c7904c` (`agent/gpu-specialisation`,
+which contains `agent/adopt` and `agent/dendritic`). Live generation before
+activation: 317 (`/nix/store/3a8fdy7qj0rv424l6rcs39yfv58786n6-…`).
+Prechecks: no failed system or user units; ESP 5.1 GB free; `nix flake check`
+passes; `scripts/erebor-rebuild build` gives
+`/nix/store/3mdy522pkn7017kyj9pashrwlhcq9ghr-…` on the same nixpkgs
+(`26.11.20261103.1d06008`). `nix store diff-closures` shows only the expected
+changes: sops-install-secrets and `searxng.env`, the update-branch timer,
+removal of `searxng-secret.service` and the copied desktop configs, and the
+new `gpu-passthrough` specialisation (its own initrd and kernel modules).
+Snapshot: read-only `/btrfs-top/nixos-root-pre-dendritic-merge-20261108`.
+Risks: a new GRUB entry is added (boot-affecting); SearXNG's key changes
+(sessions invalidated); the desktop configs become out-of-store links.
+Recovery: boot generation 317 from GRUB, or `nixos-rebuild switch --rollback`.
+Do not boot the gpu-passthrough entry until the Intel iGPU is re-enabled in
+firmware ([SYS-073](tasks/SYS-073.md)).
+
+Outcome: `scripts/erebor-rebuild switch` activated generation 318
+(`3mdy522p…`, the built path). This activates the eleven entries below that
+say "Not activated". Verified: no failed system or user units;
+`/run/secrets/rendered/searxng.env` exists (root, 0400), `searx` is active
+and answers HTTP 200 on 127.0.0.1:8888; `~/.config/{umbriel/config.toml,
+noctalia/config.toml,niri/config.kdl}` resolve into `/etc/nixos/home/`;
+`erebor-update-branch.timer` is scheduled (next Sun 2026-11-15 03:21);
+`t3code` restarted with `CLAUDE_CODE_SHELL` and the wrappers first on PATH;
+GRUB lists Default, gpu-passthrough and Windows Boot Manager; `/`, `/home`
+and `/boot` are mounted as before. Not tested: Umbriel reloading on save of
+the linked file, a new t3code agent running git, booting either new GRUB
+entry, and the Mac config (evaluated only). Build warnings: the avahi options
+in `modules/timemachine.nix` are renamed/obsolete upstream (still working).
+
 # Agents get bash and the full PATH; SSH rule for fish hosts — 2026-11-08
 
 T3 Code runs as a systemd user unit, so agents it started inherited
