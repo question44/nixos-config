@@ -3,6 +3,24 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Chomik, a native Chomikuj.pl client — 2026-11-09
+
+At the user's request, Chomik (a PySide6/QML client built on pyChomikBox, in
+the private repo question44/chomik-qml) is added as the submodule
+`apps/chomik-qml` with a `path:` flake input, the same way as the dashboard.
+`modules/workstation/packages.nix` installs it, and `modules/home/desktop.nix`
+makes `chomik-qml.desktop` the default `x-scheme-handler/chomik` handler, so
+the website's "download with ChomikBox" links open in Chomik instead of the
+Wine ChomikBox (which stays installed). erebor-diff tier: different (the
+Chomik package, its desktop entry and icon, and the Home Manager mimeapps
+change; other /etc files differ only in store hashes). Activated with switch
+as generation 329 after a first attempt failed because sudo got no touch
+approval. `chomik-qml` resolves from /run/current-system, and both
+`xdg-mime` and `gio mime` report `chomik-qml.desktop` as the default for
+`x-scheme-handler/chomik`. A browser link click has not been tried since the
+switch; the app itself was tested before (sign-in, own folders, a link
+folder listing and download).
+
 # Wine and winetricks for ChomikBox — 2026-11-08
 
 At the user's request, to install the Windows-only ChomikBox client,
