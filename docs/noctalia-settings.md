@@ -21,6 +21,9 @@ Keep these in `settings.toml` only:
 - `[wallpaper.last]` and `[[wallpaper.favorite]]`, which are history rather
   than settings. `noctalia config export` does not print them, so they are
   easy to lose.
+- `auto_hide`, `smart_auto_hide` and `reserve_space` under `[bar.default]`:
+  the bar's pin button (`noctalia-bar-autohide`) writes them there as its
+  persistent mode.
 
 Plugin code stays out too. Noctalia downloads plugins from the
 `[[plugins.source]]` entries; only the enabled list and `plugin_settings`
