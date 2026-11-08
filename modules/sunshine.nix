@@ -49,7 +49,8 @@
             settings = {
               sunshine_name = "erebor";
               capture = "wlr";
-              encoder = "nvenc";
+              # Intel Quick Sync while the RTX 4090 is passed through.
+              encoder = if config.virtualisation.windowsGpuPassthrough.enable or false then "vaapi" else "nvenc";
               output_name = "sunshine";
               upnp = "disabled";
               origin_web_ui_allowed = "lan";

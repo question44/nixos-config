@@ -9,6 +9,8 @@
 
     let
       domain = config.my.network.domain;
+      # Hosts without the windows-vm aspect lack the option.
+      gpuOnHost = !(config.virtualisation.windowsGpuPassthrough.enable or false);
       # RTX 4090 (Ada): avoid compiling runners for unrelated GPU generations.
       ollama = pkgs.ollama-cuda.override { cudaArches = [ "sm_89" ]; };
     in
@@ -24,10 +26,12 @@
         (lib.mkIf config.my.services.ollama.enable {
           # The desktop loads NVIDIA in the initrd; ensure CUDA's UVM module is also
           # loaded in stage 2 before the sandboxed Ollama service starts.
-          boot.kernelModules = [ "nvidia_uvm" ];
+          # With the GPU passed through, the module does not exist and the 27B model
+          # would run on the CPU, competing with the guest; Open WebUI stays up.
+          boot.kernelModules = lib.optionals gpuOnHost [ "nvidia_uvm" ];
 
           services.ollama = {
-            enable = true;
+            enable = gpuOnHost;
             package = ollama;
             host = "127.0.0.1";
             loadModels = [ "huihui_ai/qwen3.5-abliterated:27b" ];

@@ -96,6 +96,14 @@ in
       # Shut down windows11 before toggling GPU ownership.
       virtualisation.windowsGpuPassthrough.enable = false;
 
+      # A second GRUB entry boots with the RTX 4090 reserved for windows11 and
+      # Linux on Intel graphics; the default entry stays as above. Switch by
+      # rebooting: the GPU binds early in boot, so live switching is unsupported.
+      specialisation.gpu-passthrough.configuration = {
+        system.nixos.tags = [ "gpu-passthrough" ];
+        virtualisation.windowsGpuPassthrough.enable = lib.mkForce true;
+      };
+
       # Keep P-core 0 (CPUs 0-1) free of Nix builds so the desktop stays responsive.
       systemd.services.nix-daemon.serviceConfig.AllowedCPUs = "2-19";
 
