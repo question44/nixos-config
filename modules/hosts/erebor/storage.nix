@@ -66,8 +66,12 @@
       # Read 8 MiB ahead on spinning disks and the volumes on them, so seeding
       # from them needs fewer seeks. The SATA drives already report this size;
       # the USB Expansion drive and bigdaddy on it default to 1 MiB.
+      # Cap dirty page cache for the Crucial MX500 (/srv/external/crucial) at
+      # 1 GiB. strict_limit enforces it even while global dirty data is below
+      # the free-run threshold, where max_bytes alone would not apply.
       services.udev.extraRules = ''
         ACTION=="add|change", SUBSYSTEM=="block", ENV{DEVTYPE}=="disk", KERNEL=="sd[a-z]*|dm-[0-9]*", ATTR{queue/rotational}=="1", ATTR{bdi/read_ahead_kb}="8192"
+        ACTION=="add|change", SUBSYSTEM=="block", ENV{DEVTYPE}=="disk", ENV{ID_SERIAL}=="CT500MX500SSD1_1824E143D803", ATTR{bdi/max_bytes}="1073741824", ATTR{bdi/strict_limit}="1"
       '';
     };
 }
