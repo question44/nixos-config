@@ -3,6 +3,13 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Umbriel: drop cmd+Shift+P screen-off bind — 2026-11-08
+
+Removes `Mod+Shift+P` (`dpms-off`) from `home/umbriel/config.toml` at the
+user's request: system-wide actions should come from the CapsLock layer, not
+cmd. Screen-off intentionally gets no replacement chord. The other `Mod+…`
+binds are unchanged. Live config only (out-of-store link); no rebuild.
+
 # Dolphin admin mode (kio-admin) — 2026-11-08
 
 Adds `kdePackages.kio-admin` to the system packages and to

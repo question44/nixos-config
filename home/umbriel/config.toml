@@ -255,7 +255,6 @@ default_output = "sunshine"
 "Mod+Shift+Escape" = { action = "shortcuts-inhibit-toggle", allow_when_inhibited = true, repeat = false }
 "Mod+Shift+E" = { action = "session-quit", repeat = false }
 "Ctrl+Alt+Delete" = { action = "session-quit", repeat = false }
-"Mod+Shift+P" = { action = "dpms-off", repeat = false }
 "Print" = { action = "spawn noctalia msg screenshot-region", repeat = false }
 "Ctrl+Print" = { action = "spawn noctalia msg screenshot-fullscreen", repeat = false }
 "Alt+Print" = { action = "spawn /home/janzon/.local/bin/umbriel-screenshot-window", repeat = false }
