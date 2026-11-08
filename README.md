@@ -89,7 +89,7 @@ Other helpers:
 | File | Contents |
 |---|---|
 | [SYSTEM_CHANGELOG.md](SYSTEM_CHANGELOG.md) | Dated changes for the current month, with verification. Older months are in `changelog/`. |
-| [SYSTEM_TODO.md](SYSTEM_TODO.md) | Unfinished work, as `SYS-NNN` tasks. |
+| [tasks/](tasks/README.md) | Unfinished work, one `SYS-NNN` file per task; `scripts/erebor-tasks` shows the board. |
 | [SYSTEM_CONTEXT.md](SYSTEM_CONTEXT.md) | State that isn't declared in Nix: manual setup, recovery paths, verified pitfalls. |
 | [docs/windows-vm.md](docs/windows-vm.md) | Windows 11 VM, GPU passthrough and Looking Glass. |
 | [docs/mac-approval.md](docs/mac-approval.md) | How sudo is approved from the MacBook. |

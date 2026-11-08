@@ -24,11 +24,12 @@ other:
 - To land work: commit on your branch, run `git -C /etc/nixos merge
   agent/<task>` (rebase first if it does not merge cleanly), activate, verify,
   then `git worktree remove --force ~/nixos-wt/<task>` and delete the branch.
-- `SYSTEM_CHANGELOG.md` and `SYSTEM_TODO.md` merge with `merge=union`, which
-  keeps both sides. After a merge, check that edits to the same entry did not
-  leave duplicated lines.
-- To claim a new `SYS-NNN` ID, commit the task stub to `master` first, so two
-  agents never pick the same number.
+- `SYSTEM_CHANGELOG.md` merges with `merge=union`, which keeps both sides.
+  After a merge, check that edits to the same entry did not leave duplicated
+  lines.
+- To claim a new `SYS-NNN` ID, create it with `scripts/erebor-tasks new`
+  (which skips IDs used on any branch) and commit that file to `master` first,
+  so two agents never pick the same number.
 - Uncommitted changes in `/etc/nixos` that you did not make belong to another
   agent. Leave them out of your commits and do not reset them;
   `erebor-rebuild` lists them before activating.
@@ -105,11 +106,18 @@ other:
   `changelog/YYYY-MM.md#…`; links inside the archive gain `../`). Check that
   every link still resolves. Archived months are history: do not edit them
   except to fix links.
-- `SYSTEM_TODO.md` is the single list of unfinished work. Give each task a stable
+- `tasks/` holds unfinished work, one file per task (`tasks/SYS-NNN.md`); its
+  [README](tasks/README.md) defines the format. Give each task a stable
   `SYS-NNN` ID, status, review date, concrete completion condition and evidence
   links. Use OPEN for known work, ACTIVE for work underway, REVIEW for uncertain
   historical work, and DONE/CANCELLED with dated evidence/reason for closure.
-  Keep IDs after closure; consolidate duplicate tasks by linking their records.
+  Group related tasks under an epic (`children:` / `epic:`). Keep IDs after
+  closure; consolidate duplicate tasks by linking their records.
+- On closing a task, shrink it to a stub (outcome, untested parts, link to the
+  changelog evidence). The first task closed in a new month first runs
+  `scripts/erebor-tasks archive`, which moves earlier months' closed tasks to
+  `tasks/archive/YYYY-MM/` and rewrites their links. Read `scripts/erebor-tasks`
+  (the board) rather than every task file.
 - `SYSTEM_CONTEXT.md` holds only current non-declarative facts, recovery knowledge
   and verified pitfalls. Remove superseded facts; link tasks rather than copying
   their status. Check live state before using any historical recovery path.

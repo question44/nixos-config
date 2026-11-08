@@ -3,6 +3,38 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Tasks: one file per task, with a monthly archive — 2026-11-08
+
+User asked to split the task list ([SYS-088](tasks/SYS-088.md)), because several
+agents editing one `SYSTEM_TODO.md` led to ID clashes (SYS-074 used by two
+branches, SYS-081 claimed mid-edit) and `merge=union` duplicates.
+
+- `SYSTEM_TODO.md` is replaced by 89 files under `tasks/`: open work and tasks
+  closed this month in `tasks/`, the 27 tasks closed in October in
+  `tasks/archive/2026-10/`. Status, dates, epic and children are in a small
+  header; bodies are unchanged (word-for-word check against the old file).
+  The "Open checks" section became `kind: check`.
+- The old file had two tasks numbered SYS-028. The newer one (swaybg under
+  Umbriel) is now SYS-089, and the 2026-11-04 wallpaper entry links to it.
+- `scripts/erebor-tasks`: board (`list`, `--all`), `show`, `next` (scans every
+  branch, including legacy files), `new`, `close`, `archive` (monthly move plus
+  link rewrite), `check`, and `migrate` for branches that still edit the old
+  file.
+- `nix flake check` gains `checks.x86_64-linux.tasks`. It rejects duplicate
+  IDs, bad headers, unknown statuses, open tasks in the archive, epics and
+  children that disagree, links to `SYSTEM_TODO.md`, and broken links from or
+  into `tasks/` (files only; anchors are not checked).
+- AGENTS.md, README.md, SYSTEM_CONTEXT.md and `.gitattributes` follow:
+  closing shrinks a task to a stub, and the first task closed in a month first
+  runs `erebor-tasks archive`. The 31 links into the old file now point to the
+  task files.
+
+`nix flake check` passes. A copy with a planted duplicate ID, an epic
+mismatch and a broken link fails with those errors. No system change or
+activation. `agent/gpu-specialisation` still edits the old file (SYS-073,
+SYS-074). It conflicts when it merges `master`; [tasks/README.md](tasks/README.md)
+describes how to carry the edits over.
+
 # Ambilight remembers "off" across HyperHDR restarts — 2026-11-07
 
 User reported the LEDs lit with WLED's own effect after HyperHDR restarted
@@ -207,7 +239,7 @@ B7-895-432f4a0c installed. Windows IDD and Looking Glass session untested.
 
 # Move to nixos-unstable — 2026-11-06
 
-[SYS-072](SYSTEM_TODO.md#sys-072). User asked to move the whole system from
+[SYS-072](tasks/SYS-072.md). User asked to move the whole system from
 nixos-26.05 to nixos-unstable (`1d060086`, 2026-11-03), mainly to replace Qt
 6.11 with 6.12 everywhere. Home Manager now follows its master branch and
 Vicinae follows the system nixpkgs (it had its own copy of Qt 6.11).
@@ -1068,7 +1100,7 @@ its separately pinned Nixpkgs because the system's Nixpkgs lacks Zig 0.17.
 `nix flake check` and `nixos-rebuild dry-build --flake /etc/nixos#erebor`
 passed. Activation and graphical behavior remain unverified; administrator
 authentication is required, and the current tree contains unrelated dashboard
-and service edits that a full activation would also apply. See [SYS-067](SYSTEM_TODO.md#sys-067).
+and service edits that a full activation would also apply. See [SYS-067](tasks/SYS-067.md).
 The upstream package built successfully and `monstar --version` returned 1.1.0.
 On retry, administrator authentication succeeded, but the full system build
 failed: the separately modified dashboard control package imports `auth`, which
@@ -1289,7 +1321,7 @@ Physical display off/wake remains untested under separate SYS-002.
 
 
 This file records dated changes and their evidence. Current unfinished work lives
-in [SYSTEM_TODO.md](SYSTEM_TODO.md); recovery knowledge lives in
+in [SYSTEM_TODO.md](tasks/README.md); recovery knowledge lives in
 [SYSTEM_CONTEXT.md](SYSTEM_CONTEXT.md). Nix files define intended configuration.
 
 **Reading historical records:** versions, generations, permissions, recovery paths,
@@ -1366,7 +1398,7 @@ HDMI-A-1, Noctalia logged both as externally managed, and the user confirmed the
 animated wallpaper looks correct with HDR on. Not tested: the picker panel UI,
 the "Match Theme Colors" option, pause/stop, and startup on the next login.
 The Niri-only `niri-overview-wallpaper` swaybg still runs under Umbriel on DP-1
-below the scene ([SYS-089](SYSTEM_TODO.md#sys-089)). No reboot.
+below the scene ([SYS-089](tasks/SYS-089.md)). No reboot.
 
 ## [COMPLETED] Umbriel action arguments in rcmd and helpers — 2026-11-04
 
@@ -1386,7 +1418,7 @@ No reboot.
 
 ## [COMPLETED] Removed the wallpaper-only `ambilight` virtual output — 2026-11-04
 
-At the user's request, Ambilight now follows DP-1's content ([SYS-005](SYSTEM_TODO.md#sys-005)).
+At the user's request, Ambilight now follows DP-1's content ([SYS-005](tasks/SYS-005.md)).
 Removed `[output.ambilight]` and the `umbriel-ambilight-session` wrapper
 (`33bfbf3`); Umbriel now autostarts `noctalia` directly. Umbriel validation,
 flake check and build passed; test-activated, not switched, because another
@@ -1442,7 +1474,7 @@ installed plugin IDs to `dolphinrc` `[PreviewSettings] Plugins`. Not included:
 font thumbnails (plasma-workspace) and Calligra.
 
 The first build hit Btrfs metadata ENOSPC; the user ran a data balance first
-([SYS-008](SYSTEM_TODO.md#sys-008)). Built from a clean worktree of HEAD plus only
+([SYS-008](tasks/SYS-008.md)). Built from a clean worktree of HEAD plus only
 this change so unrelated uncommitted work was not activated; the closure diff
 showed only the new packages and Home Manager files. Flake check and build
 passed; pkexec test then switch succeeded, generation 250 (GRUB default). No
