@@ -1448,9 +1448,9 @@ Isolated compositor/NVENC tests passed; end-to-end Moonlight and persistent depl
 
 **Evidence:** [historical record](changelog/2026-10.md#record-sys-023-1).
 
-<a id="sys-028"></a>
+<a id="sys-089"></a>
 
-### SYS-028 — Niri overview swaybg runs under Umbriel
+### SYS-089 — Niri overview swaybg runs under Umbriel
 
 **Status:** OPEN · **Reviewed:** 2026-11-04
 

@@ -1366,7 +1366,7 @@ HDMI-A-1, Noctalia logged both as externally managed, and the user confirmed the
 animated wallpaper looks correct with HDR on. Not tested: the picker panel UI,
 the "Match Theme Colors" option, pause/stop, and startup on the next login.
 The Niri-only `niri-overview-wallpaper` swaybg still runs under Umbriel on DP-1
-below the scene ([SYS-028](SYSTEM_TODO.md#sys-028)). No reboot.
+below the scene ([SYS-089](SYSTEM_TODO.md#sys-089)). No reboot.
 
 ## [COMPLETED] Umbriel action arguments in rcmd and helpers — 2026-11-04
 
