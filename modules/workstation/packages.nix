@@ -79,6 +79,9 @@
       };
     in
     {
+      # kio-admin's privileged helper is a D-Bus system service.
+      services.dbus.packages = [ pkgs.kdePackages.kio-admin ];
+
       nixpkgs.config.allowUnfreePredicate =
         pkg:
         builtins.elem (lib.getName pkg) [
@@ -132,6 +135,8 @@
           gnupg
           gnumake
           kdePackages.dolphin
+          # Dolphin's admin mode (admin:/, "Open as Administrator"), approved through polkit.
+          kdePackages.kio-admin
           kdePackages.discover
           kdePackages.konsole
           kdePackages.gwenview

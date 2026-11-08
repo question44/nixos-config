@@ -3,6 +3,18 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Dolphin admin mode (kio-admin) — 2026-11-08
+
+Adds `kdePackages.kio-admin` to the system packages and to
+`services.dbus.packages` (its privileged helper `org.kde.kio.admin` is a D-Bus
+system service; its polkit action comes in through `/share/polkit-1`). Dolphin
+gains "Open as Administrator" and the `admin:/` location, approved through
+polkit, so Dolphin itself keeps running as janzon.
+
+Validation: `nix fmt`, `nix flake check` and `scripts/erebor-rebuild build`
+pass. `erebor-diff` against `master`: different, as intended: only the
+`kio-admin` package and the system bus configuration that lists it.
+
 # Activated: dendritic, sops, live-config and gpu-passthrough merge — 2026-11-08
 
 `master` fast-forwarded from `7faf39a` to `4c7904c` (`agent/gpu-specialisation`,
