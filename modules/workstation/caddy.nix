@@ -9,6 +9,12 @@
     }:
     let
       domain = config.my.network.domain;
+      ovhKeys = [
+        "ovh_endpoint"
+        "ovh_application_key"
+        "ovh_application_secret"
+        "ovh_consumer_key"
+      ];
       dashboard = config.services.erebor-dashboard.package;
       # Spliced into the indented Caddyfile below; the text keeps its layout.
       hyperhdrRoute =
@@ -50,13 +56,21 @@
       ) withPublic;
     in
     {
+      sops.secrets = lib.genAttrs ovhKeys (_: { });
+      sops.templates."caddy-ovh.env" = {
+        content = lib.concatMapStrings (k: "${lib.toUpper k}=${config.sops.placeholder.${k}}\n") ovhKeys;
+        owner = "caddy";
+        restartUnits = [ "caddy.service" ];
+      };
+
       services.caddy = {
         enable = true;
         package = pkgs.caddy.withPlugins {
           plugins = [ "github.com/caddy-dns/ovh@v1.1.0" ];
           hash = "sha256-VJgAmT1q1wcqt7o7HrK2+ONfZrfI/QW2v3d6ZSMh718=";
         };
-        environmentFile = "/etc/caddy/ovh.env";
+        # OVH DNS API credentials for certificates, from secrets/<host>.yaml.
+        environmentFile = config.sops.templates."caddy-ovh.env".path;
         globalConfig = "auto_https disable_redirects";
         extraConfig = ''
           (dashboard_controls) {
