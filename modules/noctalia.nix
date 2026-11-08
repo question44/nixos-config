@@ -90,11 +90,7 @@
             *) exit 2 ;;
           esac
 
-          if umbriel windows --json >/dev/null 2>&1; then
-            exec umbriel msg "window-focus-$direction"
-          else
-            exec niri msg action "focus-column-$direction"
-          fi
+          exec umbriel msg "window-focus-$direction"
         '';
         executable = true;
       };

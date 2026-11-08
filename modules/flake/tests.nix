@@ -62,14 +62,10 @@ let
           }
         ];
 
-    # Umbriel is always a session; Niri only where my.niri is on.
+    # Umbriel is the only session.
     sessions =
-      check (lib.elem "umbriel" (sessionNames erebor)) "erebor: no Umbriel session"
-      ++ check (lib.elem "niri" (sessionNames erebor)) "erebor: no Niri session (my.niri.enable)"
-      ++ check (lib.elem "umbriel" (sessionNames template)) "template: no Umbriel session"
-      ++ check (
-        !lib.elem "niri" (sessionNames template)
-      ) "template: Niri session although my.niri is off";
+      check (sessionNames erebor == [ "umbriel" ]) "erebor: sessions are not exactly [ umbriel ]"
+      ++ check (sessionNames template == [ "umbriel" ]) "template: sessions are not exactly [ umbriel ]";
 
     # Optional features switch off: the template enables none of them.
     features-off =

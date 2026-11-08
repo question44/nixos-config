@@ -55,7 +55,6 @@ in
         noctalia
         vicinae
         xremap
-        niri
         spotify
         steam-theme
       ];

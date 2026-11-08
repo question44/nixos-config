@@ -1,5 +1,5 @@
 # Graphical session plumbing: portals, audio and Helium. The greeter,
-# compositors and shell live in their own aspects (noctalia, umbriel, niri).
+# compositors and shell live in their own aspects (noctalia, umbriel).
 { inputs, ... }:
 {
   flake.modules.nixos.session =

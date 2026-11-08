@@ -2,7 +2,6 @@
 """Cycle matching application windows by initial, or open the Vicinae app menu."""
 import argparse
 import fcntl
-import glob
 import json
 import os
 from pathlib import Path
@@ -69,29 +68,15 @@ def command(args):
 class Desktop:
     def __init__(self):
         names = os.environ.get('XDG_CURRENT_DESKTOP', '').casefold().split(':')
-        if 'niri' in names:
-            self.kind = 'niri'
-            if not Path(os.environ.get('NIRI_SOCKET', '/nonexistent')).is_socket():
-                sockets = glob.glob(os.environ['XDG_RUNTIME_DIR'] + '/niri.wayland-*.sock')
-                if len(sockets) != 1:
-                    raise RuntimeError('Cannot identify the active Niri socket')
-                os.environ['NIRI_SOCKET'] = sockets[0]
-        elif 'umbriel' in names:
-            self.kind = 'umbriel'
-        else:
-            raise RuntimeError('Right Ctrl app switching requires Niri or Umbriel')
+        if 'umbriel' not in names:
+            raise RuntimeError('Right Ctrl app switching requires Umbriel')
 
     def windows(self):
-        args = ['niri', 'msg', '--json', 'windows'] if self.kind == 'niri' else ['umbriel', 'windows', '--json']
-        return json.loads(command(args))
+        return json.loads(command(['umbriel', 'windows', '--json']))
 
     def focus(self, window):
-        if self.kind == 'niri':
-            command(['niri', 'msg', 'action', 'focus-window', '--id', str(window['id'])])
-            command(['niri', 'msg', 'action', 'center-column'])
-        else:
-            command(['umbriel', 'msg', 'window-focus', str(window['id'])])
-            command(['umbriel', 'msg', 'column-center'])
+        command(['umbriel', 'msg', 'window-focus', str(window['id'])])
+        command(['umbriel', 'msg', 'column-center'])
 
 
 def timestamp(window):

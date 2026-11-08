@@ -102,7 +102,7 @@
           default = "/etc/nixos";
           description = ''
             Checkout of this repository that live desktop configs link to
-            (Umbriel, Noctalia, Niri). Home Manager points those files at it with
+            (Umbriel, Noctalia). Home Manager points those files at it with
             out-of-store symlinks, so saving the file there applies the change
             without a rebuild.
           '';
@@ -120,10 +120,6 @@
             example = "https://github.com/owner/nixos-config/blob/master/";
             description = "URL prefix that makes task file paths (tasks/SYS-NNN.md) into links; null shows no links.";
           };
-        };
-
-        niri = {
-          enable = lib.mkEnableOption "Niri as a second compositor next to Umbriel";
         };
 
         torrentVpn = {

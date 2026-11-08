@@ -39,7 +39,6 @@ in
       dashboard-control
       vicinae
       darkly
-      niri
       home-manager
       update-branch
       secrets

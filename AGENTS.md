@@ -40,7 +40,7 @@ before acting; each holds the full rules for its area.
 | `activation-and-checkpoints` | activating, rebooting, or touching boot, ESP, storage, subvolumes or Windows |
 | `system-records` | writing `SYSTEM_CHANGELOG.md`, a task in `tasks/` or `SYSTEM_CONTEXT.md`, month rollover, `[PENDING]` checkpoints |
 | `secrets` | a service needs a secret, adding or rotating one, changing recipients, moving an on-disk credential into sops |
-| `desktop-config` | changing Umbriel, Noctalia or Niri (their configs are live from `/etc/nixos`) |
+| `desktop-config` | changing Umbriel or Noctalia (their configs are live from `/etc/nixos`) |
 
 ## Repository layout and other machines
 
@@ -48,7 +48,7 @@ before acting; each holds the full rules for its area.
   under `modules/` with import-tree as a flake-parts module. Each file adds
   NixOS and/or Home Manager aspects (`flake.modules.nixos.<name>`,
   `flake.modules.homeManager.<name>`). A feature that spans both (Umbriel,
-  Noctalia, Niri, Vicinae, Darkly, xremap, …) keeps both halves in one file.
+  Noctalia, Vicinae, Darkly, xremap, …) keeps both halves in one file.
   Flake inputs reach modules by closure (`{ inputs, ... }:` around the
   aspect); do not add `specialArgs`. Paths with a `_`-prefixed component
   (e.g. `_hardware-configuration.nix`) are not loaded as flake-parts modules.
@@ -84,12 +84,14 @@ before acting; each holds the full rules for its area.
 
 ## System design boundaries
 
-- Preserve the established NixOS design: NVIDIA, Niri, Noctalia, Ghostty,
+- Preserve the established NixOS design: NVIDIA, Umbriel, Noctalia, Ghostty,
   Wayland/portal/audio support, ungoogled Chromium, and Oo7 as the desktop
   Secret Service provider.
-- Launch Niri through `niri-session` and launch Noctalia from Niri. Do not add
-  competing ad-hoc services or reintroduce GNOME Keyring or KWallet without
-  explicit user direction and a documented design decision.
+- Umbriel is the only compositor session, started by the Noctalia greeter;
+  Noctalia runs as a systemd user service on `graphical-session.target`. Do
+  not add another compositor session, competing ad-hoc services, or
+  reintroduce GNOME Keyring or KWallet without explicit user direction and a
+  documented design decision.
 - Add services, packages, dotfiles, containers, and personal data only when
   explicitly requested. Prefer one change at a time with build, activation,
   and live verification.
