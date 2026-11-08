@@ -3,6 +3,43 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Task board card in the dashboard hub (SYS-092) — 2026-11-08
+
+Optional follow-up to SYS-090: administrators get a read-only Tasks card in
+the hub; other accounts do not.
+
+- `scripts/erebor-tasks list --json` prints counts per open status, overdue
+  reviews, open epics with progress (`done` of `total`, cancelled children
+  excluded) and every open task with its repository path. `--root DIR`
+  selects the repository. Two new tests in `scripts/tests/`.
+- Dashboard submodule (`c1c4ee1`, local commits, **not pushed**):
+  `control.tasks.command`/`linkBase` options; `GET /api/control/tasks`
+  (administrators only, 403 otherwise) runs the command with a 10 s timeout
+  and returns only the documented fields; `/api/control/config` adds
+  `taskBoard: true` for administrators. The card shows the counts, epic
+  progress bars and active or overdue tasks (all open on request), linked to
+  GitHub. It starts folded to a one-line summary (user request); unfolding is
+  remembered per device. API tests in `api/test_tasks.py`.
+- `my.taskBoard.enable`/`linkBase` (erebor: on, GitHub `blob/master/`). The
+  API runs the store copy of `erebor-tasks` on `my.flakePath`, so counts
+  follow the checkout without a rebuild.
+
+`scripts/erebor-diff`: different — new dashboard and control packages, two
+`DASHBOARD_TASKS_*` variables on `dashboard-control.service`, closure +21.4
+KiB. `nix flake check` passes. Activated with `scripts/erebor-rebuild switch`
+as generation 323, then 324 for the fold. Verified: the running service's
+environment holds the command as valid JSON; the command under the unit's
+`ProtectSystem=strict`/`ProtectHome=read-only` gives ACTIVE 2, OPEN 30,
+REVIEW 18, 27 overdue, SYS-087 0 of 6; the deployed API code with that
+environment and a throwaway state directory gave an administrator the same
+counts and `…/blob/master/tasks/SYS-087.md` links, and a non-admin account no
+`taskBoard` flag and 403; unauthenticated `/api/control/tasks` on the live
+service is 401; Caddy serves the bundle with the folded card. Not observed:
+the rendered card in a signed-in browser (the in-app browser blocked the
+bundle). Limit: GitHub links and clean builds of `master` need the dashboard
+commits pushed; until then build with a git `insteadOf` pointing at
+`apps/erebor-dashboard`.
+
 # Zed: macOS JetBrains keymap with Cmd on Super (SYS-093) — 2026-11-08
 
 User asked for the macOS JetBrains shortcuts in Zed, with Super as Cmd. They
