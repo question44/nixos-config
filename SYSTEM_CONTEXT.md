@@ -26,6 +26,14 @@ Unfinished work and verification checks belong in
   modules. The repository is authoritative for those.
 - Secrets or one-off command history.
 
+## Recovery locations
+
+- Offline copy of janzon's sops age key (`~/.config/sops/age/keys.txt`, a
+  `.sops.yaml` recipient): `sops-age-janzon-keys.txt` (root, 0400) on the
+  ext4 partition labelled `LUKS_KEY` of the Ventoy USB flash drive, next to
+  `moria-root-luks.key`. Copied and checksum-verified 2026-11-08. Without it
+  or erebor's SSH host key, `secrets/*.yaml` cannot be decrypted.
+
 ## Reusable operational pitfalls
 
 - `xremap.service` reads `~/.config/xremap/config.yml` only at startup and
