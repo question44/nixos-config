@@ -139,6 +139,17 @@ certificate renewal or `caddy validate` authenticates with OVH after
 activation, `/etc/caddy/ovh.env` is deleted with the user's approval, and
 `/var/lib/searxng-secret/` is removed.
 
+<a id="sys-088"></a>
+
+### SYS-088 — One file per task, with a monthly archive for closed tasks
+
+**Status:** ACTIVE · **Review:** 2026-11-15
+
+User request 2026-11-08: replace `SYSTEM_TODO.md` with one file per task under
+`tasks/`, status in a header, closed tasks shrunk to stubs and archived by
+month, a `scripts/erebor-tasks` board, and a flake check for IDs and links.
+In progress on branch `agent/tasks-refactor`.
+
 <a id="sys-087"></a>
 
 ### SYS-087 — Epic: guest-safe game streaming and hub-managed guest access
