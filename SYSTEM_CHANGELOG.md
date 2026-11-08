@@ -3,6 +3,20 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Wine and winetricks for ChomikBox — 2026-11-08
+
+At the user's request, to install the Windows-only ChomikBox client,
+`modules/workstation/packages.nix` adds `wineWow64Packages.stable` and
+`winetricks`. erebor-diff tier: different (the two packages and their fish
+completions; eight /etc files differ only in store hashes). Activated with
+switch as generation 328; `wine` and `winetricks` resolve from
+/run/current-system. ChomikBox.msi was then installed silently into its own
+prefix, `~/.local/share/wineprefixes/chomikbox` (outside the flake, not
+declarative), which created the menu entry under
+`~/.local/share/applications/wine/Programs/Chomikuj.pl/`. A 25 s test launch
+ran `chomikbox.exe` without fatal errors (only the optional Qt SVG image
+plugin failed to load). Signing in and transfers are not tested.
+
 # Crucial MX500 dirty writeback capped at 1 GiB — 2026-11-08
 
 At the user's request, after ~4 GB of dirty data piled up during copies, a
