@@ -1,3 +1,6 @@
 [submodule "apps/erebor-dashboard"]
 	path = apps/erebor-dashboard
 	url = git@github.com:question44/erebor-dashboard.git
+[submodule "apps/chomik-qml"]
+	path = apps/chomik-qml
+	url = git@github.com:question44/chomik-qml.git

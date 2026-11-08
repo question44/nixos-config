@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "chomik": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "path": "./apps/chomik-qml",
+        "type": "path"
+      },
+      "original": {
+        "path": "./apps/chomik-qml",
+        "type": "path"
+      },
+      "parent": []
+    },
     "claude-desktop-nix": {
       "inputs": {
         "nixpkgs": "nixpkgs"
@@ -407,6 +423,7 @@
     },
     "root": {
       "inputs": {
+        "chomik": "chomik",
         "claude-desktop-nix": "claude-desktop-nix",
         "darkly": "darkly",
         "dashboard": "dashboard",

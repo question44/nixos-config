@@ -101,6 +101,8 @@
           "x-scheme-handler/about" = [ "helium.desktop" ];
           "x-scheme-handler/http" = [ "helium.desktop" ];
           "x-scheme-handler/https" = [ "helium.desktop" ];
+          # Website "download with ChomikBox" links open in Chomik, not the Wine ChomikBox.
+          "x-scheme-handler/chomik" = [ "chomik-qml.desktop" ];
           "image/avif" = [ "org.kde.gwenview.desktop" ];
           "image/bmp" = [ "org.kde.gwenview.desktop" ];
           "image/gif" = [ "org.kde.gwenview.desktop" ];

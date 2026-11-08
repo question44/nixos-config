@@ -20,6 +20,7 @@
       '';
 
       system = pkgs.stdenv.hostPlatform.system;
+      chomik = inputs.chomik.packages.${system}.default;
       claudeDesktop = inputs.claude-desktop-nix.packages.${system}.default.overrideAttrs (old: {
         postFixup = (old.postFixup or "") + ''
           wrapProgram "$out/bin/claude-desktop" \
@@ -200,6 +201,8 @@
           linux-wallpaperengine
           aiUsagebar
           auroraNcs
+          # Chomikuj.pl client; also the chomik:// link handler (modules/home/desktop.nix).
+          chomik
           ut2004.ut2004
           ut2004.ut2004-import-rpm
           ut2004.ut2004-setup

@@ -11,6 +11,11 @@
       url = "path:./apps/erebor-dashboard";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Chomik, the Chomikuj.pl client (apps/chomik-qml submodule).
+    chomik = {
+      url = "path:./apps/chomik-qml";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     moonshine = {
       url = "github:hgaiser/moonshine/79554f853135cbac44502b58093a4eb0f0f5e6f1";
       inputs.nixpkgs.follows = "nixpkgs";
