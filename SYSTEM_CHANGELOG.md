@@ -3,6 +3,27 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Agents get bash and the full PATH; SSH rule for fish hosts — 2026-11-08
+
+T3 Code runs as a systemd user unit, so agents it started inherited
+systemd's minimal PATH (no git, nix or setuid wrappers) and, with fish as
+the login shell and no bash on that PATH, Claude Code refused to run any
+command ("No suitable shell found"). `t3code-start` now exports the user's
+full PATH (wrappers first) and `CLAUDE_CODE_SHELL`, and
+`environment.sessionVariables.CLAUDE_CODE_SHELL` sets it for every session
+(terminals, Claude Desktop, CLI). Codex already falls back to bash on its
+own (checked: `codex exec` ran its command in bash), so it needs nothing.
+The login shell stays fish. AGENTS.md gains an always-on rule: commands run
+in bash, and scripts sent to hosts whose login shell is fish (the Mac) go
+through `bash -s` or `bash -c`. The hand-added `env.CLAUDE_CODE_SHELL` in
+`~/.claude/settings.json` becomes redundant after activation.
+
+Validation: `nix fmt`, `nix flake check` and `scripts/erebor-rebuild
+build` pass. `erebor-diff HEAD .`: different, only the new variable in
+`set-environment` and the changed `t3code` unit/start script. Not yet
+activated; after activation, restart `t3code` and confirm a new agent's
+shell has git on PATH.
+
 # The Mac under nix-darwin, sharing Home Manager aspects — 2026-11-08
 
 Adds the `nix-darwin` input (pinned, follows nixpkgs) and

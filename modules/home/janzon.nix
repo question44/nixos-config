@@ -12,6 +12,10 @@ in
       # Home Manager uses the modern profile CLI during system activation.
       systemd.services."home-manager-${config.my.user.name}".environment.NIX_CONFIG =
         "experimental-features = nix-command flakes";
+      # Claude Code (CLI, Desktop, T3 agents) refuses fish, the login shell.
+      # Set for every session through PAM, desktop apps included. Codex falls
+      # back to bash on its own.
+      environment.sessionVariables.CLAUDE_CODE_SHELL = "/run/current-system/sw/bin/bash";
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
       home-manager.backupFileExtension = "backup";

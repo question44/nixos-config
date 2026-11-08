@@ -22,6 +22,10 @@ working Windows installation, and verify every material change.
   Identify the Btrfs filesystem and the ESP by UUID only.
 - Do not reboot after a material change without a read-back checkpoint in
   `SYSTEM_CHANGELOG.md`.
+- Shell commands run in bash, not the login shell (fish). Hosts reached over
+  SSH may have fish as their login shell (the Mac does): send scripts as
+  `ssh <host> bash -s < script` or `ssh <host> bash -c '...'`, never bare
+  POSIX syntax.
 - A change is complete when it is activated and verified, recorded in
   `SYSTEM_CHANGELOG.md`, and committed; a build alone is not activation.
 

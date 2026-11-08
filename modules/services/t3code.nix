@@ -9,8 +9,12 @@
     }:
     let
       user = config.my.user.name;
+      # Agents started by T3 Code inherit this environment. Give them the user's
+      # full PATH (setuid wrappers first, as in a login shell). Claude Code gets bash:
+      # it refuses the fish login shell ("No suitable shell found").
       t3codeStart = pkgs.writeShellScript "t3code-start" ''
-        export PATH="/home/${user}/.local/bin:$PATH"
+        export PATH="/home/${user}/.local/bin:/run/wrappers/bin:/home/${user}/.nix-profile/bin:/etc/profiles/per-user/${user}/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin:$PATH"
+        export CLAUDE_CODE_SHELL=/run/current-system/sw/bin/bash
         exec /home/${user}/.local/bin/t3 serve --mode web --host 127.0.0.1 --port 3773 --base-dir /home/${user}/.t3/server
       '';
     in
