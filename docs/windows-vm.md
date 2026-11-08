@@ -2,7 +2,7 @@
 
 ## Current phase
 
-GPU ownership is chosen in the GRUB menu ([SYS-073](../SYSTEM_TODO.md#sys-073)).
+GPU ownership is chosen in the GRUB menu ([SYS-073](../tasks/SYS-073.md)).
 The default entry keeps the RTX 4090 on Linux
 (`virtualisation.windowsGpuPassthrough.enable = false` in
 `modules/hosts/erebor/default.nix`). Each generation also has a

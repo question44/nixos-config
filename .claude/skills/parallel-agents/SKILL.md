@@ -1,6 +1,6 @@
 ---
 name: parallel-agents
-description: Use before editing anything in /etc/nixos, and when landing work - creating a worktree, comparing a branch with erebor-diff, merging into master, claiming a SYS-NNN ID, or finding uncommitted changes you did not make.
+description: Use before editing anything in /etc/nixos, and when landing work - creating a worktree, comparing a branch with erebor-diff, merging into master, creating a SYS-NNN task, or finding uncommitted changes you did not make.
 ---
 
 # Working beside other agents in /etc/nixos
@@ -44,11 +44,12 @@ from overwriting each other.
 3. Activate (see the activation-and-checkpoints skill) and verify.
 4. `git worktree remove --force ~/nixos-wt/<task>` and delete the branch.
 
-- `SYSTEM_CHANGELOG.md` and `SYSTEM_TODO.md` merge with `merge=union`, which
-  keeps both sides. After a merge, check that edits to the same entry did not
-  leave duplicated lines.
-- To claim a new `SYS-NNN` ID, commit the task stub to `master` first, so two
-  agents never pick the same number.
+- `SYSTEM_CHANGELOG.md` merges with `merge=union`, which keeps both sides.
+  After a merge, check that edits to the same entry did not leave duplicated
+  lines.
+- Create a new task with `scripts/erebor-tasks new`, which reserves the ID
+  under a lock (no two agents on this machine get the same number), then
+  commit the file to `master` soon so others see the task.
 
 ## Other agents' changes
 

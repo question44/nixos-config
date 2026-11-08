@@ -1,0 +1,510 @@
+#!/usr/bin/env python3
+"""Task board and checks for erebor's tasks/ directory.
+
+  erebor-tasks [list] [--all]    board of open work (--all adds closed tasks)
+  erebor-tasks show SYS-NNN      print one task
+  erebor-tasks next              next free ID: every branch, every worktree's
+                                 files and the reservations
+  erebor-tasks new "Title"       reserve the next ID under a lock and create
+                                 tasks/SYS-NNN.md (then commit it to master)
+  erebor-tasks close SYS-NNN DONE|CANCELLED
+  erebor-tasks archive           move tasks closed before this month to
+                                 tasks/archive/YYYY-MM/ and fix links
+  erebor-tasks check [ROOT]      validate IDs, headers, epics, links and
+                                 anchors; fail when the monthly archive is due
+
+Each task is tasks/SYS-NNN.md (or tasks/archive/YYYY-MM/SYS-NNN.md):
+
+  ---
+  status: OPEN            # OPEN, ACTIVE, REVIEW, DONE or CANCELLED
+  review: 2026-11-22      # next review date (open statuses)
+  closed: 2026-11-08      # closing date (DONE/CANCELLED)
+  epic: SYS-087           # optional parent epic
+  children: SYS-075, SYS-076   # epics only
+  kind: check             # optional: an acceptance check rather than work
+  ---
+
+  # SYS-NNN — Title
+
+The ID comes from the file name; the title from the heading.
+"""
+
+import datetime
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+OPEN = ("ACTIVE", "OPEN", "REVIEW")
+CLOSED = ("DONE", "CANCELLED")
+FIELDS = ("status", "review", "closed", "epic", "children", "kind")
+ID_RE = re.compile(r"^SYS-\d{3,}$")
+DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+LINK_RE = re.compile(r"(\]\()([^)\s]+)(\))")
+RESERVED = "erebor-tasks-reserved"  # in the shared git directory
+SKIP_DIRS = {".git", "apps", "node_modules", "result"}
+
+
+def repo_root():
+    start = Path.cwd()
+    for path in (start, *start.parents):
+        if (path / "flake.nix").exists() and (path / "tasks").is_dir():
+            return path
+    for path in (start, *start.parents):
+        if (path / "flake.nix").exists():
+            return path
+    sys.exit("erebor-tasks: run inside the nixos repository")
+
+
+class Task:
+    def __init__(self, path, root):
+        self.path = path
+        self.root = root
+        self.id = path.stem
+        text = path.read_text()
+        self.meta, self.body, self.errors = {}, text, []
+        if text.startswith("---\n") and "\n---\n" in text[4:]:
+            head, self.body = text[4:].split("\n---\n", 1)
+            for line in head.splitlines():
+                line = line.split("#", 1)[0].rstrip()
+                if not line:
+                    continue
+                key, sep, value = line.partition(":")
+                if not sep:
+                    self.errors.append(f"bad header line {line!r}")
+                    continue
+                self.meta[key.strip()] = value.strip()
+        else:
+            self.errors.append("missing --- header")
+        heading = re.search(r"^# (SYS-\d+) — (.+)$", self.body, re.M)
+        self.heading_id = heading.group(1) if heading else None
+        self.title = heading.group(2) if heading else "(no heading)"
+
+    @property
+    def status(self):
+        return self.meta.get("status", "")
+
+    @property
+    def children(self):
+        return [c.strip() for c in self.meta.get("children", "").split(",") if c.strip()]
+
+    def rel(self):
+        return self.path.relative_to(self.root)
+
+
+def load_tasks(root):
+    tasks = {}
+    dupes = []
+    for path in sorted((root / "tasks").rglob("SYS-*.md")):
+        task = Task(path, root)
+        if task.id in tasks:
+            dupes.append(task)
+        else:
+            tasks[task.id] = task
+    return tasks, dupes
+
+
+def num(task_id):
+    return int(task_id.split("-")[1])
+
+
+# ---------------------------------------------------------------- links
+
+
+def markdown_files(root):
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS]
+        for name in filenames:
+            if name.endswith(".md"):
+                yield Path(dirpath) / name
+
+
+def is_relative(target):
+    return not re.match(r"^[a-z][a-z0-9+.-]*:", target) and not target.startswith(("#", "/"))
+
+
+def rewrite_links(root, mapping):
+    """Point links at moved files. mapping: old absolute Path -> new absolute Path."""
+    changed = []
+    for md in markdown_files(root):
+        text = md.read_text()
+
+        def fix(match):
+            target = match.group(2)
+            if not is_relative(target):
+                return match.group(0)
+            path, sep, anchor = target.partition("#")
+            resolved = Path(os.path.normpath(md.parent / path))
+            new = mapping.get(resolved)
+            if new is None:
+                return match.group(0)
+            # A moved task file has no inner anchors worth keeping.
+            return match.group(1) + os.path.relpath(new, md.parent) + match.group(3)
+
+        new_text = LINK_RE.sub(fix, text)
+        if new_text != text:
+            md.write_text(new_text)
+            changed.append(md)
+    return changed
+
+
+# ---------------------------------------------------------------- commands
+
+
+def cmd_list(root, args):
+    tasks, _ = load_tasks(root)
+    today = datetime.date.today().isoformat()
+    show_all = "--all" in args
+    statuses = OPEN + (CLOSED if show_all else ())
+    epics = {t.id: t for t in tasks.values() if t.children}
+    for status in statuses:
+        group = [t for t in tasks.values() if t.status == status]
+        if not group:
+            continue
+        print(f"\n{status} ({len(group)})")
+        for task in sorted(group, key=lambda t: -num(t.id)):
+            if task.meta.get("epic") in epics and epics[task.meta["epic"]].status in statuses:
+                continue  # listed under its epic
+            print_task(task, today)
+            for child_id in task.children:
+                child = tasks.get(child_id)
+                if child and child.status in statuses:
+                    print_task(child, today, indent="    └ ")
+
+
+def print_task(task, today, indent="  "):
+    date = task.meta.get("closed") or task.meta.get("review") or ""
+    late = " !overdue" if task.status in OPEN and task.meta.get("review", "9999") < today else ""
+    tag = " [epic]" if task.children else (" [check]" if task.meta.get("kind") == "check" else "")
+    status = f"{task.status:<9} " if indent != "  " else ""
+    print(f"{indent}{task.id}  {status}{task.title}{tag}  {date}{late}")
+
+
+def cmd_show(root, args):
+    tasks, _ = load_tasks(root)
+    task = tasks.get(args[0].upper()) if args else None
+    if not task:
+        sys.exit("usage: erebor-tasks show SYS-NNN")
+    print(f"{task.rel()}\n")
+    print(task.path.read_text())
+
+
+def git(root, *args):
+    try:
+        result = subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=True)
+    except OSError:
+        return ""
+    return result.stdout if result.returncode == 0 else ""
+
+
+def git_common_dir(root):
+    """The .git directory shared by every worktree of the repository."""
+    out = git(root, "rev-parse", "--path-format=absolute", "--git-common-dir").strip()
+    return Path(out) if out else None
+
+
+def ids_in(text, pattern):
+    return set(re.findall(pattern, text, re.M))
+
+
+def all_known_ids(root):
+    """Every ID in use or reserved: this tree, every branch, uncommitted files
+    in every worktree, and reservations."""
+    ids = set(load_tasks(root)[0])
+    for ref in git(root, "for-each-ref", "--format=%(refname)", "refs/heads", "refs/remotes").split():
+        ids |= ids_in(git(root, "ls-tree", "-r", "--name-only", ref, "--", "tasks"), r"(SYS-\d+)\.md$")
+    for line in git(root, "worktree", "list", "--porcelain").splitlines():
+        if line.startswith("worktree "):
+            tree = Path(line[len("worktree "):])
+            ids |= {p.stem for p in (tree / "tasks").rglob("SYS-*.md")}
+    common = git_common_dir(root)
+    if common and (common / RESERVED).exists():
+        ids |= ids_in((common / RESERVED).read_text(), r"^(SYS-\d+)\b")
+    return ids
+
+
+
+def next_id(root):
+    ids = all_known_ids(root)
+    return f"SYS-{max((num(i) for i in ids), default=0) + 1:03d}"
+
+
+def cmd_next(root, args):
+    print(next_id(root))
+
+
+def cmd_new(root, args):
+    if not args:
+        sys.exit('usage: erebor-tasks new "Title"')
+    title = " ".join(args)
+    common = git_common_dir(root)
+    if common is None:
+        sys.exit("erebor-tasks new: not in a git repository; cannot reserve an ID")
+    import fcntl  # Linux-only, like the rest of this repository
+
+    # Hold the lock from choosing the ID until it is recorded, so two
+    # concurrent runs in any worktree never get the same number.
+    with open(common / "erebor-tasks.lock", "w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        task_id = next_id(root)
+        with open(common / RESERVED, "a") as reserved:
+            reserved.write(f"{task_id} {datetime.date.today().isoformat()} {root} {title}\n")
+    review = (datetime.date.today() + datetime.timedelta(days=14)).isoformat()
+    path = root / "tasks" / f"{task_id}.md"
+    path.write_text(
+        f"---\nstatus: OPEN\nreview: {review}\n---\n\n# {task_id} — {title}\n\n"
+        "What is wanted and why (who asked, when).\n\n"
+        "Done when: a concrete, observable completion condition.\n"
+    )
+    print(path.relative_to(root))
+    print("Reserved on this machine. Commit it to master soon (see tasks/README.md).")
+
+
+def set_meta(path, updates, drop=()):
+    text = path.read_text()
+    head, body = text[4:].split("\n---\n", 1)
+    lines = [l for l in head.splitlines() if l.partition(":")[0].strip() not in (*updates, *drop)]
+    lines += [f"{k}: {v}" for k, v in updates.items()]
+    order = {k: i for i, k in enumerate(FIELDS)}
+    lines.sort(key=lambda l: order.get(l.partition(":")[0].strip(), 99))
+    path.write_text("---\n" + "\n".join(lines) + "\n---\n" + body)
+
+
+def cmd_close(root, args):
+    if len(args) != 2 or args[1].upper() not in CLOSED:
+        sys.exit("usage: erebor-tasks close SYS-NNN DONE|CANCELLED")
+    tasks, _ = load_tasks(root)
+    task = tasks.get(args[0].upper()) or sys.exit(f"no task {args[0]}")
+    set_meta(task.path, {"status": args[1].upper(), "closed": datetime.date.today().isoformat()},
+             drop=("review",))
+    print(f"{task.rel()}: {args[1].upper()}. Shrink the body to a stub (see tasks/README.md).")
+
+
+def cmd_archive(root, args):
+    tasks, _ = load_tasks(root)
+    # Same month as the check uses, so `archive` always satisfies it.
+    month = changelog_month(root) or datetime.date.today().strftime("%Y-%m")
+    mapping = {}
+    for task in tasks.values():
+        closed = task.meta.get("closed", "")
+        if task.status in CLOSED and task.path.parent == root / "tasks" and closed[:7] < month:
+            target = root / "tasks" / "archive" / closed[:7] / task.path.name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            mapping[task.path] = target
+    for old, new in mapping.items():
+        text = old.read_text()
+        old.unlink()
+        new.write_text(text)
+    # Links inside moved files are relative to their old place: rebase them.
+    for old, new in mapping.items():
+        rebase_file_links(new, old.parent, new.parent)
+    rewrite_links(root, mapping)
+    print(f"Archived {len(mapping)} task(s).")
+
+
+def rebase_file_links(path, old_dir, new_dir):
+    text = path.read_text()
+
+    def fix(match):
+        target = match.group(2)
+        if not is_relative(target):
+            return match.group(0)
+        file_part, sep, anchor = target.partition("#")
+        resolved = os.path.normpath(old_dir / file_part)
+        return match.group(1) + os.path.relpath(resolved, new_dir) + sep + anchor + match.group(3)
+
+    path.write_text(LINK_RE.sub(fix, text))
+
+
+def cmd_check(root, args):
+    if args:
+        root = Path(args[0]).resolve()
+    tasks, dupes = load_tasks(root)
+    errors = []
+    for task in dupes:
+        errors.append(f"{task.rel()}: duplicate ID {task.id} (also {tasks[task.id].rel()})")
+    for task in tasks.values():
+        where = task.rel()
+        errors += [f"{where}: {e}" for e in task.errors]
+        if not ID_RE.match(task.id):
+            errors.append(f"{where}: file name is not SYS-NNN.md")
+        if task.heading_id != task.id:
+            errors.append(f"{where}: heading must be '# {task.id} — Title'")
+        for key in task.meta:
+            if key not in FIELDS:
+                errors.append(f"{where}: unknown header field {key!r}")
+        for key in ("review", "closed"):
+            if key in task.meta and not DATE_RE.match(task.meta[key]):
+                errors.append(f"{where}: {key} must be YYYY-MM-DD")
+        status = task.status
+        archived = "archive" in task.path.parts
+        if status in OPEN:
+            if "review" not in task.meta:
+                errors.append(f"{where}: {status} needs a review date")
+            if archived:
+                errors.append(f"{where}: {status} task in the archive")
+        elif status in CLOSED:
+            if "closed" not in task.meta:
+                errors.append(f"{where}: {status} needs a closed date")
+            elif archived and task.path.parent.name != task.meta["closed"][:7]:
+                errors.append(f"{where}: archived under the wrong month")
+        else:
+            errors.append(f"{where}: unknown status {status!r}")
+        epic = task.meta.get("epic")
+        if epic:
+            parent = tasks.get(epic)
+            if not parent:
+                errors.append(f"{where}: epic {epic} does not exist")
+            elif task.id not in parent.children:
+                errors.append(f"{where}: epic {epic} does not list it in children")
+        for child in task.children:
+            if child not in tasks:
+                errors.append(f"{where}: child {child} does not exist")
+            elif tasks[child].meta.get("epic") != task.id:
+                errors.append(f"{where}: child {child} does not name it as epic")
+    errors += check_archive_due(root, tasks)
+    errors += check_links(root)
+    warnings = closed_task_warnings(root, tasks)
+    for warning in warnings:
+        print(f"warning: {warning}")
+    for error in errors:
+        print(error)
+    if errors:
+        sys.exit(f"erebor-tasks check: {len(errors)} problem(s)")
+    print(f"erebor-tasks check: {len(tasks)} tasks OK" + (f", {len(warnings)} warning(s)" if warnings else ""))
+
+
+MONTHS = ("January February March April May June July August September October "
+          "November December").split()
+
+
+def changelog_month(root):
+    """The current month as SYSTEM_CHANGELOG.md's header states it (YYYY-MM)."""
+    changelog = root / "SYSTEM_CHANGELOG.md"
+    if not changelog.exists():
+        return None
+    match = re.search(r"current month \((\w+) (\d{4})\)", changelog.read_text()[:2000])
+    if not match or match.group(1) not in MONTHS:
+        return None
+    return f"{match.group(2)}-{MONTHS.index(match.group(1)) + 1:02d}"
+
+
+def check_archive_due(root, tasks):
+    """Closed tasks outside the archive must belong to the changelog's month.
+
+    Taking the month from the changelog keeps the check reproducible: it fails
+    once the changelog has rolled over to a new month and the tasks have not.
+    """
+    month = changelog_month(root)
+    if month is None:
+        return ["SYSTEM_CHANGELOG.md: header does not state the current month"]
+    errors = []
+    for task in tasks.values():
+        closed = task.meta.get("closed", "")
+        archived = "archive" in task.path.parts
+        if task.status in CLOSED and closed:
+            if not archived and closed[:7] < month:
+                errors.append(f"{task.rel()}: closed in {closed[:7]}; run `scripts/erebor-tasks archive`")
+            if archived and closed[:7] >= month:
+                errors.append(f"{task.rel()}: archived although closed in the current month")
+    return errors
+
+
+def github_slug(heading):
+    text = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", heading)  # links keep their text
+    text = text.strip().lower().replace("`", "")
+    text = re.sub(r"[^\w\- ]", "", text)
+    return text.replace(" ", "-")
+
+
+_anchor_cache = {}
+
+
+def anchors_of(path):
+    """Anchors GitHub generates for a Markdown file: heading slugs (with -1,
+    -2 for repeats) and explicit <a id/name> tags."""
+    if path in _anchor_cache:
+        return _anchor_cache[path]
+    anchors, seen, fenced = set(), {}, False
+    for line in path.read_text().splitlines():
+        if line.lstrip().startswith(("```", "~~~")):
+            fenced = not fenced
+            continue
+        if fenced:
+            continue
+        heading = re.match(r"^#{1,6}\s+(.*?)\s*#*\s*$", line)
+        if heading:
+            slug = github_slug(heading.group(1))
+            count = seen.get(slug, 0)
+            seen[slug] = count + 1
+            anchors.add(slug if count == 0 else f"{slug}-{count}")
+        anchors |= set(re.findall(r'<a\s+(?:id|name)="([^"]+)"', line))
+    _anchor_cache[path] = anchors
+    return anchors
+
+
+def check_links(root):
+    """Links from or into tasks/ must reach an existing file and anchor; no
+    link may point at the removed SYSTEM_TODO.md."""
+    errors = []
+    tasks_dir = root / "tasks"
+    for md in markdown_files(root):
+        in_tasks = tasks_dir in md.parents
+        fenced = False
+        for line in md.read_text().splitlines():
+            if line.lstrip().startswith(("```", "~~~")):
+                fenced = not fenced
+            if fenced:
+                continue
+            for match in LINK_RE.finditer(line):
+                target = match.group(2)
+                if re.match(r"^[a-z][a-z0-9+.-]*:", target) or target.startswith("/"):
+                    continue
+                file_part, _, anchor = target.partition("#")
+                resolved = Path(os.path.normpath(md.parent / file_part)) if file_part else md
+                where = md.relative_to(root)
+                if resolved.name == "SYSTEM_TODO.md":
+                    errors.append(f"{where}: link to removed SYSTEM_TODO.md")
+                    continue
+                if not (in_tasks or tasks_dir in resolved.parents):
+                    continue
+                if not resolved.exists():
+                    errors.append(f"{where}: broken link {target}")
+                elif anchor and resolved.suffix == ".md" and anchor not in anchors_of(resolved):
+                    errors.append(f"{where}: no anchor #{anchor} in {os.path.relpath(resolved, root)}")
+    return errors
+
+
+def closed_task_warnings(root, tasks):
+    """Closed tasks this month should be stubs with a changelog link."""
+    warnings = []
+    for task in tasks.values():
+        if task.status not in CLOSED or "archive" in task.path.parts:
+            continue
+        lines = [l for l in task.body.split("\n", 2)[-1].splitlines() if l.strip()]
+        if len(lines) > 15:
+            warnings.append(f"{task.rel()}: closed but {len(lines)} lines; shrink it to a stub")
+        if "changelog" not in task.body.lower():
+            warnings.append(f"{task.rel()}: closed without a link to its changelog entry")
+    return warnings
+
+
+def main():
+    args = sys.argv[1:]
+    command = args.pop(0) if args and not args[0].startswith("-") else "list"
+    commands = {
+        "list": cmd_list, "show": cmd_show, "next": cmd_next, "new": cmd_new,
+        "close": cmd_close, "archive": cmd_archive, "check": cmd_check,
+    }
+    if command not in commands:
+        sys.exit(__doc__)
+    if command == "check" and args:
+        root, args = Path(args[0]).resolve(), []  # e.g. the flake check's source copy
+    else:
+        root = repo_root()
+    commands[command](root, args)
+
+
+if __name__ == "__main__":
+    main()

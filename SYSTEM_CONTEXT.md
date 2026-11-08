@@ -9,7 +9,7 @@ Keep it concise: retain only important information relevant now, and remove an
 entry when it becomes obsolete, superseded, or no longer applies. Historical
 changes belong in [SYSTEM_CHANGELOG.md](SYSTEM_CHANGELOG.md), not here.
 Unfinished work and verification checks belong in
-[SYSTEM_TODO.md](SYSTEM_TODO.md); do not duplicate task status here.
+[tasks/](tasks/README.md); do not duplicate task status here.
 
 ## What belongs here
 

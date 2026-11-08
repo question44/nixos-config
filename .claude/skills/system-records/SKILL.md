@@ -1,6 +1,6 @@
 ---
 name: system-records
-description: Use when writing or editing SYSTEM_CHANGELOG.md, SYSTEM_TODO.md or SYSTEM_CONTEXT.md - adding a changelog entry, the first entry of a new month (archive rollover), opening or closing a SYS-NNN task, recording a [PENDING] checkpoint, or deciding whether a change is complete.
+description: Use when writing or editing SYSTEM_CHANGELOG.md, a task under tasks/ or SYSTEM_CONTEXT.md - adding a changelog entry, the first entry of a new month (archive rollover), opening or closing a SYS-NNN task, recording a [PENDING] checkpoint, or deciding whether a change is complete.
 ---
 
 # System records and task tracking
@@ -31,20 +31,29 @@ month first:
 3. Rewrites links to moved entries: `SYSTEM_CHANGELOG.md#…` becomes
    `changelog/YYYY-MM.md#…`; links inside the archive gain `../`.
 4. Checks that every link still resolves.
+5. Runs `scripts/erebor-tasks archive`, which moves tasks closed in earlier
+   months to `tasks/archive/YYYY-MM/` and rewrites their links.
 
 Archived months are history: do not edit them except to fix links.
 
-## SYSTEM_TODO.md
+## Tasks (`tasks/`)
 
-- The single list of unfinished work.
-- Give each task a stable `SYS-NNN` ID, status, review date, concrete
-  completion condition and evidence links. Claim a new ID by committing the
-  stub to `master` first (see the parallel-agents skill).
+- Unfinished work, one file per task (`tasks/SYS-NNN.md`);
+  [tasks/README.md](../../../tasks/README.md) defines the format and rules.
+  `scripts/erebor-tasks` shows the board; read it rather than every file.
+- Create a task with `scripts/erebor-tasks new "Title"` (it reserves the ID
+  under a lock), fill in a stable status, review date, concrete completion
+  condition and evidence links, and commit it to `master` soon (see the
+  parallel-agents skill).
 - Statuses: OPEN for known work, ACTIVE for work underway, REVIEW for
   uncertain historical work, and DONE/CANCELLED with dated evidence or reason
-  for closure.
+  for closure. Group related tasks under an epic (`children:` / `epic:`).
+- On closing (`scripts/erebor-tasks close SYS-NNN DONE`), shrink the task to
+  a stub: outcome, untested parts, link to the changelog evidence.
 - Keep IDs after closure; consolidate duplicate tasks by linking their
   records.
+- When the changelog rolls over to a new month, also run
+  `scripts/erebor-tasks archive`; `nix flake check` fails until it has run.
 
 ## SYSTEM_CONTEXT.md
 

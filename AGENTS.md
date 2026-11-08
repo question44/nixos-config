@@ -36,9 +36,9 @@ before acting; each holds the full rules for its area.
 
 | Skill | Use it when |
 |---|---|
-| `parallel-agents` | creating a worktree, comparing with `erebor-diff`, merging into `master`, claiming a `SYS-NNN` ID |
+| `parallel-agents` | creating a worktree, comparing with `erebor-diff`, merging into `master`, creating a `SYS-NNN` task |
 | `activation-and-checkpoints` | activating, rebooting, or touching boot, ESP, storage, subvolumes or Windows |
-| `system-records` | writing `SYSTEM_CHANGELOG.md`, `SYSTEM_TODO.md` or `SYSTEM_CONTEXT.md`, month rollover, `[PENDING]` checkpoints |
+| `system-records` | writing `SYSTEM_CHANGELOG.md`, a task in `tasks/` or `SYSTEM_CONTEXT.md`, month rollover, `[PENDING]` checkpoints |
 | `secrets` | a service needs a secret, adding or rotating one, changing recipients, moving an on-disk credential into sops |
 | `desktop-config` | changing Umbriel, Noctalia or Niri (their configs are live from `/etc/nixos`) |
 
