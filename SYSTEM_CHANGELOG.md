@@ -3,6 +3,44 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Niri removed (SYS-094) — 2026-11-08
+
+At the user's request Niri is gone; Umbriel is the only compositor session.
+Removed: the `niri` aspect and `my.niri` toggle, `home/niri/` (config and
+Caps+Q, focus-or-launch, background-apps helpers), the
+`niri-overview-wallpaper` swaybg unit with its override and Dolphin service
+menu (resolves the swaybg half of [SYS-089](tasks/SYS-089.md)), and the Niri
+branches in `rcmd`, `xremap-focus-or-launch`, `noctalia-bar-focus`,
+remote-desktop's session script and dashboard-control's `PATH`. Niri came from
+nixpkgs (`programs.niri`), so there was no flake input to drop. The dashboard
+submodule's generic Niri support stays, as Mango's did. Noctalia: the bar's
+dead-zone left click now runs `umbriel msg overview-toggle` (it called
+`niri msg` before, a no-op under Umbriel); dropped the Niri workspace-preview
+plugin, `niri_overview_type_to_launch_enabled` and the `niri` theme template
+(the `spotify-media-niri` bar widget stays: only its name says Niri).
+`modules/flake/tests.nix` now requires exactly `[ umbriel ]` as sessions on
+erebor and the template. `AGENTS.md`, README and the desktop-config skill no
+longer name Niri.
+
+`scripts/erebor-diff`: different — only Niri: the `niri` package (−35 MiB)
+and its session, units, completions and docs, `/etc/xdg/niri/config.kdl`,
+the Niri portals config, the swaybg unit, `niri` in dashboard-control's
+`PATH`, and the resulting store-hash changes (greeter `desktops`, dbus dirs).
+`nix flake check` passes. With the user's approval, activated with
+`scripts/erebor-rebuild switch` as generation 326; greetd was not restarted
+(`X-RestartIfChanged=false`) and the running Umbriel session was untouched.
+Verified: the greeter's `wayland-sessions` holds only `umbriel.desktop`; no
+`niri` on `PATH` or user units; `noctalia`, `noctalia-lyrics`, `xremap` and
+`dashboard-control` active, no failed user units; `umbriel layers` shows no
+swaybg `wallpaper` surface, only `noctalia-wallpaper` and `dropwall`; the
+Noctalia config validates; `rcmd --focus-window` and `--list` work through
+Umbriel; `xremap-focus-or-launch` routes to Umbriel; a screenshot shows the
+bar and windows normal. Not observed: the greeter screen itself and the
+wallpaper after a re-login (SYS-089 stays open for that). Old Home Manager
+backups (`~/.config/niri/config.kdl.backup`,
+`~/.local/bin/niri-overview-wallpaper.backup`, `~/.config/niri/overview-wallpaper`)
+are user files and were left alone.
+
 # Caddy's OVH credentials from sops (SYS-074) — 2026-11-08
 
 Caddy's OVH DNS API credentials (for the `*.erebor.jzon.pl` certificates)
