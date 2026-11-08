@@ -9,9 +9,11 @@ The user logged out and back in through the greeter at 19:13 (Umbriel
 session 26). `umbriel layers` shows no swaybg `wallpaper` surface, only
 `noctalia-wallpaper` (`redhead.png`) and `dropwall` on DP-1 and HDMI-A-1; no
 `swaybg` process. The Wallpaper Engine plugin loaded and its service started,
-but no scene ran because its assignments have been empty since 2026-11-04
-16:19, so the scene's startup on login is still untested. No configuration
-change.
+but no scene ran because its assignments had been empty since 2026-11-04
+16:19. The user then assigned item 2440131566 to every output and logged in
+again at 19:16:00: `noctalia-wallpaper-engine` was active at 19:16:01 on DP-1
+and HDMI-A-1, and the user confirmed the animated wallpaper was showing, so
+scene startup on login now works. No configuration change.
 
 # Niri removed (SYS-094) — 2026-11-08
 
