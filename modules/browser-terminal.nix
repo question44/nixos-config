@@ -1,89 +1,92 @@
 {
-  config,
-  lib,
-  pkgs,
-  ...
-}:
-let
-  user = config.my.user.name;
-  domain = config.my.network.domain;
-  terminalAssets = pkgs.callPackage ../packages/ttyd-web-assets.nix { };
-in
-{
-  environment.systemPackages = [
-    (pkgs.callPackage ../packages/trzsz.nix { })
-    pkgs.chafa # inline image previews (chafa -f sixel image.png)
-  ];
+  flake.modules.nixos.browser-terminal =
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
+    let
+      user = config.my.user.name;
+      domain = config.my.network.domain;
+      terminalAssets = pkgs.callPackage ../packages/ttyd-web-assets.nix { };
+    in
+    {
+      environment.systemPackages = [
+        (pkgs.callPackage ../packages/trzsz.nix { })
+        pkgs.chafa # inline image previews (chafa -f sixel image.png)
+      ];
 
-  services.ttyd = {
-    enable = true;
-    interface = "127.0.0.1";
-    port = 17681;
-    user = "${user}";
-    writeable = true;
-    checkOrigin = true;
-    indexFile = "${terminalAssets}/index.html";
-    entrypoint = [
-      "${pkgs.fish}/bin/fish"
-      "--login"
-    ];
-    clientOptions = {
-      titleFixed = "Erebor terminal";
-      fontSize = "16";
-      enableTrzsz = "true";
-      enableSixel = "true";
-      # The page or the embedding dashboard paints the background (see ttyd-web-assets).
-      allowTransparency = "true";
-      theme = ''{"background":"rgba(43,43,43,0)"}'';
-      # ttyd parses a leading quoted family as JSON and drops trailing fallbacks.
-      fontFamily = "Erebor Terminal, Erebor Terminal Symbols, monospace";
-    };
-  };
+      services.ttyd = {
+        enable = true;
+        interface = "127.0.0.1";
+        port = 17681;
+        user = "${user}";
+        writeable = true;
+        checkOrigin = true;
+        indexFile = "${terminalAssets}/index.html";
+        entrypoint = [
+          "${pkgs.fish}/bin/fish"
+          "--login"
+        ];
+        clientOptions = {
+          titleFixed = "Erebor terminal";
+          fontSize = "16";
+          enableTrzsz = "true";
+          enableSixel = "true";
+          # The page or the embedding dashboard paints the background (see ttyd-web-assets).
+          allowTransparency = "true";
+          theme = ''{"background":"rgba(43,43,43,0)"}'';
+          # ttyd parses a leading quoted family as JSON and drops trailing fallbacks.
+          fontFamily = "Erebor Terminal, Erebor Terminal Symbols, monospace";
+        };
+      };
 
-  systemd.services.ttyd = {
-    environment = {
-      # Shells inherit this PATH: setuid wrappers first, profile links not store paths.
-      PATH = lib.mkForce "/run/wrappers/bin:/home/${user}/.local/bin:/home/${user}/.nix-profile/bin:/etc/profiles/per-user/${user}/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin";
-      HOME = "/home/${user}";
-      XDG_RUNTIME_DIR = "/run/user/1000";
-    };
-    serviceConfig = {
-      WorkingDirectory = "/home/${user}";
-      Restart = "on-failure";
-      RestartSec = 5;
-      UMask = "0077";
-    };
-  };
+      systemd.services.ttyd = {
+        environment = {
+          # Shells inherit this PATH: setuid wrappers first, profile links not store paths.
+          PATH = lib.mkForce "/run/wrappers/bin:/home/${user}/.local/bin:/home/${user}/.nix-profile/bin:/etc/profiles/per-user/${user}/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin";
+          HOME = "/home/${user}";
+          XDG_RUNTIME_DIR = "/run/user/1000";
+        };
+        serviceConfig = {
+          WorkingDirectory = "/home/${user}";
+          Restart = "on-failure";
+          RestartSec = 5;
+          UMask = "0077";
+        };
+      };
 
-  services.caddy.extraConfig = ''
-    (browser_terminal) {
-      @terminal_host host terminal.${domain}
-      handle @terminal_host {
-        @terminal_tailnet remote_ip 127.0.0.1 ::1 100.64.0.0/10 fd7a:115c:a1e0::/48
-        handle @terminal_tailnet {
-          route {
-            # Share the desktop's runtime password gate, including fail-closed setup.
-            import /var/lib/desktop-auth/auth.caddy
-            @terminal_bad_origin {
-              header Origin *
-              not header Origin https://terminal.${domain}
-            }
-            respond @terminal_bad_origin "Invalid terminal origin." 403
-            # The dashboard on erebor.jzon.pl may show the terminal in an in-page window.
-            header Content-Security-Policy "frame-ancestors 'self' https://${domain}"
-            handle /fonts/* {
-              root * ${terminalAssets}
-              file_server
-            }
-            handle {
-              reverse_proxy 127.0.0.1:17681 {
-                header_up -Authorization
+      services.caddy.extraConfig = ''
+        (browser_terminal) {
+          @terminal_host host terminal.${domain}
+          handle @terminal_host {
+            @terminal_tailnet remote_ip 127.0.0.1 ::1 100.64.0.0/10 fd7a:115c:a1e0::/48
+            handle @terminal_tailnet {
+              route {
+                # Share the desktop's runtime password gate, including fail-closed setup.
+                import /var/lib/desktop-auth/auth.caddy
+                @terminal_bad_origin {
+                  header Origin *
+                  not header Origin https://terminal.${domain}
+                }
+                respond @terminal_bad_origin "Invalid terminal origin." 403
+                # The dashboard on erebor.jzon.pl may show the terminal in an in-page window.
+                header Content-Security-Policy "frame-ancestors 'self' https://${domain}"
+                handle /fonts/* {
+                  root * ${terminalAssets}
+                  file_server
+                }
+                handle {
+                  reverse_proxy 127.0.0.1:17681 {
+                    header_up -Authorization
+                  }
+                }
               }
             }
+            respond "Terminal access requires Tailscale." 403
           }
         }
-        respond "Terminal access requires Tailscale." 403
-      }
-    }
-  '';
+      '';
+    };
 }

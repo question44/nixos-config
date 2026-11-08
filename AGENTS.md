@@ -35,18 +35,36 @@ other:
 
 ## Repository layout and other machines
 
-- `hosts/<name>/` holds only what is specific to one machine: hardware,
-  boot, storage, and its `my.*` values. `hosts/template/` is the starting
-  point for a new machine and is evaluated (never deployed) as
-  `nixosConfigurations.template`, which proves optional features switch off.
+- The flake uses the dendritic pattern: `flake.nix` loads every `.nix` file
+  under `modules/` with import-tree as a flake-parts module. Each file adds
+  NixOS and/or Home Manager aspects (`flake.modules.nixos.<name>`,
+  `flake.modules.homeManager.<name>`). A feature that spans both (Umbriel,
+  Noctalia, Niri, Vicinae, Darkly, xremap, …) keeps both halves in one file.
+  Flake inputs reach modules by closure (`{ inputs, ... }:` around the
+  aspect); do not add `specialArgs`. Paths with a `_`-prefixed component
+  (e.g. `_hardware-configuration.nix`) are not loaded as flake-parts modules.
+- `modules/hosts/<name>/` holds only what is specific to one machine:
+  `default.nix` builds `nixosConfigurations.<name>` from aspects and sets its
+  `my.*` values, next to its hardware, boot and storage.
+  `modules/hosts/template/` is the starting point for a new machine and is
+  evaluated (never deployed) as `nixosConfigurations.template`, which proves
+  optional features switch off.
 - `modules/my.nix` declares the per-machine settings (user, domain, LAN
   interface, and feature toggles such as ambilight, YubiKey, Mac approval and
   NanoKVM). Shared modules read `config.my.*`; do not hard-code erebor's user,
-  domain, addresses or device names in them.
-- `modules/workstation/` is the shared desktop profile; `home/janzon/` is the
-  Home Manager configuration, split by topic.
-- Hardware-specific modules (`xremap`, `nvidia`, `windows-vm`,
+  domain, addresses or device names in them. Features stay switched by these
+  toggles, not by which aspects a host imports.
+- `modules/workstation/default.nix` is the shared desktop profile (the
+  `workstation` aspect, which imports every shared aspect; add new shared
+  aspects there). `modules/home/janzon.nix` is the Home Manager integration
+  and janzon's profile, which lists the `homeManager` aspects; topic aspects
+  are in `modules/home/`. `home/<app>/` holds the dotfiles they deploy.
+- Hardware-specific aspects (`xremap`, `nvidia`, `windows-vm`,
   `looking-glass`) are imported per host.
+- Module order is breadth-first by import depth, so moving a definition into
+  another aspect can reorder list options (packages, overlays, graphics
+  drivers). Check with `scripts/erebor-diff` after moving code between
+  aspects.
 
 ## Before changing the system
 
@@ -150,23 +168,24 @@ other:
   Niri is still configured but is not the main session. Desktop and keybind
   changes normally belong in Umbriel.
 - The canonical configuration is `/etc/nixos/home/umbriel/config.toml`, deployed
-  by Home Manager (`programs.umbriel.settings`). Do not edit the deployed copy.
+  by Home Manager (`programs.umbriel.settings` in `modules/umbriel.nix`). Do
+  not edit the deployed copy.
 - Umbriel watches its config file. After activation, confirm the change took
   effect with its inspection commands (for example `umbriel submap`,
   `umbriel outputs`) or by trying the behavior.
 
 ## Noctalia settings
 
-- `home/noctalia/config.toml` is deployed by Home Manager; settings made in
-  Noctalia's settings window override it from
-  `~/.local/state/noctalia/settings.toml`. When the user asks to sync or save
+- `home/noctalia/config.toml` is deployed by Home Manager
+  (`modules/noctalia.nix`); settings made in Noctalia's settings window
+  override it from `~/.local/state/noctalia/settings.toml`. When the user asks to sync or save
   their Noctalia settings into the config, follow
   [docs/noctalia-settings.md](docs/noctalia-settings.md).
 
 ## Niri configuration workflow
 
 - The canonical Niri configuration is
-  `/etc/nixos/home/niri/config.kdl`; Home Manager deploys it to
+  `/etc/nixos/home/niri/config.kdl`; Home Manager deploys it (`modules/niri.nix`) to
   `/home/janzon/.config/niri/config.kdl`.
 - Do not edit the deployed file in `/home/janzon/.config/niri/` directly; it
   is a Nix store symlink and will be replaced on the next activation.

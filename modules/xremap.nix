@@ -1,84 +1,97 @@
-# uinput access and the xremap key remapper.
+# uinput access and the xremap key remapper (imported per host), and the
+# keymap it reads (home/xremap).
 {
-  config,
-  lib,
-  pkgs,
-  ...
-}:
-let
-  user = config.my.user.name;
-  cfg = config.my.xremap;
-  deviceArgs = lib.concatMapStrings (d: "--device \"${d.name}\" ") cfg.devices;
-  hotplugUsb = lib.unique (lib.filter (usb: usb != null) (map (d: d.usb) cfg.devices));
-in
-{
-  options.my.xremap = {
-    devices = lib.mkOption {
-      # A plain string is shorthand for { name = "..."; }.
-      type = lib.types.listOf (
-        lib.types.coercedTo lib.types.str (name: { inherit name; }) (
-          lib.types.submodule {
-            options = {
-              name = lib.mkOption {
-                type = lib.types.str;
-                example = "RDR IQUNIX MQ80 KB";
-                description = "Input device name xremap grabs (see `xremap --list-devices`).";
-              };
-              usb = lib.mkOption {
-                type = lib.types.nullOr (
-                  lib.types.submodule {
-                    options.vendor = lib.mkOption {
-                      type = lib.types.str;
-                      example = "320f";
-                      description = "USB vendor ID (`lsusb`, before the colon).";
-                    };
-                    options.product = lib.mkOption {
-                      type = lib.types.str;
-                      example = "5055";
-                      description = "USB product ID (`lsusb`, after the colon).";
-                    };
-                  }
-                );
-                default = null;
-                description = "When set, plugging this USB device in restarts xremap so it grabs the device again.";
-              };
-            };
-          }
-        )
-      );
-      default = [ ];
-      description = "Devices xremap remaps.";
-    };
-  };
+  flake.modules.nixos.xremap =
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
+    let
+      user = config.my.user.name;
+      cfg = config.my.xremap;
+      deviceArgs = lib.concatMapStrings (d: "--device \"${d.name}\" ") cfg.devices;
+      hotplugUsb = lib.unique (lib.filter (usb: usb != null) (map (d: d.usb) cfg.devices));
+    in
+    {
+      options.my.xremap = {
+        devices = lib.mkOption {
+          # A plain string is shorthand for { name = "..."; }.
+          type = lib.types.listOf (
+            lib.types.coercedTo lib.types.str (name: { inherit name; }) (
+              lib.types.submodule {
+                options = {
+                  name = lib.mkOption {
+                    type = lib.types.str;
+                    example = "RDR IQUNIX MQ80 KB";
+                    description = "Input device name xremap grabs (see `xremap --list-devices`).";
+                  };
+                  usb = lib.mkOption {
+                    type = lib.types.nullOr (
+                      lib.types.submodule {
+                        options.vendor = lib.mkOption {
+                          type = lib.types.str;
+                          example = "320f";
+                          description = "USB vendor ID (`lsusb`, before the colon).";
+                        };
+                        options.product = lib.mkOption {
+                          type = lib.types.str;
+                          example = "5055";
+                          description = "USB product ID (`lsusb`, after the colon).";
+                        };
+                      }
+                    );
+                    default = null;
+                    description = "When set, plugging this USB device in restarts xremap so it grabs the device again.";
+                  };
+                };
+              }
+            )
+          );
+          default = [ ];
+          description = "Devices xremap remaps.";
+        };
+      };
 
-  config = {
-    services.udev.extraRules = ''
-      KERNEL=="uinput", GROUP="input", MODE="0660", TAG+="uaccess"
-    ''
-    + lib.concatMapStrings (usb: ''
-      ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="${usb.vendor}", ATTR{idProduct}=="${usb.product}", TAG+="systemd", ENV{SYSTEMD_USER_WANTS}+="xremap-restart.service"
-    '') hotplugUsb;
+      config = {
+        services.udev.extraRules = ''
+          KERNEL=="uinput", GROUP="input", MODE="0660", TAG+="uaccess"
+        ''
+        + lib.concatMapStrings (usb: ''
+          ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="${usb.vendor}", ATTR{idProduct}=="${usb.product}", TAG+="systemd", ENV{SYSTEMD_USER_WANTS}+="xremap-restart.service"
+        '') hotplugUsb;
 
-    systemd.user.services.xremap = {
-      description = "xremap key remapper";
-      # Apps launched by xremap inherit this PATH. Keep the setuid wrappers first
-      # and use profile links, not store paths, so sudo works and survives rebuilds.
-      environment.PATH = lib.mkForce "/run/wrappers/bin:/home/${user}/.local/bin:/home/${user}/.nix-profile/bin:/etc/profiles/per-user/${user}/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin";
-      after = [ "graphical-session.target" ];
-      partOf = [ "graphical-session.target" ];
-      wantedBy = [ "graphical-session.target" ];
-      serviceConfig = {
-        ExecStart = "${pkgs.xremap}/bin/xremap --allow-launch true --mouse ${deviceArgs}/home/${user}/.config/xremap/config.yml";
-        Restart = "on-failure";
+        systemd.user.services.xremap = {
+          description = "xremap key remapper";
+          # Apps launched by xremap inherit this PATH. Keep the setuid wrappers first
+          # and use profile links, not store paths, so sudo works and survives rebuilds.
+          environment.PATH = lib.mkForce "/run/wrappers/bin:/home/${user}/.local/bin:/home/${user}/.nix-profile/bin:/etc/profiles/per-user/${user}/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin";
+          after = [ "graphical-session.target" ];
+          partOf = [ "graphical-session.target" ];
+          wantedBy = [ "graphical-session.target" ];
+          serviceConfig = {
+            ExecStart = "${pkgs.xremap}/bin/xremap --allow-launch true --mouse ${deviceArgs}/home/${user}/.config/xremap/config.yml";
+            Restart = "on-failure";
+          };
+        };
+
+        systemd.user.services.xremap-restart = {
+          description = "Restart xremap after keyboard connection";
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = "${pkgs.systemd}/bin/systemctl --user restart xremap.service";
+          };
+        };
       };
     };
 
-    systemd.user.services.xremap-restart = {
-      description = "Restart xremap after keyboard connection";
-      serviceConfig = {
-        Type = "oneshot";
-        ExecStart = "${pkgs.systemd}/bin/systemctl --user restart xremap.service";
-      };
+  # The keymap and its launcher helper; deployed for the user on every host.
+  flake.modules.homeManager.xremap = {
+    xdg.configFile."xremap/config.yml".source = ../home/xremap/config.yml;
+    home.file.".local/bin/xremap-focus-or-launch" = {
+      source = ../home/xremap/focus-or-launch;
+      executable = true;
     };
   };
 }

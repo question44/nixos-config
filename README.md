@@ -9,14 +9,16 @@ are in [AGENTS.md](AGENTS.md).
 
 | Path | Contents |
 |---|---|
-| `flake.nix` | Inputs (nixpkgs 26.05, Home Manager, Umbriel, Noctalia, Niri helpers, browsers, …) and the `mkHost` function that builds each host. |
-| `hosts/erebor/` | Settings specific to this machine: hardware, boot, storage, and its `my.*` values in `default.nix`. |
-| `hosts/template/` | A starting point for a new machine. It is built as `nixosConfigurations.template` but never deployed, which proves the optional features can be switched off. |
+| `flake.nix` | Inputs (nixpkgs 26.05, Home Manager, Umbriel, Noctalia, Niri helpers, browsers, flake-parts, import-tree, …). Its outputs are every file under `modules/`, loaded with import-tree. |
+| `modules/` | The dendritic module tree. Every `.nix` file is a flake-parts module that adds NixOS and/or Home Manager *aspects* to `flake.modules.nixos.<name>` and `flake.modules.homeManager.<name>`; flake inputs reach them by closure (`{ inputs, ... }:`), not `specialArgs`. A feature that spans both (Umbriel, Noctalia, Niri, Vicinae, Darkly, xremap, Spotify, Steam theme) keeps both halves in one file. Paths with a `_`-prefixed component are not loaded. |
+| `modules/flake/` | flake-parts setup (`systems`, the `flake.modules` option) and `nix fmt` / the format check. |
+| `modules/hosts/erebor/` | This machine: `default.nix` builds `nixosConfigurations.erebor` from aspects and sets its `my.*` values; `boot.nix`, `storage.nix` and `_hardware-configuration.nix` hold the rest. |
+| `modules/hosts/template/` | A starting point for a new machine. It is built as `nixosConfigurations.template` but never deployed, which proves the optional features can be switched off. |
 | `modules/my.nix` | Declares the per-machine `my.*` options (see below). |
-| `modules/workstation/` | The shared desktop profile: base system, session, keyring, SSH, Caddy, packages, and imports of the feature modules. |
+| `modules/workstation/` | The shared desktop profile: base system, session, keyring, SSH, Caddy, packages, and the `workstation` aspect that imports every shared feature aspect. |
 | `modules/services/` | Web services (Jellyfin, Nextcloud, Syncthing, qBittorrent, Ollama, t3code, Cockpit), each registered in `my.services`. |
-| `modules/*.nix` | Feature modules: ambilight, Mac approval, Sunshine/Moonshine, NVIDIA, Windows VM, Looking Glass, xremap, … Hardware-specific ones are imported per host. |
-| `home/janzon/` | Home Manager entry point, split into `apps`, `compositor`, `desktop` and `shell`. |
+| `modules/*.nix` | Feature aspects: ambilight, Mac approval, Sunshine/Moonshine, Umbriel, Noctalia, Niri, NVIDIA, Windows VM, Looking Glass, xremap, … Hardware-specific ones are imported per host. |
+| `modules/home/` | Home Manager: `janzon.nix` (the Home Manager integration and janzon's profile, which lists the `homeManager` aspects) and the topic aspects `apps`, `desktop` and `shell`. |
 | `home/<app>/` | Dotfiles that Home Manager deploys (Umbriel, Niri, Noctalia, fish, Ghostty, nvim, xremap, …). Edit them here, never the deployed copies in `~/.config`. |
 | `packages/` | Custom package builds. |
 | `apps/erebor-dashboard/` | The dashboard, a Git submodule with its own [README](apps/erebor-dashboard/README.md). |
@@ -26,7 +28,7 @@ are in [AGENTS.md](AGENTS.md).
 ## The `my.*` options
 
 Shared modules read `config.my.*` instead of hard-coding the user, domain,
-addresses or devices. A host sets these values in `hosts/<name>/default.nix`.
+addresses or devices. A host sets these values in `modules/hosts/<name>/default.nix`.
 The full declarations, with descriptions, are in
 [modules/my.nix](modules/my.nix).
 
@@ -56,7 +58,8 @@ them on [search.nixos.org](https://search.nixos.org/options) or in the
    under `my.services.<name>` (port, names, LAN port), then put the actual
    service under `lib.mkIf config.my.services.<name>.enable`.
    `modules/services/jellyfin.nix` is a short example.
-2. Import it in `modules/workstation/default.nix`.
+2. Define it as `flake.modules.nixos.<name>` and add `<name>` to the
+   `workstation` aspect's imports in `modules/workstation/default.nix`.
 3. Set `my.services.<name>.enable = true;` in the host.
 
 ## Building and activating

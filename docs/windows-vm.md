@@ -3,7 +3,7 @@
 ## Current phase
 
 GPU ownership is controlled by
-`virtualisation.windowsGpuPassthrough.enable` in `hosts/erebor/default.nix`.
+`virtualisation.windowsGpuPassthrough.enable` in `modules/hosts/erebor/default.nix`.
 It is currently set to `false`; after activation this restores the RTX 4090
 to Linux alongside Intel UHD 770. With `true`, both NVIDIA functions are reserved for Windows
 and the host NVIDIA driver is disabled. Shut down `windows11` before changing

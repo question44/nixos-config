@@ -1,82 +1,98 @@
-{ config, pkgs, ... }:
-
+# Spotify themed by Noctalia through Spicetify (Comfy theme): the patched
+# launcher system-wide, and the theme files and first-run setup for the user.
 let
-  user = config.my.user.name;
-  comfy = pkgs.fetchFromGitHub {
-    owner = "Comfy-Themes";
-    repo = "Spicetify";
-    rev = "32ff101e27cfd33d85b7cc587f7f95db6b2df8b0";
-    sha256 = "0zc1cf17a0k1fmfs8g7lj0kpiyqk169g20gpkyi4sb2cf94ydaxj";
-  };
-  prepare = pkgs.writeShellApplication {
-    name = "spotify-noctalia-prepare";
-    runtimeInputs = [
-      pkgs.coreutils
-      pkgs.gnused
-      pkgs.util-linux
-      pkgs.spicetify-cli
-    ];
-    text = ''
-      config_dir="''${XDG_CONFIG_HOME:-$HOME/.config}"
-      data_dir="''${XDG_DATA_HOME:-$HOME/.local/share}/spotify-noctalia"
-      app_dir="$data_dir/${builtins.baseNameOf (toString pkgs.spotify)}"
-      mkdir -p "$data_dir" "$config_dir/spicetify"
-      exec 9>"$data_dir/prepare.lock"
-      flock 9
-      if [ ! -d "$app_dir" ]; then
-        staging="$(mktemp -d "$data_dir/.prepare.XXXXXX")"
-        cp -a --reflink=auto ${pkgs.spotify}/share/spotify/. "$staging/"
-        chmod -R u+w "$staging"
-        # Spotify's Nix wrapper otherwise starts the original store binary.
-        sed -i "s|${pkgs.spotify}/share/spotify/|$app_dir/|g" "$staging/spotify"
-        mv "$staging" "$app_dir"
-      fi
-      spicetify config spotify_path "$app_dir" \
-        prefs_path "$config_dir/spotify/prefs" \
-        current_theme Comfy color_scheme Comfy \
-        inject_css 1 replace_colors 1 overwrite_assets 1 inject_theme_js 1 \
-        check_spicetify_update 0
-      if [ ! -e "$app_dir/.noctalia-initialized" ]; then
-        spicetify --no-restart backup apply
-        touch "$app_dir/.noctalia-initialized"
-      fi
-      ln -sfn "$app_dir" "$data_dir/current"
-    '';
-  };
-  launcher = pkgs.writeShellApplication {
-    name = "spotify";
-    text = ''
-      ${prepare}/bin/spotify-noctalia-prepare
-      exec "''${XDG_DATA_HOME:-$HOME/.local/share}/spotify-noctalia/current/spotify" "$@"
-    '';
-  };
-  spotify = pkgs.symlinkJoin {
-    name = "spotify-noctalia-${pkgs.spotify.version}";
-    paths = [
-      launcher
-      pkgs.spotify
-      prepare
-    ];
-    postBuild = ''
-      # Use our launcher even when the desktop entry specifies an absolute path.
-      rm "$out/share/applications/spotify.desktop"
-      substitute ${pkgs.spotify}/share/applications/spotify.desktop \
-        "$out/share/applications/spotify.desktop" \
-        --replace-fail 'Exec=spotify' "Exec=$out/bin/spotify"
-    '';
-  };
+  comfyFor =
+    pkgs:
+    pkgs.fetchFromGitHub {
+      owner = "Comfy-Themes";
+      repo = "Spicetify";
+      rev = "32ff101e27cfd33d85b7cc587f7f95db6b2df8b0";
+      sha256 = "0zc1cf17a0k1fmfs8g7lj0kpiyqk169g20gpkyi4sb2cf94ydaxj";
+    };
+  prepareFor =
+    pkgs:
+    pkgs.writeShellApplication {
+      name = "spotify-noctalia-prepare";
+      runtimeInputs = [
+        pkgs.coreutils
+        pkgs.gnused
+        pkgs.util-linux
+        pkgs.spicetify-cli
+      ];
+      text = ''
+        config_dir="''${XDG_CONFIG_HOME:-$HOME/.config}"
+        data_dir="''${XDG_DATA_HOME:-$HOME/.local/share}/spotify-noctalia"
+        app_dir="$data_dir/${builtins.baseNameOf (toString pkgs.spotify)}"
+        mkdir -p "$data_dir" "$config_dir/spicetify"
+        exec 9>"$data_dir/prepare.lock"
+        flock 9
+        if [ ! -d "$app_dir" ]; then
+          staging="$(mktemp -d "$data_dir/.prepare.XXXXXX")"
+          cp -a --reflink=auto ${pkgs.spotify}/share/spotify/. "$staging/"
+          chmod -R u+w "$staging"
+          # Spotify's Nix wrapper otherwise starts the original store binary.
+          sed -i "s|${pkgs.spotify}/share/spotify/|$app_dir/|g" "$staging/spotify"
+          mv "$staging" "$app_dir"
+        fi
+        spicetify config spotify_path "$app_dir" \
+          prefs_path "$config_dir/spotify/prefs" \
+          current_theme Comfy color_scheme Comfy \
+          inject_css 1 replace_colors 1 overwrite_assets 1 inject_theme_js 1 \
+          check_spicetify_update 0
+        if [ ! -e "$app_dir/.noctalia-initialized" ]; then
+          spicetify --no-restart backup apply
+          touch "$app_dir/.noctalia-initialized"
+        fi
+        ln -sfn "$app_dir" "$data_dir/current"
+      '';
+    };
 in
 {
-  environment.systemPackages = [
-    spotify
-    pkgs.spicetify-cli
-  ];
-  home-manager.users.${user} = { lib, ... }: {
-    xdg.configFile."spicetify/Themes/Comfy/user.css".source = "${comfy}/Comfy/app.css";
-    xdg.configFile."spicetify/Themes/Comfy/theme.js".source = "${comfy}/Comfy/theme.script.js";
-    xdg.configFile."spicetify/Themes/Comfy/assets".source = "${comfy}/Comfy/assets";
-    home.activation.spotifyNoctaliaTheme = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
-      run ${prepare}/bin/spotify-noctalia-prepare
-    '';
-  };
+  flake.modules.nixos.spotify =
+    { pkgs, ... }:
+    let
+      prepare = prepareFor pkgs;
+      launcher = pkgs.writeShellApplication {
+        name = "spotify";
+        text = ''
+          ${prepare}/bin/spotify-noctalia-prepare
+          exec "''${XDG_DATA_HOME:-$HOME/.local/share}/spotify-noctalia/current/spotify" "$@"
+        '';
+      };
+      spotify = pkgs.symlinkJoin {
+        name = "spotify-noctalia-${pkgs.spotify.version}";
+        paths = [
+          launcher
+          pkgs.spotify
+          prepare
+        ];
+        postBuild = ''
+          # Use our launcher even when the desktop entry specifies an absolute path.
+          rm "$out/share/applications/spotify.desktop"
+          substitute ${pkgs.spotify}/share/applications/spotify.desktop \
+            "$out/share/applications/spotify.desktop" \
+            --replace-fail 'Exec=spotify' "Exec=$out/bin/spotify"
+        '';
+      };
+    in
+    {
+      environment.systemPackages = [
+        spotify
+        pkgs.spicetify-cli
+      ];
+    };
+
+  flake.modules.homeManager.spotify =
+    { lib, pkgs, ... }:
+    let
+      comfy = comfyFor pkgs;
+    in
+    {
+      xdg.configFile."spicetify/Themes/Comfy/user.css".source = "${comfy}/Comfy/app.css";
+      xdg.configFile."spicetify/Themes/Comfy/theme.js".source = "${comfy}/Comfy/theme.script.js";
+      xdg.configFile."spicetify/Themes/Comfy/assets".source = "${comfy}/Comfy/assets";
+      home.activation.spotifyNoctaliaTheme = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+        run ${prepareFor pkgs}/bin/spotify-noctalia-prepare
+      '';
+    };
 }

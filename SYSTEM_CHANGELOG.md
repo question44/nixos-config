@@ -3,6 +3,36 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Dendritic flake layout (flake-parts + import-tree) — 2026-11-08
+
+Pure refactor. `flake.nix` now only declares inputs (adds `flake-parts`, with
+`nixpkgs-lib` following nixpkgs, and `import-tree`) and loads every `.nix`
+file under `modules/` as a flake-parts module. Files contribute
+`flake.modules.nixos.<aspect>` and `flake.modules.homeManager.<aspect>`;
+`specialArgs`/`extraSpecialArgs` are gone, inputs arrive by closure.
+- Hosts moved to `modules/hosts/{erebor,template}/`; each `default.nix`
+  builds its `nixosConfigurations` entry. Hardware configs are
+  `_hardware-configuration.nix` (the `_` keeps import-tree off them).
+- `home/janzon/*.nix` moved to `modules/home/` (`janzon.nix` holds the Home
+  Manager integration and the user profile). `compositor.nix` and parts of
+  `workstation/session.nix`, `workstation/packages.nix`, `desktop.nix`,
+  `home/janzon/{apps,desktop}.nix` became the two-sided aspects
+  `modules/{umbriel,noctalia,niri,vicinae,darkly}.nix`; `xremap`, `spotify`
+  and `steam-theme` gained their Home Manager halves. The upstream NixOS
+  modules and the millennium overlay moved from `flake.nix` into the aspects
+  that use them. Dotfiles stay in `home/<app>/`. `my.*` toggles unchanged.
+- `formatter` and `checks.format` moved to `modules/flake/formatter.nix`.
+
+Validation: `nix fmt` and `nix flake check` pass; `scripts/erebor-rebuild
+build` succeeds. `erebor-diff`: equivalent for erebor and for `--host
+template` (same closure, identical system-path tree; only `dbus-1` and the
+polkit rules differ, in line order). The reordered polkit blocks return YES
+for disjoint actions and the dbus service dirs have no shared names. Two
+order changes that did alter derivations were pinned back: the millennium
+overlay is `mkAfter` (it was last when `flake.nix` added it) and
+`intel-media-driver` is `mkBefore` in `hardware.graphics.extraPackages`
+(Steam's FHS env follows that order). Not activated.
+
 # Ambilight remembers "off" across HyperHDR restarts — 2026-11-07
 
 User reported the LEDs lit with WLED's own effect after HyperHDR restarted
