@@ -11,6 +11,19 @@
     }:
 
     let
+      cfg = config.my;
+      urlType = lib.types.strMatching "https?://[^ ]+";
+      enabledServices = lib.filterAttrs (_: s: s.enable) cfg.services;
+      # Enabled services that claim the same value of `attr`, as "a, b uses N".
+      clashes =
+        attr:
+        lib.mapAttrsToList (value: names: "${lib.concatStringsSep ", " names} use ${value}") (
+          lib.filterAttrs (_: names: lib.length names > 1) (
+            lib.groupBy' (names: name: names ++ [ name ]) [ ] (name: toString enabledServices.${name}.${attr}) (
+              lib.filter (name: enabledServices.${name}.${attr} != null) (lib.attrNames enabledServices)
+            )
+          )
+        );
       serviceType = lib.types.submodule (
         { name, ... }: {
           options = {
@@ -99,7 +112,7 @@
 
         user = {
           name = lib.mkOption {
-            type = lib.types.str;
+            type = lib.types.strMatching "[a-z_][a-z0-9_-]*";
             description = "The main desktop user's login name.";
           };
           description = lib.mkOption {
@@ -112,12 +125,13 @@
 
         network = {
           domain = lib.mkOption {
-            type = lib.types.str;
+            type = lib.types.strMatching "([a-z0-9-]+\\.)+[a-z]+";
             example = "erebor.jzon.pl";
             description = "Public domain; services are served on its subdomains.";
           };
           lanInterface = lib.mkOption {
-            type = lib.types.str;
+            # Linux interface names are at most 15 characters.
+            type = lib.types.strMatching "[A-Za-z0-9._-]{1,15}";
             example = "br0";
             description = "LAN interface whose firewall allows local services (SSH, media, sync).";
           };
@@ -126,12 +140,13 @@
         ambilight = {
           enable = lib.mkEnableOption "HyperHDR ambient lighting from screen capture";
           musicSink = lib.mkOption {
-            type = lib.types.str;
+            type = lib.types.nullOr lib.types.str;
+            default = null;
             example = "alsa_output.usb-iFi__by_AMR__iFi__by_AMR__HD_USB_Audio_0003-00.analog-stereo";
             description = "PipeWire sink whose output HyperHDR captures for music effects (`pw-cli ls Node`).";
           };
           wledUrl = lib.mkOption {
-            type = lib.types.nullOr lib.types.str;
+            type = lib.types.nullOr urlType;
             default = null;
             example = "http://192.168.1.118";
             description = "WLED controller the dashboard's ambilight buttons switch.";
@@ -165,11 +180,40 @@
         nanokvm = {
           enable = lib.mkEnableOption "NanoKVM wake and outlet readings in the dashboard";
           url = lib.mkOption {
-            type = lib.types.str;
+            type = lib.types.nullOr urlType;
+            default = null;
             example = "https://kvm-37ff.tail517bdc.ts.net:8443";
             description = "Base URL of the wake helper installed on the NanoKVM.";
           };
         };
       };
+
+      # Each message names the my.* setting to change in modules/hosts/<name>.
+      config.assertions = [
+        {
+          assertion = cfg.ambilight.enable -> cfg.ambilight.musicSink != null;
+          message = "my.ambilight.enable needs my.ambilight.musicSink: the PipeWire sink HyperHDR captures (`pw-cli ls Node`).";
+        }
+        {
+          assertion = cfg.macApproval.enable -> cfg.macApproval.addresses != [ ];
+          message = "my.macApproval.enable needs my.macApproval.addresses: the Mac's Tailscale and LAN addresses.";
+        }
+        {
+          assertion = cfg.nanokvm.enable -> cfg.nanokvm.url != null;
+          message = "my.nanokvm.enable needs my.nanokvm.url: the base URL of the NanoKVM wake helper.";
+        }
+      ]
+      ++ map (clash: {
+        assertion = false;
+        message = "my.services: ${clash} as their loopback port; give each a different my.services.<name>.port.";
+      }) (clashes "port")
+      ++ map (clash: {
+        assertion = false;
+        message = "my.services: ${clash} as their LAN port; give each a different my.services.<name>.lanPort.";
+      }) (clashes "lanPort")
+      ++ map (clash: {
+        assertion = false;
+        message = "my.services: ${clash} as their public name; change my.services.<name>.publicName.";
+      }) (clashes "publicName");
     };
 }

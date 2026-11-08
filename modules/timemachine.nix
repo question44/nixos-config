@@ -12,18 +12,26 @@
       options.my.timeMachine = {
         enable = lib.mkEnableOption "a Samba Time Machine share for Macs";
         path = lib.mkOption {
-          type = lib.types.str;
+          type = lib.types.nullOr lib.types.path;
+          default = null;
           example = "/srv/backups/TimeMachine";
           description = "Directory holding the backups; created owned by my.user.";
         };
         maxSize = lib.mkOption {
-          type = lib.types.str;
+          type = lib.types.strMatching "[0-9]+[KMGT]";
           default = "1T";
           description = "Size Time Machine may use before pruning old backups.";
         };
       };
 
       config = lib.mkIf cfg.enable {
+        assertions = [
+          {
+            assertion = cfg.path != null;
+            message = "my.timeMachine.enable needs my.timeMachine.path: the directory on an xattr-capable filesystem holding the backups.";
+          }
+        ];
+
         services.samba = {
           enable = true;
           nmbd.enable = false;

@@ -3,6 +3,22 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Assertions and stricter types for `my.*` settings — 2026-11-08
+
+`modules/my.nix` now fails evaluation with a message naming the `my.*`
+setting to change: ambilight without `musicSink`, Mac approval without
+`addresses`, NanoKVM without `url`, and two enabled `my.services` sharing a
+loopback port, LAN port or public name. `modules/timemachine.nix` asserts
+`my.timeMachine.path` when enabled. Values now have checked shapes:
+`user.name`, `network.domain`, `network.lanInterface` (≤ 15 characters),
+`ambilight.wledUrl`/`nanokvm.url` (http(s) URLs), `timeMachine.maxSize`
+(`<n>K|M|G|T`); `musicSink`, `nanokvm.url` and `timeMachine.path` default to
+null so the assertion, not a missing-option error, reports them.
+
+Validation: `nix fmt`, `nix flake check` and `scripts/erebor-rebuild build`
+pass. `erebor-diff` against the previous commit: identical for erebor and
+template. Not activated.
+
 # Dendritic flake layout (flake-parts + import-tree) — 2026-11-08
 
 Pure refactor. `flake.nix` now only declares inputs (adds `flake-parts`, with
