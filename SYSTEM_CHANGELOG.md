@@ -3,6 +3,23 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# AGENTS.md procedures moved into skills — 2026-11-08
+
+`AGENTS.md` now holds the rules that always apply, the repository layout,
+the design boundaries, source control, and an index of skills. The
+procedures moved, reworded but complete, into `.claude/skills/*/SKILL.md`:
+`parallel-agents` (worktrees, erebor-diff, landing, SYS-NNN claims, union
+merges), `activation-and-checkpoints` (prechecks, test vs switch, reboot
+checkpoint, storage and boot safety with the UUIDs), `system-records`
+(changelog, month rollover, TODO statuses, CONTEXT, completion,
+`[PENDING]`/`[RECORDED]`) and `desktop-config` (the live Umbriel, Noctalia
+and Niri workflow). Every rule of the old file was checked to live in
+AGENTS.md or one of the skills.
+
+Validation: docs only. `nix flake check` and `scripts/erebor-rebuild build`
+pass; `erebor-diff` against the previous commit: identical for erebor and
+template.
+
 # Live desktop configs: Umbriel, Noctalia and Niri link into /etc/nixos — 2026-11-08
 
 `~/.config/umbriel/config.toml`, `~/.config/noctalia/config.toml` and
