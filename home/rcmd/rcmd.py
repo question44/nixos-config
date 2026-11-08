@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Cycle matching application windows by initial, or choose an installed app."""
+"""Cycle matching application windows by initial, or open the Vicinae app menu."""
 import argparse
 import fcntl
 import glob
@@ -20,9 +20,6 @@ from gi.repository import Gio, GioUnix
 # Desktop actions that open another window/instance, in order of preference.
 NEW_WINDOW_ACTIONS = ('new-window', 'NewWindow', 'new-instance', 'NewInstance',
                       'NewWorkspace')
-
-
-NEW_WINDOW = object()  # chooser marker: open another window of a running app
 
 
 def initial(text):
@@ -127,49 +124,48 @@ def cycle(groups, reverse=False):
     return windows[(current + (-1 if reverse else 1)) % len(windows)]
 
 
-def choose(apps, running, letter):
-    # A single chooser across letters prevents repeated chords stacking menus.
-    lock_path = Path(os.environ['XDG_RUNTIME_DIR']) / 'rcmd-chooser.lock'
-    with lock_path.open('w') as lock:
-        try:
-            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError:
-            return None, None
-        choices = {}
-        matching_apps = [app for app in apps
-                         if app['visible'] and initial(app['name']) == letter]
-        for app in sorted(matching_apps,
-                          key=lambda app: (app['id'] not in running,
-                                           app['name'].casefold(), app['id'])):
-            window_count = len(running.get(app['id'], ()))
-            state = '●' if window_count else '○'
-            count = f' — {window_count} window' + ('s' if window_count != 1 else '') if window_count else ''
-            label = f"{state} {app['name'].replace('\n', ' ')}{count}"
-            # Desktop names are normally unique. Retain both apps if two
-            # entries share a name, while keeping the useful state first.
-            if label in choices:
-                label += f" ({app['id'].removesuffix('.desktop')})"
-            choices[label] = (app, None)
-            name = app['name'].replace('\n', ' ')
-            if window_count:
-                choices[f"＋ New window — {name}"] = (app, NEW_WINDOW)
-            for action, action_name in app['actions']:
-                choices[f"   ↳ {action_name.replace('\n', ' ')} — {name}"] = (app, action)
-        result = subprocess.run(
-            ['vicinae', 'dmenu', '--format', 'data', '--no-quick-look',
-             '--navigation-title', f'{letter.upper()} — choose an app',
-             '--placeholder', '● running  •  ○ not running  •  ＋ new window' if choices else f'No installed apps starting with {letter.upper()}',
-             '--section-title', 'Installed apps ({count})'],
-            input='\n'.join(choices) + ('\n' if choices else ''), text=True, capture_output=True)
-        if result.returncode != 0:
-            return None, None  # Esc/cancel does not launch anything.
-        return choices.get(result.stdout.rstrip('\n'), (None, None))
+MENU_COMMAND = 'vicinae://launch/@janzon/rcmd/menu'
+
+
+def menu_entry(app):
+    icon = app['info'].get_icon()
+    return {'id': app['id'], 'name': app['name'].replace('\n', ' '),
+            'icon': icon.to_string() if icon else None,
+            'newWindow': bool(app['new_action']),
+            'actions': [{'id': a, 'name': n.replace('\n', ' ')}
+                        for a, n in app['actions']]}
+
+
+def open_menu(apps, groups, letter):
+    """Hand the letter's running and installed apps to the Vicinae menu."""
+    running = []
+    for group in groups:
+        entry = (menu_entry(group['app']) if 'info' in group['app']
+                 else {'id': group['app']['id'], 'name': group['app']['name'],
+                       'icon': None, 'newWindow': False, 'actions': []})
+        windows = sorted(group['windows'], key=timestamp, reverse=True)
+        entry['windows'] = [{'id': str(w['id']), 'title': w.get('title') or entry['name']}
+                            for w in windows]
+        entry['launchable'] = 'info' in group['app']
+        running.append(entry)
+    running_ids = {group['app']['id'] for group in groups}
+    installed = []
+    for app in apps:
+        if app['visible'] and initial(app['name']) == letter:
+            entry = menu_entry(app)
+            entry['running'] = app['id'] in running_ids
+            installed.append(entry)
+    state = Path(os.environ['XDG_RUNTIME_DIR']) / 'rcmd-menu.json'
+    tmp = state.with_suffix('.tmp')
+    tmp.write_text(json.dumps({'letter': letter, 'rcmd': os.environ.get('RCMD_SELF', ''),
+                               'running': running, 'apps': installed},
+                              ensure_ascii=False))
+    tmp.replace(state)
+    command(['vicinae', 'deeplink', MENU_COMMAND])
 
 
 def launch(app, action):
     # A separate scope prevents xremap restarts from killing this app.
-    if action == NEW_WINDOW:
-        action = app['new_action']
     if action:
         target = [sys.executable, os.path.abspath(sys.argv[0]), '--launch-action',
                   app['info'].get_filename(), action]
@@ -181,22 +177,58 @@ def launch(app, action):
         stderr=None, start_new_session=True)
 
 
+def open_app(desktop, apps, desktop_id, action):
+    """Start a new instance (or a desktop action) and focus its window."""
+    app = next((a for a in apps if a['id'] == desktop_id), None)
+    if app is None:
+        raise RuntimeError(f'Unknown application {desktop_id}')
+
+    def app_windows():
+        return [w for w in desktop.windows() if app_for_window(w, apps)['id'] == app['id']]
+
+    before = {w['id'] for w in app_windows()}
+    # A running app gets its own new-window action when it has one; a plain
+    # relaunch of a single-instance app usually just raises the old window.
+    launch(app, action or (app['new_action'] if before else None))
+    matching = []
+    for _ in range(80):
+        matching = app_windows()
+        fresh = [w for w in matching if w['id'] not in before]
+        if fresh:
+            desktop.focus(max(fresh, key=timestamp))
+            return
+        time.sleep(.1)
+    if matching:
+        desktop.focus(max(matching, key=timestamp))
+
+
 def main():
     if len(sys.argv) == 4 and sys.argv[1] == '--launch-action':
         info = GioUnix.DesktopAppInfo.new_from_filename(sys.argv[2])
         info.launch_action(sys.argv[3], None)
         return
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('letter', choices=list('abcdefghijklmnopqrstuvwxyz'))
+    parser.add_argument('letter', nargs='?', choices=list('abcdefghijklmnopqrstuvwxyz'))
     parser.add_argument('--reverse', action='store_true')
-    parser.add_argument('--choose', action='store_true', help='Always show the installed-app chooser')
-    parser.add_argument('--list', action='store_true', help='Print installed matches without opening the chooser')
+    parser.add_argument('--choose', action='store_true', help='Always show the app menu')
+    parser.add_argument('--list', action='store_true', help='Print installed matches without opening the menu')
+    parser.add_argument('--focus-window', metavar='ID', help='Focus a window (used by the menu)')
+    parser.add_argument('--open', metavar='DESKTOP_ID', help='Open a new instance (used by the menu)')
+    parser.add_argument('--action', help='Desktop action to run with --open')
     args = parser.parse_args()
+    if args.focus_window:
+        Desktop().focus({'id': args.focus_window})
+        return
     apps = catalog()
+    if args.open:
+        open_app(Desktop(), apps, args.open, args.action)
+        return
+    if args.letter is None:
+        parser.error('a letter is required')
     if args.list:
         print(json.dumps([{'id': a['id'], 'name': a['name']} for a in apps if a['visible'] and initial(a['name']) == args.letter], ensure_ascii=False))
         return
-    # One worker at a time for a letter, including while its chooser is open.
+    # One worker at a time for a letter.
     with (Path(os.environ['XDG_RUNTIME_DIR']) / f'rcmd-{args.letter}.lock').open('w') as lock:
         try:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -207,29 +239,7 @@ def main():
         if groups and not args.choose:
             desktop.focus(cycle(groups, args.reverse))
             return
-        running = {group['app']['id']: group['windows'] for group in groups}
-        app, action = choose(apps, running, args.letter)
-        new_window = action is not None
-        if app is None:
-            return
-
-        def app_windows():
-            return [w for w in desktop.windows() if app_for_window(w, apps)['id'] == app['id']]
-
-        # Recheck after the chooser: the app may have opened in the meantime.
-        before = {w['id'] for w in app_windows()}
-        if new_window or not before:
-            launch(app, action)
-        for _ in range(80):
-            matching = app_windows()
-            fresh = [w for w in matching if w['id'] not in before]
-            if fresh or (matching and not new_window):
-                desktop.focus(max(fresh or matching, key=timestamp))
-                return
-            time.sleep(.1)
-        if new_window and matching:
-            # Single-window apps may just raise their existing window.
-            desktop.focus(max(matching, key=timestamp))
+        open_menu(apps, groups, args.letter)
 
 
 if __name__ == '__main__':

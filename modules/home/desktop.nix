@@ -1,5 +1,6 @@
 # Qt/GTK theming, Dolphin, XDG directories, default applications and desktop
 # helper scripts (rcmd, reboot-windows). The Qt style is in the darkly aspect.
+{ inputs, ... }:
 {
   flake.modules.homeManager.desktop =
     {
@@ -13,8 +14,15 @@
       rcmd = pkgs.writeShellScript "rcmd" ''
         export GI_TYPELIB_PATH="${pkgs.glib.out}/lib/girepository-1.0"
         export RCMD_GIO="${pkgs.glib.bin}/bin/gio"
+        export RCMD_SELF="$(readlink -f "$0")"
         exec ${rcmdPython}/bin/python3 ${../../home/rcmd/rcmd.py} "$@"
       '';
+      # Vicinae command that shows rcmd's app menu (rcmd opens it by deeplink).
+      rcmdMenu = inputs.vicinae.lib.${pkgs.stdenv.hostPlatform.system}.mkVicinaeExtension {
+        pname = "rcmd";
+        version = "1";
+        src = ../../home/rcmd/vicinae;
+      };
     in
     {
       qt = {
@@ -140,5 +148,6 @@
         source = rcmd;
         executable = true;
       };
+      xdg.dataFile."vicinae/extensions/rcmd".source = rcmdMenu;
     };
 }
