@@ -23,8 +23,10 @@ the running Caddy has all four `OVH_*` variables; a signed read-only
 `GET /auth/currentCredential` with them returns HTTP 200 from OVH; Caddy is
 active and serves the Let's Encrypt certificate (valid to 2027-01-14) with no
 errors. The restart needed a SIGKILL after the stop timeout (old process).
-Not yet observed: an actual renewal through the new file. Open until the user
-approves deleting `/etc/caddy/ovh.env` and `/var/lib/searxng-secret/`.
+Not yet observed: an actual renewal through the new file. With the user's
+approval, `/etc/caddy/ovh.env` and the unused `/var/lib/searxng-secret/` were
+then shredded; Caddy reloaded and `erebor.jzon.pl` answers 200, SearXNG is
+active. SYS-074 closed DONE.
 # Triage of overdue historical REVIEW tasks — 2026-11-08
 
 At the user's request, reconciled the 15 REVIEW tasks overdue since

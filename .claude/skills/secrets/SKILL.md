@@ -48,12 +48,13 @@ git, the Nix store, the changelog or a chat transcript.
 
 ## Moving an existing credential into sops (needs sudo)
 
-Root-owned credentials such as `/etc/caddy/ovh.env` (OVH DNS API for Caddy's
-certificates) can only be read with the user's touch approval, so this is
-done with the user present. Tracked as SYS-074.
+Root-owned credentials can only be read with the user's touch approval, so
+this is done with the user present. Caddy's OVH DNS credentials went this way
+(SYS-074); the steps below use them as the example.
 
 1. `sudo cat /etc/caddy/ovh.env` piped into a `mktemp -d` file (umask 077);
-   never print it.
+   never print it. The touch prompt can land in that file: take only the
+   expected variables.
 2. Add each variable to `secrets/erebor.yaml` (e.g. `ovh_endpoint`,
    `ovh_application_key`, `ovh_application_secret`, `ovh_consumer_key`).
 3. In `modules/workstation/caddy.nix`: `sops.templates."caddy-ovh.env"` with
@@ -64,9 +65,3 @@ done with the user present. Tracked as SYS-074.
    certificate renewal (or `caddy validate`) still authenticates with OVH.
 5. Only after that works, delete `/etc/caddy/ovh.env` (with the user's
    approval) and shred the temporary file.
-
-## Old local secrets
-
-`/var/lib/searxng-secret/` held SearXNG's previous generated key; SearXNG now
-reads `/run/secrets/rendered/searxng.env`. After activation the old directory
-can be removed with the user's approval.
