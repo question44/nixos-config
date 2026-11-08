@@ -154,6 +154,10 @@
           haruna
           moonlight-qt
           stremio-linux-shell
+          # Windows-only apps such as ChomikBox, each in its own prefix under
+          # ~/.local/share/wineprefixes.
+          wineWow64Packages.stable
+          winetricks
           ddcutil
           kdePackages.breeze
           candy-icons
