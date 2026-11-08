@@ -25,6 +25,30 @@ active and serves the Let's Encrypt certificate (valid to 2027-01-14) with no
 errors. The restart needed a SIGKILL after the stop timeout (old process).
 Not yet observed: an actual renewal through the new file. Open until the user
 approves deleting `/etc/caddy/ovh.env` and `/var/lib/searxng-secret/`.
+# Triage of overdue historical REVIEW tasks — 2026-11-08
+
+At the user's request, reconciled the 15 REVIEW tasks overdue since
+2026-11-06 against the live system (read-only checks; no rebuild).
+
+- DONE with observed evidence: SYS-007 (Windows VM exists and is in use),
+  SYS-009 (eza and aliases), SYS-015 (xremap active on its three devices),
+  SYS-016 (`Linger=yes`; oo7 unlocked the Login collection at the 2026-11-06
+  greetd login), SYS-019 (lsof 4.99.7). SYS-017 (br0 active, windows11 on
+  br0) and SYS-018 (UEFI visit) closed on user confirmation; the journal only
+  reaches back to 2026-11-02.
+- SYS-020: removed the redundant `nix profile` Zen 1.23.3b with the user's
+  approval; `zen` now resolves to the system package (1.24b).
+- CANCELLED as superseded: SYS-006 (Intel IGD assignment replaced by the GPU
+  swap and passthrough toggle), SYS-012 (Right Ctrl+D is now `rcmd d`),
+  SYS-013 (Noctalia greeter replaced tuigreet), SYS-021 and SYS-023 (Mango
+  removed 2026-11-03). SYS-011 cancelled because the user asked to remove
+  Niri, now [SYS-094](tasks/SYS-094.md).
+- SYS-014 re-scoped to OPEN: back up Tailscale state with sops instead of the
+  never-run GPG archive.
+- Noticed: oo7-daemon logs "Failed to lock memory pages" at start
+  (`ENOMEM`), so secrets may be swappable; not investigated.
+
+No configuration change, activation or reboot.
 
 # Task board card in the dashboard hub (SYS-092) — 2026-11-08
 
