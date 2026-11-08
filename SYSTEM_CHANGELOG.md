@@ -3,6 +3,18 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Crucial MX500 dirty writeback capped at 1 GiB — 2026-11-08
+
+At the user's request, after ~4 GB of dirty data piled up during copies, a
+udev rule in `modules/hosts/erebor/storage.nix` sets `bdi/max_bytes` to
+1 GiB and `bdi/strict_limit=1` on the Crucial MX500 (`/srv/external/crucial`),
+matched by `ID_SERIAL` `CT500MX500SSD1_1824E143D803`. strict_limit makes the
+cap apply below the global free-run threshold. erebor-diff tier: different
+(only the new udev rule). Activated with switch as generation 327; after a
+`udevadm trigger --action=change` on the disk, `/sys/class/bdi/8:16` reads
+max_bytes 1073736261 and strict_limit 1; sda keeps the defaults. Not yet
+observed under a large copy or after replugging/reboot.
+
 # Overdue task checks — 2026-11-08
 
 Read-only checks of the overdue OPEN tasks, plus user confirmations.
