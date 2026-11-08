@@ -162,39 +162,35 @@ other:
   explicitly requested. Prefer one change at a time with build, activation,
   and live verification.
 
-## Umbriel configuration workflow
+## Desktop configuration (live)
 
 - Umbriel is the primary compositor session (`XDG_CURRENT_DESKTOP=umbriel`);
   Niri is still configured but is not the main session. Desktop and keybind
   changes normally belong in Umbriel.
-- The canonical configuration is `/etc/nixos/home/umbriel/config.toml`, deployed
-  by Home Manager (`programs.umbriel.settings` in `modules/umbriel.nix`). Do
-  not edit the deployed copy.
-- Umbriel watches its config file. After activation, confirm the change took
-  effect with its inspection commands (for example `umbriel submap`,
-  `umbriel outputs`) or by trying the behavior.
-
-## Noctalia settings
-
-- `home/noctalia/config.toml` is deployed by Home Manager
-  (`modules/noctalia.nix`); settings made in Noctalia's settings window
-  override it from `~/.local/state/noctalia/settings.toml`. When the user asks to sync or save
-  their Noctalia settings into the config, follow
+- `home/umbriel/config.toml`, `home/noctalia/config.toml` and
+  `home/niri/config.kdl` are live: Home Manager links
+  `~/.config/{umbriel,noctalia,niri}/…` to the files in `my.flakePath`
+  (`/etc/nixos`) with out-of-store symlinks (`modules/{umbriel,noctalia,niri}.nix`).
+  Saving the file in `/etc/nixos` applies it; no rebuild or activation is
+  needed. Rebuilds are only needed when the link itself or the Nix code
+  around it changes. Edit the files, never the `~/.config` links.
+- Because `/etc/nixos` is the live copy, an edit there takes effect as soon as
+  it is written: make the change in your worktree, commit, then merge to
+  `master` as usual; the merge is the moment it goes live. Rollback is `git`
+  (revert or check out the previous version), not a previous generation.
+- A config that fails to parse does not crash the session: Umbriel and Niri
+  keep the last good config (Niri shows "Failed to parse the config file").
+  So a change is done only after you confirm it applied: Umbriel's
+  inspection commands (`umbriel submap`, `umbriel outputs`), `niri validate`
+  and `niri msg action load-config-file`, or by trying the behavior; anything
+  visible is confirmed with a screenshot.
+- Keybinding, output, input, idle and portal changes can take down the
+  session the user is looking at: do not experiment with them live; reason
+  them out first and have a rollback ready.
+- Noctalia's settings window saves to `~/.local/state/noctalia/settings.toml`,
+  which overrides `config.toml`. When the user asks to sync or save their
+  Noctalia settings into the config, follow
   [docs/noctalia-settings.md](docs/noctalia-settings.md).
-
-## Niri configuration workflow
-
-- The canonical Niri configuration is
-  `/etc/nixos/home/niri/config.kdl`; Home Manager deploys it (`modules/niri.nix`) to
-  `/home/janzon/.config/niri/config.kdl`.
-- Do not edit the deployed file in `/home/janzon/.config/niri/` directly; it
-  is a Nix store symlink and will be replaced on the next activation.
-- After changing Niri settings, run `nix flake check`,
-  `nixos-rebuild dry-build --flake /etc/nixos#erebor`, and then
-  `sudo nixos-rebuild switch --flake /etc/nixos#erebor`.
-- Reload Niri's deployed configuration with `niri msg action load-config-file`
-  and verify the affected behavior before declaring the change complete. A
-  logout is only needed when a change cannot be applied by the live reload.
 
 ## Secrets and source control
 

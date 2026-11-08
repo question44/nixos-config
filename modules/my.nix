@@ -97,6 +97,17 @@
           '';
         };
 
+        flakePath = lib.mkOption {
+          type = lib.types.strMatching "/.*";
+          default = "/etc/nixos";
+          description = ''
+            Checkout of this repository that live desktop configs link to
+            (Umbriel, Noctalia, Niri). Home Manager points those files at it with
+            out-of-store symlinks, so saving the file there applies the change
+            without a rebuild.
+          '';
+        };
+
         niri = {
           enable = lib.mkEnableOption "Niri as a second compositor next to Umbriel";
         };

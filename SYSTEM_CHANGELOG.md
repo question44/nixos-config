@@ -3,6 +3,31 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Live desktop configs: Umbriel, Noctalia and Niri link into /etc/nixos — 2026-11-08
+
+`~/.config/umbriel/config.toml`, `~/.config/noctalia/config.toml` and
+`~/.config/niri/config.kdl` are now out-of-store symlinks to the files in
+the new `my.flakePath` (default `/etc/nixos`), set through
+`config.lib.file.mkOutOfStoreSymlink` (Umbriel's Home Manager module accepts
+the link as `programs.umbriel.settings` unchanged). Saving the file in
+`/etc/nixos` applies it without a rebuild; rollback for these files is git,
+not a previous generation. Umbriel's watcher resolves every symlink component
+and watches the canonical directory, so edits in `/etc/nixos/home/umbriel/`
+trigger its reload. `/etc/xdg/niri/config.kdl` stays a store copy as
+fallback. AGENTS.md's three workflow sections became one "Desktop
+configuration (live)" section; `docs/noctalia-settings.md` no longer asks for
+activation after a sync.
+
+Validation: `nix fmt`, `nix flake check` and `scripts/erebor-rebuild build`
+pass; the built Home Manager generation's three links resolve to
+`/etc/nixos/home/…`. `erebor-diff` against the previous commit: different
+for erebor and template, as intended: the closure loses the copied
+`hm_config.toml` (Umbriel), `hm_config.toml` (Noctalia) and `hm_config.kdl`
+(Niri, erebor only) store files, and `home-manager-janzon.service` points at
+the new generation. Nothing else changed. Not activated; after activation
+check `readlink -f ~/.config/umbriel/config.toml` and that Umbriel reloads on
+save.
+
 # Third-party flake inputs pinned to commits — 2026-11-08
 
 `noctalia`, `noctalia-greeter`, `umbriel`, `zen-browser`, `helium`,

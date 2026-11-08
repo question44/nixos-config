@@ -8,12 +8,19 @@
   };
 
   flake.modules.homeManager.umbriel =
-    { pkgs, ... }:
+    {
+      config,
+      osConfig,
+      pkgs,
+      ...
+    }:
     {
       imports = [ inputs.umbriel.homeModules.default ];
       programs.umbriel = {
         enable = true;
-        settings = ../home/umbriel/config.toml;
+        # Live: a link into the checkout (my.flakePath), which Umbriel watches
+        # through the symlinks, so a saved edit applies without a rebuild.
+        settings = config.lib.file.mkOutOfStoreSymlink "${osConfig.my.flakePath}/home/umbriel/config.toml";
       };
       home.file.".local/bin/umbriel-scratchpad-hint" = {
         source = pkgs.replaceVars ../home/umbriel/scratchpad-hint {

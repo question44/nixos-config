@@ -1,12 +1,13 @@
 # Syncing Noctalia settings into the flake
 
-Noctalia reads `~/.config/noctalia/config.toml`, which Home Manager deploys
-from `home/noctalia/config.toml`. Changes made in Noctalia's settings window
+Noctalia reads `~/.config/noctalia/config.toml`, which Home Manager links
+to `/etc/nixos/home/noctalia/config.toml` (live: a merged edit applies
+without activation). Changes made in Noctalia's settings window
 are saved to `~/.local/state/noctalia/settings.toml`, which overrides it. Over
 time the repo copy falls behind what is on screen, and the overrides hide any
 later edit to the Nix file.
 
-To sync, fold the overrides into `home/noctalia/config.toml`, activate, then
+To sync, fold the overrides into `home/noctalia/config.toml`, merge it, then
 trim `settings.toml` back to what belongs outside Git. The effective
 configuration must not change. Follow the worktree, build and activation rules
 in [AGENTS.md](../AGENTS.md).
@@ -71,14 +72,14 @@ belong in the config.
    `git diff` of `home/noctalia/config.toml` and ask before going on.
 
 6. Add a `SYSTEM_CHANGELOG.md` entry, run `nix fmt`, `nix flake check` and
-   `scripts/erebor-rebuild build`, commit, merge into `master` and activate
-   with `scripts/erebor-rebuild switch` from `/etc/nixos`. Activation needs
-   the user's YubiKey or fingerprint.
+   `scripts/erebor-rebuild build`, commit and merge into `master`. The config
+   is linked live from `/etc/nixos`, so the merge applies it; no activation is
+   needed unless the change also touched Nix code.
 
-7. Only after activation succeeds, back up the overrides:
+7. Only after the merged config is live, back up the overrides:
    `cp -p ~/.local/state/noctalia/settings.toml ~/.local/state/noctalia/settings.toml.bak-<date>`.
-   Trimming before activation drops the user's changes from the live desktop
-   until the rebuild finishes.
+   Trimming before the merge drops the user's changes from the live desktop
+   until the new config is in `/etc/nixos`.
 
 8. Rewrite `settings.toml` to `config_version = <current version>` plus the
    keys from "What stays out of the repo", copied from the backup. Do not

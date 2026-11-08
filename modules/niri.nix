@@ -40,11 +40,19 @@
     };
 
   flake.modules.homeManager.niri =
-    { lib, osConfig, ... }:
+    {
+      config,
+      lib,
+      osConfig,
+      ...
+    }:
     lib.mkIf osConfig.my.niri.enable {
       xdg.configFile."systemd/user/niri-overview-wallpaper.service.d/override.conf".source =
         ../home/systemd/niri-overview-wallpaper-override.conf;
-      xdg.configFile."niri/config.kdl".source = ../home/niri/config.kdl;
+      # Live: a link into the checkout (my.flakePath); Niri reloads it on save.
+      # /etc/xdg/niri/config.kdl stays a store copy as the fallback.
+      xdg.configFile."niri/config.kdl".source =
+        config.lib.file.mkOutOfStoreSymlink "${osConfig.my.flakePath}/home/niri/config.kdl";
       home.file.".local/bin/niri-overview-wallpaper" = {
         source = ../home/dolphin/niri-overview-wallpaper;
         executable = true;

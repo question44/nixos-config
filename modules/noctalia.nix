@@ -67,9 +67,17 @@
     };
 
   flake.modules.homeManager.noctalia =
-    { pkgs, ... }:
     {
-      xdg.configFile."noctalia/config.toml".source = ../home/noctalia/config.toml;
+      config,
+      osConfig,
+      pkgs,
+      ...
+    }:
+    {
+      # Live: a link into the checkout (my.flakePath); the settings window's
+      # ~/.local/state/noctalia/settings.toml still overrides it.
+      xdg.configFile."noctalia/config.toml".source =
+        config.lib.file.mkOutOfStoreSymlink "${osConfig.my.flakePath}/home/noctalia/config.toml";
       # Local plugins in the data dir outrank every plugin source.
       xdg.dataFile."noctalia/plugins/wallpaper-engine".source = ../home/noctalia/plugins/wallpaper-engine;
       home.file.".local/bin/noctalia-bar-focus" = {
