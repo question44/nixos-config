@@ -3,6 +3,27 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# rcmd app menu moved to a Vicinae extension — 2026-11-08
+
+User asked to simplify the Right Ctrl app chooser: plain app list, actions in
+Vicinae's Ctrl+B panel, running apps first. `vicinae dmenu` is replaced by a
+local extension (`home/rcmd/vicinae/`, command `@janzon/rcmd:menu`, built with
+the vicinae flake's `mkVicinaeExtension`, `@vicinae/api` 0.29.2, linked to
+`~/.local/share/vicinae/extensions/rcmd`). `rcmd` writes
+`$XDG_RUNTIME_DIR/rcmd-menu.json` and opens it by deeplink. Section "Running"
+(Enter focuses the latest window) and "Launch" (every visible app for the
+letter; Enter opens a new instance, using the new-window desktop action when
+the app runs). Ctrl+B holds Focus, New Window, the other windows by title and
+the desktop actions. Picks call back `rcmd --focus-window ID` /
+`rcmd --open DESKTOP_ID [--action X]` (wrapper exports `RCMD_SELF`).
+
+`erebor-diff` tier: different (adds the `rcmd` extension; HM service hash).
+Activated with `erebor-rebuild switch` → generation 320. Verified: the
+extension links the store build and is listed by `vicinae cmd ls`; `rcmd c
+--choose` showed both sections with icons and the Ctrl+B hint (screenshot,
+deleted); deployed `rcmd --focus-window` focused Claude; no failed units,
+xremap active. Not tested live: picking items with Enter/Ctrl+B and `--open`.
+
 # Umbriel: drop cmd+Shift+P screen-off bind — 2026-11-08
 
 Removes `Mod+Shift+P` (`dpms-off`) from `home/umbriel/config.toml` at the
