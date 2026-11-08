@@ -12,7 +12,7 @@ the hub; other accounts do not.
   reviews, open epics with progress (`done` of `total`, cancelled children
   excluded) and every open task with its repository path. `--root DIR`
   selects the repository. Two new tests in `scripts/tests/`.
-- Dashboard submodule (`c1c4ee1`, local commits, **not pushed**):
+- Dashboard submodule (`c1c4ee1`, pushed to GitHub on user approval):
   `control.tasks.command`/`linkBase` options; `GET /api/control/tasks`
   (administrators only, 403 otherwise) runs the command with a 10 s timeout
   and returns only the documented fields; `/api/control/config` adds
@@ -36,9 +36,8 @@ counts and `…/blob/master/tasks/SYS-087.md` links, and a non-admin account no
 `taskBoard` flag and 403; unauthenticated `/api/control/tasks` on the live
 service is 401; Caddy serves the bundle with the folded card. Not observed:
 the rendered card in a signed-in browser (the in-app browser blocked the
-bundle). Limit: GitHub links and clean builds of `master` need the dashboard
-commits pushed; until then build with a git `insteadOf` pointing at
-`apps/erebor-dashboard`.
+bundle). After the push, a clean build of `master` fetches the submodule
+from GitHub and yields the running system.
 
 # Zed: macOS JetBrains keymap with Cmd on Super (SYS-093) — 2026-11-08
 
