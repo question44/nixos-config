@@ -1,0 +1,4 @@
+# macOS: Noctalia's generated `noctalia` theme does not exist here, so use a
+# fixed theme. Linux uses config.ghostty.
+theme = Catppuccin Mocha
+background-opacity = 0.95

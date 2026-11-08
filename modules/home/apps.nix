@@ -1,33 +1,21 @@
-# Application configs: Neovim, Ghostty, Monstar, the Noctalia Zed template
-# (it shares the app opacity) and Vencord.
+# Linux application configs: Monstar, the Noctalia Zed template (both share
+# the app opacity with Ghostty, see _opacity.nix) and Vencord. Neovim and
+# Ghostty are their own aspects (nvim.nix, ghostty.nix).
 {
   flake.modules.homeManager.apps =
     { lib, pkgs, ... }:
     let
-      appearance = import ../../home/appearance.nix;
-      # Zed uses an 8-bit alpha; use the same rounded value in Ghostty.
-      appOpacityByte =
-        assert lib.assertMsg (
-          appearance.appOpacity >= 0 && appearance.appOpacity <= 1
-        ) "appearance.appOpacity must be between 0 and 1";
-        builtins.floor (appearance.appOpacity * 255 + 0.5);
-      appOpacityAlpha = lib.toUpper (lib.fixedWidthString 2 "0" (lib.toHexString appOpacityByte));
+      opacity = import ./_opacity.nix lib;
     in
     {
-      xdg.configFile."nvim".source = ../../home/nvim;
-      xdg.configFile."ghostty/config.ghostty".source =
-        pkgs.replaceVars ../../home/ghostty/config.ghostty
-          {
-            appOpacity = builtins.toJSON (appOpacityByte / 255.0);
-          };
-      # Monstar shares Ghostty's background opacity, from home/appearance.nix.
+      # Monstar shares Ghostty's background opacity (_opacity.nix).
       xdg.configFile."monstar/config".source = pkgs.replaceVars ../../home/monstar/config {
-        appOpacity = builtins.toJSON (appOpacityByte / 255.0);
+        appOpacity = opacity.value;
       };
       xdg.configFile."noctalia/templates/zed.json".source =
         pkgs.replaceVars ../../home/noctalia/templates/zed.json
           {
-            inherit appOpacityAlpha;
+            appOpacityAlpha = opacity.alpha;
           };
       # Keep Vencord settings writable and let Noctalia generate its CSS.
       home.activation.discordNoctaliaTheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''

@@ -66,6 +66,13 @@ before acting; each holds the full rules for its area.
   are in `modules/home/`. `home/<app>/` holds the dotfiles they deploy.
 - Hardware-specific aspects (`xremap`, `nvidia`, `windows-vm`,
   `looking-glass`) are imported per host.
+- The Mac is `darwinConfigurations.macbook` (`modules/hosts/macbook/`, nix-darwin
+  aspects in `flake.modules.darwin.*` under `modules/darwin/`). Its Home
+  Manager profile (`homeManager.mac`) reuses the cross-platform aspects
+  `shell`, `nvim` and `ghostty`; keep Linux-only parts of a shared aspect
+  behind `pkgs.stdenv.hostPlatform.isLinux`. It is evaluated by
+  `nix flake check` but built and applied only on the Mac
+  ([docs/mac.md](docs/mac.md)).
 - Module order is breadth-first by import depth, so moving a definition into
   another aspect can reorder list options (packages, overlays, graphics
   drivers). Check with `scripts/erebor-diff` after moving code between

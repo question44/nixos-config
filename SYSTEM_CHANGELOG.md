@@ -3,6 +3,33 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# The Mac under nix-darwin, sharing Home Manager aspects — 2026-11-08
+
+Adds the `nix-darwin` input (pinned, follows nixpkgs) and
+`darwinConfigurations.macbook` (`modules/hosts/macbook/`, aarch64-darwin,
+user janzon; facts checked over SSH today). `flake.modules.darwin.base`
+(`modules/darwin/base.nix`) sets `nix.enable = false` for Determinate Nix,
+Dock autohide, Finder extensions and path bar, fast key repeat, tap to
+click, Touch ID for `sudo` (`sudo_local`), JetBrains Mono Nerd Font, and
+declares the Mac's current Homebrew casks and formulae with
+`cleanup = "none"` and no auto-update or upgrade. Its Home Manager profile
+`homeManager.mac` reuses the cross-platform aspects: `shell` (now split by
+platform: the welcome banner and Noctalia palette are Linux-only; the Mac
+gets `home/starship-mac.toml`, its own powerline prompt, Secretive's
+`SSH_AUTH_SOCK`, and `eza`/`chafa`), and the new `nvim` and `ghostty`
+aspects split out of `apps` (Ghostty uses `home/ghostty/config-macos.ghostty`
+on macOS). The opacity calculation moved to `modules/home/_opacity.nix`.
+The hostname is deliberately not set. `docs/mac.md` covers install, what the
+first apply changes, and later steps. The KDE Connect conversion was not
+done: `programs.kdeconnect` would open 1714–1764 on every interface instead
+of only `br0` and enable uinput, so it is not equivalent.
+
+Validation: `nix fmt`, `nix flake check` (new `eval-darwin-macbook`: the
+Mac's drvPath evaluates and no Linux-only file is deployed there) and
+`scripts/erebor-rebuild build` pass. `erebor-diff` against the previous
+commit: identical for erebor and template. The Mac config is evaluated
+only; it has not been built or applied.
+
 # Starship: the Mac's powerline layout on erebor, in Noctalia colours — 2026-11-08
 
 `home/starship.toml` (deployed as `noctalia/starship-base.toml`, with the

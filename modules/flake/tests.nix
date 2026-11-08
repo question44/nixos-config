@@ -190,6 +190,23 @@ let
       check (lib.elem erebor.my.user.name (lib.attrNames erebor.home-manager.users)) "erebor: no Home Manager config for my.user.name"
       ++ check (lib.elem template.my.user.name (lib.attrNames template.home-manager.users)) "template: no Home Manager config for my.user.name";
 
+    # The Mac's nix-darwin config evaluates (it can only be built on the Mac):
+    # forcing its drvPath evaluates every option, and the shared Home Manager
+    # aspects must keep Linux-only files off it.
+    darwin-macbook =
+      let
+        mac = config.flake.darwinConfigurations.macbook.config;
+        files = lib.attrNames mac.home-manager.users.janzon.xdg.configFile;
+      in
+      check (lib.hasPrefix "/nix/store/" mac.system.build.toplevel.drvPath) "macbook: no system derivation"
+      ++ map (f: "macbook: Linux-only file ${f} is deployed") (
+        lib.intersectLists files [
+          "fish/functions/shell_welcome.fish"
+          "noctalia/starship-base.toml"
+          "monstar/config"
+        ]
+      );
+
     # Every secrets/*.yaml is sops-encrypted: each top-level value is ENC[…]
     # and the file carries sops metadata.
     secrets-encrypted = lib.concatMap (

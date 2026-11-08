@@ -46,6 +46,8 @@ in
         desktop
         darkly
         apps
+        nvim
+        ghostty
         noctalia
         vicinae
         xremap
