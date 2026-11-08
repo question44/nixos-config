@@ -2,7 +2,7 @@
 
 Current unfinished work belongs here. History and dated evidence belong in
 [SYSTEM_CHANGELOG.md](SYSTEM_CHANGELOG.md); recovery knowledge belongs in
-[SYSTEM_CONTEXT.md](SYSTEM_CONTEXT.md). Updated: 2026-10-23.
+[SYSTEM_CONTEXT.md](SYSTEM_CONTEXT.md). Updated: 2026-11-08.
 
 - **OPEN:** a specific remaining task or unverified result is known.
 - **ACTIVE:** work is underway; include the current checkpoint, recovery path
@@ -15,6 +15,253 @@ Each item has one stable ID. Do not renumber or reuse IDs. Link related records
 instead of copying their instructions. No review task authorizes a reboot,
 activation, storage change, secret archive or graphical-session interruption.
 Earlier approvals remain bounded by their original scope and safety preconditions.
+
+<a id="sys-075"></a>
+
+### SYS-075 — Accept Moonshine PINs only from erebor itself
+
+**Status:** OPEN · **Review:** 2026-11-15
+
+Security fix; do first. Found 2026-11-08 while reading the source of Moonshine
+0.16.1 (upstream `8247857`, same version as the installed package). `GET /pin`
+and `POST /submit-pin` (`src/webserver/mod.rs:408`, `submit_pin` at line 635)
+are served on the public HTTP port 47989 and only check
+`webserver.enable_pairing` (default `true`, unset in `modules/moonshine.nix`).
+They do not check the peer address, and the port is open (`openFirewall = true`).
+So any device that can reach 47989 (LAN, tailnet, shared users) can start
+pairing in Moonlight and submit its own PIN. Not reproduced against erebor yet.
+
+Plan:
+
+1. Add a small patch to the Moonshine package (overlay or
+   `services.moonshine.package`) that rejects `/pin` and `/submit-pin` unless
+   the peer address is loopback or one of erebor's own addresses. The hub
+   already submits from `127.0.0.1:47989` (`control.moonshineUrl`,
+   [SYS-069](#sys-069)), so hub pairing keeps working. The desktop "Enter PIN"
+   notification opens `http://<local address>:47989/pin`, which is a local peer.
+2. Write the patch with a test, and offer it upstream (user's choice).
+3. Note in SYSTEM_CONTEXT.md that unpairing is a no-op (`unpair()` returns
+   200 and does nothing); paired certificates live in
+   `~/.local/share/moonshine/state.toml` (`paired_certs`), and removing a
+   client means editing that file and restarting `moonshine.service`.
+
+Done when: a submission from another LAN/tailnet device gets 403 (curl to
+`/submit-pin` from the MacBook), and a real Moonlight client still pairs
+through the hub. Recovery: drop the patch and set `enable_pairing = false`.
+Related: [SYS-069](#sys-069), [SYS-076](#sys-076).
+
+<a id="sys-076"></a>
+
+### SYS-076 — Guest-safe Moonshine streaming: game tiles and session sandbox
+
+**Status:** OPEN · **Review:** 2026-11-22
+
+User wants streamed sessions limited to games, with no file browsing or other
+software, for themselves and occasional guests. One Steam install is shared
+with the desktop; the desktop and a stream are never played at the same time.
+Decided 2026-11-08: one Linux user with a sandbox, not a separate streaming
+user (separate users would split Proton prefixes and saves and need a moved,
+group-shared library; see the discussion behind [SYS-080](#sys-080)).
+
+Findings (Moonshine 0.16.1 source, upstream `8247857`):
+
+- Each app runs in Moonshine's own headless compositor; the desktop is never
+  visible to the client.
+- Apps are started as a transient user unit, `moonshine-session.service`, in
+  `user@1000` through `StartTransientUnit`. Confirm the name during a live
+  stream (`systemctl --user status moonshine-session`).
+- The `steam` application scanner rescans on every Moonlight app-list request
+  when `libraryfolders.vdf` or any `appmanifest_*.acf` changes
+  (`src/webserver/mod.rs` `app_list`, `src/app_scanner/steam.rs`
+  `source_fingerprint`), so installs and uninstalls show up without a restart.
+- Moonshine passes the client's resolution and frame rate to the app, but not
+  which client it is. Any tile is visible to every paired client.
+
+Plan (`modules/moonshine.nix`, Home Manager for the drop-in):
+
+1. Replace the "Steam Big Picture" application with an `application_scanner`
+   of `type = "steam"`, `library = "$HOME/.local/share/Steam"`, command
+   `steam -silent steam://rungameid/{game_id}`. Check that `-silent` keeps the
+   Steam window off the stream.
+2. Add `pre_command = steam -shutdown` (wait until it exits), so a desktop
+   Steam that was left open closes. Otherwise the launch is handed to the
+   unsandboxed desktop instance and may open on the monitor.
+3. Add the drop-in `~/.config/systemd/user/moonshine-session.service.d/sandbox.conf`:
+   `TemporaryFileSystem=%h`, `BindPaths=%h/.local/share/Steam %h/.steam`,
+   `NoExecPaths=/`, `ExecPaths=/nix/store %h/.local/share/Steam`. Add
+   `BindPaths` for any game that saves outside the Steam folder (check the
+   played games' save locations).
+4. Turn off the Steam overlay (Steam settings → In game) so Shift+Tab gives no
+   browser. Record it in SYSTEM_CONTEXT.md, as it is not declarative.
+
+Done when: tiles list exactly the installed Steam games; a game launches over
+a real Moonlight stream with nothing else visible; inside a game, a file
+dialog shows only the Steam folders and nothing under `~` can be run; a
+Proton game's save written during the stream is present on the desktop; the
+desktop Steam works afterwards; installing a game on the desktop adds a tile
+after a Moonlight refresh. Risks: in a user unit these options also put the
+session in its own user namespace, and Steam's bubblewrap must work nested
+inside it. Recovery: remove the drop-in and restore the Big Picture
+application. Related: [SYS-053](#sys-053), [SYS-075](#sys-075).
+
+<a id="sys-077"></a>
+
+### SYS-077 — Hub as gatekeeper for every `*.erebor` service
+
+**Status:** OPEN · **Review:** 2026-11-29
+
+Guests (tailnet members and shared friends, [SYS-078](#sys-078)) will reach
+erebor's port 443, where every Caddy site lives (`modules/workstation/caddy.nix`).
+The hub's per-user visibility only hides links ([SYS-068](#sys-068); README:
+"hiding a service only removes its link and does not protect the service
+itself"). Sites that must never reach a guest: `sys` (Cockpit, root),
+`code` (T3 Code, runs commands as janzon), the browser terminal and browser
+desktop, `sync` (Syncthing), `torrent` (qBittorrent).
+
+Plan:
+
+1. Add `my.services.<name>.access` with values `owner` / `hub` / `public`,
+   defaulting to `owner`. Mark the services above `owner`; candidates for
+   `hub` are `media` (Jellyfin) and `cloud` (Nextcloud).
+2. Dashboard API: add a `forward_auth` check endpoint (for example
+   `GET /api/control/authz?service=<id>`). Return 200 for owner devices
+   (tailnet identity, see step 4) or for a signed-in user allowed that service.
+   Return 401 or 403 otherwise, and never allow `owner` services for
+   non-owners.
+3. The session cookie is currently scoped to `/api/control` on the hub host
+   (`SameSite=Strict`). Scope it to `.<domain>` so subdomains send it, or add
+   a short-lived per-subdomain token handed over by the hub.
+4. Owner device identity: Caddy cannot ask Tailscale directly. Either the API
+   resolves the client IP with the `tailscale whois` local API, or a list of
+   owner device addresses is generated from config. LAN clients
+   (`private_ranges`) count as owner, as they do now for `dashboard_controls`.
+5. Generate `forward_auth` into each `publicRoutes` block in `caddy.nix`. LAN
+   blocks (`lanPorts`) stay LAN-only.
+
+Done when: from a guest test account and device, an allowed service opens
+after hub sign-in, a non-allowed one is refused, and every `owner` service
+returns 403 even with hub permission set; owner devices and the LAN see no
+change. Related: [SYS-068](#sys-068), [SYS-078](#sys-078).
+
+<a id="sys-078"></a>
+
+### SYS-078 — Tailnet guest policy and erebor guest firewall
+
+**Status:** OPEN · **Review:** 2026-11-29
+
+User decision 2026-11-08: everyone except the owner is a guest. Guests may
+only stream games and use the services enabled for them in the hub, with no
+other privileges. `tailscale status` on 2026-11-08 shows a second member,
+a guest login ("MacBook Pro (Zordon)"), who currently reaches
+other devices (user report). No device advertises subnet routes or an exit
+node, so the LAN is not reachable through Tailscale. Shared users only ever
+see the machines shared with them.
+
+Plan:
+
+1. Keep the tailnet policy in this repo (`tailscale/policy.hujson`):
+   - the owner gets `*`;
+   - `autogroup:member` gets only `autogroup:self`;
+   - `group:guests` and `autogroup:shared` get erebor
+     (`100.108.216.80`) on `tcp:443`, `tcp:47984`, `tcp:47989`, `tcp:48010`
+     and `udp:47998-48000`.
+   Include `tests`: owner accepts `erebor:22` and the NanoKVM; a guest accepts
+   `erebor:443` and `erebor:47989` but is denied `erebor:22`, `erebor:8384`,
+   the NanoKVM and the Steam Deck. Keep the Tailscale SSH rule
+   (`autogroup:member` → `autogroup:self`, `check`). Merge any sections the
+   live policy already has; first read it in the admin console or through the
+   API.
+2. Apply the policy: the user pastes it, or a Tailscale OAuth client with the
+   `policy_file` scope does it (secret via a private prompt, outside the store).
+3. erebor firewall, second layer: on `tailscale0`, guest ports are open to
+   all tailnet peers; every other TCP/UDP port (currently 22, 80, 443 extras,
+   22000) is open only to owner devices. Generate the owner device list, or
+   refresh it from `tailscale status --json` (UserID of the owner) in a small
+   service.
+
+Done when: the policy tests pass in Tailscale; from Karol's (or a test guest)
+device only the guest ports on erebor answer and no other device does; owner
+devices reach everything as before. Related: [SYS-077](#sys-077),
+[SYS-079](#sys-079).
+
+<a id="sys-079"></a>
+
+### SYS-079 — Hub Access page: guests, share invites, streaming switch
+
+**Status:** OPEN · **Review:** 2026-12-06
+
+Make the hub the one place to add, see and remove guests. Tailscale API
+findings (OpenAPI spec, 2026-11-08):
+
+- **Create invite:** `POST /api/v2/device/{deviceId}/device-invites` with
+  `multiUse`, `allowExitNode` and `email`. It cannot use an OAuth client
+  token, only a personal API access token, which expires after at most 90 days.
+- **List and delete invite:** `GET /api/v2/device/{deviceId}/device-invites`
+  and `DELETE /api/v2/device-invites/{id}`, with OAuth scopes
+  `device_invites:read` and `device_invites`. Revoking an accepted invite
+  removes the recipient's access.
+- Recipients accept in their own (personal) tailnet. A revoked share needs a
+  new invite.
+
+Plan (dashboard app plus `modules/dashboard-control.nix`):
+
+1. Admin-only "Access" page.
+   - **Lists:** tailnet members, accepted share invites (`acceptedBy`) and
+     `group:guests` from [SYS-078](#sys-078), matched to hub accounts.
+   - **Manual steps:** a short written guide for doing the same by hand in the
+     Tailscale admin console.
+2. Invite: create the link manually in the admin console (once per friend), or
+   through the API with a personal token stored as a secret. The hub warns
+   before the token expires. Show the link as text or QR, and create the
+   matching hub account with its services and actions.
+3. Remove: delete the invite (OAuth client), remove the member from
+   `group:guests`, and disable the hub account.
+4. Friends-streaming switch ("Friends can stream for N hours", per account
+   permission): erebor's firewall opens Moonshine ports to guest devices only
+   while it is on, and turns it off automatically. Owner devices are always
+   allowed. A paired guest who reconnects later is blocked while the switch is
+   off.
+5. Guest pairing: grant `moonshine-pair` to guest accounts so they pair their
+   own devices ([SYS-075](#sys-075)).
+
+Done when: a test guest is invited, accepts, signs in, pairs and streams with
+the switch on, is blocked with it off, and loses all access after Remove.
+Secrets: OAuth client (`device_invites`, `policy_file`) and optional personal
+token, never in the store or repo. Related: [SYS-068](#sys-068),
+[SYS-078](#sys-078).
+
+<a id="sys-080"></a>
+
+### SYS-080 — Hub-unlocked Steam Library tile for installing games
+
+**Status:** OPEN · **Review:** 2026-12-13
+
+Let permitted guests install owned games from Moonlight. Moonshine lists only
+installed games, and a tile cannot be hidden from some clients
+([SYS-076](#sys-076) findings).
+
+Plan:
+
+1. Add a "Steam Library" application: Big Picture inside the
+   [SYS-076](#sys-076) sandbox, started through a wrapper that exits at once
+   unless an unlock flag exists and has not expired (for example
+   `$XDG_RUNTIME_DIR/moonshine-library-until`).
+2. Hub action "Allow installing games for 2 hours", granted per account. It
+   writes the flag; the flag expires automatically.
+3. Before enabling it for anyone, the owner removes the saved payment method
+   from Steam and keeps Steam Guard on the phone. Inside Steam a guest still
+   acts as the owner's account (store, chat, settings), and nothing on the
+   Linux side can block that.
+4. Considered alternative: a "Request a game" card. It lists owned games
+   (needs a Steam Web API key as a secret), and the owner approves by
+   installing remotely from the Steam mobile app. It is safer but slower;
+   build it only if the user prefers it.
+
+Done when: with the flag absent the tile exits immediately; after unlocking, a
+test account installs an owned game, which then appears as its own tile; the
+flag expires on time; file and exec limits hold in Big Picture (a "Browse"
+dialog shows only the Steam folders, and a downloaded file cannot be run).
+Depends on [SYS-076](#sys-076) and [SYS-079](#sys-079).
 
 <a id="sys-073"></a>
 
