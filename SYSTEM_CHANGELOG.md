@@ -30,6 +30,27 @@ Removes `Mod+Shift+P` (`dpms-off`) from `home/umbriel/config.toml` at the
 user's request: system-wide actions should come from the CapsLock layer, not
 cmd. Screen-off intentionally gets no replacement chord. The other `Mod+…`
 binds are unchanged. Live config only (out-of-store link); no rebuild.
+# Noctalia pin button: persistent mode, reserve in step — 2026-11-08
+
+The bar's pin button (`noctalia-bar-autohide`) drifted: it flipped between
+"auto-hide but reserving space" and "always shown without reserving space".
+It used runtime IPC (`bar-auto-hide-set` plus the toggle-only
+`bar-reserve-toggle`) and a mode file in `$XDG_RUNTIME_DIR`; since the
+Noctalia config is linked live, any config reload reset the runtime reserve
+and auto-hide while the mode file kept the old value, inverting the reserve
+on every later press. The script now writes `auto_hide`, `smart_auto_hide`
+and `reserve_space` into `[bar.default]` of Noctalia's settings override
+(`~/.local/state/noctalia/settings.toml`), which Noctalia reloads live and
+keeps across reloads and logins. Pinned: reserve on, no auto-hide; toggled:
+smart auto-hide without reserve (the stats bar's combination).
+`docs/noctalia-settings.md` lists these keys as staying out of the repo.
+
+Validation: tested live from the worktree; `umbriel layers --json` shows the
+bar's exclusive zone at 52 when pinned and 0 when auto-hidden, and
+screenshots show the bar hidden over windows in smart mode and windows ending
+above it when pinned. Override backup:
+`settings.toml.bak-pin-persist`. `erebor-diff` against `master`: different,
+only the `noctalia-bar-autohide` file and the Home Manager unit that links it.
 
 # Dolphin admin mode (kio-admin) — 2026-11-08
 

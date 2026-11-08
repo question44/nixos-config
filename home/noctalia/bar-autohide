@@ -1,69 +1,75 @@
 #!/usr/bin/env bash
-# Toggle the Noctalia default bar between disabled and smart auto-hide.
+# Toggle the Noctalia default bar between pinned (always shown, reserving its
+# space) and auto-hide (overlaying the workspace, no reserved space).
 #
-# `bar-auto-hide-set` is deliberately a runtime-only Noctalia IPC command and
-# its mode is not exposed by `noctalia msg status`.  Keep the state alongside
-# the Wayland session, so a fresh login safely starts from the declarative
-# configuration again.
+# The mode is written to Noctalia's settings override
+# (~/.local/state/noctalia/settings.toml, [bar.default]), which Noctalia
+# reloads live and re-applies after config reloads and new logins.  Runtime
+# IPC (`bar-auto-hide-set`, `bar-reserve-toggle`) is not used: it is lost on
+# every reload of the live config, and the reserve toggle drifted out of step
+# with the auto-hide state.
 set -euo pipefail
 
 usage() {
-  echo "usage: noctalia-bar-autohide [toggle|on|off|smart|status] [monitor-selector]" >&2
+  echo "usage: noctalia-bar-autohide [toggle|off|smart|on|status]" >&2
+  echo "  off = pinned, smart = smart auto-hide, on = always auto-hide" >&2
   exit 2
 }
 
 action="${1:-toggle}"
-monitor="${2:-}"
-[[ $# -le 2 ]] || usage
-
+[[ $# -le 1 ]] || usage
 case "$action" in
   toggle|on|off|smart|status) ;;
   *) usage ;;
 esac
 
-runtime_dir="${XDG_RUNTIME_DIR:?XDG_RUNTIME_DIR is required}"
-state_file="$runtime_dir/noctalia-bar-autohide-default.state"
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/noctalia"
+settings="$state_dir/settings.toml"
+section="bar.default"
 
-# The managed configuration starts with auto-hide off.  A state written by
-# this tool takes precedence for the current graphical session.
-current="off"
-if [[ -r "$state_file" ]]; then
-  read -r current < "$state_file" || current="off"
-fi
-case "$current" in
-  on|off|smart) ;;
-  *) current="off" ;;
-esac
+# Current mode from the override; no override means the declarative default
+# (pinned).
+current="$(awk -v sec="[$section]" '
+  /^[[:space:]]*\[/ { in_sec = ($0 == sec); next }
+  in_sec && /^smart_auto_hide[[:space:]]*=[[:space:]]*true/ { smart = 1 }
+  in_sec && /^auto_hide[[:space:]]*=[[:space:]]*true/ { on = 1 }
+  END { print (on ? "on" : (smart ? "smart" : "off")) }
+' "$settings" 2>/dev/null || echo off)"
 
 if [[ "$action" == status ]]; then
   printf '%s\n' "$current"
   exit 0
 fi
-
 if [[ "$action" == toggle ]]; then
-  # Smart mode delegates the workspace/overview decision to Noctalia.  With
-  # Umbriel, it remains visible on an empty focused workspace or in overview.
   [[ "$current" == off ]] && action="smart" || action="off"
 fi
 
-args=(bar-auto-hide-set "$action" default)
-[[ -n "$monitor" ]] && args+=("$monitor")
+case "$action" in
+  off)   keys=$'auto_hide = false\nsmart_auto_hide = false\nreserve_space = true' ;;
+  smart) keys=$'auto_hide = false\nsmart_auto_hide = true\nreserve_space = false' ;;
+  on)    keys=$'auto_hide = true\nsmart_auto_hide = false\nreserve_space = false' ;;
+esac
 
-# Match the layout reservation to the mode: an auto-hidden bar overlays the
-# workspace instead of leaving an empty strip at the edge.  The Noctalia IPC
-# command is a toggle, so issue it only for an actual mode transition.
-if [[ "$current" == off && "$action" != off ]]; then
-  reserve_args=(bar-reserve-toggle default)
-  [[ -n "$monitor" ]] && reserve_args+=("$monitor")
-  noctalia msg "${reserve_args[@]}"
-elif [[ "$current" != off && "$action" == off ]]; then
-  reserve_args=(bar-reserve-toggle default)
-  [[ -n "$monitor" ]] && reserve_args+=("$monitor")
-  noctalia msg "${reserve_args[@]}"
-fi
+mkdir -p "$state_dir"
+[[ -e "$settings" ]] || : > "$settings"
+tmp="$(mktemp "$settings.XXXXXX")"
+trap 'rm -f "$tmp"' EXIT
 
-noctalia msg "${args[@]}"
+# Replace the three keys inside [bar.default], keeping every other line;
+# add the table if the override does not have it yet.
+awk -v sec="[$section]" -v keys="$keys" '
+  /^[[:space:]]*\[/ {
+    in_sec = ($0 == sec)
+    print
+    if (in_sec) { print keys; done = 1 }
+    next
+  }
+  in_sec && /^(auto_hide|smart_auto_hide|reserve_space)[[:space:]]*=/ { next }
+  { print }
+  END { if (!done) printf "\n%s\n%s\n", sec, keys }
+' "$settings" > "$tmp"
 
-umask 077
-printf '%s\n' "$action" > "$state_file"
+chmod --reference="$settings" "$tmp"
+mv "$tmp" "$settings"
+trap - EXIT
 printf '%s\n' "$action"
