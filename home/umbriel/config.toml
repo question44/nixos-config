@@ -29,6 +29,9 @@ hdr = "on"
 [appearance.blur]
 # Liquid-glass look: a wide, smooth frost that keeps the backdrop's colour
 # (vibrancy) and lifts it slightly, with little grain.
+# Unoptimized: every surface blurs what is really behind it (windows too), not
+# a cached wallpaper blur; costs GPU time while something behind changes.
+optimized = false
 radius = 12
 passes = 4
 noise = 0.012
@@ -56,27 +59,22 @@ shader = "/etc/nixos/home/umbriel/effects/liquid-glass-rim.glsl"
 match.namespace = "^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd)$"
 blur = true
 blur_ignore_alpha = 0.5
-blur_optimized = true
 
 [[layer_rule]]
 match.namespace = "^vicinae$"
 blur = true
-blur_optimized = true
 
 [[window_rule]]
 blur = true
 # Qt menus, context menus, and combo boxes are descendant XDG popups rather
 # than toplevel windows, so they need this explicit opt-in.
 blur_popups = true
-blur_optimized = true
 
 [[window_rule]]
 match.app_id = "^(com\\.mitchellh\\.ghostty|dev\\.rockorager\\.monstar)$"
 window_effect = "liquid-glass"
 # The shader's R must equal this radius.
 corner_radius = 18
-# Blur the windows behind a glass window too, not only the wallpaper.
-blur_optimized = false
 # A hairline instead of the 2 px ring; focused, it is lit like the glass rim.
 border_width = 1
 border_effect = "liquid-glass-rim"
