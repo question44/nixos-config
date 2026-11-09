@@ -1,11 +1,26 @@
 # Umbriel, the primary compositor: the system session and its Home Manager
 # configuration (home/umbriel/config.toml) with the helper scripts it binds.
 { inputs, ... }:
+let
+  # Upstream Umbriel plus local patches. backdrop-effect adds the "backdrop"
+  # effect kind that the liquid-glass rule uses (shader drawn by the window's
+  # blur node, under the window). Both the system and Home Manager install it.
+  patched =
+    pkgs:
+    inputs.umbriel.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
+      patches = (old.patches or [ ]) ++ [ ../patches/umbriel-backdrop-effect.patch ];
+    });
+in
 {
-  flake.modules.nixos.umbriel = {
-    imports = [ inputs.umbriel.nixosModules.default ];
-    programs.umbriel.enable = true;
-  };
+  flake.modules.nixos.umbriel =
+    { pkgs, ... }:
+    {
+      imports = [ inputs.umbriel.nixosModules.default ];
+      programs.umbriel = {
+        enable = true;
+        package = patched pkgs;
+      };
+    };
 
   flake.modules.homeManager.umbriel =
     {
@@ -18,6 +33,7 @@
       imports = [ inputs.umbriel.homeModules.default ];
       programs.umbriel = {
         enable = true;
+        package = patched pkgs;
         # Live: a link into the checkout (my.flakePath), which Umbriel watches
         # through the symlinks, so a saved edit applies without a rebuild.
         settings = config.lib.file.mkOutOfStoreSymlink "${osConfig.my.flakePath}/home/umbriel/config.toml";

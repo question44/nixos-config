@@ -1,0 +1,720 @@
+diff --git a/src/config/change.cpp b/src/config/change.cpp
+index ab6c48f6..3d69d796 100644
+--- a/src/config/change.cpp
++++ b/src/config/change.cpp
+@@ -88,7 +88,7 @@ namespace umbriel {
+ 
+     bool selectsEffect(const std::vector<WindowRule>& rules) {
+       return std::ranges::any_of(rules, [](const WindowRule& rule) {
+-        return rule.borderEffect.has_value() || rule.windowEffect.has_value();
++        return rule.borderEffect.has_value() || rule.windowEffect.has_value() || rule.backdropEffect.has_value();
+       });
+     }
+ 
+diff --git a/src/config/config.h b/src/config/config.h
+index 92d053ec..731be955 100644
+--- a/src/config/config.h
++++ b/src/config/config.h
+@@ -491,6 +491,8 @@ namespace umbriel {
+     // Override [effects] border and window for windows this rule matches; "off" disables the default.
+     std::optional<std::string> borderEffect;
+     std::optional<std::string> windowEffect;
++    // A backdrop preset drawn by the window's blur node in place of its blur; "off" disables it.
++    std::optional<std::string> backdropEffect;
+ 
+     // See RegexPatterns: the regexes are derived from the patterns, so equality compares the patterns alone.
+     bool operator==(const WindowRule& other) const {
+@@ -551,7 +553,8 @@ namespace umbriel {
+           && cornerRadius == other.cornerRadius
+           && shadow == other.shadow
+           && borderEffect == other.borderEffect
+-          && windowEffect == other.windowEffect;
++          && windowEffect == other.windowEffect
++          && backdropEffect == other.backdropEffect;
+     }
+   };
+ 
+@@ -601,6 +604,7 @@ namespace umbriel {
+     std::optional<bool> shadow;
+     std::optional<std::string> borderEffect;
+     std::optional<std::string> windowEffect;
++    std::optional<std::string> backdropEffect;
+     bool operator==(const ResolvedWindowRule&) const = default;
+   };
+ 
+diff --git a/src/config/effects.cpp b/src/config/effects.cpp
+index e684932a..7bcab559 100644
+--- a/src/config/effects.cpp
++++ b/src/config/effects.cpp
+@@ -115,6 +115,9 @@ namespace umbriel {
+     if (text == "cursor") {
+       return EffectKind::Cursor;
+     }
++    if (text == "backdrop") {
++      return EffectKind::Backdrop;
++    }
+     return std::nullopt;
+   }
+ 
+@@ -130,6 +133,8 @@ namespace umbriel {
+       return "screen";
+     case EffectKind::Cursor:
+       return "cursor";
++    case EffectKind::Backdrop:
++      return "backdrop";
+     }
+     return "effect";
+   }
+diff --git a/src/config/effects.h b/src/config/effects.h
+index 611d2798..ba49502e 100644
+--- a/src/config/effects.h
++++ b/src/config/effects.h
+@@ -14,7 +14,7 @@ namespace umbriel {
+ 
+   class Section;
+ 
+-  enum class EffectKind : std::uint8_t { Animation, Border, Window, Screen, Cursor };
++  enum class EffectKind : std::uint8_t { Animation, Border, Window, Screen, Cursor, Backdrop };
+   enum class EffectSelectionPolicy : std::uint8_t { UnusedFirst, RoundRobin, Random };
+   enum class EffectReferenceConstraint : std::uint8_t { PresetOnly, PresetOrPool, PoolRequired };
+ 
+diff --git a/src/config/fields_effects.cpp b/src/config/fields_effects.cpp
+index 3d421849..be351ebd 100644
+--- a/src/config/fields_effects.cpp
++++ b/src/config/fields_effects.cpp
+@@ -120,6 +120,9 @@ namespace umbriel {
+         case EffectKind::Cursor:
+           keys.integer("radius", 0, 4096, preset.radius);
+           break;
++        case EffectKind::Backdrop:
++          keys.integer("padding", 0, 1024, preset.padding);
++          break;
+         case EffectKind::Animation:
+         case EffectKind::Window:
+         case EffectKind::Screen:
+@@ -235,7 +238,7 @@ namespace umbriel {
+                   description.path = key;
+                   keys.push_back(std::move(description));
+                 };
+-                add("kind", KeyDescription("enum").withValues({"animation", "border", "window", "screen", "cursor"}));
++                add("kind", KeyDescription("enum").withValues({"animation", "border", "window", "screen", "cursor", "backdrop"}));
+                 add("shader", KeyDescription("string").withFormat("path"));
+                 add("palette", KeyDescription("bool"));
+                 add("padding", KeyDescription("int").withRange(0, 1024));
+diff --git a/src/config/fields_rules.cpp b/src/config/fields_rules.cpp
+index 61dc5cf7..e4c912f6 100644
+--- a/src/config/fields_rules.cpp
++++ b/src/config/fields_rules.cpp
+@@ -234,6 +234,7 @@ namespace umbriel {
+           boolean("shadow", &W::shadow),
+           optionalEffectField("border_effect", &W::borderEffect),
+           optionalEffectField("window_effect", &W::windowEffect),
++          optionalEffectField("backdrop_effect", &W::backdropEffect),
+           registry::table<W>("default_floating_size", self, floatingSize),
+           registry::table<W>("default_floating_size_px", self, floatingSizePx),
+           registry::choice("vrr", &W::vrr, vrrModes()),
+@@ -316,6 +317,9 @@ namespace umbriel {
+       recordRuleEffect(context, keys, "window_effect", EffectKind::Window, [&loaded, index] {
+         loaded.windowRules[index].windowEffect.reset();
+       });
++      recordRuleEffect(context, keys, "backdrop_effect", EffectKind::Backdrop, [&loaded, index] {
++        loaded.windowRules[index].backdropEffect.reset();
++      });
+       return true;
+     }
+ 
+diff --git a/src/config/resolve.cpp b/src/config/resolve.cpp
+index 16a64d47..92f7492f 100644
+--- a/src/config/resolve.cpp
++++ b/src/config/resolve.cpp
+@@ -412,6 +412,9 @@ namespace umbriel {
+       if (rule.windowEffect) {
+         resolved.windowEffect = rule.windowEffect;
+       }
++      if (rule.backdropEffect) {
++        resolved.backdropEffect = rule.backdropEffect;
++      }
+     }
+     return resolved;
+   }
+diff --git a/src/scene/effect_registry.cpp b/src/scene/effect_registry.cpp
+index e4303532..199da7ce 100644
+--- a/src/scene/effect_registry.cpp
++++ b/src/scene/effect_registry.cpp
+@@ -82,6 +82,8 @@ vec4 animation(vec2 uv) {
+         return FX_EFFECT_SCREEN;
+       case EffectKind::Cursor:
+         return FX_EFFECT_CURSOR;
++      case EffectKind::Backdrop:
++        return FX_EFFECT_BACKDROP;
+       }
+       return FX_EFFECT_ANIMATION;
+     }
+@@ -173,6 +175,7 @@ vec4 animation(vec2 uv) {
+     for (const WindowRule& rule : settings.windowRules) {
+       add(rule.borderEffect.value_or(""));
+       add(rule.windowEffect.value_or(""));
++      add(rule.backdropEffect.value_or(""));
+     }
+     for (const OutputRule& rule : settings.outputs) {
+       add(rule.screenEffect.value_or(""));
+diff --git a/src/scene/surface_blur.h b/src/scene/surface_blur.h
+index d9059207..3ec9e651 100644
+--- a/src/scene/surface_blur.h
++++ b/src/scene/surface_blur.h
+@@ -42,6 +42,8 @@ namespace umbriel {
+     void setLive(bool live);
+     // Disable the node (unmap path); update() re-enables.
+     void hide();
++    // The current node, or nullptr before the first update that wants one.
++    wlr_scene_blur* node() const { return m_node; }
+ 
+   private:
+     wlr_scene_blur* m_node = nullptr;
+diff --git a/src/view/decoration.h b/src/view/decoration.h
+index 18621341..4732c52d 100644
+--- a/src/view/decoration.h
++++ b/src/view/decoration.h
+@@ -63,6 +63,7 @@ namespace umbriel {
+     );
+     void hideBlur();
+     void setBlurLive(bool live) { m_blur.setLive(live); }
++    wlr_scene_blur* blurNode() const { return m_blur.node(); }
+ 
+     // Shadow
+     void createShadow(wlr_scene_tree* frame);
+diff --git a/src/view/effects.cpp b/src/view/effects.cpp
+index e997214f..aee045dd 100644
+--- a/src/view/effects.cpp
++++ b/src/view/effects.cpp
+@@ -28,6 +28,7 @@ namespace umbriel {
+     m_border.clear();
+     m_window.clear();
+     m_overlay = false;
++    m_backdrop.clear();
+   }
+ 
+   void ViewEffects::syncNames(const Effects& effects) {
+@@ -60,7 +61,28 @@ namespace umbriel {
+     effectRegistry().removeInstance(owner);
+   }
+ 
++  void ViewEffects::applyBackdrop(const ApplyInput& input) {
++    if (input.blur == nullptr) {
++      return;
++    }
++    EffectRegistry& registry = effectRegistry();
++    fx_effect_shader* shader = m_backdrop.empty() ? nullptr : registry.preset(m_backdrop, EffectKind::Backdrop);
++    const EffectPreset* preset = shader != nullptr ? registry.presetConfig(m_backdrop) : nullptr;
++    if (preset == nullptr) {
++      wlr_scene_blur_set_effect(input.blur, nullptr, nullptr, 0);
++      m_backdropBound = false;
++      return;
++    }
++    // Static: umbriel_time stays 0, so the node redraws only when its backdrop or the window changes.
++    fx_animation_parameters parameters{};
++    parameters.scale = input.scale;
++    registry.fillTimeUniforms(parameters, 0.0F, *preset, shader);
++    wlr_scene_blur_set_effect(input.blur, shader, &parameters, preset->padding);
++    m_backdropBound = true;
++  }
++
+   void ViewEffects::apply(const ApplyInput& input) {
++    applyBackdrop(input);
+     EffectRegistry& registry = effectRegistry();
+     const bool gateOpen = input.border != nullptr && !m_border.empty() && borderEffectApplies(input.gate);
+     fx_effect_shader* shader = gateOpen ? registry.preset(m_border, EffectKind::Border) : nullptr;
+diff --git a/src/view/effects.h b/src/view/effects.h
+index e4cf551f..ed943c3b 100644
+--- a/src/view/effects.h
++++ b/src/view/effects.h
+@@ -11,6 +11,7 @@ extern "C" {
+ }
+ 
+ struct wlr_scene_node;
++struct wlr_scene_blur;
+ 
+ namespace umbriel {
+ 
+@@ -49,9 +50,18 @@ namespace umbriel {
+       bool clockAdvancing = true;
+       const void* output = nullptr; // the output driving this instance's frames
+       wlr_box outputBox{};          // that output's layout box: an instance is visible only inside it
++      wlr_scene_blur* blur = nullptr; // the window's blur node, which draws a backdrop preset
+     };
+     // True when a border or window preset is selected for this view: the caller reads the clock only then.
+-    bool configured() const { return !m_border.empty() || !m_window.empty(); }
++    bool configured() const { return !m_border.empty() || !m_window.empty() || !m_backdrop.empty() || m_backdropBound; }
++    // The backdrop_effect preset name, or empty for none.
++    bool setBackdrop(const std::string& name) {
++      if (m_backdrop == name) {
++        return false;
++      }
++      m_backdrop = name;
++      return true;
++    }
+     // True when apply() reads `surface`: a window preset or a border preset with an overlay is selected, or a node of
+     // this view is in the ledger.
+     bool needsSurface() const { return !m_window.empty() || m_overlay || !m_owners.empty(); }
+@@ -66,11 +76,14 @@ namespace umbriel {
+     void untrack(const void* owner); // remove from the ledger and forget it; null is a no-op
+     void
+     applyWindowSlots(const ApplyInput& input, const EffectPreset* border, float borderSeconds, bool borderAdvancing);
++    void applyBackdrop(const ApplyInput& input);
+     EffectSlot m_borderSlot;
+     EffectSlot m_windowSlot;
+     std::string m_border;
+     std::string m_window;
+     bool m_overlay = false;            // the border preset names an overlay
++    std::string m_backdrop;            // backdrop preset bound to the blur node
++    bool m_backdropBound = false;      // the blur node holds a program to clear
+     std::vector<const void*> m_owners; // nodes registered in the ledger
+   };
+ 
+diff --git a/src/view/view_animation.cpp b/src/view/view_animation.cpp
+index 335e1f77..9efdd7e8 100644
+--- a/src/view/view_animation.cpp
++++ b/src/view/view_animation.cpp
+@@ -868,6 +868,7 @@ namespace umbriel {
+ #endif
+           .output = output,
+           .outputBox = output != nullptr ? output->layoutBox() : wlr_box{},
++          .blur = m_decoration.blurNode(),
+       });
+     }
+   }
+diff --git a/src/view/view_rules.cpp b/src/view/view_rules.cpp
+index 16d9e470..b96847a5 100644
+--- a/src/view/view_rules.cpp
++++ b/src/view/view_rules.cpp
+@@ -688,6 +688,12 @@ namespace umbriel {
+     };
+     resolve(EffectKind::Border, config().effects.border, rule.borderEffect);
+     resolve(EffectKind::Window, config().effects.window, rule.windowEffect);
++    if (m_effects.setBackdrop(
++            rule.backdropEffect.has_value() && *rule.backdropEffect != "off" ? *rule.backdropEffect : std::string{}
++        )
++        && m_mapped) {
++      scheduleFrame();
++    }
+     m_effects.syncNames(config().effects);
+     const bool paddingChanged = m_decoration.setBorderPadding(m_effects.borderPadding());
+     if (ringChanged || paddingChanged) {
+diff --git a/umbrielfx/include/umbrielfx/render/effect.h b/umbrielfx/include/umbrielfx/render/effect.h
+index 57e3c2e2..e2e1697c 100644
+--- a/umbrielfx/include/umbrielfx/render/effect.h
++++ b/umbrielfx/include/umbrielfx/render/effect.h
+@@ -46,6 +46,10 @@ enum fx_effect_kind {
+   FX_EFFECT_WINDOW,
+   FX_EFFECT_SCREEN,
+   FX_EFFECT_CURSOR,
++  // Drawn by a blur node in place of its blur: umbriel_sample reads the blurred
++  // backdrop and umbriel_sample_raw the unblurred one, both past the node's
++  // bounds; the window is drawn on top afterwards.
++  FX_EFFECT_BACKDROP,
+ };
+ 
+ enum fx_uniform_type {
+diff --git a/umbrielfx/include/umbrielfx/render/fx_renderer/fx_offscreen_buffers.h b/umbrielfx/include/umbrielfx/render/fx_renderer/fx_offscreen_buffers.h
+index 945860d4..991e53d3 100644
+--- a/umbrielfx/include/umbrielfx/render/fx_renderer/fx_offscreen_buffers.h
++++ b/umbrielfx/include/umbrielfx/render/fx_renderer/fx_offscreen_buffers.h
+@@ -18,6 +18,8 @@ struct fx_target_buffers {
+   struct fx_framebuffer* in_place_source;
+   struct fx_framebuffer* animation_buffers[FX_ANIMATION_DEPTH];
+   struct fx_framebuffer* animation_backdrop;
++  // Unblurred copy of the target around a blur node with a backdrop effect
++  struct fx_framebuffer* backdrop_source;
+ };
+ 
+ /**
+diff --git a/umbrielfx/include/umbrielfx/types/wlr_scene.h b/umbrielfx/include/umbrielfx/types/wlr_scene.h
+index e4125a44..c2e2df67 100644
+--- a/umbrielfx/include/umbrielfx/types/wlr_scene.h
++++ b/umbrielfx/include/umbrielfx/types/wlr_scene.h
+@@ -19,6 +19,7 @@
+  * compositors need to implement custom rendering logic.
+  */
+ 
++#include "umbrielfx/render/effect.h"
+ #include "umbrielfx/types/fx/blur_data.h"
+ #include "umbrielfx/types/fx/clipped_region.h"
+ #include "umbrielfx/types/linked_node.h"
+@@ -240,6 +241,12 @@ struct wlr_scene_blur {
+   bool should_only_blur_bottom_layer;
+ 
+   struct linked_node transparency_mask_source;
++
++  // Backdrop-kind program drawn in place of the blur; NULL draws the blur.
++  struct fx_effect_shader* effect;
++  struct fx_animation_parameters effect_parameters;
++  // Logical px the program may sample past the node bounds.
++  int effect_padding;
+ };
+ 
+ /** A scene-graph node telling SceneFX to render the optimized blur */
+@@ -907,6 +914,15 @@ void wlr_scene_blur_set_ignore_alpha(struct wlr_scene_blur* blur, float ignore_a
+  */
+ void wlr_scene_blur_set_clipped_region(struct wlr_scene_blur* blur, struct clipped_region clipped_region);
+ 
++/**
++ * Draws a backdrop-kind effect program in place of the blur, or the blur
++ * again with a NULL shader. padding is in logical px.
++ */
++void wlr_scene_blur_set_effect(
++    struct wlr_scene_blur* blur, struct fx_effect_shader* shader, const struct fx_animation_parameters* parameters,
++    int padding
++);
++
+ /**
+  * If this node represents a wlr_scene_optimized_blur node, that node will
+  * be returned. It is not legal to feed a node that does not represent
+diff --git a/umbrielfx/internal/render/fx_renderer/effect.h b/umbrielfx/internal/render/fx_renderer/effect.h
+index 2dc2ca60..8b38db90 100644
+--- a/umbrielfx/internal/render/fx_renderer/effect.h
++++ b/umbrielfx/internal/render/fx_renderer/effect.h
+@@ -12,6 +12,7 @@
+ 
+ struct fx_animation_history;
+ struct fx_gles_render_pass;
++struct fx_render_blur_pass_options;
+ struct fx_renderer;
+ struct wlr_output;
+ 
+@@ -114,6 +115,23 @@ struct fx_effect_composite {
+   const float* audio; // bands followed by availability; NULL supplies zero
+ };
+ 
++// A backdrop-kind program drawn by a blur node in place of its blur.
++struct fx_backdrop_effect {
++  struct fx_effect_shader* shader;
++  const struct fx_animation_parameters* parameters;
++  struct wlr_box logical_box; // node box, logical
++  float corner_radius[4];     // tl, tr, br, bl logical px
++  int padding;                // buffer px the program may sample past the node box
++};
++
++// Blurs the target under the node (dst_box of the options) and its padding,
++// then draws the program over the node's rounded shape with the blurred and
++// unblurred backdrops as inputs.
++void fx_render_pass_add_blur_effect(
++    struct fx_gles_render_pass* pass, struct fx_render_blur_pass_options* fx_options,
++    const struct fx_backdrop_effect* effect
++);
++
+ // Pops the capture begun by fx_render_pass_begin_animation and draws it
+ // through the composite's program.
+ void fx_render_pass_end_effect(struct fx_gles_render_pass* pass, const struct fx_effect_composite* composite);
+diff --git a/umbrielfx/render/fx_renderer/effect_shader.c b/umbrielfx/render/fx_renderer/effect_shader.c
+index 89e0a448..c80007a2 100644
+--- a/umbrielfx/render/fx_renderer/effect_shader.c
++++ b/umbrielfx/render/fx_renderer/effect_shader.c
+@@ -42,13 +42,17 @@ static const char kPreamble[] =
+     "uniform vec4 umbriel_palette[4];\n"
+     "uniform int umbriel_palette_count;\n"
+     "vec4 umbriel_sample(vec2 uv) {\n"
++    "#ifndef UMBRIEL_UNBOUNDED\n"
+     "  if (any(lessThan(uv, vec2(0.0))) || any(greaterThan(uv, vec2(1.0)))) return vec4(0.0);\n"
++    "#endif\n"
+     "  vec2 p = (vec3(uv, 1.0) * umbriel_sample_matrix).xy;\n"
+     "  if (any(lessThan(p, vec2(0.0))) || any(greaterThan(p, vec2(1.0)))) return vec4(0.0);\n"
+     "  return texture2D(umbriel_texture, p);\n"
+     "}\n"
+     "vec4 umbriel_sample_incoming(vec2 uv) {\n"
++    "#ifndef UMBRIEL_UNBOUNDED\n"
+     "  if (any(lessThan(uv, vec2(0.0))) || any(greaterThan(uv, vec2(1.0)))) return vec4(0.0);\n"
++    "#endif\n"
+     "  vec2 p = (vec3(uv, 1.0) * umbriel_sample_matrix).xy;\n"
+     "  if (any(lessThan(p, vec2(0.0))) || any(greaterThan(p, vec2(1.0)))) return vec4(0.0);\n"
+     "  return texture2D(umbriel_incoming_texture, p);\n"
+@@ -121,6 +125,13 @@ static const char kMaskSection[] =
+     "}\n";
+ static const char kWindowSuffix[] =
+     "\nvoid main() { gl_FragColor = mix(umbriel_sample(v_texcoord), window(v_texcoord), umbriel_mask(v_texcoord)); }\n";
++// Backdrop: sampling may leave the drawn rectangle (up to the preset's padding),
++// and the result covers only the rounded node shape; the window is drawn over it.
++static const char kBackdropPrefix[] = "#define UMBRIEL_UNBOUNDED 1\n";
++static const char kBackdropSection[] =
++    "vec4 umbriel_sample_raw(vec2 uv) { return umbriel_sample_incoming(uv); }\n";
++static const char kBackdropSuffix[] =
++    "\nvoid main() { gl_FragColor = backdrop(v_texcoord) * umbriel_mask(v_texcoord); }\n";
+ static const char kScreenSuffix[] = "\nvoid main() { gl_FragColor = screen(v_texcoord); }\n";
+ // The cursor kind is in place too, so it needs the mask helper before its own uniform.
+ static const char kCursorSection[] = "uniform vec2 umbriel_pointer;\n"
+@@ -142,6 +153,8 @@ static const char* kind_name(enum fx_effect_kind kind) {
+     return "screen";
+   case FX_EFFECT_CURSOR:
+     return "cursor";
++  case FX_EFFECT_BACKDROP:
++    return "backdrop";
+   }
+   return "effect";
+ }
+@@ -171,6 +184,11 @@ static void kind_sections(enum fx_effect_kind kind, const char** section, const
+     *extra = kCursorSection;
+     *suffix = kCursorSuffix;
+     return;
++  case FX_EFFECT_BACKDROP:
++    *section = kMaskSection;
++    *extra = kBackdropSection;
++    *suffix = kBackdropSuffix;
++    return;
+   }
+   *section = "";
+   *suffix = "";
+@@ -383,6 +401,7 @@ struct fx_effect_shader* fx_effect_shader_create(
+   const char* extra = NULL;
+   const char* suffix = NULL;
+   kind_sections(kind, &section, &extra, &suffix);
++  const char* prefix = kind == FX_EFFECT_BACKDROP ? kBackdropPrefix : "";
+   struct fx_renderer* fx = fx_get_renderer(renderer);
+   struct wlr_egl_context previous;
+   if (!wlr_egl_make_current(fx->egl, &previous)) {
+@@ -391,7 +410,8 @@ struct fx_effect_shader* fx_effect_shader_create(
+   struct fx_effect_shader* shader = calloc(1, sizeof(*shader));
+   static const char line[] = "#line 1\n";
+   const size_t length =
+-      sizeof(kPreamble) + strlen(section) + strlen(extra) + sizeof(line) + strlen(source) + strlen(suffix) + 1;
++      strlen(prefix) + sizeof(kPreamble) + strlen(section) + strlen(extra) + sizeof(line) + strlen(source)
++      + strlen(suffix) + 1;
+   char* fragment = malloc(length);
+   if (shader == NULL || fragment == NULL) {
+     free(shader);
+@@ -399,7 +419,7 @@ struct fx_effect_shader* fx_effect_shader_create(
+     wlr_egl_restore_context(&previous);
+     return NULL;
+   }
+-  snprintf(fragment, length, "%s%s%s%s%s%s", kPreamble, section, extra, line, source, suffix);
++  snprintf(fragment, length, "%s%s%s%s%s%s%s", prefix, kPreamble, section, extra, line, source, suffix);
+   wlr_log(WLR_INFO, "Compiling %s shader: %s", kind_name(kind), label);
+   shader->program = link_program(fragment);
+   free(fragment);
+diff --git a/umbrielfx/render/fx_renderer/fx_offscreen_buffers.c b/umbrielfx/render/fx_renderer/fx_offscreen_buffers.c
+index e7de290f..35071e6f 100644
+--- a/umbrielfx/render/fx_renderer/fx_offscreen_buffers.c
++++ b/umbrielfx/render/fx_renderer/fx_offscreen_buffers.c
+@@ -73,6 +73,7 @@ static void clear_animation_buffers(struct fx_target_buffers* buffers) {
+   }
+   drop_framebuffer(&buffers->animation_backdrop);
+   drop_framebuffer(&buffers->in_place_source);
++  drop_framebuffer(&buffers->backdrop_source);
+ }
+ 
+ static void clear_target_buffers(struct fx_target_buffers* buffers) {
+diff --git a/umbrielfx/render/fx_renderer/fx_pass.c b/umbrielfx/render/fx_renderer/fx_pass.c
+index e74cb674..bb308564 100644
+--- a/umbrielfx/render/fx_renderer/fx_pass.c
++++ b/umbrielfx/render/fx_renderer/fx_pass.c
+@@ -876,7 +876,7 @@ static void draw_animation_texture(
+     }
+     fx_effect_shader_bind_uniform(shader, &radius);
+   }
+-  if (shader->kind == FX_EFFECT_WINDOW || shader->kind == FX_EFFECT_CURSOR) {
++  if (shader->kind == FX_EFFECT_WINDOW || shader->kind == FX_EFFECT_CURSOR || shader->kind == FX_EFFECT_BACKDROP) {
+     struct fx_uniform corners = {.name = "umbriel_corner_radius", .type = FX_UNIFORM_VEC4, .count = 1};
+     if (corner_radius != NULL) {
+       for (unsigned i = 0; i < 4; i++) {
+@@ -3022,6 +3022,111 @@ finish:
+   TRACY_BOTH_ZONES_END;
+ }
+ 
++void fx_render_pass_add_blur_effect(
++    struct fx_gles_render_pass* pass, struct fx_render_blur_pass_options* fx_options,
++    const struct fx_backdrop_effect* effect
++) {
++  if (pass->fx_offscreen_buffers == NULL) {
++    return;
++  }
++  struct fx_renderer* renderer = pass->buffer->renderer;
++  TRACY_BOTH_ZONES_START(renderer);
++  push_fx_debug(renderer);
++
++  const struct wlr_box box = fx_options->tex_options.base.dst_box;
++  const pixman_region32_t* clip = fx_options->tex_options.base.clip;
++  struct wlr_texture* blurred_texture = NULL;
++  struct wlr_texture* raw_texture = NULL;
++  pixman_region32_t reach;
++  pixman_region32_init(&reach);
++
++  // What the program may read: the damaged part of the node, grown by the padding.
++  struct fx_framebuffer* backdrop = animation_backdrop(pass);
++  const int width = backdrop->buffer->width, height = backdrop->buffer->height;
++  if (clip != NULL) {
++    pixman_region32_copy(&reach, clip);
++  } else {
++    pixman_region32_init_rect(&reach, box.x, box.y, box.width, box.height);
++  }
++  pixman_region32_intersect_rect(&reach, &reach, box.x, box.y, box.width, box.height);
++  if (pixman_region32_empty(&reach)) {
++    goto finish;
++  }
++  wlr_region_expand(&reach, &reach, effect->padding);
++  pixman_region32_intersect_rect(&reach, &reach, 0, 0, width, height);
++
++  // Unblurred copy: the program samples it while writing the target.
++  struct fx_framebuffer* source = ensure_offscreen_buffer(pass, &target_buffers(pass)->backdrop_source, true);
++  if (source == NULL) {
++    goto finish;
++  }
++  pixman_region32_t copy_region;
++  pixman_region32_init(&copy_region);
++  pixman_region32_copy(&copy_region, &reach);
++  wlr_region_expand(&copy_region, &copy_region, blur_data_calc_size(fx_options->blur_data));
++  pixman_region32_intersect_rect(&copy_region, &copy_region, 0, 0, width, height);
++  const bool copied = fx_render_pass_read_to_buffer(pass, &copy_region, source, backdrop);
++  pixman_region32_fini(&copy_region);
++  fx_framebuffer_bind(pass->buffer);
++  if (!copied) {
++    pass->animation_failed = true;
++    goto finish;
++  }
++
++  // Blurred backdrop over the same reach. The optimized buffer already holds it.
++  const bool has_strength = fx_options->blur_strength < 1.0;
++  struct fx_offscreen_buffers* fbos = pass->fx_offscreen_buffers;
++  const bool use_optimized = fx_options->use_optimized_blur
++      && pass->group_depth == 0
++      && fbos->optimized_blur_buffer != NULL
++      && !fx_render_pass_optimized_blur_stale(pass);
++  struct fx_framebuffer* blurred = NULL;
++  if (use_optimized && !has_strength) {
++    blurred = fbos->optimized_blur_buffer;
++  } else {
++    struct fx_render_blur_pass_options blur_options = *fx_options;
++    blur_options.tex_options.base.clip = &reach;
++    blur_options.current_buffer = use_optimized ? fbos->optimized_no_blur_buffer : source;
++    blurred = get_main_buffer_blur(pass, &blur_options, NULL);
++  }
++  fx_framebuffer_bind(pass->buffer);
++  if (blurred == NULL) {
++    // Blur disabled or at zero strength: the program reads the unblurred backdrop for both.
++    blurred = source;
++  }
++
++  blurred_texture = fx_texture_from_buffer(&renderer->wlr_renderer, blurred->buffer);
++  raw_texture = fx_texture_from_buffer(&renderer->wlr_renderer, source->buffer);
++  if (blurred_texture == NULL
++      || raw_texture == NULL
++      || fx_get_texture(blurred_texture)->target != GL_TEXTURE_2D
++      || fx_get_texture(raw_texture)->target != GL_TEXTURE_2D) {
++    pass->animation_failed = true;
++    goto finish;
++  }
++
++  struct wlr_texture* saved_incoming = pass->workspace_incoming;
++  pass->workspace_incoming = raw_texture;
++  draw_animation_texture(
++      pass, blurred_texture, effect->shader, effect->parameters, &box, &box, &effect->logical_box, 0, NULL,
++      effect->corner_radius, NULL, NULL, NULL, WL_OUTPUT_TRANSFORM_NORMAL, clip, NULL, NULL, pass->projection_matrix,
++      true, true
++  );
++  pass->workspace_incoming = saved_incoming;
++
++finish:
++  if (blurred_texture != NULL) {
++    wlr_texture_destroy(blurred_texture);
++  }
++  if (raw_texture != NULL) {
++    wlr_texture_destroy(raw_texture);
++  }
++  pixman_region32_fini(&reach);
++  fx_framebuffer_bind(pass->buffer);
++  pop_fx_debug(renderer);
++  TRACY_BOTH_ZONES_END;
++}
++
+ bool fx_render_pass_optimized_blur_stale(const struct fx_gles_render_pass* pass) {
+   const struct fx_offscreen_buffers* fbos = pass->fx_offscreen_buffers;
+   // A group capture neither draws the output blur nor can render it.
+diff --git a/umbrielfx/types/scene/wlr_scene.c b/umbrielfx/types/scene/wlr_scene.c
+index 38519465..30012971 100644
+--- a/umbrielfx/types/scene/wlr_scene.c
++++ b/umbrielfx/types/scene/wlr_scene.c
+@@ -547,6 +547,8 @@ void wlr_scene_node_destroy(struct wlr_scene_node* node) {
+   } else if (node->type == WLR_SCENE_NODE_BLUR) {
+     struct wlr_scene_blur* blur = wlr_scene_blur_from_node(node);
+     linked_node_destroy(&blur->transparency_mask_source);
++    fx_effect_shader_unref(blur->effect);
++    blur->effect = NULL;
+   }
+ 
+   assert(wl_list_empty(&node->events.destroy.listener_list));
+@@ -2453,6 +2455,32 @@ void wlr_scene_blur_set_clipped_region(struct wlr_scene_blur* blur, struct clipp
+   scene_node_update(&blur->node, NULL);
+ }
+ 
++void wlr_scene_blur_set_effect(
++    struct wlr_scene_blur* blur, struct fx_effect_shader* shader, const struct fx_animation_parameters* parameters,
++    int padding
++) {
++  struct fx_animation_parameters next = {0};
++  if (shader != NULL && parameters != NULL) {
++    next = *parameters;
++  }
++  if (shader == NULL) {
++    padding = 0;
++  }
++  if (blur->effect == shader
++      && blur->effect_padding == padding
++      && parameters_equal(&blur->effect_parameters, &next)) {
++    return;
++  }
++  // Damage the old reach before it shrinks.
++  scene_node_update(&blur->node, NULL);
++  fx_effect_shader_ref(shader);
++  fx_effect_shader_unref(blur->effect);
++  blur->effect = shader;
++  blur->effect_parameters = next;
++  blur->effect_padding = padding;
++  scene_node_update(&blur->node, NULL);
++}
++
+ void wlr_scene_set_background_color(struct wlr_scene* scene, const float color[static 4]) {
+   if (memcmp(scene->background_color, color, sizeof(scene->background_color)) == 0) {
+     return;
+@@ -3798,7 +3826,19 @@ static void scene_entry_render(struct render_list_entry* entry, const struct ren
+         .ignore_alpha = mask != NULL ? blur->ignore_alpha : 0.0f,
+         .blur_strength = blur->strength,
+     };
+-    fx_render_pass_add_blur(fx_pass, &blur_options);
++    if (blur->effect != NULL) {
++      struct fx_backdrop_effect effect = {
++          .shader = blur->effect,
++          .parameters = &blur->effect_parameters,
++          .logical_box = {.width = blur->width, .height = blur->height},
++          .corner_radius = {blur_corners.top_left, blur_corners.top_right, blur_corners.bottom_right,
++                            blur_corners.bottom_left},
++          .padding = (int)ceilf((float)blur->effect_padding * data->scale),
++      };
++      fx_render_pass_add_blur_effect(fx_pass, &blur_options, &effect);
++    } else {
++      fx_render_pass_add_blur(fx_pass, &blur_options);
++    }
+     break;
+   }
+ 
+@@ -5932,7 +5972,7 @@ static bool should_blur_node_extend_damage(
+     struct wlr_scene_blur* blur_node = wlr_scene_blur_from_node(node);
+     // No artifact prevention needed when the whole blur is already
+     // rendered
+-    if (blur_node->should_only_blur_bottom_layer && blur_node->strength == 1.0) {
++    if (blur_node->should_only_blur_bottom_layer && blur_node->strength == 1.0 && blur_node->effect == NULL) {
+       fx_pass->has_blur = true;
+       return false;
+     }
+@@ -5961,7 +6001,14 @@ static bool apply_blur_region(
+     pixman_region32_t* blur_padding_region
+ ) {
+   bool should_compensate_blur = false;
+-  const int sample_size = blur_data_calc_size(blur_data);
++  int sample_size = blur_data_calc_size(blur_data);
++  // A backdrop effect also reads its padding: changes there redraw the node.
++  if (node->type == WLR_SCENE_NODE_BLUR) {
++    const struct wlr_scene_blur* blur = wlr_scene_blur_from_node(node);
++    if (blur->effect != NULL) {
++      sample_size += (int)ceilf((float)blur->effect_padding * render_data->scale);
++    }
++  }
+ 
+   pixman_region32_t node_visible_region;
+   pixman_region32_init(&node_visible_region);
