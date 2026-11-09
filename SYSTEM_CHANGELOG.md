@@ -9,7 +9,11 @@ The user found the edge clear over too much of the window. The blur fade now
 covers 80 px instead of 160, on an ease-out curve (w = 1 − (1 − s/80)²)
 instead of a smoothstep, so the frost returns quickly. 2 px of blur remain at
 the edge instead of 1. In the headless text A/B, only a narrow outer strip is
-noticeably clearer. Linked live.
+noticeably clearer. Linked live. fd8dec8 failed to compile: the new local `x`
+clashed with the fold's `x` (`error C1038`). Umbriel rendered the glass plainly
+from 22:01:08 until the fix, which renamed it to `f`. The first A/B had hidden
+this, because its output (and the log) were silenced; the re-run checked the
+log for compile failures.
 
 # Liquid glass: blur weakens towards the window edge — 2026-11-09
 

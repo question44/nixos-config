@@ -85,8 +85,8 @@ vec4 backdrop(vec2 uv) {
 
   // Blur strength: weak at the edge, full frost from FADE inwards. Ease-out,
   // so the frost returns quickly and only the outermost strip is near clear.
-  float x = 1.0 - clamp(s / FADE, 0.0, 1.0);
-  float w = 1.0 - x * x;
+  float f = 1.0 - clamp(s / FADE, 0.0, 1.0);
+  float w = 1.0 - f * f;
   vec3 col = vec3(
     tap(uv, n, bend * (1.0 + SPLIT), w).r,
     tap(uv, n, bend, w).g,
