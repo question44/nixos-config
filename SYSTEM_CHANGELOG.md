@@ -3,6 +3,22 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# [PENDING] Slower Sequoia wallpaper on the desktop — 2026-11-09
+
+At the user's request ("desktop wallpaper should animate slower"), the Sequoia
+patch gains `[wallpaper.sequoia] desktop_speed` (0.05–2, default 1 = Apple's
+300 s loop), set to 0.5 in `home/noctalia/config.toml`. The lock screen keeps
+full speed; switching between the two eases over the existing 2 s spring.
+Source: `sequoia-live` in `~/src/noctalia-sequoia` (now two commits, exported
+together), core synced to `~/src/sequoia-re` (scene test: 0.5 gives 1/600 per
+second). Built: `/nix/store/9sqjrnpgivg7b6ryn7a4833mxq4phnbx-nixos-system-erebor-26.11.20261103.1d06008`;
+`erebor-diff` tier different, only the Noctalia package (and paths naming it).
+The new Noctalia validates the config; the running one warns "unknown setting"
+for `desktop_speed` and otherwise loads it, so merging before activation is safe.
+Not activated: sudo needs the Mac approval and `macbook` did not answer SSH.
+Live generation 338. Next: `scripts/erebor-rebuild switch` from `/etc/nixos`
+once the Mac is reachable, then restart Noctalia and check the speed.
+
 # Glass windows without a border — 2026-11-09
 
 At the user's request, the hairline was removed: the glass window rule sets

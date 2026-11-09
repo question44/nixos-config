@@ -796,6 +796,7 @@ desktop_motion = "still"  # "animated" keeps it moving while unlocked
 lock_motion = "animated"
 fps = 60                  # cap while locked
 desktop_fps = 30          # cap on the desktop when animated
+desktop_speed = 0.5       # desktop travel speed (1 = Apple's 300 s loop)
 
 [wallpaper.default]
 path = "/home/janzon/Pictures/redhead.png"

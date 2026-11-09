@@ -1,7 +1,7 @@
 From 70ea51e00e9191465071219790bd450f1577c3c7 Mon Sep 17 00:00:00 2001
 From: janzon <jmmzon@gmail.com>
 Date: Mon, 9 Nov 2026 13:28:20 +0100
-Subject: [PATCH] Add live "sequoia:" wallpaper
+Subject: [PATCH 1/2] Add live "sequoia:" wallpaper
 
 A Sequoia scene renderer (src/shell/sequoia) that wallpaper and lock
 surfaces draw through a new WallpaperSourceKind::Live. The scene eases
@@ -2596,6 +2596,118 @@ index 3f30b021a..f16693e2b 100644
 +  // SequoiaLiveWallpaper wake listener (0 = none).
 +  std::uint64_t liveWakeId = 0;
  };
+-- 
+2.56.0
+
+
+From badafa8d9b659557998ed3cb16b4d6d0dc7d4600 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20Zo=C5=84?= <jmmzon@gmail.com>
+Date: Mon, 9 Nov 2026 20:22:41 +0100
+Subject: [PATCH 2/2] Sequoia: desktop_speed option; speed changes ease over
+ the 2 s spring
+
+---
+ src/config/config_types.h                    | 1 +
+ src/config/schema/config_schema.cpp          | 1 +
+ src/config/schema/ranges.h                   | 1 +
+ src/shell/sequoia/sequoia_live_wallpaper.cpp | 4 ++--
+ src/shell/sequoia/sequoia_scene.cpp          | 6 +++---
+ src/shell/sequoia/sequoia_scene.h            | 4 +++-
+ 6 files changed, 11 insertions(+), 6 deletions(-)
+
+diff --git a/src/config/config_types.h b/src/config/config_types.h
+index ab7e447d2..e476b951b 100644
+--- a/src/config/config_types.h
++++ b/src/config/config_types.h
+@@ -593,6 +593,7 @@ struct WallpaperSequoiaConfig {
+   SequoiaMotion lockMotion = SequoiaMotion::Animated;
+   std::int32_t fps = 60;        // frame cap while locked
+   std::int32_t desktopFps = 30; // frame cap on the desktop
++  float desktopSpeed = 1.0F;    // travel speed on the desktop (1 = Apple's 300 s loop)
+   float renderScale = 1.0F;     // fraction of the output resolution rendered
+   SequoiaAppearance appearance = SequoiaAppearance::Automatic;
+   std::string scene; // empty = $XDG_DATA_HOME/sequoia/sequoia.scene
+diff --git a/src/config/schema/config_schema.cpp b/src/config/schema/config_schema.cpp
+index ded75bf52..a933f2316 100644
+--- a/src/config/schema/config_schema.cpp
++++ b/src/config/schema/config_schema.cpp
+@@ -1891,6 +1891,7 @@ namespace noctalia::config::schema {
+         enumField(&WallpaperSequoiaConfig::lockMotion, "lock_motion", kSequoiaMotions),
+         field(&WallpaperSequoiaConfig::fps, "fps", kSequoiaFpsRange),
+         field(&WallpaperSequoiaConfig::desktopFps, "desktop_fps", kSequoiaFpsRange),
++        field(&WallpaperSequoiaConfig::desktopSpeed, "desktop_speed", kSequoiaSpeedRange),
+         field(&WallpaperSequoiaConfig::renderScale, "render_scale", kSequoiaRenderScaleRange),
+         enumField(&WallpaperSequoiaConfig::appearance, "appearance", kSequoiaAppearances),
+         pathStringField(&WallpaperSequoiaConfig::scene, "scene"),
+diff --git a/src/config/schema/ranges.h b/src/config/schema/ranges.h
+index 38c8674be..b909da4cf 100644
+--- a/src/config/schema/ranges.h
++++ b/src/config/schema/ranges.h
+@@ -51,6 +51,7 @@ namespace noctalia::config::schema {
+   inline constexpr Range<float> kWallpaperTransitionDurationRange{100.0F, 30000.0F, 100.0F};
+   inline constexpr Range<std::int64_t> kSequoiaFpsRange{1, 240, 1};
+   inline constexpr Range<float> kSequoiaRenderScaleRange{0.25F, 1.0F, 0.05F};
++  inline constexpr Range<float> kSequoiaSpeedRange{0.05F, 2.0F, 0.05F};
+   inline constexpr Range<std::int64_t> kWallpaperAutomationIntervalRange{1, 86400, 1};
+ 
+   // Audio.
+diff --git a/src/shell/sequoia/sequoia_live_wallpaper.cpp b/src/shell/sequoia/sequoia_live_wallpaper.cpp
+index e306cb4fa..87776bac8 100644
+--- a/src/shell/sequoia/sequoia_live_wallpaper.cpp
++++ b/src/shell/sequoia/sequoia_live_wallpaper.cpp
+@@ -140,7 +140,7 @@ bool SequoiaLiveWallpaper::ensureScene() {
+   applySettings();
+   const bool moving =
+       m_locked ? m_config.lockMotion == SequoiaMotion::Animated : m_config.desktopMotion == SequoiaMotion::Animated;
+-  m_scene->setMoving(moving);
++  m_scene->setMoving(moving, m_locked ? 1.0 : static_cast<double>(m_config.desktopSpeed));
+   return true;
+ }
+ 
+@@ -195,7 +195,7 @@ void SequoiaLiveWallpaper::setLocked(bool locked) {
+   advance(); // bring time current so the ramp starts from now, not from the last frame
+   const bool moving =
+       locked ? m_config.lockMotion == SequoiaMotion::Animated : m_config.desktopMotion == SequoiaMotion::Animated;
+-  m_scene->setMoving(moving);
++  m_scene->setMoving(moving, locked ? 1.0 : static_cast<double>(m_config.desktopSpeed));
+   wake();
+ }
+ 
+diff --git a/src/shell/sequoia/sequoia_scene.cpp b/src/shell/sequoia/sequoia_scene.cpp
+index d32bf81b8..a172390d3 100644
+--- a/src/shell/sequoia/sequoia_scene.cpp
++++ b/src/shell/sequoia/sequoia_scene.cpp
+@@ -145,12 +145,12 @@ namespace sequoia {
+     ++m_generation;
+   }
+ 
+-  void Scene::setMoving(bool moving) {
++  void Scene::setMoving(bool moving, double speed) {
+     if (moving) {
+-      if (m_movement == Movement::Moving || m_movement == Movement::RampingUp) {
++      if ((m_movement == Movement::Moving || m_movement == Movement::RampingUp) && m_speed.target() == speed) {
+         return;
+       }
+-      m_speed.retarget(1.0, kRampUpSeconds);
++      m_speed.retarget(speed, kRampUpSeconds);
+       m_movement = Movement::RampingUp;
+     } else {
+       if (m_movement == Movement::Stopped || m_movement == Movement::RampingDown) {
+diff --git a/src/shell/sequoia/sequoia_scene.h b/src/shell/sequoia/sequoia_scene.h
+index f1c1f1593..6587bb6b2 100644
+--- a/src/shell/sequoia/sequoia_scene.h
++++ b/src/shell/sequoia/sequoia_scene.h
+@@ -74,7 +74,9 @@ namespace sequoia {
+     const SceneSettings& settings() const { return m_settings; }
+ 
+     // Lock screen: start moving (2 s ease-in). Unlock with still desktop: stop (5 s ease-out).
+-    void setMoving(bool moving);
++    // `speed` scales travel (1 = Apple's 300 s loop); changing it while moving eases
++    // over the same 2 s spring.
++    void setMoving(bool moving, double speed = 1.0);
+     // Skips the ramp (startup, tests).
+     void setMovingImmediately(bool moving);
+     Movement movement() const { return m_movement; }
 -- 
 2.56.0
 
