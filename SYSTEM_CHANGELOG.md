@@ -294,6 +294,20 @@ greeter sync staged `wallpaper-DP-1.png` and `wallpaper-HDMI-A-1.png` with no
 "skip missing wallpaper" warning. Helium, not started from Noctalia this time,
 survived the restart ([SYS-096](tasks/SYS-096.md)).
 
+# Chomik downloads dropped links — 2026-11-09
+
+At the user's request, `apps/chomik-qml` moves to b3c52ca: dropping a
+`chomik://` link or a chomikuj.pl folder or file address on Chomik offers
+Download, Download as ZIP and Open. Folders are requested by path (works for
+any user's folder), files by the id in their address. erebor-diff tier:
+different (only the Chomik package). The user approved switching together
+with another session's unactivated Sequoia speed change, but that session
+activated it itself first (generation 340); master matched the running
+system, so this switch changed only Chomik. Activated as generation 341. A
+folder opened by its web address (107 files) and a file downloaded by its
+address were tested headless against the live service; dragging from the
+browser has not been tried.
+
 # Chomik menus fit their entries — 2026-11-09
 
 At the user's request (the ⋮ menu cut off its longer entries), `apps/chomik-qml`
