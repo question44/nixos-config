@@ -3,6 +3,21 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Noctalia launches apps as systemd services — 2026-11-09
+
+The cause of the Helium SIGTRAP during the d6cfd29 `test` activation (see the
+Sequoia entry below) is now established ([SYS-096](tasks/SYS-096.md)).
+Helium had been started from Noctalia's launcher, so its GPU process and
+zygotes ran in `noctalia.service`'s cgroup. Restarting Noctalia killed them,
+and Chromium aborted with "GPU process isn't usable. Goodbye." At the user's
+request, `[shell] launch_apps_as_systemd_services = true` was added to
+`home/noctalia/config.toml`. With it, Noctalia runs each app with `systemd-run --user
+--slice=app.slice`. The file is linked live, so no rebuild or activation was
+needed. `noctalia config validate` passed, and the running Noctalia reloaded
+the config at 19:08:45 without errors. Not yet verified: whether an app
+launched from Noctalia gets its own unit and survives a Noctalia restart. A
+launch from the launcher or dock is needed first.
+
 # Live Sequoia wallpaper in Noctalia — 2026-11-09
 
 At the user's request, the macOS Sequoia live wallpaper, reverse-engineered in
