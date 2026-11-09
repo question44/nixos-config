@@ -1,4 +1,4 @@
-From a0d42be97754ed378756f9941ac23ec259a24409 Mon Sep 17 00:00:00 2001
+From 70ea51e00e9191465071219790bd450f1577c3c7 Mon Sep 17 00:00:00 2001
 From: janzon <jmmzon@gmail.com>
 Date: Mon, 9 Nov 2026 13:28:20 +0100
 Subject: [PATCH] Add live "sequoia:" wallpaper
@@ -11,29 +11,30 @@ the theme, greeter and backdrop. Settings live in [wallpaper.sequoia].
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 ---
- meson.build                                  |   4 +
- src/app/application_services.cpp             |   9 +
- src/config/config_overrides.cpp              |   6 +-
- src/config/config_types.h                    |  36 ++
- src/config/schema/config_schema.cpp          |  14 +
- src/config/schema/ranges.h                   |   2 +
- src/shell/backdrop/backdrop.cpp              |   7 +-
- src/shell/lockscreen/lock_screen.cpp         |   5 +
- src/shell/lockscreen/lock_surface.cpp        |  46 ++
- src/shell/lockscreen/lock_surface.h          |   4 +
- src/shell/render/wallpaper_node.cpp          |  53 +-
- src/shell/render/wallpaper_types.h           |   1 +
- src/shell/sequoia/sequoia_assets.cpp         | 144 ++++++
- src/shell/sequoia/sequoia_assets.h           |  44 ++
- src/shell/sequoia/sequoia_live_wallpaper.cpp | 468 +++++++++++++++++
- src/shell/sequoia/sequoia_live_wallpaper.h   | 128 +++++
- src/shell/sequoia/sequoia_renderer.cpp       | 503 +++++++++++++++++++
- src/shell/sequoia/sequoia_renderer.h         |  85 ++++
- src/shell/sequoia/sequoia_scene.cpp          | 364 ++++++++++++++
- src/shell/sequoia/sequoia_scene.h            | 129 +++++
- src/shell/wallpaper/wallpaper.cpp            |  43 +-
- src/shell/wallpaper/wallpaper_instance.h     |   8 +
- 22 files changed, 2086 insertions(+), 17 deletions(-)
+ meson.build                                   |   4 +
+ src/app/application_services.cpp              |   9 +
+ src/config/config_overrides.cpp               |   6 +-
+ src/config/config_types.h                     |  36 ++
+ src/config/schema/config_schema.cpp           |  14 +
+ src/config/schema/ranges.h                    |   2 +
+ src/shell/backdrop/backdrop.cpp               |   7 +-
+ src/shell/greeter/greeter_appearance_sync.cpp |   9 +-
+ src/shell/lockscreen/lock_screen.cpp          |   5 +
+ src/shell/lockscreen/lock_surface.cpp         |  46 ++
+ src/shell/lockscreen/lock_surface.h           |   4 +
+ src/shell/render/wallpaper_node.cpp           |  53 +-
+ src/shell/render/wallpaper_types.h            |   1 +
+ src/shell/sequoia/sequoia_assets.cpp          | 144 +++++
+ src/shell/sequoia/sequoia_assets.h            |  44 ++
+ src/shell/sequoia/sequoia_live_wallpaper.cpp  | 468 ++++++++++++++++
+ src/shell/sequoia/sequoia_live_wallpaper.h    | 128 +++++
+ src/shell/sequoia/sequoia_renderer.cpp        | 503 ++++++++++++++++++
+ src/shell/sequoia/sequoia_renderer.h          |  85 +++
+ src/shell/sequoia/sequoia_scene.cpp           | 364 +++++++++++++
+ src/shell/sequoia/sequoia_scene.h             | 129 +++++
+ src/shell/wallpaper/wallpaper.cpp             |  43 +-
+ src/shell/wallpaper/wallpaper_instance.h      |   8 +
+ 23 files changed, 2092 insertions(+), 20 deletions(-)
  create mode 100644 src/shell/sequoia/sequoia_assets.cpp
  create mode 100644 src/shell/sequoia/sequoia_assets.h
  create mode 100644 src/shell/sequoia/sequoia_live_wallpaper.cpp
@@ -263,6 +264,44 @@ index 9090075cf..822aabe1d 100644
      }
      if (!path.empty()) {
        loadWallpaper(*instPtr, path);
+diff --git a/src/shell/greeter/greeter_appearance_sync.cpp b/src/shell/greeter/greeter_appearance_sync.cpp
+index ffbd2ff03..70cb1cfd9 100644
+--- a/src/shell/greeter/greeter_appearance_sync.cpp
++++ b/src/shell/greeter/greeter_appearance_sync.cpp
+@@ -7,6 +7,7 @@
+ #include "dbus/polkit/polkit_session_support.h"
+ #include "ipc/ipc_service.h"
+ #include "render/core/color.h"
++#include "shell/sequoia/sequoia_live_wallpaper.h"
+ #include "shell/session/session_action_meta.h"
+ #include "system/process.h"
+ #include "ui/palette.h"
+@@ -244,12 +245,12 @@ namespace {
+   // Fallback single wallpaper when no per-output map is usable.
+   std::string resolveSyncWallpaperPath(const ConfigService& configService) {
+     if (const auto output = readGreeterConfiguredOutput(); output.has_value() && !output->empty()) {
+-      const std::string path = configService.getWallpaperPath(*output);
++      const std::string path = SequoiaLiveWallpaper::imagePathFor(configService.getWallpaperPath(*output));
+       if (!path.empty()) {
+         return path;
+       }
+     }
+-    std::string defaultPath = configService.getDefaultWallpaperPath();
++    std::string defaultPath = SequoiaLiveWallpaper::imagePathFor(configService.getDefaultWallpaperPath());
+     if (!defaultPath.empty()) {
+       return defaultPath;
+     }
+@@ -268,7 +269,9 @@ namespace {
+   [[nodiscard]] std::optional<std::vector<StagedOutputWallpaper>>
+   stageAllOutputWallpapers(const std::filesystem::path& staging, const ConfigService& configService) {
+     std::vector<StagedOutputWallpaper> staged;
+-    for (const auto& [connector, sourcePath] : configService.monitorWallpaperPaths()) {
++    for (const auto& [connector, monitorPath] : configService.monitorWallpaperPaths()) {
++      // A live "sequoia:" wallpaper is staged as its latest still frame.
++      const std::string sourcePath = SequoiaLiveWallpaper::imagePathFor(monitorPath);
+       if (connector.empty() || sourcePath.empty()) {
+         continue;
+       }
 diff --git a/src/shell/lockscreen/lock_screen.cpp b/src/shell/lockscreen/lock_screen.cpp
 index ad0a0dcf6..26641472d 100644
 --- a/src/shell/lockscreen/lock_screen.cpp
