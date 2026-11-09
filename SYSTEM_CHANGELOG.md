@@ -294,6 +294,17 @@ greeter sync staged `wallpaper-DP-1.png` and `wallpaper-HDMI-A-1.png` with no
 "skip missing wallpaper" warning. Helium, not started from Noctalia this time,
 survived the restart ([SYS-096](tasks/SYS-096.md)).
 
+# Chomik paid downloads with own transfer — 2026-11-09
+
+At the user's request, `apps/chomik-qml` moves to 7956136: other users' files
+with no free agreement (the server offers `transfer`, cost in KiB) can be
+downloaded with the account's own transfer after a confirmation showing the
+cost and the remaining transfer; each file is paid for at most once.
+erebor-diff tier: different (only the Chomik package). Activated with switch
+as generation 342. Detection and the confirmation were tested headless on a
+real paid folder with paid requests blocked (nothing charged, balance
+unchanged at 22.1 GB); an actual paid download has not been made yet.
+
 # Chomik downloads dropped links — 2026-11-09
 
 At the user's request, `apps/chomik-qml` moves to b3c52ca: dropping a
