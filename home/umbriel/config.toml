@@ -27,9 +27,18 @@ position = [0, 0]
 hdr = "on"
 
 [appearance.blur]
-radius = 8
+# Liquid-glass look: softer, brighter, more saturated frost.
+radius = 14
 passes = 3
-noise = 0.05
+noise = 0.02
+brightness = 1.05
+contrast = 0.85
+saturation = 1.4
+
+# Lens edge for the translucent terminals (both already use appOpacity).
+[effects.preset.liquid-glass]
+kind = "window"
+shader = "effects/liquid-glass.glsl"
 
 [[layer_rule]]
 match.namespace = "^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd)$"
@@ -48,6 +57,10 @@ blur = true
 # than toplevel windows, so they need this explicit opt-in.
 blur_popups = true
 blur_optimized = true
+
+[[window_rule]]
+match.app_id = "^(com\\.mitchellh\\.ghostty|dev\\.rockorager\\.monstar)$"
+window_effect = "liquid-glass"
 
 # These destinations apply only while Sunshine's virtual monitor exists.
 [[window_rule]]
