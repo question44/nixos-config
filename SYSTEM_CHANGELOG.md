@@ -22,6 +22,12 @@ run. `erebor-diff`: different, only `claude-desktop` (binary wrapper replaced by
 a shell wrapper) plus /etc files differing in store hashes. The snippet was
 tested on a copy of the config: both flags went to `false`, other keys kept;
 a missing file exits 0.
+
+Activated as generation 338; the desktop entry now runs the new launcher. The
+running app had been started with acceleration off and rewrote the file with
+the flags `true` at 20:38 (it saves its in-memory settings), which is also why
+a hand edit made while it ran did not stick. Not yet seen live: GPU rendering
+after the next full restart of Claude Desktop.
 # [PENDING] Slower Sequoia wallpaper on the desktop — 2026-11-09
 
 At the user's request ("desktop wallpaper should animate slower"), the Sequoia
