@@ -224,6 +224,19 @@ greeter sync staged `wallpaper-DP-1.png` and `wallpaper-HDMI-A-1.png` with no
 "skip missing wallpaper" warning. Helium, not started from Noctalia this time,
 survived the restart ([SYS-096](tasks/SYS-096.md)).
 
+# Chomik download notifications — 2026-11-09
+
+At the user's request, `apps/chomik-qml` moves to 7674264: desktop
+notifications (org.freedesktop.Notifications via jeepney) when a download or a
+whole folder download finishes or fails, and a summary when the queue empties,
+both switchable in Chomik's ⋮ menu. erebor-diff tier: different (only the
+Chomik package). Merged with a merge commit because another session was
+committing Umbriel config to master at the same time (its commits since the
+running generation touched only the live-linked `home/umbriel/config.toml` and
+this file). Activated with switch as generation 336. The rules were tested with
+a stub sender, and one real test notification went through the session bus
+without error; a real download's notification has not been seen yet.
+
 # Chomik styles, including KDE's desktop style — 2026-11-09
 
 At the user's request, the `apps/chomik-qml` submodule moves to 080a9b3:
