@@ -224,6 +224,16 @@ greeter sync staged `wallpaper-DP-1.png` and `wallpaper-HDMI-A-1.png` with no
 "skip missing wallpaper" warning. Helium, not started from Noctalia this time,
 survived the restart ([SYS-096](tasks/SYS-096.md)).
 
+# Chomik menus fit their entries — 2026-11-09
+
+At the user's request (the ⋮ menu cut off its longer entries), `apps/chomik-qml`
+moves to b4650d1: menus grow to their widest entry, capped at the window
+width, and the download folder is shown with `~`. erebor-diff tier: different
+(only the Chomik package). Activated with switch as generation 337 (the first
+attempt got no sudo touch). Checked in offscreen renders, where the new menu
+shows entries in full and the stock one cuts them off; not yet seen in the live
+window.
+
 # Chomik download notifications — 2026-11-09
 
 At the user's request, `apps/chomik-qml` moves to 7674264: desktop
