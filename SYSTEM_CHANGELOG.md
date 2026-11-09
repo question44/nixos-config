@@ -3,6 +3,12 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Umbriel blur 3 passes, radius 6 — 2026-11-09
+
+At the user's request, `[appearance.blur]` went to 3 passes at radius 6 (from
+2 at 5). In the earlier comparison this was smooth, with no striping, and a
+fuller frost than radius 5. Linked live; `umbriel config validate` passes.
+
 # Umbriel blur radius 5 — 2026-11-09
 
 The user reported that the blur looked strange after the change to 2 passes.
