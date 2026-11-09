@@ -5,7 +5,7 @@ enabled = true
 order = [ "default", "stats" ]
 
     [bar.default]
-    background_opacity = 0.54
+    background_opacity = 0.35
     border = "surface_container"
     capsule = true
     capsule_padding = 8.0
@@ -141,7 +141,7 @@ sidebar = "full"
     type = "dark_mode"
 
 [dock]
-background_opacity = 0.51
+background_opacity = 0.35
 border_width = 0.5
 enabled = true
 icon_size = 42

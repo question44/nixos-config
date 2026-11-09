@@ -3,6 +3,15 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# More transparent Noctalia bar and dock — 2026-11-09
+
+At the user's request, the Noctalia layer rule's `blur_ignore_alpha` went from
+0.5 to 0.25, and the bar's (`[bar.default]`) and dock's `background_opacity` from
+0.54 / 0.51 to 0.35. The cut-off decides where blur (and the backdrop glass)
+applies: below it, Noctalia's pixels count as empty. At 0.5, a bar below 50%
+opacity would have lost its blur. Risk: Noctalia's soft shadows darker than 25%
+may now get blurred too. Both files are linked live.
+
 # Umbriel patch: shape input for layer glass (option B) — 2026-11-09
 
 At the user's request, the Noctalia glass gets a rim that follows the shapes
