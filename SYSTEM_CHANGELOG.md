@@ -3,6 +3,18 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Umbriel optimized blur disabled — 2026-11-09
+
+At the user's request, `[appearance.blur] optimized = false` in
+`home/umbriel/config.toml`, and the per-rule `blur_optimized` overrides were
+removed: three `true` (Noctalia layers, Vicinae, all windows) and the glass
+rule's `false`. Every blurred surface now blurs what is really behind it,
+including windows, instead of the cached wallpaper blur. This costs GPU time
+on frames where something behind a blurred surface changes. Linked live, so no
+rebuild was needed. Verified: `umbriel config validate` passes, and Umbriel
+logged the reload of the appearance, window rules and layer rules sections at
+19:46:26 without diagnostics. The result was not checked in a screenshot.
+
 # Closer macOS Liquid Glass in Umbriel — 2026-11-09
 
 At the user's request, the liquid-glass effect was reworked to look more like
