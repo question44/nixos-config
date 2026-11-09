@@ -3,6 +3,26 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Stateful bar toggles for Sequoia motion and bar pinning — 2026-11-09
+
+At the user's request, a local Noctalia plugin (`home/noctalia/plugins/toggles`,
+`janzon/toggles`) adds two bar widgets whose glyph follows the setting they
+toggle, read with `noctalia.getSetting` so `onConfigChanged` redraws them:
+`sequoia-motion` (in group g5) flips `wallpaper.sequoia.desktop_motion`
+(photo = still, wave-sine = animated), and `bar-pin` replaces the static
+`custom_button_2` (pinned / pinned-off). `noctalia-bar-autohide` now writes
+its three keys with one `noctalia msg config-set bar.default {…}` instead of
+editing `settings.toml` directly: Noctalia's own override writes (e.g. a
+`config-set` right after) put the old mode back. erebor-diff tier: different
+(only the plugin directory and the script in Home Manager).
+
+9b4bdb4 activated with switch as generation 332; the script fix followed as generation 333. The plugin had to be enabled
+with `noctalia msg plugins enable janzon/toggles`, and the `start` list saved
+in `settings.toml` (which overrides `config.toml`) was changed from
+`custom_button_2` to `bar-pin`: both are user state outside the flake. Verified
+live: both glyphs change with their settings (screenshots of DP-1), and the
+pin mode survives a following `config-set`. Clicks were not tested.
+
 # Noctalia launches apps as systemd services — 2026-11-09
 
 The cause of the Helium SIGTRAP during the d6cfd29 `test` activation (see the
