@@ -27,17 +27,17 @@ position = [0, 0]
 hdr = "on"
 
 [appearance.blur]
-# Liquid-glass look: a wide, smooth frost that keeps the backdrop's colour
-# (vibrancy) and lifts it slightly, with little grain.
+# Light frost with natural colour, matched against macOS glass; the backdrop
+# shader adds the lens, the milky lift and the edge line.
 # Unoptimized: every surface blurs what is really behind it (windows too), not
 # a cached wallpaper blur; costs GPU time while something behind changes.
 optimized = false
 radius = 3
 passes = 2
-noise = 0.012
-brightness = 1.08
-contrast = 0.82
-saturation = 1.65
+noise = 0.02
+brightness = 1.0
+contrast = 1.0
+saturation = 1.1
 
 # Large, soft shadow falling straight down, as macOS draws it.
 [appearance.shadow]
@@ -56,7 +56,7 @@ shader = "/etc/nixos/home/umbriel/effects/liquid-glass.glsl"
 [effects.preset.liquid-glass-backdrop]
 kind = "backdrop"
 shader = "/etc/nixos/home/umbriel/effects/liquid-glass-backdrop.glsl"
-padding = 32
+padding = 80
 
 [effects.preset.liquid-glass-rim]
 kind = "border"
@@ -82,6 +82,9 @@ match.app_id = "^(com\\.mitchellh\\.ghostty|dev\\.rockorager\\.monstar)$"
 # The backdrop preset replaces the old in-window glass, which bent text.
 window_effect = "off"
 backdrop_effect = "liquid-glass-backdrop"
+# The lens reads past the edge, where Umbriel has already drawn this window's
+# own shadow; it would show as a dark inner frame.
+shadow = false
 # The shader's R must equal this radius.
 corner_radius = 18
 # No border ring: the backdrop shader's lit rim is the only edge.

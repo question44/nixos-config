@@ -3,6 +3,25 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Liquid glass retuned against macOS — 2026-11-09
+
+At the user's request, the backdrop glass was compared with Ghostty's
+`macos-glass-regular` on the Mac (macOS 26, Ghostty 1.4.0, opacity 0.1). The
+comparison used a headless test Umbriel showing the user's own Mac wallpaper
+screenshot, with a glass window at the same size and position. Apple's rim pulls
+in what lies *beyond* the window edge, magnified as it wraps round. The old
+shader bent inward over 26 px and blended in unadjusted sharp pixels, which read
+as a frame. `liquid-glass-backdrop.glsl` now has a 60 px band that samples
+outward up to 24 px past the edge. A Hermite curve gives a seamless join with
+the body and magnification at the edge. The shader adds a small colour split, a
+5% milky lift and one thin edge line, brighter along the top. The glow band and
+bottom shadow strip are gone. Config: preset padding 32 → 80; blur colour back
+to natural (brightness 1.0, contrast 1.0, saturation 1.1, noise 0.02; 2 passes,
+radius 3 unchanged); glass windows `shadow = false`. Umbriel draws a window's
+shadow before its blur node, so the lens pulled that shadow in as a dark inner
+frame (confirmed in the A/B by turning it off). Linked live; `umbriel config
+validate` passes.
+
 # Liquid glass drawn under the window — 2026-11-09
 
 After the user logged in to the patched Umbriel (running binary
