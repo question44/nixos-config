@@ -3,6 +3,18 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Umbriel blur matched to KWin strength 4 — 2026-11-09
+
+At the user's request, `[appearance.blur]` went to 2 passes at radius 3, the
+Umbriel equivalent of KWin's blur strength 4. The mapping comes from the two
+sources: kwin-effects-glass's strength table gives 2 iterations at offset
+3.0, times the default fine-tune scale 0.89 (≈2.7). Umbriel's `passes`
+counts the same halve-and-restore iterations, and `radius` scales the same
+sample spread. Umbriel takes whole-number radii only. KWin keeps 2 passes
+within offset 2–3, the range that avoids banding. Linked live;
+`umbriel config validate` passes. Brightness, contrast, saturation and noise
+are unchanged.
+
 # Umbriel blur 3 passes, radius 6 — 2026-11-09
 
 At the user's request, `[appearance.blur]` went to 3 passes at radius 6 (from
