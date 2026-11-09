@@ -3,6 +3,18 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Shared app opacity 0.75 — 2026-11-09
+
+At the user's request, `appOpacity` in `home/appearance.nix` went from 0.9
+to 0.75. The value stays shared: Ghostty, Monstar and the Noctalia Zed theme
+template follow it together, and the lower opacity lets Umbriel's
+liquid-glass blur show through. erebor-diff tier: different (only those three
+files: 0.902 → 0.749, Zed alpha E6 → BF). Activated with switch as
+generation 335. The deployed Monstar and Ghostty configs read 0.749, and the
+Zed template uses BF. Running terminals and Zed pick it up on restart or
+config reload, and Zed only after Noctalia next regenerates its theme. Not
+checked in a screenshot.
+
 # Umbriel optimized blur disabled — 2026-11-09
 
 At the user's request, `[appearance.blur] optimized = false` in
