@@ -20,7 +20,7 @@ order = [ "default", "stats" ]
     position = "bottom"
     radius = 16
     shadow = false
-    start = [ "cat", "bar_3", "audio_visualizer", "lyrics_2", "custom_button_2", "bar_4" ]
+    start = [ "cat", "bar_3", "audio_visualizer", "lyrics_2", "bar-pin", "bar_4" ]
     thickness = 48
 
         [bar.default.dead_zone.actions]
@@ -63,7 +63,7 @@ order = [ "default", "stats" ]
         enabled = true
         fill = "surface_container"
         id = "g5"
-        members = [ "wallpaper", "wallhaven", "wallpaper-engine", "nightlight", "display-switch", "brightness" ]
+        members = [ "wallpaper", "sequoia-motion", "wallhaven", "wallpaper-engine", "nightlight", "display-switch", "brightness" ]
         opacity = 1.0
         padding = 6.0
         radius = 8.0
@@ -643,7 +643,8 @@ enabled = [
     "question44/spotify-media-niri",
     "tranzem/media-lyrics",
     "noctalia/umbriel-companion",
-    "janzon/wallpaper-engine"
+    "janzon/wallpaper-engine",
+    "janzon/toggles"
 ]
 
     [[plugins.source]]
@@ -830,6 +831,9 @@ type = "noctalia/umbriel-companion:bar"
 [widget.bar_6]
 type = "felipeartur/ai-usagebar:bar"
 
+[widget.bar-pin]
+type = "janzon/toggles:bar-pin"
+
 [widget.cat]
 poll_interval = 1
 type = "dotnetrob/cat:cat"
@@ -840,13 +844,6 @@ capsule = true
 color = "secondary"
 font_scale = 1.49
 format = "{:%H:%M} \\n{:%d}.{:%m}.{:%Y}"
-
-[widget.custom_button_2]
-glyph = "pinned"
-type = "custom_button"
-
-    [widget.custom_button_2.actions]
-    left = "exec noctalia-bar-autohide"
 
 # The bar is on every output, so this stays reachable on whichever screen is on.
 [widget.display-switch]
@@ -892,6 +889,9 @@ type = "custom_button"
 
     [widget.show_vicinae_button.actions]
     left = "exec vicinae toggle"
+
+[widget.sequoia-motion]
+type = "janzon/toggles:sequoia-motion"
 
 [widget.status]
 type = "davemhammer/tailscale:status"

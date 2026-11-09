@@ -1,0 +1,23 @@
+# Bar buttons whose glyph follows a shell setting. Each reads the setting with
+# noctalia.getSetting, so Noctalia calls onConfigChanged when it changes (also
+# when another tool edits the settings override), and the glyph follows.
+
+id = "janzon/toggles"
+name = "Toggles"
+version = "1.0.0"
+plugin_api = 43
+author = "janzon"
+license = "MIT"
+tags = ["bar"]
+icon = "toggle-right"
+description = "Stateful bar toggles: Sequoia wallpaper motion and bar pinning."
+
+# Sequoia wallpaper on the desktop: animated or still.
+[[widget]]
+id = "sequoia-motion"
+entry = "sequoia_motion.luau"
+
+# Default bar: pinned or smart auto-hide (noctalia-bar-autohide).
+[[widget]]
+id = "bar-pin"
+entry = "bar_pin.luau"

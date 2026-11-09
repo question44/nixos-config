@@ -96,6 +96,7 @@
         config.lib.file.mkOutOfStoreSymlink "${osConfig.my.flakePath}/home/noctalia/config.toml";
       # Local plugins in the data dir outrank every plugin source.
       xdg.dataFile."noctalia/plugins/wallpaper-engine".source = ../home/noctalia/plugins/wallpaper-engine;
+      xdg.dataFile."noctalia/plugins/toggles".source = ../home/noctalia/plugins/toggles;
       home.file.".local/bin/noctalia-bar-focus" = {
         source = pkgs.writeShellScript "noctalia-bar-focus" ''
           set -euo pipefail
