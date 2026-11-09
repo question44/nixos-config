@@ -3,6 +3,17 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Liquid-glass shaders re-enabled — 2026-11-09
+
+At the user's request ("add glass"), the glass window rule again selects
+`window_effect = "liquid-glass"` and `border_effect = "liquid-glass-rim"`
+(both had been switched off earlier today). Live: both presets report
+`compiled`, and Monstar has both effects. Checked in a cropped DP-1 capture of
+a floating test Monstar window, made with the usual temporary `in_capture`
+profile and reverted afterwards. With the lighter blur (2 passes, radius 3),
+the content behind shows through softened. The rim and hairline are visible,
+and the padded text stays clear of the lip.
+
 # Umbriel blur matched to KWin strength 4 — 2026-11-09
 
 At the user's request, `[appearance.blur]` went to 2 passes at radius 3, the
