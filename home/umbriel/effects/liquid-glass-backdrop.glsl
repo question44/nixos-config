@@ -5,16 +5,19 @@
 // both readable up to the preset's padding past the window edge.
 //
 // Matched against macOS 26 `macos-glass-regular` (Ghostty) on the same
-// wallpaper. Apple's rim is a wide band that pulls in what lies *beyond* the
-// window edge, magnified as it wraps round the edge, while the body shows the backdrop
+// wallpaper. Apple's rim mirrors the strip just inside it (total internal
+// reflection: glyphs near the edge appear next to their mirror image), while
+// the body shows the backdrop
 // with its colours a little brighter and more saturated. The edge is a faint
 // dark hairline with a faint light line just inside it.
 
 const float R = 18.0;          // must match the glass window rule's corner_radius
-const float BAND = 60.0;       // width of the lens band, logical px
-const float REACH = 24.0;      // how far beyond the edge the rim pixel looks (<= preset padding)
-const float SHARP = 0.35;      // unblurred share at the very edge, fading to 0 inward
-const float SPLIT = 0.015;      // colour split along the bend, fraction of it
+const float FOLD = 11.0;       // the rim mirrors the strip inside this line, logical px from the edge
+const float CREASE = 1.5;      // softness of the fold, px
+const float MAG = 1.2;         // the reflection is this much larger than what it mirrors
+const float SHARP = 0.6;       // unblurred share in the rim
+const float CLEAR = 3.2;       // the rim stays sharp out to this many folds from the edge
+const float SPLIT = 0.06;      // colour split along the bend, fraction of it
 const float MILK = 0.02;       // mix towards white over the whole glass
 const float LIFT = 1.08;       // brightness of the glass (multiplicative)
 const float VIBRANCY = 1.25;   // saturation of the glass
@@ -48,19 +51,20 @@ vec4 backdrop(vec2 uv) {
     sdRoundBox(p + vec2(0.0, h), halfSize, r) - sdRoundBox(p - vec2(0.0, h), halfSize, r));
   vec2 n = length(g) > 0.0 ? normalize(g) : vec2(0.0);
 
-  float band = min(BAND, min(halfSize.x, halfSize.y) * 0.5);
-  float t = 1.0 - clamp(s / band, 0.0, 1.0);  // 1 at the edge, 0 at the band's inner side
+  // Total internal reflection in the rim: within FOLD of the edge the glass
+  // shows the strip just inside the fold, mirrored (soft at the crease).
+  float fold = min(FOLD, min(halfSize.x, halfSize.y) * 0.25);
+  float x = fold - s;
+  // Soft |x| that tends to |x| exactly, so the body past the fold is unshifted.
+  float k = x > 0.0 ? 1.0 / MAG : 1.0;  // the reflected strip covers less source: magnified
+  float mirrored = fold + k * x * x / sqrt(x * x + CREASE * CREASE);  // ~s past the fold, mirrored inside it
+  float bend = s - mirrored;  // <= 0: along -n, i.e. inward
+  float t = clamp(1.0 - s / fold, 0.0, 1.0);
 
   vec3 col;
-  if (t > 0.0) {
-    // The band shows the strip from its inner side to REACH past the edge.
-    // f is a Hermite curve: slope band/(band+REACH) at the inner side, so the
-    // band joins the body without a seam, and slope 0 at the edge, so what
-    // lies just past the edge is stretched across the outer band (magnified).
-    float k = band / (band + REACH);
-    float f = k * (t * t * t - 2.0 * t * t + t) + (3.0 * t * t - 2.0 * t * t * t);
-    float bend = (band + REACH) * f - band * t;
-    float sharp = SHARP * t * t;
+  if (s < CLEAR * fold) {
+    // Sharp in the reflection and the strip it mirrors, frosted further in.
+    float sharp = SHARP * (1.0 - smoothstep(2.0 * fold, CLEAR * fold, s));
     col = vec3(
       tap(uv, n, bend * (1.0 + SPLIT), sharp).r,
       tap(uv, n, bend, sharp).g,

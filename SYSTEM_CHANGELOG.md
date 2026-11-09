@@ -3,6 +3,22 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Liquid glass: a mirrored rim like Apple's — 2026-11-09
+
+The user pointed out that the distortion still differed from macOS ("look at
+umbrella"). Zooming the Mac screenshot against the bare wallpaper showed what
+Apple's rim does. It does not pull in content from beyond the edge (the widget
+glyphs were already under the glass). It mirrors the strip just inside a fold
+about 11 px from the edge, like total internal reflection: the weather
+umbrella appears beside its mirror image, and "75%", "rain" and the clock's
+"2" fold onto themselves. The rim also stays fairly sharp about 35 px in. The
+backdrop shader now does exactly that: a fold at 11 px with a soft crease, a
+reflection magnified 1.2×, the unblurred backdrop at 60% out to 3.2 folds, and
+the colour split back at 0.06 (the user liked the fringe). Blur radius 3 → 2
+(Apple's body is less blurred). The fold only reads inward, so glass windows
+keep their drop shadow again (`shadow = false` removed; the A/B shows no inner
+frame), and preset padding is 80 → 8. Linked live.
+
 # Liquid glass: a quieter edge — 2026-11-09
 
 At the user's request, the top-right corner was compared with the Mac A/B, where

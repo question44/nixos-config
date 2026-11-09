@@ -32,7 +32,7 @@ hdr = "on"
 # Unoptimized: every surface blurs what is really behind it (windows too), not
 # a cached wallpaper blur; costs GPU time while something behind changes.
 optimized = false
-radius = 3
+radius = 2
 passes = 2
 noise = 0.0
 brightness = 1.0
@@ -52,11 +52,12 @@ kind = "window"
 shader = "/etc/nixos/home/umbriel/effects/liquid-glass.glsl"
 
 # Glass under the window (patched Umbriel: patches/umbriel-backdrop-effect.patch).
-# padding: how far past the window edge the shader may read the backdrop.
+# padding: how far past the window edge the shader may read the backdrop (the
+# fold reads inward only; 8 px covers the blur at the edge).
 [effects.preset.liquid-glass-backdrop]
 kind = "backdrop"
 shader = "/etc/nixos/home/umbriel/effects/liquid-glass-backdrop.glsl"
-padding = 80
+padding = 8
 
 [effects.preset.liquid-glass-rim]
 kind = "border"
@@ -82,9 +83,6 @@ match.app_id = "^(com\\.mitchellh\\.ghostty|dev\\.rockorager\\.monstar)$"
 # The backdrop preset replaces the old in-window glass, which bent text.
 window_effect = "off"
 backdrop_effect = "liquid-glass-backdrop"
-# The lens reads past the edge, where Umbriel has already drawn this window's
-# own shadow; it would show as a dark inner frame.
-shadow = false
 # The shader's R must equal this radius.
 corner_radius = 18
 # No border ring: the backdrop shader's lit rim is the only edge.
