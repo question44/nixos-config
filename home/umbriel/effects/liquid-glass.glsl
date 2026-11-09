@@ -4,8 +4,8 @@
 // see the window rule in config.toml.
 
 const float R = 10.0;         // must match appearance.corner_radius (default 10)
-const float RIM = 22.0;       // width of the refracting band, logical px
-const float STRENGTH = 12.0;  // displacement at the very edge, logical px
+const float RIM = 12.0;       // width of the refracting band, logical px
+const float STRENGTH = 6.0;   // displacement at the very edge, logical px
 const float DISPERSION = 0.08;
 
 float sdRoundBox(vec2 p, vec2 b, float r) {
