@@ -3,6 +3,14 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Liquid-glass rim border shader switched off — 2026-11-09
+
+At the user's request, the glass window rule now sets `border_effect = "off"`
+in place of `"liquid-glass-rim"`. As with the window shader, the preset
+definition and `home/umbriel/effects/liquid-glass-rim.glsl` stay in place.
+Focused glass windows now show the native 1 px accent ring
+(`border_width = 1`, corner radius 18 unchanged).
+
 # Liquid-glass window shader switched off — 2026-11-09
 
 At the user's request, the glass window rule now sets `window_effect = "off"`

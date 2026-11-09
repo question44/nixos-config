@@ -78,7 +78,8 @@ window_effect = "off"
 corner_radius = 18
 # A hairline instead of the 2 px ring; focused, it is lit like the glass rim.
 border_width = 1
-border_effect = "liquid-glass-rim"
+# Disabled; set back to "liquid-glass-rim" to turn the lit hairline on.
+border_effect = "off"
 
 # These destinations apply only while Sunshine's virtual monitor exists.
 [[window_rule]]
