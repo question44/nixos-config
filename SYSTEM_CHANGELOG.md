@@ -3,6 +3,16 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Liquid glass: a quieter edge — 2026-11-09
+
+At the user's request, the top-right corner was compared with the Mac A/B, where
+the clock and weather widgets lie past the window edge. The lens and its
+magnification matched. Ours had red and blue fringes on the pulled-in glyphs, a
+bright cyan edge line with a glow across the corner, and a lighter band; Apple
+has none of these. Shader: colour split 0.06 → 0.015, band glint off, and the
+edge is now a faint dark outermost pixel (22%) with a faint light line just
+inside (0.10, 0.08 extra on top). Linked live.
+
 # Liquid glass: vibrancy instead of milk — 2026-11-09
 
 A second A/B against the user's Mac, on a wallpaper with hard-edged beams.

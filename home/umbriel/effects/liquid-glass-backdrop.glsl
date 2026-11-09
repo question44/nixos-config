@@ -7,20 +7,21 @@
 // Matched against macOS 26 `macos-glass-regular` (Ghostty) on the same
 // wallpaper. Apple's rim is a wide band that pulls in what lies *beyond* the
 // window edge, magnified as it wraps round the edge, while the body shows the backdrop
-// with its own colours under a slight milky lift. The edge carries one thin
-// light line, brighter along the top.
+// with its colours a little brighter and more saturated. The edge is a faint
+// dark hairline with a faint light line just inside it.
 
 const float R = 18.0;          // must match the glass window rule's corner_radius
 const float BAND = 60.0;       // width of the lens band, logical px
 const float REACH = 24.0;      // how far beyond the edge the rim pixel looks (<= preset padding)
 const float SHARP = 0.35;      // unblurred share at the very edge, fading to 0 inward
-const float SPLIT = 0.06;      // colour split along the bend, fraction of it
+const float SPLIT = 0.015;      // colour split along the bend, fraction of it
 const float MILK = 0.02;       // mix towards white over the whole glass
 const float LIFT = 1.08;       // brightness of the glass (multiplicative)
 const float VIBRANCY = 1.25;   // saturation of the glass
-const float LINE = 0.30;       // edge line strength, all round
-const float LINE_TOP = 0.35;   // extra strength where the edge faces up
-const float GLINT = 0.05;      // soft brightening of the band towards the edge
+const float LINE = 0.10;       // light edge line strength, all round
+const float LINE_TOP = 0.08;   // extra strength where the edge faces up
+const float OUTLINE = 0.22;    // darkening of the outermost pixel (a faint dark hairline)
+const float GLINT = 0.0;       // soft brightening of the band towards the edge
 
 float sdRoundBox(vec2 p, vec2 b, float r) {
   vec2 q = abs(p) - b + r;
@@ -73,9 +74,10 @@ vec4 backdrop(vec2 uv) {
   col = mix(col * LIFT, vec3(1.0), MILK);
   col += GLINT * t * t;
 
-  // One thin light line on the edge, brighter where it faces up.
+  // A faint dark hairline on the outermost pixel, a faint light one just inside.
   float up = max(-n.y, 0.0);
-  float line = exp(-pow((s - 0.8) / 0.6, 2.0));
+  col *= 1.0 - OUTLINE * exp(-pow(s / 0.7, 2.0));
+  float line = exp(-pow((s - 1.6) / 0.6, 2.0));
   col += line * (LINE + LINE_TOP * up);
 
   return vec4(col, 1.0);
