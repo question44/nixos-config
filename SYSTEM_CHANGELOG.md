@@ -3,6 +3,35 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Closer macOS Liquid Glass in Umbriel — 2026-11-09
+
+At the user's request, the liquid-glass effect was reworked to look more like
+macOS 26. `liquid-glass.glsl` now refracts through a convex lip whose bend
+climbs steeply at the rim, with a colour split there, a saturation lift on the
+body, fresnel whitening and a lit ~1 px specular rim with a soft sheen. The
+body's brightness gain is multiplicative: an additive lift turned the dark
+body milky grey on the HDR DP-1, where the buffer appears to be linear. A new
+border effect, `liquid-glass-rim`, draws the focused glass window's ring as a
+light hairline lit from the top-left instead of the accent colour; unfocused
+glass windows keep the dark native ring. Glass windows (Ghostty, Monstar) get
+`corner_radius = 18`, `border_width = 1` and unoptimized blur, so they also
+blur windows behind them. Global blur: 4 passes, radius 12, saturation 1.65,
+brightness 1.08, contrast 0.82, noise 0.012. Global shadow: softness 32,
+offset (0, 8). Ghostty and Monstar get 14×9 px window padding so text stays
+off the lip. erebor-diff tier: different (only the Ghostty and Monstar
+configs; the Umbriel files are linked live and are not in the closure).
+
+The Umbriel part is live from the merge: both presets report `compiled`.
+Verified with cropped DP-1 captures of a floating test Monstar window (a
+temporary profile with `in_capture` and the worktree shaders, reverted after
+each capture). The window had 14 px padding, applied through `-o`. The
+captures show the hairline, the lit rim and the lip, with the edge text
+undistorted. `erebor-rebuild switch` failed from the agent session because
+sudo refused ("no new privileges" flag set on the app's process). The padding
+is built (`4n2b0csw…-nixos-system-erebor`) but not activated until the user
+runs the switch. Not checked: the shadow, which did not show against the dark
+backdrop in the captures.
+
 # Liquid-glass look in Umbriel — 2026-11-09
 
 At the user's request, `home/umbriel/config.toml` gets a brighter, more
