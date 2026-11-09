@@ -72,7 +72,8 @@ blur_popups = true
 
 [[window_rule]]
 match.app_id = "^(com\\.mitchellh\\.ghostty|dev\\.rockorager\\.monstar)$"
-window_effect = "liquid-glass"
+# Disabled; set back to "liquid-glass" to turn the glass shader on.
+window_effect = "off"
 # The shader's R must equal this radius.
 corner_radius = 18
 # A hairline instead of the 2 px ring; focused, it is lit like the glass rim.
