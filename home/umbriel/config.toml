@@ -32,7 +32,7 @@ hdr = "on"
 # Unoptimized: every surface blurs what is really behind it (windows too), not
 # a cached wallpaper blur; costs GPU time while something behind changes.
 optimized = false
-radius = 12
+radius = 5
 passes = 2
 noise = 0.012
 brightness = 1.08

@@ -3,6 +3,18 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Umbriel blur radius 5 — 2026-11-09
+
+The user reported that the blur looked strange after the change to 2 passes.
+Captures of a strip behind the floating Monstar window showed vertical bands
+where a window edge sits behind blurred glass: 2 passes at radius 12 leave
+gaps between the blur's samples. Tested at the same spot, each setting briefly
+loaded with `config-replace` and reverted: 2 passes at radius 8 still banded,
+radius 4–5 barely did, and 3 passes at radius 6–8 were smooth. The user chose
+to keep 2 passes, so `[appearance.blur] radius` went from 12 to 5. This is a
+lighter frost: shapes behind stay recognisable. Linked live; `umbriel config
+validate` passes.
+
 # Liquid-glass rim border shader switched off — 2026-11-09
 
 At the user's request, the glass window rule now sets `border_effect = "off"`
