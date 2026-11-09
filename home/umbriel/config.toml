@@ -38,7 +38,8 @@ saturation = 1.4
 # Lens edge for the translucent terminals (both already use appOpacity).
 [effects.preset.liquid-glass]
 kind = "window"
-shader = "effects/liquid-glass.glsl"
+# Absolute: a relative path resolves beside the ~/.config link, not the repo.
+shader = "/etc/nixos/home/umbriel/effects/liquid-glass.glsl"
 
 [[layer_rule]]
 match.namespace = "^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd)$"
