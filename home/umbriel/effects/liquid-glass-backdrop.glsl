@@ -15,8 +15,9 @@ const float BAND = 60.0;       // width of the lens band, logical px
 const float REACH = 24.0;      // how far beyond the edge the rim pixel looks (<= preset padding)
 const float SHARP = 0.35;      // unblurred share at the very edge, fading to 0 inward
 const float SPLIT = 0.06;      // colour split along the bend, fraction of it
-const float MILK = 0.05;       // mix towards white over the whole glass
-const float LIFT = 1.03;       // brightness of the glass (multiplicative)
+const float MILK = 0.02;       // mix towards white over the whole glass
+const float LIFT = 1.08;       // brightness of the glass (multiplicative)
+const float VIBRANCY = 1.25;   // saturation of the glass
 const float LINE = 0.30;       // edge line strength, all round
 const float LINE_TOP = 0.35;   // extra strength where the edge faces up
 const float GLINT = 0.05;      // soft brightening of the band towards the edge
@@ -67,6 +68,8 @@ vec4 backdrop(vec2 uv) {
     col = umbriel_sample(uv).rgb;
   }
 
+  float lum = dot(col, vec3(0.2126, 0.7152, 0.0722));
+  col = max(mix(vec3(lum), col, VIBRANCY), 0.0);
   col = mix(col * LIFT, vec3(1.0), MILK);
   col += GLINT * t * t;
 

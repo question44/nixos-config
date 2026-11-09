@@ -3,6 +3,16 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Liquid glass: vibrancy instead of milk — 2026-11-09
+
+A second A/B against the user's Mac, on a wallpaper with hard-edged beams.
+Apple's glass is brighter and more saturated than the wallpaper under it,
+with no grain; ours read grey and slightly milky. Backdrop shader: saturation
+1.25 (new `VIBRANCY`), lift 1.08, milk 0.02; blur noise 0. The lens and the
+beam softness already matched. Still open: Apple keeps a drop shadow under
+glass windows, while ours are off (`shadow = false`) because the lens would
+pull in the window's own shadow. Linked live.
+
 # Liquid glass retuned against macOS — 2026-11-09
 
 At the user's request, the backdrop glass was compared with Ghostty's
