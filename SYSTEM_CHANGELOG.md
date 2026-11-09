@@ -3,6 +3,13 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Umbriel blur passes 2 — 2026-11-09
+
+At the user's request, `[appearance.blur] passes` went from 4 to 2 in
+`home/umbriel/config.toml`, for a narrower, cheaper blur. Radius stays 12.
+Linked live, so no rebuild was needed. `umbriel config validate` passes. Not
+checked in a screenshot.
+
 # Shared app opacity 0.75 — 2026-11-09
 
 At the user's request, `appOpacity` in `home/appearance.nix` went from 0.9
