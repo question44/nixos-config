@@ -21,7 +21,11 @@ glass, with nothing outside their shapes. The copy also opened a Chromium
 terms window inside the test compositor; it ended with it, and no process stayed
 attached to the test display. erebor-diff tier: different (umbriel and the
 scripts naming it). Activated with switch as generation 345. Config (after the next login):
-`liquid-glass-layer` preset and `backdrop_effect` on the Noctalia layer rule. The config change waits for the next login; the running
+`liquid-glass-layer` preset and `backdrop_effect` on the Noctalia layer rule, merged
+after the user logged in to the generation 345 build (`z4q1w3ll…-umbriel-0.1.0`
+running). Umbriel reloaded the layer rules at 22:25:46, and both backdrop presets
+report `compiled`. A live crop of the bar showed it drawing normally. The glass is
+hard to judge over a dark app window. The config change waited for the next login; the running
 compositor does not know the layer key.
 
 # Liquid glass: narrower clear edge — 2026-11-09
