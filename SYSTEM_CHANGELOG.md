@@ -3,6 +3,27 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Liquid-glass look in Umbriel — 2026-11-09
+
+At the user's request, `home/umbriel/config.toml` gets a brighter, more
+saturated blur (radius 14, brightness 1.05, contrast 0.85, saturation 1.4)
+and a custom window effect, `liquid-glass`
+(`home/umbriel/effects/liquid-glass.glsl`). The shader refracts the backdrop
+in a 12 px band along the rounded edge, splits it slightly by colour and adds
+a specular rim. A window rule applies it to Ghostty and Monstar, which are
+already translucent through `appOpacity`. The preset's `shader` path is
+absolute (`/etc/nixos/...`): a relative path resolved beside the
+`~/.config/umbriel` link, and the preset stayed `inert`. The config is linked
+live, so no rebuild was needed (no Nix change, no erebor-diff). Verified:
+`umbriel config validate` passes, `umbriel effects` reports the preset
+`compiled`, and the rule assigns it to Monstar. A DP-1 screenshot, taken with
+a temporary `in_capture` profile that was then reverted, shows the rim and the
+lens edge. The first version (22 px band) smeared the first text column of an
+unpadded terminal, so the band was narrowed. The narrowed version was not
+re-checked in a screenshot. Limits: layer surfaces (Noctalia bar, dock)
+cannot take window effects; the effect reads only the window during
+animations; `R` in the shader must track `appearance.corner_radius` by hand.
+
 # Stateful bar toggles for Sequoia motion and bar pinning — 2026-11-09
 
 At the user's request, a local Noctalia plugin (`home/noctalia/plugins/toggles`,
