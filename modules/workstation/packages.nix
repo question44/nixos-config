@@ -21,10 +21,16 @@
 
       system = pkgs.stdenv.hostPlatform.system;
       chomik = inputs.chomik.packages.${system}.default;
+      # The app turns hardware acceleration off for good when its GPU process
+      # fails to relaunch, which a nixos-rebuild switch triggers by killing its
+      # helpers. Clear that flag at every launch so one switch does not leave it
+      # on software rendering; a real GPU failure still disables it per run.
       claudeDesktop = inputs.claude-desktop-nix.packages.${system}.default.overrideAttrs (old: {
+        nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pkgs.makeShellWrapper ];
         postFixup = (old.postFixup or "") + ''
-          wrapProgram "$out/bin/claude-desktop" \
-            --add-flags "--password-store=gnome-libsecret"
+          wrapProgramShell "$out/bin/claude-desktop" \
+            --add-flags "--password-store=gnome-libsecret" \
+            --run 'cfg="''${XDG_CONFIG_HOME:-$HOME/.config}/Claude/claude_desktop_config.json"; [ -f "$cfg" ] && ${pkgs.gnused}/bin/sed -i -E "s/(\"isHardwareAcceleration(Auto)?Disabled\"): *true/\1: false/" "$cfg" || true'
         '';
       });
       # Phone Connect invokes gdbus through Noctalia's PATH; only gdbus, not all of glib.bin.

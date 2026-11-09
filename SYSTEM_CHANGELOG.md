@@ -3,6 +3,26 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Claude Desktop keeps GPU rendering after a switch — 2026-11-09
+
+Claude Desktop had been drawing in software since 2026-11-08: its GPU process
+ran with `--use-gl=disabled` because the app had set
+`isHardwareAccelerationDisabled` and `isHardwareAccelerationAutoDisabled` in
+`~/.config/Claude/claude_desktop_config.json`. Its log shows why: the
+`nixos-rebuild switch` at 19:07 SIGTERMed its helper processes (Network
+Service exit code 15), the GPU process then failed to relaunch about 11,000
+times (`launch-failed`, exit code 1002), and the app disabled acceleration for
+good. A separate instance started by hand used the NVIDIA render node without
+GPU errors, so the GPU was not at fault.
+
+At the user's request, the `claudeDesktop` override now wraps the launcher with
+`makeShellWrapper` and clears both flags before every start (sed, non-fatal if
+the file is missing). A real GPU failure still disables acceleration for that
+run. `erebor-diff`: different, only `claude-desktop` (binary wrapper replaced by
+a shell wrapper) plus /etc files differing in store hashes. The snippet was
+tested on a copy of the config: both flags went to `false`, other keys kept;
+a missing file exits 0.
+
 # Glass windows without a border — 2026-11-09
 
 At the user's request, the hairline was removed: the glass window rule sets
