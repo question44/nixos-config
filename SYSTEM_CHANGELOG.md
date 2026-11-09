@@ -26,10 +26,10 @@ Verified with cropped DP-1 captures of a floating test Monstar window (a
 temporary profile with `in_capture` and the worktree shaders, reverted after
 each capture). The window had 14 px padding, applied through `-o`. The
 captures show the hairline, the lit rim and the lip, with the edge text
-undistorted. `erebor-rebuild switch` failed from the agent session because
-sudo refused ("no new privileges" flag set on the app's process). The padding
-is built (`4n2b0csw…-nixos-system-erebor`) but not activated until the user
-runs the switch. Not checked: the shadow, which did not show against the dark
+undistorted. The first `erebor-rebuild switch` failed because sudo refused
+("no new privileges" was set on the app's process). After an app restart
+cleared the flag, 1e1524d activated with switch as generation 334
+(`4n2b0csw…`); both deployed terminal configs contain the padding. Not checked: the shadow, which did not show against the dark
 backdrop in the captures.
 
 # Liquid-glass look in Umbriel — 2026-11-09
