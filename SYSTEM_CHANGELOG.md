@@ -3,6 +3,18 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Liquid glass on every transparent window — 2026-11-09
+
+At the user's request, `backdrop_effect = "liquid-glass-backdrop"` moved from
+the terminal rule to the all-windows rule. The patched Umbriel draws a backdrop
+preset from the window's blur node, and that node exists only while the
+surface is transparent (translucent pixels or opacity below 1). So every
+transparent window gets the glass and opaque windows are untouched. The shader
+no longer hard-codes an 18 px corner: it reads `umbriel_corner_radius` (per
+corner) from the blur node, so its rim fits windows at the default 10 px too
+(checked in the headless A/B). Terminals keep 18 px corners, no border and no
+in-window effect. Linked live.
+
 # Liquid glass: a little more fringe — 2026-11-09
 
 At the user's request, the rim's colour split went from 0.06 to 0.12 of the bend

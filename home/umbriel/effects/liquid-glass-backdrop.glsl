@@ -11,7 +11,6 @@
 // with its colours a little brighter and more saturated. The edge is a faint
 // dark hairline with a faint light line just inside it.
 
-const float R = 18.0;          // must match the glass window rule's corner_radius
 const float FOLD = 11.0;       // the rim mirrors the strip inside this line, logical px from the edge
 const float CREASE = 1.5;      // softness of the fold, px
 const float MAG = 1.2;         // the reflection is this much larger than what it mirrors
@@ -48,8 +47,11 @@ vec3 tap(vec2 uv, vec2 n, float px, float sharp) {
 
 vec4 backdrop(vec2 uv) {
   vec2 halfSize = umbriel_size * 0.5;
-  float r = min(R, min(halfSize.x, halfSize.y));
   vec2 p = uv * umbriel_size - halfSize;
+  // The window's own corner radius (tl, tr, br, bl), as Umbriel rounds it.
+  vec4 c = umbriel_corner_radius;
+  float r = p.y < 0.0 ? (p.x < 0.0 ? c.x : c.y) : (p.x < 0.0 ? c.w : c.z);
+  r = min(r, min(halfSize.x, halfSize.y));
   float d = sdRoundBox(p, halfSize, r);
   float s = max(-d, 0.0);  // px in from the edge
 

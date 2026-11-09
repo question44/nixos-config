@@ -77,13 +77,15 @@ blur = true
 # Qt menus, context menus, and combo boxes are descendant XDG popups rather
 # than toplevel windows, so they need this explicit opt-in.
 blur_popups = true
+# Liquid glass behind every window. It is drawn by the window's blur node,
+# which exists only while the window is transparent, so opaque windows are
+# unaffected.
+backdrop_effect = "liquid-glass-backdrop"
 
 [[window_rule]]
 match.app_id = "^(com\\.mitchellh\\.ghostty|dev\\.rockorager\\.monstar)$"
-# The backdrop preset replaces the old in-window glass, which bent text.
+# Glass comes from the all-windows rule; terminals get larger corners.
 window_effect = "off"
-backdrop_effect = "liquid-glass-backdrop"
-# The shader's R must equal this radius.
 corner_radius = 18
 # No border ring: the backdrop shader's lit rim is the only edge.
 border_width = 0
