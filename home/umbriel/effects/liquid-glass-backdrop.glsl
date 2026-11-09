@@ -15,8 +15,8 @@ const float R = 18.0;          // must match the glass window rule's corner_radi
 const float FOLD = 11.0;       // the rim mirrors the strip inside this line, logical px from the edge
 const float CREASE = 1.5;      // softness of the fold, px
 const float MAG = 1.2;         // the reflection is this much larger than what it mirrors
-const float SHARP = 0.6;       // unblurred share in the rim
-const float CLEAR = 3.2;       // the rim stays sharp out to this many folds from the edge
+const float SHARP = 0.45;      // share of the lightly softened backdrop in the rim
+const float CLEAR = 7.0;       // the sharpness fades out by this many folds from the edge
 const float SPLIT = 0.06;      // colour split along the bend, fraction of it
 const float MILK = 0.02;       // mix towards white over the whole glass
 const float LIFT = 1.08;       // brightness of the glass (multiplicative)
@@ -31,10 +31,19 @@ float sdRoundBox(vec2 p, vec2 b, float r) {
   return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r;
 }
 
+// The unblurred backdrop, softened by a small 5-tap blur: Apple's reflection
+// is slightly soft, which keeps the rim from looking sharper than the body.
+vec3 soft(vec2 q) {
+  vec2 o = 1.25 / umbriel_size;
+  return (umbriel_sample_raw(q).rgb * 2.0
+          + umbriel_sample_raw(q + vec2(o.x, 0.0)).rgb + umbriel_sample_raw(q - vec2(o.x, 0.0)).rgb
+          + umbriel_sample_raw(q + vec2(0.0, o.y)).rgb + umbriel_sample_raw(q - vec2(0.0, o.y)).rgb) / 6.0;
+}
+
 vec3 tap(vec2 uv, vec2 n, float px, float sharp) {
   vec2 q = uv + n * px / umbriel_size;
   vec3 frosted = umbriel_sample(q).rgb;
-  return sharp > 0.0 ? mix(frosted, umbriel_sample_raw(q).rgb, sharp) : frosted;
+  return sharp > 0.0 ? mix(frosted, soft(q), sharp) : frosted;
 }
 
 vec4 backdrop(vec2 uv) {
@@ -63,8 +72,10 @@ vec4 backdrop(vec2 uv) {
 
   vec3 col;
   if (s < CLEAR * fold) {
-    // Sharp in the reflection and the strip it mirrors, frosted further in.
-    float sharp = SHARP * (1.0 - smoothstep(2.0 * fold, CLEAR * fold, s));
+    // Sharp in the reflection, easing into the frost over a long distance so
+    // the rim has no visible boundary with the body.
+    float e = clamp((s - fold) / ((CLEAR - 1.0) * fold), 0.0, 1.0);
+    float sharp = SHARP * (1.0 - e) * (1.0 - e) * (1.0 - e);
     col = vec3(
       tap(uv, n, bend * (1.0 + SPLIT), sharp).r,
       tap(uv, n, bend, sharp).g,

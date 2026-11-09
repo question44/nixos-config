@@ -3,6 +3,16 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Liquid glass: no step between rim and body — 2026-11-09
+
+The user found the transition from the sharp rim to the frosted body jarring.
+A test over a text-filled backdrop confirmed it: the rim showed the backdrop 60%
+unblurred and switched to full frost between 22 and 35 px in, a visible step.
+Now the rim uses a lightly softened copy of the unblurred backdrop (5 taps,
+1.25 px, like Apple's slightly soft reflection) at 45%, fading on a cubic ease
+from the fold out to 7 folds (77 px). Text sharpens gradually towards the edge,
+with no boundary. Linked live.
+
 # Liquid glass: a mirrored rim like Apple's — 2026-11-09
 
 The user pointed out that the distortion still differed from macOS ("look at
