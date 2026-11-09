@@ -14,9 +14,9 @@
 const float FOLD = 11.0;       // the rim mirrors the strip inside this line, logical px from the edge
 const float CREASE = 1.5;      // softness of the fold, px
 const float MAG = 1.2;         // the reflection is this much larger than what it mirrors
-const float FADE = 160.0;      // the blur weakens over this distance towards the edge, logical px
+const float FADE = 80.0;       // the blur weakens over this distance towards the edge, logical px
 const float KERNEL = 5.0;      // radius of the shader's own blur where it hands over to the frost, px
-const float EDGE_BLUR = 1.0;   // blur radius left right at the edge, px
+const float EDGE_BLUR = 2.0;   // blur radius left right at the edge, px
 const float SPLIT = 0.12;      // colour split along the bend, fraction of it
 const float MILK = 0.02;       // mix towards white over the whole glass
 const float LIFT = 1.08;       // brightness of the glass (multiplicative)
@@ -83,8 +83,10 @@ vec4 backdrop(vec2 uv) {
   float bend = s - mirrored;  // <= 0: along -n, i.e. inward
   float t = clamp(1.0 - s / fold, 0.0, 1.0);
 
-  // Blur strength: weak at the edge, full frost from FADE inwards.
-  float w = smoothstep(0.0, 1.0, clamp(s / FADE, 0.0, 1.0));
+  // Blur strength: weak at the edge, full frost from FADE inwards. Ease-out,
+  // so the frost returns quickly and only the outermost strip is near clear.
+  float x = 1.0 - clamp(s / FADE, 0.0, 1.0);
+  float w = 1.0 - x * x;
   vec3 col = vec3(
     tap(uv, n, bend * (1.0 + SPLIT), w).r,
     tap(uv, n, bend, w).g,

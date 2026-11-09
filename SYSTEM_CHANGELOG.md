@@ -3,6 +3,14 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Liquid glass: narrower clear edge — 2026-11-09
+
+The user found the edge clear over too much of the window. The blur fade now
+covers 80 px instead of 160, on an ease-out curve (w = 1 − (1 − s/80)²)
+instead of a smoothstep, so the frost returns quickly. 2 px of blur remain at
+the edge instead of 1. In the headless text A/B, only a narrow outer strip is
+noticeably clearer. Linked live.
+
 # Liquid glass: blur weakens towards the window edge — 2026-11-09
 
 At the user's request, the glass blur now fades from full frost in the body
