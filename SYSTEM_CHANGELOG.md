@@ -24,8 +24,9 @@ coordinates as `umbriel_sample`; 1 inside the box for windows). The matching
 `liquid-glass-layer.glsl` searches 16 directions up to 28 px for the nearest
 edge, refines it by bisection, and applies the window glass along it: fold,
 fringe, graded blur, hairline. An 8-probe pre-check skips the search deep
-inside panels. The shader stays on a branch until the next login, because the
-running compositor lacks `umbriel_shape` and its live compile would fail.
+inside panels. Activated with switch as generation 346. The shader stays on a branch
+(`agent/layer-shape-shader`) until the next login, because the running
+compositor lacks `umbriel_shape` and its live compile would fail.
 Unit tests 149/150 (the known NVIDIA failure). Headless test with copies of
 the user's Noctalia config: the shader compiles, the rim follows the bar's
 outline and the panel's rounded corners, and nothing renders outside the
