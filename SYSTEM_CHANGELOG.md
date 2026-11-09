@@ -3,6 +3,26 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Umbriel patch: backdrop effects on layer surfaces — 2026-11-09
+
+At the user's request (option A for Noctalia), `patches/umbriel-backdrop-effect.patch`
+gains a second commit (`~/src/umbriel`, branch `backdrop-effect`, 04002d58).
+Layer rules accept `backdrop_effect`. The layer's blur node draws the preset
+through the same `blur_ignore_alpha` stencil the plain blur uses, so it stays
+inside the shapes Noctalia draws. Layers rebind on effect edits when a layer
+rule selects a backdrop. New shader `home/umbriel/effects/liquid-glass-layer.glsl`:
+the glass body only (frost, vibrancy 1.25, lift 1.08), with no rim, because a
+layer's blur node is the whole surface rectangle and its real edges are unknown.
+Unit tests: 149/150, only the known NVIDIA `hdr-sdr-capture` failure. A first
+version also refreshed layers on every effect edit, which a test
+(`effectReloadsFlagOnlyEffectDependentState`) caught; narrowed. Headless test
+with copies of the user's Noctalia config and state: the bar and a panel take the
+glass, with nothing outside their shapes. The copy also opened a Chromium
+terms window inside the test compositor; it ended with it, and no process stayed
+attached to the test display. erebor-diff tier: different (umbriel and the
+scripts naming it). The config change waits for the next login; the running
+compositor does not know the layer key.
+
 # Liquid glass: narrower clear edge — 2026-11-09
 
 The user found the edge clear over too much of the window. The blur fade now

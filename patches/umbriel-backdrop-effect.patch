@@ -1,9 +1,15 @@
 diff --git a/src/config/change.cpp b/src/config/change.cpp
-index ab6c48f6..3d69d796 100644
+index ab6c48f6..e0acf625 100644
 --- a/src/config/change.cpp
 +++ b/src/config/change.cpp
-@@ -88,7 +88,7 @@ namespace umbriel {
+@@ -86,9 +86,13 @@ namespace umbriel {
+       return before.windowsDrag == after.windowsDrag;
+     }
  
++    bool selectsLayerBackdrop(const std::vector<LayerRule>& rules) {
++      return std::ranges::any_of(rules, [](const LayerRule& rule) { return rule.backdropEffect.has_value(); });
++    }
++
      bool selectsEffect(const std::vector<WindowRule>& rules) {
        return std::ranges::any_of(rules, [](const WindowRule& rule) {
 -        return rule.borderEffect.has_value() || rule.windowEffect.has_value();
@@ -11,8 +17,20 @@ index ab6c48f6..3d69d796 100644
        });
      }
  
+@@ -248,7 +252,10 @@ namespace umbriel {
+             || before.colors != after.colors
+             || before.windowRules != after.windowRules
+             || focusAppearance,
+-        .layerEffects = sceneBlur || before.layerRules != after.layerRules,
++        // A backdrop preset's program changes with its source, so layers that select one rebind on effect edits.
++        .layerEffects = sceneBlur
++            || before.layerRules != after.layerRules
++            || (effectsChanged && (selectsLayerBackdrop(before.layerRules) || selectsLayerBackdrop(after.layerRules))),
+         .animation = before.animation != after.animation,
+         .input = before.input != after.input || before.hotCorners != after.hotCorners,
+         .overviewPresentation = before.overview != after.overview || before.colors != after.colors,
 diff --git a/src/config/config.h b/src/config/config.h
-index 92d053ec..731be955 100644
+index 92d053ec..15396b9d 100644
 --- a/src/config/config.h
 +++ b/src/config/config.h
 @@ -491,6 +491,8 @@ namespace umbriel {
@@ -40,6 +58,33 @@ index 92d053ec..731be955 100644
      std::optional<std::string> windowEffect;
 +    std::optional<std::string> backdropEffect;
      bool operator==(const ResolvedWindowRule&) const = default;
+   };
+ 
+@@ -620,6 +624,8 @@ namespace umbriel {
+     std::optional<bool> blurPopups;
+     std::optional<double> ignoreAlpha;
+     std::optional<bool> optimized;
++    // A backdrop preset drawn by the surface's blur node in place of its blur; "off" disables it.
++    std::optional<std::string> backdropEffect;
+ 
+     // See WindowRule: the regexes are derived from the patterns.
+     bool operator==(const LayerRule& other) const {
+@@ -629,7 +635,8 @@ namespace umbriel {
+           && blur == other.blur
+           && blurPopups == other.blurPopups
+           && ignoreAlpha == other.ignoreAlpha
+-          && optimized == other.optimized;
++          && optimized == other.optimized
++          && backdropEffect == other.backdropEffect;
+     }
+   };
+ 
+@@ -638,6 +645,7 @@ namespace umbriel {
+     std::optional<bool> blurPopups;
+     std::optional<double> ignoreAlpha;
+     std::optional<bool> optimized;
++    std::optional<std::string> backdropEffect;
+     bool operator==(const ResolvedLayerRule&) const = default;
    };
  
 diff --git a/src/config/effects.cpp b/src/config/effects.cpp
@@ -102,7 +147,7 @@ index 3d421849..be351ebd 100644
                  add("palette", KeyDescription("bool"));
                  add("padding", KeyDescription("int").withRange(0, 1024));
 diff --git a/src/config/fields_rules.cpp b/src/config/fields_rules.cpp
-index 61dc5cf7..e4c912f6 100644
+index 61dc5cf7..7fd7795c 100644
 --- a/src/config/fields_rules.cpp
 +++ b/src/config/fields_rules.cpp
 @@ -234,6 +234,7 @@ namespace umbriel {
@@ -123,8 +168,16 @@ index 61dc5cf7..e4c912f6 100644
        return true;
      }
  
+@@ -345,6 +349,7 @@ namespace umbriel {
+           registry::boolean("blur_popups", &L::blurPopups),
+           registry::real("blur_ignore_alpha", 0.0, 1.0, &L::ignoreAlpha),
+           registry::boolean("blur_optimized", &L::optimized),
++          optionalEffectField("backdrop_effect", &L::backdropEffect),
+       };
+       return fields;
+     }
 diff --git a/src/config/resolve.cpp b/src/config/resolve.cpp
-index 16a64d47..92f7492f 100644
+index 16a64d47..b5e48e30 100644
 --- a/src/config/resolve.cpp
 +++ b/src/config/resolve.cpp
 @@ -412,6 +412,9 @@ namespace umbriel {
@@ -137,8 +190,47 @@ index 16a64d47..92f7492f 100644
      }
      return resolved;
    }
+@@ -442,6 +445,9 @@ namespace umbriel {
+       if (rule.optimized) {
+         resolved.optimized = rule.optimized;
+       }
++      if (rule.backdropEffect) {
++        resolved.backdropEffect = rule.backdropEffect;
++      }
+     }
+     return resolved;
+   }
+diff --git a/src/layer/layer_surface.cpp b/src/layer/layer_surface.cpp
+index c972f1ab..bd6c382e 100644
+--- a/src/layer/layer_surface.cpp
++++ b/src/layer/layer_surface.cpp
+@@ -396,6 +396,24 @@ namespace umbriel {
+   void LayerSurface::updateBlur() {
+     const wlr_box box{0, 0, m_layerSurface->surface->current.width, m_layerSurface->surface->current.height};
+     m_blur.update(m_scene->tree, m_layerSurface->surface, box, box, corner_radii_none(), nullptr, blurOptions());
++    // A backdrop preset is drawn by the blur node in place of the blur; the blur's alpha mask still shapes it.
++    wlr_scene_blur* node = m_blur.node();
++    if (node == nullptr) {
++      return;
++    }
++    EffectRegistry& registry = effectRegistry();
++    const std::string name = m_rule.backdropEffect.value_or("");
++    fx_effect_shader* shader =
++        !name.empty() && name != "off" ? registry.preset(name, EffectKind::Backdrop) : nullptr;
++    const EffectPreset* preset = shader != nullptr ? registry.presetConfig(name) : nullptr;
++    if (preset == nullptr) {
++      wlr_scene_blur_set_effect(node, nullptr, nullptr, 0);
++      return;
++    }
++    fx_animation_parameters parameters{};
++    parameters.scale = 1.0F;
++    registry.fillTimeUniforms(parameters, 0.0F, *preset, shader);
++    wlr_scene_blur_set_effect(node, shader, &parameters, preset->padding);
+   }
+ 
+   void LayerSurface::applyConfig() {
 diff --git a/src/scene/effect_registry.cpp b/src/scene/effect_registry.cpp
-index e4303532..199da7ce 100644
+index e4303532..6c2dd8b9 100644
 --- a/src/scene/effect_registry.cpp
 +++ b/src/scene/effect_registry.cpp
 @@ -82,6 +82,8 @@ vec4 animation(vec2 uv) {
@@ -150,10 +242,13 @@ index e4303532..199da7ce 100644
        }
        return FX_EFFECT_ANIMATION;
      }
-@@ -173,6 +175,7 @@ vec4 animation(vec2 uv) {
+@@ -173,6 +175,10 @@ vec4 animation(vec2 uv) {
      for (const WindowRule& rule : settings.windowRules) {
        add(rule.borderEffect.value_or(""));
        add(rule.windowEffect.value_or(""));
++      add(rule.backdropEffect.value_or(""));
++    }
++    for (const LayerRule& rule : settings.layerRules) {
 +      add(rule.backdropEffect.value_or(""));
      }
      for (const OutputRule& rule : settings.outputs) {
@@ -328,6 +423,18 @@ index 945860d4..991e53d3 100644
  };
  
  /**
+diff --git a/umbrielfx/include/umbrielfx/render/pass.h b/umbrielfx/include/umbrielfx/render/pass.h
+index 33e4b0db..5ec5681b 100644
+--- a/umbrielfx/include/umbrielfx/render/pass.h
++++ b/umbrielfx/include/umbrielfx/render/pass.h
+@@ -58,6 +58,7 @@ struct fx_gles_render_pass {
+   struct fx_offscreen_buffers* fx_offscreen_buffers;
+   unsigned animation_depth;
+   struct wlr_texture* workspace_incoming; // bound only while compositing a workspace pair
++  bool effect_keeps_stencil;              // a backdrop effect draws through the blur's alpha mask
+   // A scratch backdrop beneath an isolated subtree, excluded from composition.
+   unsigned isolation_depth;
+   bool isolation_content;
 diff --git a/umbrielfx/include/umbrielfx/types/wlr_scene.h b/umbrielfx/include/umbrielfx/types/wlr_scene.h
 index e4125a44..c2e2df67 100644
 --- a/umbrielfx/include/umbrielfx/types/wlr_scene.h
@@ -502,7 +609,7 @@ index e7de290f..35071e6f 100644
  
  static void clear_target_buffers(struct fx_target_buffers* buffers) {
 diff --git a/umbrielfx/render/fx_renderer/fx_pass.c b/umbrielfx/render/fx_renderer/fx_pass.c
-index e74cb674..bb308564 100644
+index e74cb674..41e85fa8 100644
 --- a/umbrielfx/render/fx_renderer/fx_pass.c
 +++ b/umbrielfx/render/fx_renderer/fx_pass.c
 @@ -876,7 +876,7 @@ static void draw_animation_texture(
@@ -514,7 +621,18 @@ index e74cb674..bb308564 100644
      struct fx_uniform corners = {.name = "umbriel_corner_radius", .type = FX_UNIFORM_VEC4, .count = 1};
      if (corner_radius != NULL) {
        for (unsigned i = 0; i < 4; i++) {
-@@ -3022,6 +3022,111 @@ finish:
+@@ -945,7 +945,9 @@ static void draw_animation_texture(
+     glDisable(GL_BLEND);
+   }
+   glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+-  glDisable(GL_STENCIL_TEST);
++  if (!pass->effect_keeps_stencil) {
++    glDisable(GL_STENCIL_TEST);
++  }
+   if (mark_updated) {
+     render_pass_mark_updated(pass, box, clip);
+   }
+@@ -3022,6 +3024,129 @@ finish:
    TRACY_BOTH_ZONES_END;
  }
  
@@ -601,14 +719,32 @@ index e74cb674..bb308564 100644
 +    goto finish;
 +  }
 +
++  // As the plain blur does: only where the surface is opaque enough (blur_ignore_alpha).
++  bool masked = false;
++  if (fx_options->ignore_alpha > 0.0F && fx_options->tex_options.base.texture) {
++    masked = stencil_mask_init(pass);
++  }
++  if (masked) {
++    struct fx_render_texture_options mask_options = fx_options->tex_options;
++    mask_options.discard_transparent = fx_options->ignore_alpha;
++    mask_options.clipped_region = fx_options->clipped_region;
++    fx_render_pass_add_texture(pass, &mask_options);
++    stencil_mask_close(true);
++  }
++
 +  struct wlr_texture* saved_incoming = pass->workspace_incoming;
 +  pass->workspace_incoming = raw_texture;
++  pass->effect_keeps_stencil = masked;
 +  draw_animation_texture(
 +      pass, blurred_texture, effect->shader, effect->parameters, &box, &box, &effect->logical_box, 0, NULL,
 +      effect->corner_radius, NULL, NULL, NULL, WL_OUTPUT_TRANSFORM_NORMAL, clip, NULL, NULL, pass->projection_matrix,
 +      true, true
 +  );
++  pass->effect_keeps_stencil = false;
 +  pass->workspace_incoming = saved_incoming;
++  if (masked) {
++    stencil_mask_fini();
++  }
 +
 +finish:
 +  if (blurred_texture != NULL) {
