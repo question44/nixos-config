@@ -294,6 +294,16 @@ greeter sync staged `wallpaper-DP-1.png` and `wallpaper-HDMI-A-1.png` with no
 "skip missing wallpaper" warning. Helium, not started from Noctalia this time,
 survived the restart ([SYS-096](tasks/SYS-096.md)).
 
+# Chomik drops empty placeholders after failed downloads — 2026-11-09
+
+After the cost fix the user's paid download went through (671.4 MB charged:
+23,171,247 → 22,483,739 KiB, link received) but saved as "name (1)": the
+earlier failed attempt had left its empty `.part` reservation. At the user's
+request `apps/chomik-qml` moves to c878fda, which removes the reservation when
+a download fails before any data arrives (partial files stay for resuming);
+tested offline. erebor-diff tier: different (only the Chomik package).
+Activated with switch as generation 344.
+
 # Chomik paid requests send the cost — 2026-11-09
 
 The user's first paid download failed with "no download link": the request
