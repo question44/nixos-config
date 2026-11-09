@@ -118,6 +118,13 @@ Unfinished work and verification checks belong in
 - The long-running Vicinae daemon does not pick up applications added by a
   `nixos-rebuild switch`; run `systemctl --user restart vicinae` to rescan
   (verified 2026-11-04 with Google Chrome).
+- Apps started from Noctalia's launcher, dock or bar run inside
+  `noctalia.service`'s cgroup (unless `launch_apps_as_systemd_services` is
+  set), so a Noctalia stop or restart (an activation that changes its package)
+  kills them. Chromium-based browsers move only their main PID to their own
+  scope, so they lose their GPU process and zygotes and abort with "GPU process
+  isn't usable. Goodbye." (verified 2026-11-09, [SYS-096](tasks/SYS-096.md)).
+  Check with `systemctl --user status noctalia.service` before an activation.
 - A newly added kernel module is not found by default modprobe after a NixOS
   test activation because it searches `/run/booted-system/kernel-modules`.
   For a module built against the running kernel, load it with
