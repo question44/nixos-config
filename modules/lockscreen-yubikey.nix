@@ -3,7 +3,6 @@
 # unlocks Oo7. Noctalia is patched to run a helper while locked; the helper
 # runs its own `noctalia-key` PAM stack holding only pam_u2f, with the same key
 # file as sudo. Killing the helper cancels a pending touch.
-{ inputs, ... }:
 {
   flake.modules.nixos.lockscreen-yubikey =
     {
@@ -16,11 +15,8 @@
       helper = pkgs.callPackage ../packages/noctalia-key-auth { };
     in
     lib.mkIf config.my.yubikey.enable {
-      programs.noctalia.package =
-        inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs
-          (old: {
-            patches = (old.patches or [ ]) ++ [ ../patches/noctalia-security-key-unlock.patch ];
-          });
+      # Applied first; later Noctalia patches are made on top of it.
+      programs.noctalia.patches = lib.mkBefore [ ../patches/noctalia-security-key-unlock.patch ];
 
       systemd.user.services.noctalia.environment.NOCTALIA_SECURITY_KEY_HELPER = lib.getExe helper;
 

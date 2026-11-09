@@ -35,6 +35,7 @@ in
       # Formerly added to every host by flake.nix.
       moonshine
       noctalia
+      sequoia-wallpaper
       umbriel
       dashboard-control
       vicinae

@@ -786,6 +786,15 @@ wallpaper_scheme = "m3-tonal-spot"
         input_path = "/home/janzon/.config/noctalia/templates/zed.json"
         output_path = [ "$XDG_CONFIG_HOME/zed/themes/noctalia.json", "$XDG_CONFIG_HOME/gram/themes/noctalia.json" ]
 
+# Live "sequoia:" wallpaper (modules/sequoia-wallpaper.nix). Set it with
+# `noctalia msg wallpaper-set sequoia:`. It is still on the desktop, eases into
+# motion on the lock screen (2 s) and coasts to a stop after unlock (~5 s).
+[wallpaper.sequoia]
+desktop_motion = "still"  # "animated" keeps it moving while unlocked
+lock_motion = "animated"
+fps = 60                  # cap while locked
+desktop_fps = 30          # cap on the desktop when animated
+
 [wallpaper.default]
 path = "/home/janzon/Pictures/redhead.png"
 

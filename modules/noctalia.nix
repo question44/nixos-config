@@ -12,11 +12,22 @@
     let
       user = config.my.user.name;
       noctaliaPython = pkgs.callPackage ../packages/noctalia-python.nix { };
+      inherit (config.programs.noctalia) patches;
     in
     {
       imports = [
         inputs.noctalia-greeter.nixosModules.default
         inputs.noctalia.nixosModules.default
+        {
+          # Features that patch Noctalia (lockscreen-yubikey, sequoia-wallpaper) add
+          # their patch here; they apply in list order to the flake input's package.
+          options.programs.noctalia.patches = lib.mkOption {
+            type = lib.types.listOf lib.types.path;
+            default = [ ];
+            internal = true;
+            description = "Patches applied, in order, to Noctalia from the flake input.";
+          };
+        }
       ];
 
       systemd.user.services.noctalia-lyrics = {
@@ -53,6 +64,11 @@
         enable = true;
         systemd.enable = true;
         recommendedServices.enable = true;
+        package = lib.mkIf (patches != [ ]) (
+          inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
+            patches = (old.patches or [ ]) ++ patches;
+          })
+        );
       };
 
       # Noctalia updates this policy with the current palette for Helium.

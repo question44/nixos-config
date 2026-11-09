@@ -57,6 +57,7 @@ in
           enable = true;
           sound = "${pkgs.kdePackages.oxygen-sounds}/share/sounds/oxygen/stereo/dialog-question.ogg";
         };
+        sequoiaWallpaper.enable = true;
         macApproval = {
           enable = true;
           addresses = [

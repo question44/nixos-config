@@ -34,6 +34,16 @@ Unfinished work and verification checks belong in
   `moria-root-luks.key`. Copied and checksum-verified 2026-11-08. Without it
   or erebor's SSH host key, `secrets/*.yaml` cannot be decrypted.
 
+- The live `sequoia:` wallpaper (modules/sequoia-wallpaper.nix) loads
+  `~/.local/share/sequoia/sequoia.scene`, which is user data outside the flake
+  (Apple's scene data, kept out of git and the store). Regenerate it from the
+  reverse-engineering checkout with
+  `python3 -I ~/src/sequoia-re/tools/pack.py ~/src/sequoia-re/build ~/.local/share/sequoia/sequoia.scene`
+  (inputs come from the MacBook's WallpaperSequoiaExtension; see
+  `~/src/sequoia-re/NOTES.md`). Without it Noctalia logs `sequoia: cannot load
+  scene` and the wallpaper shows only the fill colour. The patch source is the
+  `sequoia-live` branch of `~/src/noctalia-sequoia`.
+
 ## Reusable operational pitfalls
 
 - `xremap.service` reads `~/.config/xremap/config.yml` only at startup and

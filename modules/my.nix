@@ -185,6 +185,13 @@
           };
         };
 
+        sequoiaWallpaper = {
+          enable = lib.mkEnableOption ''
+            the live `sequoia:` wallpaper in Noctalia (the macOS Sequoia scene, animated on
+            the lock screen). Needs the scene file in ~/.local/share/sequoia, which is not
+            in the repository'';
+        };
+
         macApproval = {
           enable = lib.mkEnableOption "sudo and polkit approval through a forwarded Mac SSH agent";
           addresses = lib.mkOption {

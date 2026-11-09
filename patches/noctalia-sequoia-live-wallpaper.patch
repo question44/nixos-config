@@ -1,0 +1,2562 @@
+From a0d42be97754ed378756f9941ac23ec259a24409 Mon Sep 17 00:00:00 2001
+From: janzon <jmmzon@gmail.com>
+Date: Mon, 9 Nov 2026 13:28:20 +0100
+Subject: [PATCH] Add live "sequoia:" wallpaper
+
+A Sequoia scene renderer (src/shell/sequoia) that wallpaper and lock
+surfaces draw through a new WallpaperSourceKind::Live. The scene eases
+into motion when the session locks and, with desktop_motion = "still",
+coasts to a stop after unlock; the settled frame is saved as a PNG for
+the theme, greeter and backdrop. Settings live in [wallpaper.sequoia].
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ meson.build                                  |   4 +
+ src/app/application_services.cpp             |   9 +
+ src/config/config_overrides.cpp              |   6 +-
+ src/config/config_types.h                    |  36 ++
+ src/config/schema/config_schema.cpp          |  14 +
+ src/config/schema/ranges.h                   |   2 +
+ src/shell/backdrop/backdrop.cpp              |   7 +-
+ src/shell/lockscreen/lock_screen.cpp         |   5 +
+ src/shell/lockscreen/lock_surface.cpp        |  46 ++
+ src/shell/lockscreen/lock_surface.h          |   4 +
+ src/shell/render/wallpaper_node.cpp          |  53 +-
+ src/shell/render/wallpaper_types.h           |   1 +
+ src/shell/sequoia/sequoia_assets.cpp         | 144 ++++++
+ src/shell/sequoia/sequoia_assets.h           |  44 ++
+ src/shell/sequoia/sequoia_live_wallpaper.cpp | 468 +++++++++++++++++
+ src/shell/sequoia/sequoia_live_wallpaper.h   | 128 +++++
+ src/shell/sequoia/sequoia_renderer.cpp       | 503 +++++++++++++++++++
+ src/shell/sequoia/sequoia_renderer.h         |  85 ++++
+ src/shell/sequoia/sequoia_scene.cpp          | 364 ++++++++++++++
+ src/shell/sequoia/sequoia_scene.h            | 129 +++++
+ src/shell/wallpaper/wallpaper.cpp            |  43 +-
+ src/shell/wallpaper/wallpaper_instance.h     |   8 +
+ 22 files changed, 2086 insertions(+), 17 deletions(-)
+ create mode 100644 src/shell/sequoia/sequoia_assets.cpp
+ create mode 100644 src/shell/sequoia/sequoia_assets.h
+ create mode 100644 src/shell/sequoia/sequoia_live_wallpaper.cpp
+ create mode 100644 src/shell/sequoia/sequoia_live_wallpaper.h
+ create mode 100644 src/shell/sequoia/sequoia_renderer.cpp
+ create mode 100644 src/shell/sequoia/sequoia_renderer.h
+ create mode 100644 src/shell/sequoia/sequoia_scene.cpp
+ create mode 100644 src/shell/sequoia/sequoia_scene.h
+
+diff --git a/meson.build b/meson.build
+index cf2d5d1a7..f82499f28 100644
+--- a/meson.build
++++ b/meson.build
+@@ -664,6 +664,10 @@ _noctalia_sources = files(
+   'src/shell/render/wallpaper_mask_node.cpp',
+   'src/shell/render/wallpaper_node.cpp',
+   'src/shell/render/weather_effect_node.cpp',
++  'src/shell/sequoia/sequoia_assets.cpp',
++  'src/shell/sequoia/sequoia_live_wallpaper.cpp',
++  'src/shell/sequoia/sequoia_renderer.cpp',
++  'src/shell/sequoia/sequoia_scene.cpp',
+   'src/shell/render/weather_effect_rain_simulation.cpp',
+   'src/shell/render/weather_effect_snow_simulation.cpp',
+   'src/shell/visuals/audio_visualizer.cpp',
+diff --git a/src/app/application_services.cpp b/src/app/application_services.cpp
+index fd2f87376..66e9bb60c 100644
+--- a/src/app/application_services.cpp
++++ b/src/app/application_services.cpp
+@@ -61,6 +61,7 @@
+ #include "shell/launcher/launcher_panel.h"
+ #include "shell/panel/plugin_panel.h"
+ #include "shell/polkit/polkit_panel.h"
++#include "shell/sequoia/sequoia_live_wallpaper.h"
+ #include "shell/session/session_ipc.h"
+ #include "shell/session/session_panel.h"
+ #include "shell/setup_wizard/setup_wizard_panel.h"
+@@ -1018,6 +1019,13 @@ void Application::initAuxServicesAndHooks() {
+     m_gammaService.reload(m_configService.config().nightlight, m_configService.config().location);
+   });
+ 
++  // A live "sequoia:" wallpaper settled on a new still: refresh everything that needs an image file.
++  SequoiaLiveWallpaper::instance().setStillChangedCallback([this] {
++    m_backdrop.onStateChange();
++    m_themeService.onWallpaperChange();
++    scheduleGreeterAutoSync();
++  });
++
+   // Register all wallpaper consumers in the single-callback slot.
+   m_configService.setWallpaperChangeCallback([this] {
+     const auto wallpaperChanges = m_wallpaper.onStateChange();
+@@ -1825,6 +1833,7 @@ void Application::initSessionBusServices() {
+       );
+       m_gammaService.setResolvedCoordinates(location->latitude, location->longitude);
+       m_themeService.setAutoCoordinates(location->latitude, location->longitude);
++      SequoiaLiveWallpaper::instance().setLocation(location->latitude, location->longitude);
+     } else {
+       m_weatherService.setLocation(std::nullopt, {}, {});
+       m_gammaService.setResolvedCoordinates(std::nullopt, std::nullopt);
+diff --git a/src/config/config_overrides.cpp b/src/config/config_overrides.cpp
+index f43277fe5..0ffed6524 100644
+--- a/src/config/config_overrides.cpp
++++ b/src/config/config_overrides.cpp
+@@ -8,6 +8,7 @@
+ #include "core/input/key_chord.h"
+ #include "core/log.h"
+ #include "scripting/plugin_id.h"
++#include "shell/sequoia/sequoia_live_wallpaper.h"
+ #include "shell/settings/widget_settings_registry.h"
+ #include "theme/builtin_palettes.h"
+ #include "theme/custom_palettes.h"
+@@ -2251,10 +2252,11 @@ std::string ConfigService::getPaletteWallpaperPath() const {
+   if (const std::string bundled = fallbackWallpaperPath(); !bundled.empty()) {
+     return bundled;
+   }
++  // A live "sequoia:" wallpaper is represented by its latest still frame.
+   if (!m_lastWallpaperPath.empty()) {
+-    return m_lastWallpaperPath;
++    return SequoiaLiveWallpaper::imagePathFor(m_lastWallpaperPath);
+   }
+-  return m_defaultWallpaperPath;
++  return SequoiaLiveWallpaper::imagePathFor(m_defaultWallpaperPath);
+ }
+ 
+ std::string ConfigService::getGreeterSyncWallpaperPath() const {
+diff --git a/src/config/config_types.h b/src/config/config_types.h
+index 544506f5c..ab7e447d2 100644
+--- a/src/config/config_types.h
++++ b/src/config/config_types.h
+@@ -576,6 +576,30 @@ struct WallpaperAutomationConfig {
+   bool operator==(const WallpaperAutomationConfig&) const = default;
+ };
+ 
++// Live "sequoia:" wallpaper (src/shell/sequoia). Motion modes for the desktop and lock screen.
++enum class SequoiaMotion : std::uint8_t {
++  Still = 0,
++  Animated = 1,
++};
++
++enum class SequoiaAppearance : std::uint8_t {
++  Automatic = 0, // time-of-day colours from the sun's position
++  Light = 1,
++  Dark = 2,
++};
++
++struct WallpaperSequoiaConfig {
++  SequoiaMotion desktopMotion = SequoiaMotion::Still;
++  SequoiaMotion lockMotion = SequoiaMotion::Animated;
++  std::int32_t fps = 60;        // frame cap while locked
++  std::int32_t desktopFps = 30; // frame cap on the desktop
++  float renderScale = 1.0F;     // fraction of the output resolution rendered
++  SequoiaAppearance appearance = SequoiaAppearance::Automatic;
++  std::string scene; // empty = $XDG_DATA_HOME/sequoia/sequoia.scene
++
++  bool operator==(const WallpaperSequoiaConfig&) const = default;
++};
++
+ struct WallpaperConfig {
+   bool enabled = true;
+   WallpaperFillMode fillMode = WallpaperFillMode::Crop;
+@@ -595,6 +619,7 @@ struct WallpaperConfig {
+   std::string directoryDark;   // empty = directory
+   bool perMonitorDirectories = false;
+   WallpaperAutomationConfig automation;
++  WallpaperSequoiaConfig sequoia;
+   std::vector<WallpaperMonitorOverride> monitorOverrides;
+ 
+   bool operator==(const WallpaperConfig&) const = default;
+@@ -1019,6 +1044,17 @@ constexpr EnumOption<WallpaperFillMode> kWallpaperFillModes[] = {
+     {WallpaperFillMode::Span, "span", "settings.options.wallpaper.fill.span"},
+ };
+ 
++constexpr EnumOption<SequoiaMotion> kSequoiaMotions[] = {
++    {SequoiaMotion::Still, "still", "settings.options.wallpaper.sequoia.still"},
++    {SequoiaMotion::Animated, "animated", "settings.options.wallpaper.sequoia.animated"},
++};
++
++constexpr EnumOption<SequoiaAppearance> kSequoiaAppearances[] = {
++    {SequoiaAppearance::Automatic, "auto", "settings.options.wallpaper.sequoia.auto"},
++    {SequoiaAppearance::Light, "light", "settings.options.wallpaper.sequoia.light"},
++    {SequoiaAppearance::Dark, "dark", "settings.options.wallpaper.sequoia.dark"},
++};
++
+ constexpr EnumOption<WallpaperAutomationConfig::Order> kWallpaperAutomationOrders[] = {
+     {WallpaperAutomationConfig::Order::Random, "random", "settings.options.wallpaper.order.random"},
+     {WallpaperAutomationConfig::Order::Alphabetical, "alphabetical", "settings.options.wallpaper.order.alphabetical"},
+diff --git a/src/config/schema/config_schema.cpp b/src/config/schema/config_schema.cpp
+index 5ec226926..ded75bf52 100644
+--- a/src/config/schema/config_schema.cpp
++++ b/src/config/schema/config_schema.cpp
+@@ -1885,6 +1885,19 @@ namespace noctalia::config::schema {
+     return s;
+   }
+ 
++  const Schema<WallpaperSequoiaConfig>& wallpaperSequoiaSchema() {
++    static const Schema<WallpaperSequoiaConfig> s = {
++        enumField(&WallpaperSequoiaConfig::desktopMotion, "desktop_motion", kSequoiaMotions),
++        enumField(&WallpaperSequoiaConfig::lockMotion, "lock_motion", kSequoiaMotions),
++        field(&WallpaperSequoiaConfig::fps, "fps", kSequoiaFpsRange),
++        field(&WallpaperSequoiaConfig::desktopFps, "desktop_fps", kSequoiaFpsRange),
++        field(&WallpaperSequoiaConfig::renderScale, "render_scale", kSequoiaRenderScaleRange),
++        enumField(&WallpaperSequoiaConfig::appearance, "appearance", kSequoiaAppearances),
++        pathStringField(&WallpaperSequoiaConfig::scene, "scene"),
++    };
++    return s;
++  }
++
+   const Schema<WallpaperConfig>& wallpaperSchema() {
+     static const Schema<WallpaperConfig> s = {
+         field(&WallpaperConfig::enabled, "enabled"),
+@@ -1902,6 +1915,7 @@ namespace noctalia::config::schema {
+         pathStringField(&WallpaperConfig::directoryDark, "directory_dark"),
+         field(&WallpaperConfig::perMonitorDirectories, "per_monitor_directories"),
+         subTable(&WallpaperConfig::automation, "automation", wallpaperAutomationSchema()),
++        subTable(&WallpaperConfig::sequoia, "sequoia", wallpaperSequoiaSchema()),
+         namedMap<WallpaperConfig, WallpaperMonitorOverride>(
+             &WallpaperConfig::monitorOverrides, "monitor", wallpaperMonitorSchema(),
+             [](WallpaperMonitorOverride& o, std::string_view name) { o.match = std::string(name); },
+diff --git a/src/config/schema/ranges.h b/src/config/schema/ranges.h
+index 56358e811..38c8674be 100644
+--- a/src/config/schema/ranges.h
++++ b/src/config/schema/ranges.h
+@@ -49,6 +49,8 @@ namespace noctalia::config::schema {
+   // Battery / wallpaper.
+   inline constexpr Range<std::int64_t> kBatteryWarningThresholdRange{0, 100, 1};
+   inline constexpr Range<float> kWallpaperTransitionDurationRange{100.0F, 30000.0F, 100.0F};
++  inline constexpr Range<std::int64_t> kSequoiaFpsRange{1, 240, 1};
++  inline constexpr Range<float> kSequoiaRenderScaleRange{0.25F, 1.0F, 0.05F};
+   inline constexpr Range<std::int64_t> kWallpaperAutomationIntervalRange{1, 86400, 1};
+ 
+   // Audio.
+diff --git a/src/shell/backdrop/backdrop.cpp b/src/shell/backdrop/backdrop.cpp
+index 9090075cf..822aabe1d 100644
+--- a/src/shell/backdrop/backdrop.cpp
++++ b/src/shell/backdrop/backdrop.cpp
+@@ -7,6 +7,7 @@
+ #include "render/core/shared_texture_cache.h"
+ #include "shell/backdrop/backdrop_instance.h"
+ #include "shell/backdrop/backdrop_surface.h"
++#include "shell/sequoia/sequoia_live_wallpaper.h"
+ #include "shell/wallpaper/wallpaper_geometry.h"
+ #include "ui/palette.h"
+ #include "wayland/wayland_connection.h"
+@@ -131,7 +132,7 @@ void Backdrop::onStateChange() {
+   kLog.info("state changed, checking wallpaper updates");
+ 
+   for (auto& inst : m_instances) {
+-    auto newPath = m_config->getWallpaperPath(inst->connectorName);
++    auto newPath = SequoiaLiveWallpaper::imagePathFor(m_config->getWallpaperPath(inst->connectorName));
+     const std::string& targetPath = inst->pendingLease.empty() ? inst->currentPath : inst->pendingPath;
+     if (newPath.empty() || newPath == targetPath) {
+       continue;
+@@ -230,7 +231,7 @@ void Backdrop::syncInstances() {
+ }
+ 
+ void Backdrop::createInstance(const WaylandOutput& output) {
+-  auto wallpaperPath = m_config->getWallpaperPath(output.connectorName);
++  auto wallpaperPath = SequoiaLiveWallpaper::imagePathFor(m_config->getWallpaperPath(output.connectorName));
+   kLog.info("creating on {} ({}), path={}", output.connectorName, output.description, wallpaperPath);
+ 
+   auto inst = std::make_unique<BackdropInstance>();
+@@ -265,7 +266,7 @@ void Backdrop::createInstance(const WaylandOutput& output) {
+     }
+     std::string path = instPtr->currentPath;
+     if (path.empty()) {
+-      path = m_config->getWallpaperPath(instPtr->connectorName);
++      path = SequoiaLiveWallpaper::imagePathFor(m_config->getWallpaperPath(instPtr->connectorName));
+     }
+     if (!path.empty()) {
+       loadWallpaper(*instPtr, path);
+diff --git a/src/shell/lockscreen/lock_screen.cpp b/src/shell/lockscreen/lock_screen.cpp
+index ad0a0dcf6..26641472d 100644
+--- a/src/shell/lockscreen/lock_screen.cpp
++++ b/src/shell/lockscreen/lock_screen.cpp
+@@ -17,6 +17,7 @@
+ #include "shell/keyboard_layout_label.h"
+ #include "shell/lockscreen/lock_surface.h"
+ #include "shell/lockscreen/lockscreen_session_actions.h"
++#include "shell/sequoia/sequoia_live_wallpaper.h"
+ #include "shell/session/session_action_runner.h"
+ #include "shell/wallpaper/wallpaper_geometry.h"
+ #include "shell/wayland/capture_globals.h"
+@@ -257,10 +258,12 @@ bool LockScreen::lock() {
+   }
+   wl_display_flush(m_wayland->display());
+   kLog.info("session lock requested");
++  SequoiaLiveWallpaper::instance().setLocked(true); // live wallpaper eases into motion
+   return true;
+ }
+ 
+ void LockScreen::unlock() {
++  SequoiaLiveWallpaper::instance().setLocked(false); // desktop motion setting applies again
+   m_lockDeferred = false;
+   cancelPendingAfterLocked();
+   cancelOutputPowerOff();
+@@ -310,6 +313,7 @@ void LockScreen::finishUnlock() {
+   m_unlockTransitionTimer.stop();
+   m_unlocking = false;
+   m_unlockFinishQueued = false;
++  SequoiaLiveWallpaper::instance().setLocked(false);
+ 
+   const bool wasLockedInteractive = m_locked;
+ 
+@@ -1347,6 +1351,7 @@ void LockScreen::createInstance(const WaylandOutput& output) {
+ }
+ 
+ void LockScreen::notifyLockAborted() {
++  SequoiaLiveWallpaper::instance().setLocked(false);
+   m_transitionSuppressed = false;
+   cancelOutputPowerOff();
+   if (m_onLockAborted) {
+diff --git a/src/shell/lockscreen/lock_surface.cpp b/src/shell/lockscreen/lock_surface.cpp
+index 87de82ef4..514e5d1fa 100644
+--- a/src/shell/lockscreen/lock_surface.cpp
++++ b/src/shell/lockscreen/lock_surface.cpp
+@@ -16,6 +16,7 @@
+ #include "shell/lockscreen/lockscreen_widgets_host.h"
+ #include "shell/render/blur_cache.h"
+ #include "shell/render/wallpaper_node.h"
++#include "shell/sequoia/sequoia_live_wallpaper.h"
+ #include "shell/session/session_action_meta.h"
+ #include "shell/session/session_action_runner.h"
+ #include "system/weather_service.h"
+@@ -655,10 +656,15 @@ LockSurface::LockSurface(WaylandConnection& connection, ConfigService* config) :
+   m_root.setAnimationManager(&m_animations);
+   setConfigureCallback([this](std::uint32_t /*width*/, std::uint32_t /*height*/) { requestLayout(); });
+   setPrepareFrameCallback([this](bool needsUpdate, bool needsLayout) { prepareFrame(needsUpdate, needsLayout); });
++  // The live scene started moving (lock, colour change): resume frames if it is shown here.
++  m_liveWakeId = SequoiaLiveWallpaper::instance().addWakeListener([this] { driveLiveFrames(); });
+   requestUpdate();
+ }
+ 
+ LockSurface::~LockSurface() {
++  auto& live = SequoiaLiveWallpaper::instance();
++  live.removeWakeListener(m_liveWakeId);
++  live.forgetConsumer(this);
+   invalidateSleepFrame();
+   m_aliveGuard.reset();
+   releaseCaptureTextures();
+@@ -2090,14 +2096,54 @@ std::string LockSurface::resolveStatusText(const lockscreen_login_box::LoginBoxS
+   return i18n::tr("lockscreen.ready");
+ }
+ 
++void LockSurface::driveLiveFrames() {
++  if (!m_showsLiveWallpaper) {
++    return;
++  }
++  auto& live = SequoiaLiveWallpaper::instance();
++  live.driveFrames(m_animations, this, [this, &live] {
++    live.advance();
++    if (live.takeRepaint(this) && m_wallpaper != nullptr) {
++      m_wallpaper->markPaintDirty();
++    }
++  });
++}
++
+ void LockSurface::applyWallpaperTexture() {
+   if (usesDesktopCaptureBackground()) {
+     applyBlurredDesktopTexture();
+     if (m_blurredDesktopTexture.id != 0) {
++      m_showsLiveWallpaper = false;
+       return;
+     }
+   }
+ 
++  // "sequoia:" draws the shared live scene unblurred, as the macOS lock screen does.
++  m_showsLiveWallpaper = SequoiaLiveWallpaper::isSequoiaPath(m_wallpaperPath);
++  if (m_showsLiveWallpaper) {
++    if (m_wallpaperDirty) {
++      m_wallpaperLease.reset();
++      m_pendingWallpaperLease.reset();
++      m_shownWallpaperPath = m_wallpaperPath;
++      m_pendingWallpaperPath.clear();
++      if (m_blurredWallpaperTexture.id != 0 && renderContext() != nullptr) {
++        renderContext()->backend().makeCurrentNoSurface();
++        renderContext()->textureManager().unload(m_blurredWallpaperTexture);
++        m_blurredWallpaperTexture = {};
++      }
++      m_wallpaper->setSources(
++          WallpaperSourceKind::Live, {}, rgba(0.0F, 0.0F, 0.0F, 1.0F), WallpaperSourceKind::Image, {},
++          rgba(0.0F, 0.0F, 0.0F, 1.0F), 0.0F, 0.0F, 0.0F, 0.0F
++      );
++      m_wallpaper->setTransition(WallpaperTransition::Fade, 0.0F, TransitionParams{});
++      m_wallpaper->setFillMode(m_wallpaperFillMode);
++      m_wallpaper->setFillColor(m_wallpaperFillColor);
++      m_wallpaperDirty = false;
++    }
++    driveLiveFrames();
++    return;
++  }
++
+   if (!m_wallpaperDirty) {
+     return;
+   }
+diff --git a/src/shell/lockscreen/lock_surface.h b/src/shell/lockscreen/lock_surface.h
+index e23ceca9c..53add5a48 100644
+--- a/src/shell/lockscreen/lock_surface.h
++++ b/src/shell/lockscreen/lock_surface.h
+@@ -141,6 +141,7 @@ private:
+   void invalidateSleepFrame();
+   static void handleSleepFrameDone(void* data, wl_callback* callback, std::uint32_t callbackData);
+   void applyWallpaperTexture();
++  void driveLiveFrames();
+   void applyBlurredDesktopTexture();
+   void releaseCaptureTextures();
+   void layoutScene(std::uint32_t width, std::uint32_t height);
+@@ -161,6 +162,9 @@ private:
+   ConfigService* m_config = nullptr;
+   // Declared before m_root so it outlives the scene: ~Node cancels its animations through this manager.
+   AnimationManager m_animations;
++  // SequoiaLiveWallpaper: wake listener id and whether the live scene is the background.
++  std::uint64_t m_liveWakeId = 0;
++  bool m_showsLiveWallpaper = false;
+   Node m_root;
+   Node* m_backgroundLayer = nullptr;
+   Node* m_widgetLayer = nullptr;
+diff --git a/src/shell/render/wallpaper_node.cpp b/src/shell/render/wallpaper_node.cpp
+index 937a1acd8..49be93eff 100644
+--- a/src/shell/render/wallpaper_node.cpp
++++ b/src/shell/render/wallpaper_node.cpp
+@@ -1,29 +1,62 @@
+ #include "shell/render/wallpaper_node.h"
+ 
+ #include "shell/render/programs/wallpaper_program.h"
++#include "shell/sequoia/sequoia_live_wallpaper.h"
++
++#include <cmath>
++
++namespace {
++
++  struct ResolvedSource {
++    WallpaperSourceKind kind;
++    TextureId texture;
++    float width;
++    float height;
++  };
++
++  // Live sources render the shared Sequoia frame at this node's buffer size and draw it as an image.
++  ResolvedSource resolveSource(
++      WallpaperSourceKind kind, TextureId texture, float width, float height, const CustomDrawContext& context
++  ) {
++    if (kind != WallpaperSourceKind::Live) {
++      return {kind, texture, width, height};
++    }
++    const int bufferWidth = static_cast<int>(std::lround(context.width * context.pixelScaleX));
++    const int bufferHeight = static_cast<int>(std::lround(context.height * context.pixelScaleY));
++    const TextureHandle frame = SequoiaLiveWallpaper::instance().frameTexture(bufferWidth, bufferHeight);
++    return {WallpaperSourceKind::Image, frame.id, static_cast<float>(frame.width), static_cast<float>(frame.height)};
++  }
++
++} // namespace
+ 
+ void WallpaperNode::draw(RenderBackend& backend, const CustomDrawContext& context) const {
+-  const bool hasSource1 = m_sourceKind1 == WallpaperSourceKind::Color || m_texture1 != 0;
++  const bool hasSource1 = m_sourceKind1 != WallpaperSourceKind::Image || m_texture1 != 0;
+   if (!hasSource1) {
+     return;
+   }
+-  const bool hasSource2 = m_sourceKind2 == WallpaperSourceKind::Color || m_texture2 != 0;
++  const bool hasSource2 = m_sourceKind2 != WallpaperSourceKind::Image || m_texture2 != 0;
++  const ResolvedSource from = resolveSource(m_sourceKind1, m_texture1, m_imageWidth1, m_imageHeight1, context);
++  const ResolvedSource to =
++      hasSource2 ? resolveSource(m_sourceKind2, m_texture2, m_imageWidth2, m_imageHeight2, context) : from;
++  if (from.kind == WallpaperSourceKind::Image && from.texture == 0) {
++    return; // live scene unavailable (no scene file or GL error); fill colour shows through
++  }
+   drawWallpaper(
+       backend,
+       WallpaperDrawParams{
+           .transition = m_transition,
+           .from =
+-              {.kind = m_sourceKind1,
+-               .texture = m_texture1,
++              {.kind = from.kind,
++               .texture = from.texture,
+                .color = m_sourceColor1,
+-               .imageWidth = m_imageWidth1,
+-               .imageHeight = m_imageHeight1},
++               .imageWidth = from.width,
++               .imageHeight = from.height},
+           .to =
+-              {.kind = hasSource2 ? m_sourceKind2 : m_sourceKind1,
+-               .texture = hasSource2 ? m_texture2 : m_texture1,
++              {.kind = to.kind,
++               .texture = to.texture,
+                .color = hasSource2 ? m_sourceColor2 : m_sourceColor1,
+-               .imageWidth = hasSource2 ? m_imageWidth2 : m_imageWidth1,
+-               .imageHeight = hasSource2 ? m_imageHeight2 : m_imageHeight1},
++               .imageWidth = to.width,
++               .imageHeight = to.height},
+           .surfaceWidth = context.surfaceWidth,
+           .surfaceHeight = context.surfaceHeight,
+           .quadWidth = context.width,
+diff --git a/src/shell/render/wallpaper_types.h b/src/shell/render/wallpaper_types.h
+index 69f7bb6f5..75c08dfaa 100644
+--- a/src/shell/render/wallpaper_types.h
++++ b/src/shell/render/wallpaper_types.h
+@@ -12,6 +12,7 @@ enum class WallpaperTransition : std::uint8_t;
+ enum class WallpaperSourceKind : std::uint8_t {
+   Image = 0,
+   Color = 1,
++  Live = 2, // "sequoia:" scene, rendered each frame by SequoiaLiveWallpaper
+ };
+ 
+ struct TransitionParams {
+diff --git a/src/shell/sequoia/sequoia_assets.cpp b/src/shell/sequoia/sequoia_assets.cpp
+new file mode 100644
+index 000000000..791f79f3b
+--- /dev/null
++++ b/src/shell/sequoia/sequoia_assets.cpp
+@@ -0,0 +1,144 @@
++#include "sequoia_assets.h"
++
++#include <cstring>
++#include <fstream>
++#include <iterator>
++
++namespace sequoia {
++
++  namespace {
++
++    class Reader {
++    public:
++      explicit Reader(const std::vector<char>& data) : m_data(data) {}
++
++      bool bytes(void* out, std::size_t size) {
++        if (m_pos + size > m_data.size()) {
++          return false;
++        }
++        std::memcpy(out, m_data.data() + m_pos, size);
++        m_pos += size;
++        return true;
++      }
++
++      template <typename T> bool value(T& out) { return bytes(&out, sizeof(T)); }
++
++      template <typename T> bool array(std::vector<T>& out, std::size_t count) {
++        if (count > (m_data.size() - m_pos) / sizeof(T)) {
++          return false;
++        }
++        out.resize(count);
++        return bytes(out.data(), count * sizeof(T));
++      }
++
++      bool atEnd() const { return m_pos == m_data.size(); }
++
++    private:
++      const std::vector<char>& m_data;
++      std::size_t m_pos = 0;
++    };
++
++  } // namespace
++
++  bool Assets::load(const std::string& path, std::string* error) {
++    auto fail = [&](const char* what) {
++      if (error != nullptr) {
++        *error = path + ": " + what;
++      }
++      return false;
++    };
++
++    std::ifstream file(path, std::ios::binary);
++    if (!file) {
++      return fail("cannot open");
++    }
++    const std::vector<char> data((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
++    Reader r(data);
++
++    char magic[8];
++    if (!r.bytes(magic, sizeof(magic)) || std::memcmp(magic, "SEQSCN01", 8) != 0) {
++      return fail("not a sequoia.scene file");
++    }
++
++    std::uint32_t meshCount = 0;
++    if (!r.value(meshCount) || meshCount != kMeshCount) {
++      return fail("unexpected mesh count");
++    }
++    for (Mesh& mesh : meshes) {
++      std::uint32_t vCount = 0;
++      std::uint32_t iCount = 0;
++      if (!r.value(vCount)
++          || !r.value(iCount)
++          || !r.array(mesh.vertices, std::size_t{vCount} * 4)
++          || !r.array(mesh.indices, iCount)) {
++        return fail("truncated mesh");
++      }
++      for (std::uint32_t index : mesh.indices) {
++        if (index >= vCount) {
++          return fail("mesh index out of range");
++        }
++      }
++    }
++
++    std::uint32_t gradientCount = 0;
++    std::uint32_t width = 0;
++    if (!r.value(gradientCount)
++        || !r.value(width)
++        || gradientCount != kGradientCount
++        || width == 0
++        || width > 4096
++        || !r.array(gradients, std::size_t{gradientCount} * width * 3)) {
++      return fail("bad gradients");
++    }
++    gradientWidth = static_cast<int>(width);
++
++    std::uint32_t instanceCount = 0;
++    if (!r.value(instanceCount) || instanceCount > 100000) {
++      return fail("bad instance count");
++    }
++    instances.resize(instanceCount);
++    for (Instance& inst : instances) {
++      if (!r.value(inst.mesh)
++          || !r.value(inst.x)
++          || !r.value(inst.z)
++          || !r.value(inst.rotation)
++          || !r.value(inst.radial)
++          || !r.value(inst.vertical)
++          || inst.mesh >= kMeshCount) {
++        return fail("bad instance");
++      }
++    }
++
++    std::uint32_t pathCount = 0;
++    std::uint32_t samples = 0;
++    if (!r.value(pathCount)
++        || !r.value(samples)
++        || pathCount == 0
++        || pathCount > 64
++        || samples < 2
++        || samples > 65536) {
++      return fail("bad paths");
++    }
++    pathSamples = static_cast<int>(samples);
++    paths.resize(pathCount);
++    for (auto& xs : paths) {
++      if (!r.array(xs, samples)) {
++        return fail("truncated path");
++      }
++    }
++
++    std::int32_t lo = 0;
++    std::int32_t hi = 0;
++    if (!r.value(lo) || !r.value(hi) || hi < lo || hi - lo > 1024) {
++      return fail("bad noise lattice");
++    }
++    latticeLo = lo;
++    latticeHi = hi;
++    const std::size_t n = static_cast<std::size_t>(hi - lo + 1);
++    if (!r.array(lattice, n * n * 2) || !r.atEnd()) {
++      return fail("bad noise lattice data");
++    }
++    return true;
++  }
++
++} // namespace sequoia
+diff --git a/src/shell/sequoia/sequoia_assets.h b/src/shell/sequoia/sequoia_assets.h
+new file mode 100644
+index 000000000..3f31a7448
+--- /dev/null
++++ b/src/shell/sequoia/sequoia_assets.h
+@@ -0,0 +1,44 @@
++#pragma once
++
++// Loader for `sequoia.scene` (written by tools/pack.py). Pure data, no GL.
++
++#include <array>
++#include <cstdint>
++#include <string>
++#include <vector>
++
++namespace sequoia {
++
++  inline constexpr int kMeshCount = 3; // common, hero1, hero2
++  inline constexpr int kGradientCount = 8;
++
++  struct Mesh {
++    std::vector<float> vertices; // x, y, z (height), v
++    std::vector<std::uint32_t> indices;
++  };
++
++  struct Instance {
++    std::uint32_t mesh = 0;
++    float x = 0.0F;
++    float z = 0.0F;
++    float rotation = 0.0F;
++    float radial = 1.0F;
++    float vertical = 1.0F;
++  };
++
++  struct Assets {
++    std::array<Mesh, kMeshCount> meshes;
++    int gradientWidth = 0;
++    std::vector<float> gradients; // kGradientCount * gradientWidth * 3, linear RGB
++    std::vector<Instance> instances;
++    int pathSamples = 0;
++    std::vector<std::vector<float>> paths; // camera x, resampled by arc length
++    int latticeLo = 0;
++    int latticeHi = -1;
++    std::vector<float> lattice; // (i * n + j) * 2 gradients
++
++    // Returns false and sets `error` when the file is missing or malformed.
++    bool load(const std::string& path, std::string* error);
++  };
++
++} // namespace sequoia
+diff --git a/src/shell/sequoia/sequoia_live_wallpaper.cpp b/src/shell/sequoia/sequoia_live_wallpaper.cpp
+new file mode 100644
+index 000000000..e306cb4fa
+--- /dev/null
++++ b/src/shell/sequoia/sequoia_live_wallpaper.cpp
+@@ -0,0 +1,468 @@
++#include "shell/sequoia/sequoia_live_wallpaper.h"
++
++#include "core/deferred_call.h"
++#include "core/log.h"
++#include "render/animation/animation.h"
++#include "render/animation/animation_manager.h"
++#include "render/codecs/image_encoder.h"
++#include "shell/sequoia/sequoia_assets.h"
++#include "shell/sequoia/sequoia_renderer.h"
++#include "shell/sequoia/sequoia_scene.h"
++#include "util/file_utils.h"
++
++#include <algorithm>
++#include <cmath>
++#include <cstdlib>
++#include <filesystem>
++#include <fstream>
++#include <random>
++#include <system_error>
++#include <thread>
++#include <utility>
++#include <vector>
++
++namespace {
++
++  constexpr Logger kLog("sequoia");
++
++  // Heartbeat slice; the frame loop re-arms it while frames are needed.
++  constexpr float kDriveSliceMs = 250.0F;
++  // Frame-cap slack so a 60 fps cap is not missed by sub-millisecond jitter.
++  constexpr auto kFrameSlack = std::chrono::microseconds(1500);
++  // Render targets unused this long are released (output removed or resized).
++  constexpr auto kTargetIdle = std::chrono::seconds(30);
++
++  std::string defaultScenePath() {
++    const char* xdg = std::getenv("XDG_DATA_HOME");
++    if (xdg != nullptr && xdg[0] != '\0') {
++      return std::string(xdg) + "/sequoia/sequoia.scene";
++    }
++    const char* home = std::getenv("HOME");
++    return home != nullptr ? std::string(home) + "/.local/share/sequoia/sequoia.scene" : std::string{};
++  }
++
++  sequoia::Appearance toSceneAppearance(SequoiaAppearance appearance) {
++    switch (appearance) {
++    case SequoiaAppearance::Light:
++      return sequoia::Appearance::Light;
++    case SequoiaAppearance::Dark:
++      return sequoia::Appearance::Dark;
++    case SequoiaAppearance::Automatic:
++      break;
++    }
++    return sequoia::Appearance::Automatic;
++  }
++
++} // namespace
++
++struct SequoiaLiveWallpaper::TargetSlot {
++  sequoia::RenderTarget target;
++  std::chrono::steady_clock::time_point lastUsed{};
++};
++
++SequoiaLiveWallpaper& SequoiaLiveWallpaper::instance() {
++  // Intentionally leaked: GL objects must not be destroyed after the context is gone.
++  static auto* live = new SequoiaLiveWallpaper();
++  return *live;
++}
++
++SequoiaLiveWallpaper::SequoiaLiveWallpaper() = default;
++SequoiaLiveWallpaper::~SequoiaLiveWallpaper() = default;
++
++namespace {
++
++  constexpr std::string_view kStillPrefix = "sequoia-still-";
++
++  std::filesystem::path stillDirectory() {
++    const std::string state = FileUtils::stateDir();
++    return state.empty() ? std::filesystem::path{} : std::filesystem::path(state);
++  }
++
++  bool isStillFile(const std::filesystem::path& path) {
++    const std::string name = path.filename().string();
++    return name.starts_with(kStillPrefix) && name.ends_with(".png");
++  }
++
++} // namespace
++
++std::string SequoiaLiveWallpaper::stillPath() const {
++  if (!m_stillScanned) {
++    // After a restart, reuse the newest still from the previous run until a new one is written.
++    m_stillScanned = true;
++    std::error_code ec;
++    const std::filesystem::path dir = stillDirectory();
++    std::filesystem::path newest;
++    std::filesystem::file_time_type newestTime{};
++    if (!dir.empty()) {
++      for (const auto& entry : std::filesystem::directory_iterator(dir, ec)) {
++        if (entry.is_regular_file(ec) && isStillFile(entry.path())) {
++          const auto time = entry.last_write_time(ec);
++          if (newest.empty() || time > newestTime) {
++            newest = entry.path();
++            newestTime = time;
++          }
++        }
++      }
++    }
++    m_stillPath = newest.string();
++  }
++  return m_stillPath;
++}
++
++std::string SequoiaLiveWallpaper::imagePathFor(const std::string& path) {
++  return isSequoiaPath(path) ? instance().stillPath() : path;
++}
++
++void SequoiaLiveWallpaper::setStillChangedCallback(std::function<void()> callback) {
++  m_stillChanged = std::move(callback);
++}
++
++bool SequoiaLiveWallpaper::ensureScene() {
++  if (m_scene != nullptr) {
++    return true;
++  }
++  if (m_loadFailed) {
++    return false;
++  }
++  const std::string path =
++      m_config.scene.empty() ? defaultScenePath() : FileUtils::expandUserPath(m_config.scene).string();
++  auto assets = std::make_unique<sequoia::Assets>();
++  std::string error;
++  if (!assets->load(path, &error)) {
++    kLog.warn("cannot load scene: {}", error);
++    m_loadFailed = true;
++    return false;
++  }
++  m_assets = std::move(assets);
++  m_scene = std::make_unique<sequoia::Scene>(*m_assets, std::random_device{}());
++  kLog.info("loaded {} ({} trees)", path, m_assets->instances.size());
++  m_lastAdvance = std::chrono::steady_clock::now();
++  applySettings();
++  const bool moving =
++      m_locked ? m_config.lockMotion == SequoiaMotion::Animated : m_config.desktopMotion == SequoiaMotion::Animated;
++  m_scene->setMoving(moving);
++  return true;
++}
++
++void SequoiaLiveWallpaper::applySettings() {
++  if (m_scene == nullptr) {
++    return;
++  }
++  sequoia::SceneSettings settings;
++  settings.appearance = toSceneAppearance(m_config.appearance);
++  settings.latitude = m_latitude;
++  settings.longitude = m_longitude;
++  m_scene->setSettings(settings, std::chrono::system_clock::now());
++}
++
++void SequoiaLiveWallpaper::setConfig(const WallpaperSequoiaConfig& config) {
++  if (config == m_config) {
++    return;
++  }
++  const bool sceneChanged = config.scene != m_config.scene;
++  m_config = config;
++  if (sceneChanged && m_scene == nullptr) {
++    m_loadFailed = false; // retry with the new path
++  } else if (sceneChanged) {
++    kLog.info("scene path changed; restart Noctalia to load it");
++  }
++  if (m_scene == nullptr) {
++    return;
++  }
++  advance();
++  applySettings();
++  setLocked(m_locked);
++}
++
++void SequoiaLiveWallpaper::setLocation(double latitude, double longitude) {
++  if (latitude == m_latitude && longitude == m_longitude) {
++    return;
++  }
++  m_latitude = latitude;
++  m_longitude = longitude;
++  if (m_scene != nullptr) {
++    advance();
++    applySettings();
++    wake();
++  }
++}
++
++void SequoiaLiveWallpaper::setLocked(bool locked) {
++  m_locked = locked;
++  if (m_scene == nullptr) {
++    return;
++  }
++  advance(); // bring time current so the ramp starts from now, not from the last frame
++  const bool moving =
++      locked ? m_config.lockMotion == SequoiaMotion::Animated : m_config.desktopMotion == SequoiaMotion::Animated;
++  m_scene->setMoving(moving);
++  wake();
++}
++
++void SequoiaLiveWallpaper::advance() {
++  if (m_scene == nullptr) {
++    return;
++  }
++  const auto now = std::chrono::steady_clock::now();
++  const double dt = std::chrono::duration<double>(now - m_lastAdvance).count();
++  m_lastAdvance = now;
++  if (dt > 0.0) {
++    m_scene->update(dt, std::chrono::system_clock::now());
++  }
++  const bool settled = !m_scene->animating();
++  if (settled && !m_wasSettled) {
++    // The settled frame was usually drawn already; one more paint captures it.
++    m_stillWanted = m_scene->generation();
++    m_capturePending = true;
++    m_captureDeadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
++  }
++  if (m_capturePending && std::chrono::steady_clock::now() > m_captureDeadline) {
++    m_capturePending = false; // nothing drew the frame (no visible consumer); keep the old still
++  }
++  m_wasSettled = settled;
++  const auto movement = static_cast<int>(m_scene->movement());
++  if (movement != m_loggedMovement) {
++    static constexpr const char* kNames[] = {"stopped", "ramping up", "moving", "ramping down"};
++    kLog.info("motion: {}", kNames[movement]);
++    m_loggedMovement = movement;
++  }
++}
++
++bool SequoiaLiveWallpaper::needsFrames(const void* consumer) const {
++  if (m_scene == nullptr) {
++    return false;
++  }
++  if (m_scene->animating() || m_capturePending) {
++    return true;
++  }
++  const auto it = m_consumers.find(consumer);
++  return it == m_consumers.end() || it->second.paintedGeneration != m_scene->generation();
++}
++
++bool SequoiaLiveWallpaper::takeRepaint(const void* consumer) {
++  if (m_scene == nullptr) {
++    return false;
++  }
++  ConsumerState& state = m_consumers[consumer];
++  const std::uint64_t generation = m_scene->generation();
++  if (m_capturePending && !m_stillWriting) {
++    state.paintedGeneration = generation;
++    state.lastPaint = std::chrono::steady_clock::now();
++    return true; // repaint the unchanged frame so frameTexture() can save it
++  }
++  if (state.paintedGeneration == generation) {
++    return false;
++  }
++  const auto now = std::chrono::steady_clock::now();
++  if (m_scene->animating()) {
++    const std::int32_t fps = std::max<std::int32_t>(1, m_locked ? m_config.fps : m_config.desktopFps);
++    const auto interval = std::chrono::duration_cast<std::chrono::steady_clock::duration>(
++        std::chrono::duration<double>(1.0 / static_cast<double>(fps))
++    );
++    if (now - state.lastPaint + kFrameSlack < interval) {
++      return false;
++    }
++  }
++  state.paintedGeneration = generation;
++  state.lastPaint = now;
++  return true;
++}
++
++void SequoiaLiveWallpaper::forgetConsumer(const void* consumer) { m_consumers.erase(consumer); }
++
++void SequoiaLiveWallpaper::driveFrames(
++    AnimationManager& animations, const void* consumer, std::function<void()> onTick
++) {
++  if (!ensureScene()) {
++    return;
++  }
++  // Update callbacks run on every frame tick, so arming must depend on need, or
++  // the heartbeat would keep itself alive forever.
++  if (!needsFrames(consumer)) {
++    return;
++  }
++  ConsumerState& state = m_consumers[consumer];
++  if (state.driving) {
++    return;
++  }
++  state.driving = true;
++  animations.animateTimer(
++      0.0F, 1.0F, kDriveSliceMs, Easing::Linear, [onTick](float) { onTick(); },
++      [this, &animations, consumer, onTick] {
++        auto it = m_consumers.find(consumer);
++        if (it == m_consumers.end()) {
++          return;
++        }
++        it->second.driving = false;
++        if (needsFrames(consumer)) {
++          driveFrames(animations, consumer, onTick);
++        }
++      },
++      consumer
++  );
++  onTick();
++}
++
++std::uint64_t SequoiaLiveWallpaper::addWakeListener(std::function<void()> callback) {
++  const std::uint64_t id = m_nextListenerId++;
++  m_wakeListeners.emplace(id, std::move(callback));
++  return id;
++}
++
++void SequoiaLiveWallpaper::removeWakeListener(std::uint64_t id) { m_wakeListeners.erase(id); }
++
++void SequoiaLiveWallpaper::wake() {
++  // Copy: a listener may add or remove listeners.
++  std::vector<std::function<void()>> listeners;
++  listeners.reserve(m_wakeListeners.size());
++  for (const auto& [id, fn] : m_wakeListeners) {
++    listeners.push_back(fn);
++  }
++  for (auto& fn : listeners) {
++    fn();
++  }
++}
++
++void SequoiaLiveWallpaper::onSecondTick() {
++  if (m_scene == nullptr) {
++    return;
++  }
++  const bool wasAnimating = m_scene->animating();
++  const std::uint64_t generation = m_scene->generation();
++  advance();
++  if (!wasAnimating && (m_scene->animating() || m_scene->generation() != generation)) {
++    wake(); // a time-of-day colour change started while idle
++  }
++}
++
++TextureHandle SequoiaLiveWallpaper::frameTexture(int width, int height) {
++  if (width <= 0 || height <= 0 || m_gpuFailed || !ensureScene()) {
++    return {};
++  }
++  if (m_renderer == nullptr) {
++    auto renderer = std::make_unique<sequoia::Renderer>();
++    std::string error;
++    renderer->setTopDown(true); // Noctalia samples textures top row first
++    if (!renderer->init(*m_assets, &error)) {
++      kLog.warn("renderer unavailable: {}", error);
++      m_gpuFailed = true;
++      return {};
++    }
++    m_renderer = std::move(renderer);
++  }
++
++  const float scale = std::clamp(m_config.renderScale, 0.25F, 1.0F);
++  const int w = std::max(1, static_cast<int>(std::lround(static_cast<float>(width) * scale)));
++  const int h = std::max(1, static_cast<int>(std::lround(static_cast<float>(height) * scale)));
++
++  const auto now = std::chrono::steady_clock::now();
++  for (auto it = m_targets.begin(); it != m_targets.end();) {
++    if (it->first != std::pair{w, h} && now - it->second->lastUsed > kTargetIdle) {
++      m_renderer->destroyTarget(it->second->target);
++      it = m_targets.erase(it);
++    } else {
++      ++it;
++    }
++  }
++
++  auto& slot = m_targets[{w, h}];
++  if (slot == nullptr) {
++    slot = std::make_unique<TargetSlot>();
++  }
++  slot->lastUsed = now;
++
++  const float aspect = static_cast<float>(w) / static_cast<float>(h);
++  const GLuint id = m_renderer->render(slot->target, m_scene->frame(aspect), w, h, m_scene->generation());
++  if (id == 0) {
++    return {};
++  }
++  maybeCaptureStill(slot->target);
++  return TextureHandle{
++      .id = TextureId(id),
++      .width = w,
++      .height = h,
++      .sourceWidth = w,
++      .sourceHeight = h,
++      .generation = m_scene->generation(),
++      .opaque = true,
++  };
++}
++
++void SequoiaLiveWallpaper::maybeCaptureStill(const sequoia::RenderTarget& target) {
++  if (m_stillWanted == 0
++      || m_stillWanted == m_stillSaved
++      || m_stillWriting
++      || target.renderedGeneration != m_stillWanted) {
++    if (m_stillWanted == m_stillSaved || target.renderedGeneration > m_stillWanted) {
++      m_capturePending = false; // saved already, or the scene moved on before the capture
++    }
++    return;
++  }
++  m_capturePending = false;
++  std::vector<std::uint8_t> rgba;
++  if (!m_renderer->readPixels(target, rgba)) {
++    kLog.warn("still readback failed");
++    m_stillSaved = m_stillWanted;
++    return;
++  }
++  const std::filesystem::path dir = stillDirectory();
++  if (dir.empty()) {
++    m_stillSaved = m_stillWanted;
++    return;
++  }
++  const auto stamp =
++      std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch())
++          .count();
++  const std::string path = (dir / (std::string(kStillPrefix) + std::to_string(stamp) + ".png")).string();
++  m_stillWriting = true;
++  const std::uint64_t generation = m_stillWanted;
++  std::thread([this, rgba = std::move(rgba), width = target.width, height = target.height, path, generation] {
++    std::string error;
++    const std::vector<std::uint8_t> png = encodePng(rgba.data(), width, height, &error);
++    bool ok = !png.empty();
++    if (ok) {
++      std::error_code ec;
++      std::filesystem::create_directories(std::filesystem::path(path).parent_path(), ec);
++      const std::string tmp = path + ".tmp";
++      std::ofstream out(tmp, std::ios::binary | std::ios::trunc);
++      out.write(reinterpret_cast<const char*>(png.data()), static_cast<std::streamsize>(png.size()));
++      out.close();
++      ok = static_cast<bool>(out);
++      if (ok) {
++        std::filesystem::rename(tmp, path, ec);
++        ok = !ec;
++      }
++    }
++    DeferredCall::callLater([this, ok, error, generation, path] {
++      m_stillWriting = false;
++      m_stillSaved = generation;
++      if (!ok) {
++        kLog.warn("cannot write still frame: {}", error.empty() ? "I/O error" : error);
++        return;
++      }
++      (void)stillPath(); // make sure the startup scan does not override the new still
++      m_stillPath = path;
++      std::error_code ec;
++      for (const auto& entry : std::filesystem::directory_iterator(std::filesystem::path(path).parent_path(), ec)) {
++        if (isStillFile(entry.path()) && entry.path() != std::filesystem::path(path)) {
++          std::filesystem::remove(entry.path(), ec);
++        }
++      }
++      if (m_stillChanged) {
++        m_stillChanged();
++      }
++    });
++  }).detach();
++}
++
++void SequoiaLiveWallpaper::abandonGpuResources() {
++  if (m_renderer != nullptr) {
++    m_renderer->abandon();
++    m_renderer.reset();
++  }
++  m_targets.clear();
++  m_gpuFailed = false;
++  for (auto& [consumer, state] : m_consumers) {
++    state.paintedGeneration = 0;
++  }
++}
+diff --git a/src/shell/sequoia/sequoia_live_wallpaper.h b/src/shell/sequoia/sequoia_live_wallpaper.h
+new file mode 100644
+index 000000000..a49ab73a9
+--- /dev/null
++++ b/src/shell/sequoia/sequoia_live_wallpaper.h
+@@ -0,0 +1,128 @@
++#pragma once
++
++// Live "sequoia:" wallpaper: one Sequoia scene shared by every wallpaper and lock
++// surface in the process, so the desktop and the lock screen always show the same
++// frame. The scene eases into motion on lock and, with desktop_motion = "still",
++// coasts to a stop after unlock (timings recovered from macOS; see sequoia_scene.h).
++//
++// Threading: main thread only. frameTexture() must run in the Render phase with a
++// GL context of the shared Noctalia context group current.
++
++#include "config/config_types.h"
++#include "render/core/texture_handle.h"
++
++#include <chrono>
++#include <cstdint>
++#include <functional>
++#include <map>
++#include <memory>
++#include <string>
++#include <string_view>
++#include <unordered_map>
++
++class AnimationManager;
++
++namespace sequoia {
++  struct Assets;
++  class Scene;
++  class Renderer;
++  struct RenderTarget;
++} // namespace sequoia
++
++class SequoiaLiveWallpaper {
++public:
++  static constexpr std::string_view kPathPrefix = "sequoia:";
++  static bool isSequoiaPath(std::string_view path) noexcept { return path.starts_with(kPathPrefix); }
++
++  static SequoiaLiveWallpaper& instance();
++
++  SequoiaLiveWallpaper(const SequoiaLiveWallpaper&) = delete;
++  SequoiaLiveWallpaper& operator=(const SequoiaLiveWallpaper&) = delete;
++
++  void setConfig(const WallpaperSequoiaConfig& config);
++  void setLocation(double latitude, double longitude);
++  // Lock screen shown (true) or the unlock began (false).
++  void setLocked(bool locked);
++
++  // Advances the scene to now; cheap to call many times per frame.
++  void advance();
++  // A consumer must keep requesting frames: the scene moves or fades, or the
++  // consumer has not painted the newest frame yet.
++  bool needsFrames(const void* consumer) const;
++  // True when `consumer` should repaint now: there is a newer frame and the frame
++  // cap (fps while locked, desktop_fps otherwise) allows it. Records the paint.
++  bool takeRepaint(const void* consumer);
++  void forgetConsumer(const void* consumer);
++
++  // Render phase: the current frame at the given buffer size (scaled by render_scale).
++  TextureHandle frameTexture(int width, int height);
++
++  // Keeps `animations` ticking while the scene needs frames; `onTick` runs on each
++  // tick and decides whether to repaint. Re-arms itself in short slices, so nothing
++  // has to be cancelled from inside a tick.
++  void driveFrames(AnimationManager& animations, const void* consumer, std::function<void()> onTick);
++
++  // Consumers that show the live wallpaper register to be woken when motion starts.
++  std::uint64_t addWakeListener(std::function<void()> callback);
++  void removeWakeListener(std::uint64_t id);
++
++  // PNG of the most recent settled frame ("" before the first one), used where a
++  // file is needed: theme colours, the greeter and the backdrop. Every capture gets
++  // a new name so path-keyed caches pick it up; older captures are deleted.
++  std::string stillPath() const;
++  // `path` itself, or the current still when `path` is a "sequoia:" path.
++  static std::string imagePathFor(const std::string& path);
++  void setStillChangedCallback(std::function<void()> callback);
++
++  // Periodic gradient (time-of-day) checks while nothing animates.
++  void onSecondTick();
++  // The GL context group was lost or reset: drop GL objects without GL calls.
++  void abandonGpuResources();
++
++private:
++  SequoiaLiveWallpaper();
++  ~SequoiaLiveWallpaper();
++
++  bool ensureScene();
++  void applySettings();
++  void wake();
++  void maybeCaptureStill(const sequoia::RenderTarget& target);
++
++  WallpaperSequoiaConfig m_config;
++  double m_latitude = 52.23;
++  double m_longitude = 21.01;
++  bool m_locked = false;
++
++  std::unique_ptr<sequoia::Assets> m_assets;
++  std::unique_ptr<sequoia::Scene> m_scene;
++  std::unique_ptr<sequoia::Renderer> m_renderer;
++  bool m_loadFailed = false;
++  bool m_gpuFailed = false;
++  struct TargetSlot;
++  std::map<std::pair<int, int>, std::unique_ptr<TargetSlot>> m_targets;
++
++  std::chrono::steady_clock::time_point m_lastAdvance{};
++  bool m_advancing = false;
++
++  struct ConsumerState {
++    std::uint64_t paintedGeneration = 0;
++    std::chrono::steady_clock::time_point lastPaint{};
++    bool driving = false;
++  };
++  std::unordered_map<const void*, ConsumerState> m_consumers;
++
++  std::map<std::uint64_t, std::function<void()>> m_wakeListeners;
++  std::uint64_t m_nextListenerId = 1;
++
++  // Still capture: generation of the settled frame that should be saved / was saved.
++  std::uint64_t m_stillWanted = 0;
++  std::uint64_t m_stillSaved = 0;
++  bool m_stillWriting = false;
++  bool m_capturePending = false;
++  std::chrono::steady_clock::time_point m_captureDeadline{};
++  bool m_wasSettled = false;
++  int m_loggedMovement = 0;
++  std::function<void()> m_stillChanged;
++  mutable std::string m_stillPath;
++  mutable bool m_stillScanned = false;
++};
+diff --git a/src/shell/sequoia/sequoia_renderer.cpp b/src/shell/sequoia/sequoia_renderer.cpp
+new file mode 100644
+index 000000000..587fe5248
+--- /dev/null
++++ b/src/shell/sequoia/sequoia_renderer.cpp
+@@ -0,0 +1,503 @@
++#include "sequoia_renderer.h"
++
++#include <algorithm>
++#include <cstdio>
++#include <cstring>
++#include <utility>
++
++namespace sequoia {
++
++  namespace {
++
++    // Shaders follow drawVertex / drawFragment / backgroundFragment from default.metallib
++    // (NOTES.md), as validated in src/sequoia.html.
++    constexpr const char* kCommonFragment = R"(
++uniform sampler2D uGradA;
++uniform sampler2D uGradB;
++uniform float uMix;
++out vec4 fragColor;
++vec3 lin2srgb(vec3 c) {
++  c = max(c, 0.0);
++  return mix(c * 12.92, 1.055 * pow(c, vec3(1.0 / 2.4)) - 0.055, step(0.0031308, c));
++}
++vec4 shade(float u) {
++  vec2 uv = vec2(clamp(u, 0.0, 1.0), 0.5);
++  vec3 c = mix(texture(uGradA, uv).rgb, texture(uGradB, uv).rgb, uMix);
++  // interleaved-gradient-noise dither, added in linear space as in drawFragment
++  float n = fract(fract(dot(gl_FragCoord.xy, vec2(0.06711056, 0.00583715))) * 52.9829189);
++  c += (n - 0.5) * (1.0 / 255.0);
++  return vec4(lin2srgb(c), 1.0);
++}
++)";
++
++    constexpr const char* kMeshVertex = R"(#version 300 es
++layout(location = 0) in vec4 aPos;   // x, y, z (height), v
++layout(location = 1) in vec4 aInst;  // x, z, rotation, unused
++layout(location = 2) in vec2 aScale; // radial, vertical
++uniform mat4 uView;
++uniform mat4 uProj;
++uniform float uProgress;
++out float vU;
++void main() {
++  // z' = fmod(z - 20p + 24, 20) - 4; instances with z' > 10 are culled (fn 0x10000fa30)
++  float z = mod(aInst.y - 20.0 * uProgress + 24.0, 20.0) - 4.0;
++  if (z > 10.0) {
++    gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
++    vU = 0.0;
++    return;
++  }
++  float a = -aPos.x * aScale.x;
++  float b = aPos.y * aScale.x;
++  float s = sin(aInst.z);
++  float c = cos(aInst.z);
++  vec2 r = vec2(c, s) * a + vec2(-s, c) * b;
++  vec3 world = vec3(r.x - aInst.x, aPos.z * aScale.y, r.y + z);
++  gl_Position = uProj * uView * vec4(world, 1.0);
++  vU = aPos.w;
++}
++)";
++
++    constexpr const char* kMeshFragmentHead = "#version 300 es\nprecision highp float;\nin float vU;\n";
++    constexpr const char* kMeshFragmentMain = "void main() { fragColor = shade(vU); }\n";
++
++    constexpr const char* kBackgroundVertex = R"(#version 300 es
++void main() {
++  vec2 p = vec2(float(gl_VertexID & 1), float(gl_VertexID >> 1)) * 4.0 - 1.0;
++  gl_Position = vec4(p, 0.0, 1.0);
++}
++)";
++    constexpr const char* kBackgroundFragmentHead = "#version 300 es\nprecision highp float;\n";
++    constexpr const char* kBackgroundFragmentMain = "void main() { fragColor = shade(1.0); }\n";
++
++    GLuint compile(GLenum type, const std::string& source, std::string* error) {
++      const GLuint shader = glCreateShader(type);
++      const char* text = source.c_str();
++      glShaderSource(shader, 1, &text, nullptr);
++      glCompileShader(shader);
++      GLint ok = GL_FALSE;
++      glGetShaderiv(shader, GL_COMPILE_STATUS, &ok);
++      if (ok != GL_TRUE) {
++        char log[2048] = {};
++        glGetShaderInfoLog(shader, sizeof(log), nullptr, log);
++        if (error != nullptr) {
++          *error = std::string("shader compile failed: ") + log;
++        }
++        glDeleteShader(shader);
++        return 0;
++      }
++      return shader;
++    }
++
++    GLuint link(const std::string& vs, const std::string& fs, std::string* error) {
++      const GLuint v = compile(GL_VERTEX_SHADER, vs, error);
++      if (v == 0) {
++        return 0;
++      }
++      const GLuint f = compile(GL_FRAGMENT_SHADER, fs, error);
++      if (f == 0) {
++        glDeleteShader(v);
++        return 0;
++      }
++      const GLuint program = glCreateProgram();
++      glAttachShader(program, v);
++      glAttachShader(program, f);
++      glLinkProgram(program);
++      glDeleteShader(v);
++      glDeleteShader(f);
++      GLint ok = GL_FALSE;
++      glGetProgramiv(program, GL_LINK_STATUS, &ok);
++      if (ok != GL_TRUE) {
++        char log[2048] = {};
++        glGetProgramInfoLog(program, sizeof(log), nullptr, log);
++        if (error != nullptr) {
++          *error = std::string("program link failed: ") + log;
++        }
++        glDeleteProgram(program);
++        return 0;
++      }
++      return program;
++    }
++
++    // Saves the GL state Renderer::render touches and restores it on scope exit.
++    class StateGuard {
++    public:
++      StateGuard() {
++        glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &m_drawFbo);
++        glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &m_readFbo);
++        glGetIntegerv(GL_VIEWPORT, m_viewport);
++        glGetIntegerv(GL_CURRENT_PROGRAM, &m_program);
++        glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &m_vao);
++        glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &m_arrayBuffer);
++        glGetIntegerv(GL_ACTIVE_TEXTURE, &m_activeTexture);
++        for (int unit = 0; unit < 2; ++unit) {
++          glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + unit));
++          glGetIntegerv(GL_TEXTURE_BINDING_2D, &m_textures[unit]);
++        }
++        glGetIntegerv(GL_RENDERBUFFER_BINDING, &m_renderbuffer);
++        m_scissor = glIsEnabled(GL_SCISSOR_TEST);
++        m_blend = glIsEnabled(GL_BLEND);
++        m_depthTest = glIsEnabled(GL_DEPTH_TEST);
++        m_cullFace = glIsEnabled(GL_CULL_FACE);
++        m_stencilTest = glIsEnabled(GL_STENCIL_TEST);
++        glGetBooleanv(GL_DEPTH_WRITEMASK, &m_depthMask);
++        glGetBooleanv(GL_COLOR_WRITEMASK, m_colorMask);
++        glGetIntegerv(GL_DEPTH_FUNC, &m_depthFunc);
++        glGetFloatv(GL_DEPTH_CLEAR_VALUE, &m_clearDepth);
++      }
++
++      ~StateGuard() {
++        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(m_drawFbo));
++        glBindFramebuffer(GL_READ_FRAMEBUFFER, static_cast<GLuint>(m_readFbo));
++        glViewport(m_viewport[0], m_viewport[1], m_viewport[2], m_viewport[3]);
++        glUseProgram(static_cast<GLuint>(m_program));
++        glBindVertexArray(static_cast<GLuint>(m_vao));
++        glBindBuffer(GL_ARRAY_BUFFER, static_cast<GLuint>(m_arrayBuffer));
++        for (int unit = 0; unit < 2; ++unit) {
++          glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + unit));
++          glBindTexture(GL_TEXTURE_2D, static_cast<GLuint>(m_textures[unit]));
++        }
++        glActiveTexture(static_cast<GLenum>(m_activeTexture));
++        glBindRenderbuffer(GL_RENDERBUFFER, static_cast<GLuint>(m_renderbuffer));
++        set(GL_SCISSOR_TEST, m_scissor);
++        set(GL_BLEND, m_blend);
++        set(GL_DEPTH_TEST, m_depthTest);
++        set(GL_CULL_FACE, m_cullFace);
++        set(GL_STENCIL_TEST, m_stencilTest);
++        glDepthMask(m_depthMask);
++        glColorMask(m_colorMask[0], m_colorMask[1], m_colorMask[2], m_colorMask[3]);
++        glDepthFunc(static_cast<GLenum>(m_depthFunc));
++        glClearDepthf(m_clearDepth);
++      }
++
++      StateGuard(const StateGuard&) = delete;
++      StateGuard& operator=(const StateGuard&) = delete;
++
++    private:
++      static void set(GLenum cap, GLboolean on) {
++        if (on == GL_TRUE) {
++          glEnable(cap);
++        } else {
++          glDisable(cap);
++        }
++      }
++
++      GLint m_drawFbo = 0, m_readFbo = 0, m_viewport[4] = {}, m_program = 0, m_vao = 0, m_arrayBuffer = 0;
++      GLint m_activeTexture = GL_TEXTURE0, m_textures[2] = {}, m_renderbuffer = 0, m_depthFunc = GL_LESS;
++      GLboolean m_scissor = GL_FALSE, m_blend = GL_FALSE, m_depthTest = GL_FALSE, m_cullFace = GL_FALSE;
++      GLboolean m_stencilTest = GL_FALSE, m_depthMask = GL_TRUE, m_colorMask[4] = {GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE};
++      GLfloat m_clearDepth = 1.0F;
++    };
++
++    int glesMajorVersion() {
++      const auto* version = reinterpret_cast<const char*>(glGetString(GL_VERSION));
++      int major = 0;
++      int minor = 0;
++      if (version == nullptr || std::sscanf(version, "OpenGL ES %d.%d", &major, &minor) < 1) {
++        return 0;
++      }
++      return major;
++    }
++
++  } // namespace
++
++  bool Renderer::init(const Assets& assets, std::string* error) {
++    if (glesMajorVersion() < 3) {
++      if (error != nullptr) {
++        *error = "OpenGL ES 3.0 or newer is required";
++      }
++      return false;
++    }
++
++    StateGuard guard;
++    m_meshProgram = link(kMeshVertex, std::string(kMeshFragmentHead) + kCommonFragment + kMeshFragmentMain, error);
++    m_backgroundProgram = link(
++        kBackgroundVertex, std::string(kBackgroundFragmentHead) + kCommonFragment + kBackgroundFragmentMain, error
++    );
++    if (m_meshProgram == 0 || m_backgroundProgram == 0) {
++      destroy();
++      return false;
++    }
++    auto uniforms = [](GLuint program) {
++      Uniforms u;
++      u.view = glGetUniformLocation(program, "uView");
++      u.projection = glGetUniformLocation(program, "uProj");
++      u.progress = glGetUniformLocation(program, "uProgress");
++      u.gradA = glGetUniformLocation(program, "uGradA");
++      u.gradB = glGetUniformLocation(program, "uGradB");
++      u.mix = glGetUniformLocation(program, "uMix");
++      return u;
++    };
++    m_meshUniforms = uniforms(m_meshProgram);
++    m_backgroundUniforms = uniforms(m_backgroundProgram);
++
++    // Static per-instance data; scrolling happens in the vertex shader.
++    std::array<std::vector<float>, kMeshCount> instanceData;
++    for (const Instance& inst : assets.instances) {
++      auto& d = instanceData[inst.mesh];
++      d.insert(d.end(), {inst.x, inst.z, inst.rotation, 0.0F, inst.radial, inst.vertical});
++    }
++
++    for (int i = 0; i < kMeshCount; ++i) {
++      const Mesh& mesh = assets.meshes[static_cast<std::size_t>(i)];
++      MeshGpu& gpu = m_meshes[static_cast<std::size_t>(i)];
++      glGenVertexArrays(1, &gpu.vao);
++      glBindVertexArray(gpu.vao);
++
++      glGenBuffers(1, &gpu.vertexBuffer);
++      glBindBuffer(GL_ARRAY_BUFFER, gpu.vertexBuffer);
++      glBufferData(
++          GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(mesh.vertices.size() * sizeof(float)), mesh.vertices.data(),
++          GL_STATIC_DRAW
++      );
++      glEnableVertexAttribArray(0);
++      glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 16, nullptr);
++
++      glGenBuffers(1, &gpu.indexBuffer);
++      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gpu.indexBuffer);
++      glBufferData(
++          GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(mesh.indices.size() * sizeof(std::uint32_t)),
++          mesh.indices.data(), GL_STATIC_DRAW
++      );
++      gpu.indexCount = static_cast<GLsizei>(mesh.indices.size());
++
++      const auto& inst = instanceData[static_cast<std::size_t>(i)];
++      glGenBuffers(1, &gpu.instanceBuffer);
++      glBindBuffer(GL_ARRAY_BUFFER, gpu.instanceBuffer);
++      glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(inst.size() * sizeof(float)), inst.data(), GL_STATIC_DRAW);
++      glEnableVertexAttribArray(1);
++      glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 24, nullptr);
++      glVertexAttribDivisor(1, 1);
++      glEnableVertexAttribArray(2);
++      glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 24, reinterpret_cast<const void*>(16));
++      glVertexAttribDivisor(2, 1);
++      gpu.instanceCount = static_cast<GLsizei>(inst.size() / 6);
++    }
++    glBindVertexArray(0);
++    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); // the element binding belongs to VAO 0 again
++    glGenVertexArrays(1, &m_backgroundVao);
++
++    // Gradients: Apple ships them as half-float EXRs; RGBA16F keeps that precision.
++    glActiveTexture(GL_TEXTURE0);
++    std::vector<float> rgba(static_cast<std::size_t>(assets.gradientWidth) * 4);
++    glGenTextures(kGradientCount, m_gradients.data());
++    for (int g = 0; g < kGradientCount; ++g) {
++      const float* src = assets.gradients.data() + static_cast<std::size_t>(g) * assets.gradientWidth * 3;
++      for (int x = 0; x < assets.gradientWidth; ++x) {
++        std::memcpy(&rgba[static_cast<std::size_t>(x) * 4], src + static_cast<std::size_t>(x) * 3, 3 * sizeof(float));
++        rgba[static_cast<std::size_t>(x) * 4 + 3] = 1.0F;
++      }
++      glBindTexture(GL_TEXTURE_2D, m_gradients[static_cast<std::size_t>(g)]);
++      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, assets.gradientWidth, 1, 0, GL_RGBA, GL_FLOAT, rgba.data());
++      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
++      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
++      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
++      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
++    }
++
++    // 4x MSAA as on macOS (2x on low-power GPUs there).
++    GLint maxSamples = 0;
++    glGetIntegerv(GL_MAX_SAMPLES, &maxSamples);
++    m_samples = std::clamp(maxSamples, 0, 4);
++
++    if (glGetError() != GL_NO_ERROR) {
++      if (error != nullptr) {
++        *error = "GL error while uploading the scene";
++      }
++      destroy();
++      return false;
++    }
++    return true;
++  }
++
++  bool Renderer::ensureTarget(RenderTarget& target, int width, int height) {
++    if (target.texture != 0 && target.width == width && target.height == height) {
++      return true;
++    }
++    destroyTarget(target);
++    target.width = width;
++    target.height = height;
++
++    glGenRenderbuffers(1, &target.msaaColor);
++    glBindRenderbuffer(GL_RENDERBUFFER, target.msaaColor);
++    glRenderbufferStorageMultisample(GL_RENDERBUFFER, m_samples, GL_RGBA8, width, height);
++    glGenRenderbuffers(1, &target.msaaDepth);
++    glBindRenderbuffer(GL_RENDERBUFFER, target.msaaDepth);
++    glRenderbufferStorageMultisample(GL_RENDERBUFFER, m_samples, GL_DEPTH_COMPONENT24, width, height);
++    glGenFramebuffers(1, &target.msaaFbo);
++    glBindFramebuffer(GL_FRAMEBUFFER, target.msaaFbo);
++    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, target.msaaColor);
++    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, target.msaaDepth);
++    const bool msaaOk = glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
++
++    glGenTextures(1, &target.texture);
++    glBindTexture(GL_TEXTURE_2D, target.texture);
++    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
++    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
++    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
++    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
++    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
++    glGenFramebuffers(1, &target.resolveFbo);
++    glBindFramebuffer(GL_FRAMEBUFFER, target.resolveFbo);
++    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, target.texture, 0);
++    const bool resolveOk = glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
++
++    if (!msaaOk || !resolveOk) {
++      destroyTarget(target);
++      return false;
++    }
++    target.renderedGeneration = 0;
++    return true;
++  }
++
++  GLuint
++  Renderer::render(RenderTarget& target, const FrameParams& frame, int width, int height, std::uint64_t generation) {
++    if (!initialized() || width <= 0 || height <= 0) {
++      return 0;
++    }
++    if (target.texture != 0
++        && target.width == width
++        && target.height == height
++        && target.renderedGeneration == generation) {
++      return target.texture;
++    }
++
++    StateGuard guard;
++    if (!ensureTarget(target, width, height)) {
++      return 0;
++    }
++
++    glBindFramebuffer(GL_FRAMEBUFFER, target.msaaFbo);
++    glViewport(0, 0, width, height);
++    glDisable(GL_SCISSOR_TEST);
++    glDisable(GL_BLEND);
++    glDisable(GL_CULL_FACE);
++    glDisable(GL_STENCIL_TEST);
++    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
++    glDepthMask(GL_TRUE);
++    glClearDepthf(0.0F); // reverse-Z
++    glClear(GL_DEPTH_BUFFER_BIT);
++
++    glActiveTexture(GL_TEXTURE0);
++    glBindTexture(GL_TEXTURE_2D, m_gradients[static_cast<std::size_t>(frame.gradientFrom % kGradientCount)]);
++    glActiveTexture(GL_TEXTURE1);
++    glBindTexture(GL_TEXTURE_2D, m_gradients[static_cast<std::size_t>(frame.gradientTo % kGradientCount)]);
++    const float mix = frame.gradientFrom == frame.gradientTo ? 0.0F : frame.gradientMix;
++
++    // Background fills every pixel, so no colour clear is needed.
++    glDisable(GL_DEPTH_TEST);
++    glUseProgram(m_backgroundProgram);
++    glUniform1i(m_backgroundUniforms.gradA, 0);
++    glUniform1i(m_backgroundUniforms.gradB, 1);
++    glUniform1f(m_backgroundUniforms.mix, mix);
++    glBindVertexArray(m_backgroundVao);
++    glDrawArrays(GL_TRIANGLES, 0, 3);
++
++    glEnable(GL_DEPTH_TEST);
++    glDepthFunc(GL_GREATER);
++    glUseProgram(m_meshProgram);
++    glUniform1i(m_meshUniforms.gradA, 0);
++    glUniform1i(m_meshUniforms.gradB, 1);
++    glUniform1f(m_meshUniforms.mix, mix);
++    glUniform1f(m_meshUniforms.progress, frame.progress);
++    glUniformMatrix4fv(m_meshUniforms.view, 1, GL_FALSE, frame.view.data());
++    glUniformMatrix4fv(m_meshUniforms.projection, 1, GL_FALSE, frame.projection.data());
++    for (const MeshGpu& mesh : m_meshes) {
++      if (mesh.instanceCount == 0) {
++        continue;
++      }
++      glBindVertexArray(mesh.vao);
++      glDrawElementsInstanced(GL_TRIANGLES, mesh.indexCount, GL_UNSIGNED_INT, nullptr, mesh.instanceCount);
++    }
++
++    // Resolve MSAA into the sampled texture; depth is not needed afterwards.
++    glBindFramebuffer(GL_READ_FRAMEBUFFER, target.msaaFbo);
++    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, target.resolveFbo);
++    if (m_topDown) {
++      glBlitFramebuffer(0, 0, width, height, 0, height, width, 0, GL_COLOR_BUFFER_BIT, GL_NEAREST);
++    } else {
++      glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
++    }
++    const GLenum discard[] = {GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT};
++    glBindFramebuffer(GL_FRAMEBUFFER, target.msaaFbo);
++    glInvalidateFramebuffer(GL_FRAMEBUFFER, 2, discard);
++
++    target.renderedGeneration = generation;
++    return target.texture;
++  }
++
++  bool Renderer::readPixels(const RenderTarget& target, std::vector<std::uint8_t>& rgba) {
++    if (target.resolveFbo == 0) {
++      return false;
++    }
++    StateGuard guard;
++    const auto w = static_cast<std::size_t>(target.width);
++    const auto h = static_cast<std::size_t>(target.height);
++    std::vector<std::uint8_t> raw(w * h * 4);
++    glBindFramebuffer(GL_READ_FRAMEBUFFER, target.resolveFbo);
++    GLint packAlignment = 4;
++    glGetIntegerv(GL_PACK_ALIGNMENT, &packAlignment);
++    glPixelStorei(GL_PACK_ALIGNMENT, 1);
++    glReadPixels(0, 0, target.width, target.height, GL_RGBA, GL_UNSIGNED_BYTE, raw.data());
++    glPixelStorei(GL_PACK_ALIGNMENT, packAlignment);
++    if (m_topDown) {
++      rgba = std::move(raw); // the texture already stores the top row first
++    } else {
++      rgba.resize(raw.size());
++      for (std::size_t y = 0; y < h; ++y) { // GL rows are bottom-up
++        std::memcpy(&rgba[y * w * 4], &raw[(h - 1 - y) * w * 4], w * 4);
++      }
++    }
++    return glGetError() == GL_NO_ERROR;
++  }
++
++  void Renderer::destroyTarget(RenderTarget& target) {
++    if (target.msaaFbo != 0) {
++      glDeleteFramebuffers(1, &target.msaaFbo);
++    }
++    if (target.resolveFbo != 0) {
++      glDeleteFramebuffers(1, &target.resolveFbo);
++    }
++    if (target.msaaColor != 0) {
++      glDeleteRenderbuffers(1, &target.msaaColor);
++    }
++    if (target.msaaDepth != 0) {
++      glDeleteRenderbuffers(1, &target.msaaDepth);
++    }
++    if (target.texture != 0) {
++      glDeleteTextures(1, &target.texture);
++    }
++    target = RenderTarget{};
++  }
++
++  void Renderer::destroy() {
++    for (MeshGpu& mesh : m_meshes) {
++      if (mesh.vao != 0) {
++        glDeleteVertexArrays(1, &mesh.vao);
++      }
++      const GLuint buffers[] = {mesh.vertexBuffer, mesh.indexBuffer, mesh.instanceBuffer};
++      glDeleteBuffers(3, buffers);
++    }
++    if (m_backgroundVao != 0) {
++      glDeleteVertexArrays(1, &m_backgroundVao);
++    }
++    if (m_gradients[0] != 0) {
++      glDeleteTextures(kGradientCount, m_gradients.data());
++    }
++    if (m_meshProgram != 0) {
++      glDeleteProgram(m_meshProgram);
++    }
++    if (m_backgroundProgram != 0) {
++      glDeleteProgram(m_backgroundProgram);
++    }
++    abandon();
++  }
++
++  void Renderer::abandon() {
++    m_meshes = {};
++    m_gradients = {};
++    m_backgroundVao = 0;
++    m_meshProgram = 0;
++    m_backgroundProgram = 0;
++  }
++
++} // namespace sequoia
+diff --git a/src/shell/sequoia/sequoia_renderer.h b/src/shell/sequoia/sequoia_renderer.h
+new file mode 100644
+index 000000000..23243b488
+--- /dev/null
++++ b/src/shell/sequoia/sequoia_renderer.h
+@@ -0,0 +1,85 @@
++#pragma once
++
++// GLES 3.0 renderer for the Sequoia scene. Renders into its own multisampled
++// framebuffer and resolves into a plain RGBA8 texture that the caller samples.
++// Every call saves and restores the GL state it touches, so it can run in the
++// middle of a host renderer's frame. The GL context must be current.
++
++#include "sequoia_assets.h"
++#include "sequoia_scene.h"
++
++#include <GLES3/gl3.h>
++#include <array>
++#include <cstdint>
++#include <string>
++#include <vector>
++
++namespace sequoia {
++
++  // One output size: MSAA colour + depth, resolved into `texture`.
++  struct RenderTarget {
++    int width = 0;
++    int height = 0;
++    GLuint msaaFbo = 0;
++    GLuint msaaColor = 0;
++    GLuint msaaDepth = 0;
++    GLuint resolveFbo = 0;
++    GLuint texture = 0;
++    std::uint64_t renderedGeneration = 0; // scene generation last rendered into `texture`
++  };
++
++  class Renderer {
++  public:
++    // Compiles programs and uploads the scene. Fails without ES 3.0.
++    bool init(const Assets& assets, std::string* error);
++    bool initialized() const { return m_meshProgram != 0; }
++
++    // Store the resolved texture top row first (as image textures usually are)
++    // instead of OpenGL's bottom-up order. The flip happens in the MSAA resolve.
++    void setTopDown(bool topDown) { m_topDown = topDown; }
++
++    // Renders `frame` at width x height into `target` (resizing it as needed) and
++    // returns the resolved texture. Skips work when `generation` was already rendered.
++    GLuint render(RenderTarget& target, const FrameParams& frame, int width, int height, std::uint64_t generation);
++
++    // Reads the resolved texture back as tightly packed RGBA8, top row first.
++    bool readPixels(const RenderTarget& target, std::vector<std::uint8_t>& rgba);
++
++    void destroyTarget(RenderTarget& target);
++    // Releases GL objects (context current) / forgets them after context loss.
++    void destroy();
++    void abandon();
++
++  private:
++    bool ensureTarget(RenderTarget& target, int width, int height);
++
++    struct MeshGpu {
++      GLuint vao = 0;
++      GLuint vertexBuffer = 0;
++      GLuint indexBuffer = 0;
++      GLuint instanceBuffer = 0;
++      GLsizei indexCount = 0;
++      GLsizei instanceCount = 0;
++    };
++
++    std::array<MeshGpu, kMeshCount> m_meshes{};
++    std::array<GLuint, kGradientCount> m_gradients{};
++    GLuint m_backgroundVao = 0;
++    GLuint m_meshProgram = 0;
++    GLuint m_backgroundProgram = 0;
++    int m_samples = 4;
++    bool m_topDown = false;
++
++    struct Uniforms {
++      GLint view = -1;
++      GLint projection = -1;
++      GLint progress = -1;
++      GLint gradA = -1;
++      GLint gradB = -1;
++      GLint mix = -1;
++    };
++    Uniforms m_meshUniforms;
++    Uniforms m_backgroundUniforms;
++  };
++
++} // namespace sequoia
+diff --git a/src/shell/sequoia/sequoia_scene.cpp b/src/shell/sequoia/sequoia_scene.cpp
+new file mode 100644
+index 000000000..d32bf81b8
+--- /dev/null
++++ b/src/shell/sequoia/sequoia_scene.cpp
+@@ -0,0 +1,364 @@
++#include "sequoia_scene.h"
++
++#include <algorithm>
++#include <cmath>
++
++namespace sequoia {
++
++  namespace {
++
++    constexpr double kPi = 3.14159265358979323846;
++
++    // Recovered constants (NOTES.md).
++    constexpr double kLoopSeconds = 300.0;      // progress += dt / 300
++    constexpr double kFov = 39.7 * kPi / 180.0; // horizontal when aspect > 1
++    constexpr double kPitch = 177.12 * kPi / 180.0;
++    constexpr double kCameraZ = 2.0;
++    constexpr double kPathPhase = 0.1; // path sampled at fract(p + 0.1)
++    constexpr double kYawGain = 1.2;
++    constexpr double kNoiseFrequency = 5.0;
++    constexpr double kSeedRange = 5.0;
++    constexpr float kNearZ = 0.01000025F; // reverse-Z projection
++    constexpr float kZScale = 2.503395e-05F;
++    constexpr double kRotationSign = -1.0;    // Apple's rotation helper is clockwise
++    constexpr int kLightGradient = 4;         // solarNoon
++    constexpr int kDarkGradient = 0;          // solarMidnight
++    constexpr double kColorFadeSeconds = 3.0; // Spring(duration: 3, bounce: 0) @0x10000f823
++    constexpr double kRampUpSeconds = 2.0;    // SpringRamp(0 -> 1, duration: 2) @0x1000077ed
++    constexpr double kRampDownSeconds = 5.0;  // SpringRamp(1 -> 0, duration: 5) @0x100007c6d
++    constexpr double kRampEpsilon = 0.001;    // stop threshold @0x10000672c
++    constexpr double kGradientCheckSeconds = 30.0;
++
++    double fract(double x) { return x - std::floor(x); }
++
++    double smootherstep01(double x) {
++      x = std::clamp(x, 0.0, 1.0);
++      return x * x * x * (x * (x * 6.0 - 15.0) + 10.0);
++    }
++
++    // Yaw envelope (fn 0x100009b9a): fades the wobble out around the loop seam.
++    double yawEnvelope(double p) {
++      if (p < 0.158) {
++        return smootherstep01((p - 0.094) / 0.064);
++      }
++      if (p > 0.83) {
++        return 1.0 - smootherstep01((p - 0.83) / 0.147);
++      }
++      return 1.0;
++    }
++
++    using Mat = std::array<double, 16>; // column major
++
++    Mat mul(const Mat& a, const Mat& b) {
++      Mat o{};
++      for (int c = 0; c < 4; ++c) {
++        for (int r = 0; r < 4; ++r) {
++          double s = 0.0;
++          for (int k = 0; k < 4; ++k) {
++            s += a[k * 4 + r] * b[c * 4 + k];
++          }
++          o[c * 4 + r] = s;
++        }
++      }
++      return o;
++    }
++
++    Mat rotX(double t) {
++      const double c = std::cos(t), s = std::sin(t);
++      return {1, 0, 0, 0, 0, c, s, 0, 0, -s, c, 0, 0, 0, 0, 1};
++    }
++    Mat rotY(double t) {
++      const double c = std::cos(t), s = std::sin(t);
++      return {c, 0, -s, 0, 0, 1, 0, 0, s, 0, c, 0, 0, 0, 0, 1};
++    }
++    Mat rotZ(double t) {
++      const double c = std::cos(t), s = std::sin(t);
++      return {c, s, 0, 0, -s, c, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
++    }
++    Mat translate(double x, double y, double z) { return {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, z, 1}; }
++
++    Mat invertRigid(const Mat& m) {
++      Mat o{};
++      for (int r = 0; r < 3; ++r) {
++        for (int c = 0; c < 3; ++c) {
++          o[c * 4 + r] = m[r * 4 + c];
++        }
++      }
++      for (int r = 0; r < 3; ++r) {
++        o[12 + r] = -(o[r] * m[12] + o[4 + r] * m[13] + o[8 + r] * m[14]);
++      }
++      o[15] = 1.0;
++      return o;
++    }
++
++    struct SunPosition {
++      double altitude;
++      double noonAltitude;
++      bool morning;
++    };
++
++    SunPosition sunPosition(Scene::Clock::time_point now, double lat, double lon) {
++      const double rad = kPi / 180.0;
++      const double ms =
++          static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count());
++      const double d = ms / 86400000.0 - 10957.5; // days since J2000
++      const double g = (357.529 + 0.98560028 * d) * rad;
++      const double q = 280.459 + 0.98564736 * d;
++      const double L = (q + 1.915 * std::sin(g) + 0.020 * std::sin(2 * g)) * rad;
++      const double e = (23.439 - 0.00000036 * d) * rad;
++      const double dec = std::asin(std::sin(e) * std::sin(L));
++      const double ra = std::atan2(std::cos(e) * std::sin(L), std::cos(L));
++      const double gmst = std::fmod(18.697374558 + 24.06570982441908 * d, 24.0);
++      const double ha = (gmst * 15.0 + lon) * rad - ra;
++      const double alt =
++          std::asin(std::sin(lat * rad) * std::sin(dec) + std::cos(lat * rad) * std::cos(dec) * std::cos(ha));
++      return {alt / rad, 90.0 - std::abs(lat - dec / rad), std::sin(ha) < 0.0};
++    }
++
++  } // namespace
++
++  void SpringRamp::update(double dt) {
++    if (dt <= 0.0) {
++      return;
++    }
++    // x(t) = T + (c1 + c2 t) e^(-wt), critically damped, starting from the current state.
++    const double c1 = m_value - m_target;
++    const double c2 = m_velocity + m_omega * c1;
++    const double e = std::exp(-m_omega * dt);
++    m_value = m_target + (c1 + c2 * dt) * e;
++    m_velocity = (c2 - m_omega * (c1 + c2 * dt)) * e;
++  }
++
++  bool SpringRamp::settled(double epsilon) const { return std::abs(m_value - m_target) < epsilon; }
++
++  Scene::Scene(const Assets& assets, std::uint32_t randomSeed) : m_assets(assets), m_rng(randomSeed) {
++    rerollLoop();
++    m_progress = std::uniform_real_distribution<double>(0.0, 1.0)(m_rng);
++    m_speed.reset(0.0);
++    const int g = wantedGradient(Clock::now());
++    m_gradientFrom = m_gradientTo = g;
++  }
++
++  void Scene::setSettings(const SceneSettings& settings, Clock::time_point now) {
++    m_settings = settings;
++    checkGradient(now, true);
++    ++m_generation;
++  }
++
++  void Scene::setMoving(bool moving) {
++    if (moving) {
++      if (m_movement == Movement::Moving || m_movement == Movement::RampingUp) {
++        return;
++      }
++      m_speed.retarget(1.0, kRampUpSeconds);
++      m_movement = Movement::RampingUp;
++    } else {
++      if (m_movement == Movement::Stopped || m_movement == Movement::RampingDown) {
++        return;
++      }
++      m_speed.retarget(0.0, kRampDownSeconds);
++      m_movement = Movement::RampingDown;
++    }
++  }
++
++  void Scene::setMovingImmediately(bool moving) {
++    m_speed.reset(moving ? 1.0 : 0.0);
++    m_movement = moving ? Movement::Moving : Movement::Stopped;
++  }
++
++  void Scene::setPose(double progress, int path, double seed) {
++    m_progress = fract(progress);
++    if (path >= 0) {
++      m_path = path % static_cast<int>(m_assets.paths.size());
++    }
++    if (!std::isnan(seed)) {
++      m_seed = seed;
++    }
++    ++m_generation;
++  }
++
++  void Scene::rerollLoop() {
++    m_path = std::uniform_int_distribution<int>(0, static_cast<int>(m_assets.paths.size()) - 1)(m_rng);
++    m_seed = std::uniform_real_distribution<double>(-kSeedRange, kSeedRange)(m_rng);
++  }
++
++  bool Scene::update(double dt, Clock::time_point now) {
++    dt = std::clamp(dt, 0.0, 1.0); // a stalled frame must not jump the scene
++    bool changed = false;
++
++    if (m_movement == Movement::RampingUp || m_movement == Movement::RampingDown) {
++      m_speed.update(dt);
++      if (m_movement == Movement::RampingDown && m_speed.value() < kRampEpsilon) {
++        m_speed.snap();
++        m_movement = Movement::Stopped;
++      } else if (m_movement == Movement::RampingUp && m_speed.settled(kRampEpsilon)) {
++        m_speed.snap();
++        m_movement = Movement::Moving;
++      }
++    }
++
++    const double advance = dt * m_speed.value() * m_settings.speed / kLoopSeconds;
++    if (advance > 0.0) {
++      m_progress += advance;
++      while (m_progress >= 1.0) { // loop wrap: new path and noise seed (fn 0x10000fbea)
++        m_progress -= 1.0;
++        rerollLoop();
++      }
++      changed = true;
++    }
++
++    m_sinceGradientCheck += dt;
++    if (m_sinceGradientCheck >= kGradientCheckSeconds) {
++      checkGradient(now, false);
++    }
++
++    if (m_fading) {
++      m_fadeElapsed += dt;
++      if (m_fadeElapsed >= kColorFadeSeconds) {
++        m_fading = false;
++        m_gradientFrom = m_gradientTo;
++        if (m_gradientPending >= 0 && m_gradientPending != m_gradientTo) { // "beginning pending transition"
++          m_gradientTo = m_gradientPending;
++          m_fading = true;
++          m_fadeElapsed = 0.0;
++        }
++        m_gradientPending = -1;
++      }
++      changed = true;
++    }
++
++    if (changed) {
++      ++m_generation;
++    }
++    return changed;
++  }
++
++  void Scene::checkGradient(Clock::time_point now, bool force) {
++    m_sinceGradientCheck = 0.0;
++    const int wanted = wantedGradient(now);
++    if (m_fading) {
++      m_gradientPending = wanted == m_gradientTo ? -1 : wanted; // "new colors pending"
++      return;
++    }
++    if (wanted == m_gradientTo) {
++      return;
++    }
++    if (force && m_settings.forcedGradient >= 0) {
++      m_gradientFrom = m_gradientTo = wanted; // pinned gradients apply at once
++      return;
++    }
++    m_gradientFrom = m_gradientTo;
++    m_gradientTo = wanted;
++    m_fading = true;
++    m_fadeElapsed = 0.0;
++  }
++
++  bool Scene::animating() const { return m_movement != Movement::Stopped || m_fading; }
++
++  int Scene::wantedGradient(Clock::time_point now) const {
++    if (m_settings.forcedGradient >= 0) {
++      return m_settings.forcedGradient % kGradientCount;
++    }
++    switch (m_settings.appearance) {
++    case Appearance::Light:
++      return kLightGradient;
++    case Appearance::Dark:
++      return kDarkGradient;
++    case Appearance::Automatic:
++      break;
++    }
++    // Approximation of WallpaperExtensionKit.SolarTrigger (thresholds not recovered).
++    const SunPosition sun = sunPosition(now, m_settings.latitude, m_settings.longitude);
++    if (sun.altitude < -12.0) {
++      return 0; // solarMidnight
++    }
++    if (sun.altitude < -0.833) {
++      return sun.morning ? 1 : 7; // dawn / dusk
++    }
++    if (sun.altitude < 8.0) {
++      return sun.morning ? 2 : 6; // sunrise / sunset
++    }
++    if (sun.altitude > std::max(sun.noonAltitude - 8.0, 8.0)) {
++      return 4; // solarNoon
++    }
++    return sun.morning ? 3 : 5; // midMorning / lateAfternoon
++  }
++
++  double Scene::pathX(double t) const {
++    const auto& xs = m_assets.paths[static_cast<std::size_t>(m_path)];
++    const int n = m_assets.pathSamples;
++    const double f = t * n;
++    const int i = static_cast<int>(std::floor(f)) % n;
++    const int next = (i + 1) % n;
++    const double r = f - std::floor(f);
++    return xs[static_cast<std::size_t>(i)] + r * (xs[static_cast<std::size_t>(next)] - xs[static_cast<std::size_t>(i)]);
++  }
++
++  // PhysicsKit improved-Perlin noise2, rebuilt from its measured lattice.
++  double Scene::noise2(double x, double y) const {
++    const int n = m_assets.latticeHi - m_assets.latticeLo + 1;
++    auto grad = [&](int i, int j, double& gx, double& gy) {
++      i = std::clamp(i - m_assets.latticeLo, 0, n - 1);
++      j = std::clamp(j - m_assets.latticeLo, 0, n - 1);
++      const std::size_t k = (static_cast<std::size_t>(i) * n + j) * 2;
++      gx = m_assets.lattice[k];
++      gy = m_assets.lattice[k + 1];
++    };
++    const int i = static_cast<int>(std::floor(x));
++    const int j = static_cast<int>(std::floor(y));
++    const double rx = x - i, ry = y - j;
++    double ax, ay, bx, by, cx, cy, dx, dy;
++    grad(i, j, ax, ay);
++    grad(i + 1, j, bx, by);
++    grad(i, j + 1, cx, cy);
++    grad(i + 1, j + 1, dx, dy);
++    const double sx = smootherstep01(rx), sy = smootherstep01(ry);
++    const double u0 = rx * ax + ry * ay, v0 = (rx - 1) * bx + ry * by;
++    const double u1 = rx * cx + (ry - 1) * cy, v1 = (rx - 1) * dx + (ry - 1) * dy;
++    const double a = u0 + sx * (v0 - u0), b = u1 + sx * (v1 - u1);
++    return a + sy * (b - a);
++  }
++
++  FrameParams Scene::frame(float aspect) const {
++    const double p = m_progress;
++    const double eyeX = -pathX(fract(p + kPathPhase));
++    const double yaw = noise2(m_seed + p * kNoiseFrequency, p * kNoiseFrequency - m_seed) * yawEnvelope(p) * kYawGain;
++
++    double adj = kFov * 0.5;
++    if (aspect > 1.0F) {
++      adj = std::tan(std::atan(adj) / aspect);
++    }
++    const Mat world =
++        mul(mul(mul(translate(eyeX, 0.0, kCameraZ), rotY(kRotationSign * yaw)),
++                rotX(kRotationSign * (kPitch - adj + kPi / 2.0))),
++            rotZ(kRotationSign * kPi));
++    const Mat view = invertRigid(world);
++
++    const double t = std::tan(kFov * 0.5);
++    double sx, sy;
++    if (aspect > 1.0F) {
++      sx = 1.0 / t;
++      sy = aspect / t;
++    } else {
++      sx = 1.0 / (t * aspect);
++      sy = 1.0 / t;
++    }
++
++    FrameParams out;
++    for (int i = 0; i < 16; ++i) {
++      out.view[static_cast<std::size_t>(i)] = static_cast<float>(view[static_cast<std::size_t>(i)]);
++    }
++    out.projection = {
++        static_cast<float>(sx), 0, 0, 0, 0, static_cast<float>(sy), 0, 0, 0, 0, kZScale, -1, 0, 0, kNearZ, 0
++    };
++    out.progress = static_cast<float>(p);
++    out.gradientFrom = m_gradientFrom;
++    out.gradientTo = m_gradientTo;
++    if (m_fading) {
++      const double w = 2.0 * kPi / kColorFadeSeconds * m_fadeElapsed; // critically damped spring
++      out.gradientMix = static_cast<float>(1.0 - (1.0 + w) * std::exp(-w));
++    }
++    return out;
++  }
++
++} // namespace sequoia
+diff --git a/src/shell/sequoia/sequoia_scene.h b/src/shell/sequoia/sequoia_scene.h
+new file mode 100644
+index 000000000..f1c1f1593
+--- /dev/null
++++ b/src/shell/sequoia/sequoia_scene.h
+@@ -0,0 +1,129 @@
++#pragma once
++
++// Scene state for the Sequoia wallpaper: loop progress, camera path and yaw
++// noise, time-of-day colours, and the movement ramp used on lock/unlock.
++// Constants are from WallpaperSequoiaExtension (see ../../NOTES.md). No GL.
++
++#include "sequoia_assets.h"
++
++#include <array>
++#include <chrono>
++#include <cstdint>
++#include <random>
++
++namespace sequoia {
++
++  enum class Appearance { Automatic, Light, Dark };
++
++  struct SceneSettings {
++    Appearance appearance = Appearance::Automatic;
++    double latitude = 52.23;
++    double longitude = 21.01;
++    int forcedGradient = -1; // 0..7 pins one gradient
++    double speed = 1.0;      // time multiplier (testing)
++  };
++
++  // Critically damped spring, matching SwiftUI.Spring(duration:, bounce: 0) as
++  // used by WallpaperExtensionKit.SpringRamp. Retargeting keeps value and velocity.
++  class SpringRamp {
++  public:
++    void reset(double value) {
++      m_value = value;
++      m_velocity = 0.0;
++      m_target = value;
++    }
++    void retarget(double target, double duration) {
++      m_target = target;
++      m_omega = 2.0 * 3.14159265358979323846 / duration;
++    }
++    void update(double dt);
++    double value() const { return m_value; }
++    double target() const { return m_target; }
++    bool settled(double epsilon) const;
++    void snap() {
++      m_value = m_target;
++      m_velocity = 0.0;
++    }
++
++  private:
++    double m_value = 0.0;
++    double m_velocity = 0.0;
++    double m_target = 0.0;
++    double m_omega = 1.0;
++  };
++
++  // Everything the renderer needs for one frame.
++  struct FrameParams {
++    std::array<float, 16> view{};
++    std::array<float, 16> projection{};
++    float progress = 0.0F;
++    int gradientFrom = 0;
++    int gradientTo = 0;
++    float gradientMix = 0.0F;
++  };
++
++  enum class Movement { Stopped, RampingUp, Moving, RampingDown };
++
++  class Scene {
++  public:
++    using Clock = std::chrono::system_clock;
++
++    Scene(const Assets& assets, std::uint32_t randomSeed);
++
++    void setSettings(const SceneSettings& settings, Clock::time_point now);
++    const SceneSettings& settings() const { return m_settings; }
++
++    // Lock screen: start moving (2 s ease-in). Unlock with still desktop: stop (5 s ease-out).
++    void setMoving(bool moving);
++    // Skips the ramp (startup, tests).
++    void setMovingImmediately(bool moving);
++    Movement movement() const { return m_movement; }
++
++    // Pins the pose (CLI / tests). Negative path or NaN seed keep the current one.
++    void setPose(double progress, int path, double seed);
++    double progress() const { return m_progress; }
++    int path() const { return m_path; }
++    double seed() const { return m_seed; }
++
++    // Advances wall-clock time. Returns true when the next frame differs from the last.
++    bool update(double dt, Clock::time_point now);
++
++    // True while frames must keep coming (moving, ramping or fading colours).
++    bool animating() const;
++
++    // Index of the gradient the clock/appearance currently asks for.
++    int wantedGradient(Clock::time_point now) const;
++
++    FrameParams frame(float aspect) const;
++
++    // Bumped whenever update() changes anything visible; lets callers reuse frames.
++    std::uint64_t generation() const { return m_generation; }
++
++  private:
++    void rerollLoop();
++    double pathX(double t) const;
++    double noise2(double x, double y) const;
++    void checkGradient(Clock::time_point now, bool force);
++
++    const Assets& m_assets;
++    SceneSettings m_settings;
++    std::mt19937 m_rng;
++
++    double m_progress = 0.0;
++    int m_path = 0;
++    double m_seed = 0.0;
++
++    Movement m_movement = Movement::Stopped;
++    SpringRamp m_speed;
++
++    int m_gradientFrom = 0;
++    int m_gradientTo = 0;
++    int m_gradientPending = -1;
++    double m_fadeElapsed = 0.0;
++    bool m_fading = false;
++    double m_sinceGradientCheck = 0.0;
++
++    std::uint64_t m_generation = 1;
++  };
++
++} // namespace sequoia
+diff --git a/src/shell/wallpaper/wallpaper.cpp b/src/shell/wallpaper/wallpaper.cpp
+index 8341775e4..9266bcc66 100644
+--- a/src/shell/wallpaper/wallpaper.cpp
++++ b/src/shell/wallpaper/wallpaper.cpp
+@@ -11,6 +11,7 @@
+ #include "render/core/render_styles.h"
+ #include "render/core/shared_texture_cache.h"
+ #include "render/render_context.h"
++#include "shell/sequoia/sequoia_live_wallpaper.h"
+ #include "shell/wallpaper/wallpaper_geometry.h"
+ #include "shell/wallpaper/wallpaper_instance.h"
+ #include "shell/wallpaper/wallpaper_paths.h"
+@@ -132,7 +133,7 @@ namespace {
+     if (path.empty()) {
+       return std::nullopt;
+     }
+-    if (path.starts_with("color:")) {
++    if (path.starts_with("color:") || SequoiaLiveWallpaper::isSequoiaPath(path)) {
+       return std::string(path);
+     }
+     const std::filesystem::path resolved = FileUtils::resolvePath(path, callerCwd);
+@@ -269,7 +270,7 @@ namespace {
+     if (!compositors::isKde()) {
+       return;
+     }
+-    if (imagePath.starts_with("color:")) {
++    if (imagePath.starts_with("color:") || SequoiaLiveWallpaper::isSequoiaPath(imagePath)) {
+       return;
+     }
+ 
+@@ -406,6 +407,7 @@ bool Wallpaper::onPointerEvent(const PointerEvent& event) {
+ }
+ 
+ void Wallpaper::onGpuResourcesInvalidated() {
++  SequoiaLiveWallpaper::instance().abandonGpuResources();
+   // The texture cache re-uploads leased images after a reset; onImageChanged() applies them as they land.
+   for (auto& inst : m_instances) {
+     updateRendererState(*inst);
+@@ -427,6 +429,7 @@ bool Wallpaper::initialize(
+ 
+   // Register reload callback unconditionally so toggling enabled in config works.
+   m_config->addReloadCallback([this] { reload(); }, "wallpaper");
++  SequoiaLiveWallpaper::instance().setConfig(m_config->config().wallpaper.sequoia);
+   m_paletteConn = paletteChanged().connect([this] {
+     for (auto& inst : m_instances) {
+       updateRendererState(*inst);
+@@ -455,6 +458,7 @@ bool Wallpaper::initialize(
+ void Wallpaper::reload() {
+   const auto& wallpaperConfig = m_config->config().wallpaper;
+   const bool nowEnabled = wallpaperConfig.enabled;
++  SequoiaLiveWallpaper::instance().setConfig(wallpaperConfig.sequoia);
+ 
+   if (nowEnabled && m_wallpaperEnabled && wallpaperConfig == m_lastWallpaperConfig) {
+     return;
+@@ -610,6 +614,7 @@ void Wallpaper::onSecondTick() {
+   if (m_config == nullptr || !m_config->config().wallpaper.enabled) {
+     return;
+   }
++  SequoiaLiveWallpaper::instance().onSecondTick();
+ 
+   using namespace std::chrono;
+   const auto secondStamp = duration_cast<seconds>(system_clock::now().time_since_epoch()).count();
+@@ -1319,6 +1324,12 @@ void Wallpaper::createInstance(const WaylandOutput& output) {
+   instance->surface->setAnimationManager(&instance->animations);
+ 
+   instance->surface->setUpdateCallback([this, inst] { updateRendererState(*inst); });
++  // The live scene started moving (lock, unlock coast, colour change): resume frames.
++  instance->liveWakeId = SequoiaLiveWallpaper::instance().addWakeListener([inst] {
++    if (inst->surface != nullptr) {
++      inst->surface->requestUpdate();
++    }
++  });
+ 
+   if (!instance->surface->initialize(output.output)) {
+     kLog.warn("failed to initialize surface for output {}", output.name);
+@@ -1375,6 +1386,11 @@ void Wallpaper::loadWallpaper(WallpaperInstance& instance, const std::string& pa
+     beginWallpaperChange(instance, path, WallpaperSourceKind::Color, {}, color);
+     return;
+   }
++  if (SequoiaLiveWallpaper::isSequoiaPath(path)) {
++    cancelLoading(instance);
++    beginWallpaperChange(instance, path, WallpaperSourceKind::Live, {}, color);
++    return;
++  }
+ 
+   if (path == instance.loadingPath) {
+     return;
+@@ -1628,6 +1644,9 @@ void Wallpaper::updateRendererState(WallpaperInstance& instance) {
+           if (kind == WallpaperSourceKind::Color) {
+             return color.a >= 1.0F;
+           }
++          if (kind == WallpaperSourceKind::Live) {
++            return wpConfig.fillMode != WallpaperFillMode::Center && wpConfig.fillMode != WallpaperFillMode::Fit;
++          }
+           // Center and Fit leave the surface outside the image to the fill; the other modes cover all of it.
+           const bool fillsSurface =
+               wpConfig.fillMode != WallpaperFillMode::Center && wpConfig.fillMode != WallpaperFillMode::Fit;
+@@ -1654,4 +1673,24 @@ void Wallpaper::updateRendererState(WallpaperInstance& instance) {
+   } else {
+     wallpaperNode->setSpan(WallpaperSpanParams{});
+   }
++
++  const bool showsLive = instance.currentSourceKind == WallpaperSourceKind::Live
++      || (instance.transitioning && instance.nextSourceKind == WallpaperSourceKind::Live);
++  if (showsLive) {
++    auto& live = SequoiaLiveWallpaper::instance();
++    live.driveFrames(instance.animations, &instance, [&live, inst = &instance] {
++      live.advance();
++      if (live.takeRepaint(inst) && inst->wallpaperNode != nullptr) {
++        inst->wallpaperNode->markPaintDirty();
++      }
++    });
++  }
++}
++
++WallpaperInstance::~WallpaperInstance() {
++  auto& live = SequoiaLiveWallpaper::instance();
++  if (liveWakeId != 0) {
++    live.removeWakeListener(liveWakeId);
++  }
++  live.forgetConsumer(this);
+ }
+diff --git a/src/shell/wallpaper/wallpaper_instance.h b/src/shell/wallpaper/wallpaper_instance.h
+index 3f30b021a..f16693e2b 100644
+--- a/src/shell/wallpaper/wallpaper_instance.h
++++ b/src/shell/wallpaper/wallpaper_instance.h
+@@ -21,6 +21,11 @@ enum class WallpaperTransitionDirection {
+ };
+ 
+ struct WallpaperInstance {
++  WallpaperInstance() = default;
++  WallpaperInstance(const WallpaperInstance&) = delete;
++  WallpaperInstance& operator=(const WallpaperInstance&) = delete;
++  ~WallpaperInstance();
++
+   std::uint32_t outputName = 0;
+   struct wl_output* output = nullptr;
+   std::int32_t scale = 1;
+@@ -54,4 +59,7 @@ struct WallpaperInstance {
+   AnimationManager::Id transitionAnimId = 0;
+   WallpaperTransition activeTransition = WallpaperTransition::Fade;
+   TransitionParams transitionParams;
++
++  // SequoiaLiveWallpaper wake listener (0 = none).
++  std::uint64_t liveWakeId = 0;
+ };
+-- 
+2.56.0
+
