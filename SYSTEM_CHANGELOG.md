@@ -3,6 +3,19 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Chomik styles, including KDE's desktop style — 2026-11-09
+
+At the user's request, the `apps/chomik-qml` submodule moves to 080a9b3:
+`QT_QUICK_CONTROLS_STYLE` now really switches Qt Quick Controls styles (the
+QML imported Material unqualified, which bound every control to it), and
+Chomik bundles qqc2-desktop-style and Kirigami so
+`QT_QUICK_CONTROLS_STYLE=org.kde.desktop` draws with the desktop's Darkly
+widget style and Noctalia colour scheme. Material with Chomikuj green stays the
+default. erebor-diff tier: different (only the Chomik package). Activated with
+switch as generation 330; the installed wrapper carries qqc2-desktop-style and
+Kirigami on its QML path. Styles were compared in offscreen renders, not yet in
+the live window.
+
 # Chomik, a native Chomikuj.pl client — 2026-11-09
 
 At the user's request, Chomik (a PySide6/QML client built on pyChomikBox, in
