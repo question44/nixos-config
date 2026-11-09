@@ -28,7 +28,7 @@ running app had been started with acceleration off and rewrote the file with
 the flags `true` at 20:38 (it saves its in-memory settings), which is also why
 a hand edit made while it ran did not stick. Not yet seen live: GPU rendering
 after the next full restart of Claude Desktop.
-# [PENDING] Slower Sequoia wallpaper on the desktop — 2026-11-09
+# [COMPLETED] Slower Sequoia wallpaper on the desktop — 2026-11-09
 
 At the user's request ("desktop wallpaper should animate slower"), the Sequoia
 patch gains `[wallpaper.sequoia] desktop_speed` (0.05–2, default 1 = Apple's
@@ -40,9 +40,12 @@ second). Built: `/nix/store/9sqjrnpgivg7b6ryn7a4833mxq4phnbx-nixos-system-erebor
 `erebor-diff` tier different, only the Noctalia package (and paths naming it).
 The new Noctalia validates the config; the running one warns "unknown setting"
 for `desktop_speed` and otherwise loads it, so merging before activation is safe.
-Not activated: sudo needs the Mac approval and `macbook` did not answer SSH.
-Live generation 338. Next: `scripts/erebor-rebuild switch` from `/etc/nixos`
-once the Mac is reachable, then restart Noctalia and check the speed.
+Live from generation 339 (activated by another rebuild of `master` at 20:40,
+which included this merge; Noctalia restarted then); `scripts/erebor-rebuild
+switch` made generation 340 persistent. The running Noctalia is
+`zk2wmw8i…-noctalia-5.4.1` (the patched build), loaded the scene (273 trees)
+and no longer warns about `desktop_speed`. The slower motion itself was not
+measured; the user is to confirm it by eye.
 # Umbriel patched with a backdrop effect kind — 2026-11-09
 
 At the user's request, Umbriel is built with a local patch,
