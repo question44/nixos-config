@@ -3,6 +3,19 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Liquid glass: blur weakens towards the window edge — 2026-11-09
+
+At the user's request, the glass blur now fades from full frost in the body
+to nearly clear at the edge. The fade runs over the outer 160 px on a
+smoothstep, with 1 px of blur left right at the edge. Umbriel hands the shader
+only the full frost and the unblurred backdrop. So `graded()` blurs the
+unblurred one itself with a 20-tap golden-angle disc, whose radius grows from
+1 to 5 px, and cross-fades into the frost from w = 0.3. This replaces the
+earlier SHARP/CLEAR rim blend. With 13 taps or a 10 px disc the hand-over zone
+speckled; at 5 px and 20 taps it is smooth (headless A/B over a text backdrop).
+The mirrored fold, fringe, colour and edge line are unchanged. Cost: up to 63
+texture reads per pixel in the outer band. Linked live.
+
 # Liquid glass on every transparent window — 2026-11-09
 
 At the user's request, `backdrop_effect = "liquid-glass-backdrop"` moved from

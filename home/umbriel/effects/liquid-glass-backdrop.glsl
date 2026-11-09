@@ -14,8 +14,9 @@
 const float FOLD = 11.0;       // the rim mirrors the strip inside this line, logical px from the edge
 const float CREASE = 1.5;      // softness of the fold, px
 const float MAG = 1.2;         // the reflection is this much larger than what it mirrors
-const float SHARP = 0.45;      // share of the lightly softened backdrop in the rim
-const float CLEAR = 7.0;       // the sharpness fades out by this many folds from the edge
+const float FADE = 160.0;      // the blur weakens over this distance towards the edge, logical px
+const float KERNEL = 5.0;      // radius of the shader's own blur where it hands over to the frost, px
+const float EDGE_BLUR = 1.0;   // blur radius left right at the edge, px
 const float SPLIT = 0.12;      // colour split along the bend, fraction of it
 const float MILK = 0.02;       // mix towards white over the whole glass
 const float LIFT = 1.08;       // brightness of the glass (multiplicative)
@@ -32,17 +33,27 @@ float sdRoundBox(vec2 p, vec2 b, float r) {
 
 // The unblurred backdrop, softened by a small 5-tap blur: Apple's reflection
 // is slightly soft, which keeps the rim from looking sharper than the body.
-vec3 soft(vec2 q) {
-  vec2 o = 1.25 / umbriel_size;
-  return (umbriel_sample_raw(q).rgb * 2.0
-          + umbriel_sample_raw(q + vec2(o.x, 0.0)).rgb + umbriel_sample_raw(q - vec2(o.x, 0.0)).rgb
-          + umbriel_sample_raw(q + vec2(0.0, o.y)).rgb + umbriel_sample_raw(q - vec2(0.0, o.y)).rgb) / 6.0;
+// The backdrop blurred by w: 0 at the edge (almost clear), 1 in the body (the
+// compositor's frost). Umbriel provides only the full frost and the unblurred
+// backdrop, so the in-between strengths blur the unblurred one here with a
+// 20-tap golden-angle disc whose radius grows with w, then hand over to the frost.
+vec3 graded(vec2 q, float w) {
+  vec3 frost = umbriel_sample(q).rgb;
+  if (w >= 1.0) {
+    return frost;
+  }
+  float rad = mix(EDGE_BLUR, KERNEL, w);
+  vec3 acc = umbriel_sample_raw(q).rgb;
+  for (int i = 0; i < 19; i++) {
+    float a = float(i) * 2.39996;
+    float rr = rad * sqrt((float(i) + 0.5) / 19.0);
+    acc += umbriel_sample_raw(q + vec2(cos(a), sin(a)) * rr / umbriel_size).rgb;
+  }
+  return mix(acc / 20.0, frost, smoothstep(0.3, 1.0, w));
 }
 
-vec3 tap(vec2 uv, vec2 n, float px, float sharp) {
-  vec2 q = uv + n * px / umbriel_size;
-  vec3 frosted = umbriel_sample(q).rgb;
-  return sharp > 0.0 ? mix(frosted, soft(q), sharp) : frosted;
+vec3 tap(vec2 uv, vec2 n, float px, float w) {
+  return graded(uv + n * px / umbriel_size, w);
 }
 
 vec4 backdrop(vec2 uv) {
@@ -72,19 +83,12 @@ vec4 backdrop(vec2 uv) {
   float bend = s - mirrored;  // <= 0: along -n, i.e. inward
   float t = clamp(1.0 - s / fold, 0.0, 1.0);
 
-  vec3 col;
-  if (s < CLEAR * fold) {
-    // Sharp in the reflection, easing into the frost over a long distance so
-    // the rim has no visible boundary with the body.
-    float e = clamp((s - fold) / ((CLEAR - 1.0) * fold), 0.0, 1.0);
-    float sharp = SHARP * (1.0 - e) * (1.0 - e) * (1.0 - e);
-    col = vec3(
-      tap(uv, n, bend * (1.0 + SPLIT), sharp).r,
-      tap(uv, n, bend, sharp).g,
-      tap(uv, n, bend * (1.0 - SPLIT), sharp).b);
-  } else {
-    col = umbriel_sample(uv).rgb;
-  }
+  // Blur strength: weak at the edge, full frost from FADE inwards.
+  float w = smoothstep(0.0, 1.0, clamp(s / FADE, 0.0, 1.0));
+  vec3 col = vec3(
+    tap(uv, n, bend * (1.0 + SPLIT), w).r,
+    tap(uv, n, bend, w).g,
+    tap(uv, n, bend * (1.0 - SPLIT), w).b);
 
   float lum = dot(col, vec3(0.2126, 0.7152, 0.0722));
   col = max(mix(vec3(lum), col, VIBRANCY), 0.0);
