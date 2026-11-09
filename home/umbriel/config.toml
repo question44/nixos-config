@@ -59,6 +59,12 @@ kind = "backdrop"
 shader = "/etc/nixos/home/umbriel/effects/liquid-glass-backdrop.glsl"
 padding = 8
 
+# Glass body for Noctalia's surfaces (layer shapes are unknown, so no rim).
+[effects.preset.liquid-glass-layer]
+kind = "backdrop"
+shader = "/etc/nixos/home/umbriel/effects/liquid-glass-layer.glsl"
+padding = 8
+
 [effects.preset.liquid-glass-rim]
 kind = "border"
 shader = "/etc/nixos/home/umbriel/effects/liquid-glass-rim.glsl"
@@ -67,6 +73,7 @@ shader = "/etc/nixos/home/umbriel/effects/liquid-glass-rim.glsl"
 match.namespace = "^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd)$"
 blur = true
 blur_ignore_alpha = 0.5
+backdrop_effect = "liquid-glass-layer"
 
 [[layer_rule]]
 match.namespace = "^vicinae$"

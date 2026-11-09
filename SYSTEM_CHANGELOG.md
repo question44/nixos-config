@@ -20,7 +20,8 @@ with copies of the user's Noctalia config and state: the bar and a panel take th
 glass, with nothing outside their shapes. The copy also opened a Chromium
 terms window inside the test compositor; it ended with it, and no process stayed
 attached to the test display. erebor-diff tier: different (umbriel and the
-scripts naming it). The config change waits for the next login; the running
+scripts naming it). Activated with switch as generation 345. Config (after the next login):
+`liquid-glass-layer` preset and `backdrop_effect` on the Noctalia layer rule. The config change waits for the next login; the running
 compositor does not know the layer key.
 
 # Liquid glass: narrower clear edge — 2026-11-09
