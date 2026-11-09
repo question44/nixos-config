@@ -3,6 +3,13 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Glass windows without a border — 2026-11-09
+
+At the user's request, the hairline was removed: the glass window rule sets
+`border_width = 0` and no longer selects `liquid-glass-rim`. The preset and its
+shader file stay defined but unused. Glass windows (Ghostty, Monstar) now have
+no focus ring; the `liquid-glass` window shader's rim is their only edge.
+
 # Liquid-glass shaders re-enabled — 2026-11-09
 
 At the user's request ("add glass"), the glass window rule again selects

@@ -75,9 +75,8 @@ match.app_id = "^(com\\.mitchellh\\.ghostty|dev\\.rockorager\\.monstar)$"
 window_effect = "liquid-glass"
 # The shader's R must equal this radius.
 corner_radius = 18
-# A hairline instead of the 2 px ring; focused, it is lit like the glass rim.
-border_width = 1
-border_effect = "liquid-glass-rim"
+# No border ring: the glass rim in the window shader is the only edge.
+border_width = 0
 
 # These destinations apply only while Sunshine's virtual monitor exists.
 [[window_rule]]
