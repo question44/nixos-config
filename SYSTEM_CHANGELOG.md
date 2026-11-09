@@ -3,6 +3,16 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Liquid-glass window shader switched off — 2026-11-09
+
+At the user's request, the glass window rule now sets `window_effect = "off"`
+in place of `"liquid-glass"`. The shader is disabled but not removed: the
+preset definition and `home/umbriel/effects/liquid-glass.glsl` stay, and
+setting the value back re-enables it. The rest of the glass rule is unchanged:
+the lit hairline border effect `liquid-glass-rim`, corner radius 18 and the
+1 px border. Live: `umbriel effects` reports `liquid-glass` as `unreferenced`,
+and Monstar has no window effect.
+
 # Umbriel blur passes 2 — 2026-11-09
 
 At the user's request, `[appearance.blur] passes` went from 4 to 2 in
