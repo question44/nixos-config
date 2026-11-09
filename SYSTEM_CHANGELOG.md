@@ -3,6 +3,12 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Liquid glass: a little more fringe — 2026-11-09
+
+At the user's request, the rim's colour split went from 0.06 to 0.12 of the bend
+(`SPLIT` in `liquid-glass-backdrop.glsl`). The split follows the mirrored fold,
+so it shows only in the outer ~11 px. Linked live.
+
 # Liquid glass: no step between rim and body — 2026-11-09
 
 The user found the transition from the sharp rim to the frosted body jarring.
