@@ -411,27 +411,31 @@ index 57e3c2e2..e2e1697c 100644
  
  enum fx_uniform_type {
 diff --git a/umbrielfx/include/umbrielfx/render/fx_renderer/fx_offscreen_buffers.h b/umbrielfx/include/umbrielfx/render/fx_renderer/fx_offscreen_buffers.h
-index 945860d4..991e53d3 100644
+index 945860d4..75bfa0e2 100644
 --- a/umbrielfx/include/umbrielfx/render/fx_renderer/fx_offscreen_buffers.h
 +++ b/umbrielfx/include/umbrielfx/render/fx_renderer/fx_offscreen_buffers.h
-@@ -18,6 +18,8 @@ struct fx_target_buffers {
+@@ -18,6 +18,10 @@ struct fx_target_buffers {
    struct fx_framebuffer* in_place_source;
    struct fx_framebuffer* animation_buffers[FX_ANIMATION_DEPTH];
    struct fx_framebuffer* animation_backdrop;
 +  // Unblurred copy of the target around a blur node with a backdrop effect
 +  struct fx_framebuffer* backdrop_source;
++  // The surface's own alpha around a blur node with a backdrop effect
++  struct fx_framebuffer* backdrop_shape;
  };
  
  /**
 diff --git a/umbrielfx/include/umbrielfx/render/pass.h b/umbrielfx/include/umbrielfx/render/pass.h
-index 33e4b0db..5ec5681b 100644
+index 33e4b0db..125aeaaa 100644
 --- a/umbrielfx/include/umbrielfx/render/pass.h
 +++ b/umbrielfx/include/umbrielfx/render/pass.h
-@@ -58,6 +58,7 @@ struct fx_gles_render_pass {
+@@ -58,6 +58,9 @@ struct fx_gles_render_pass {
    struct fx_offscreen_buffers* fx_offscreen_buffers;
    unsigned animation_depth;
    struct wlr_texture* workspace_incoming; // bound only while compositing a workspace pair
 +  bool effect_keeps_stencil;              // a backdrop effect draws through the blur's alpha mask
++  struct wlr_texture* backdrop_shape;     // the surface's alpha, output-aligned, for a backdrop effect
++  float backdrop_shape_threshold;         // the blur's ignore_alpha for that shape
    // A scratch backdrop beneath an isolated subtree, excluded from composition.
    unsigned isolation_depth;
    bool isolation_content;
@@ -477,7 +481,7 @@ index e4125a44..c2e2df67 100644
   * If this node represents a wlr_scene_optimized_blur node, that node will
   * be returned. It is not legal to feed a node that does not represent
 diff --git a/umbrielfx/internal/render/fx_renderer/effect.h b/umbrielfx/internal/render/fx_renderer/effect.h
-index 2dc2ca60..8b38db90 100644
+index 2dc2ca60..e353bf90 100644
 --- a/umbrielfx/internal/render/fx_renderer/effect.h
 +++ b/umbrielfx/internal/render/fx_renderer/effect.h
 @@ -12,6 +12,7 @@
@@ -488,6 +492,15 @@ index 2dc2ca60..8b38db90 100644
  struct fx_renderer;
  struct wlr_output;
  
+@@ -34,7 +35,7 @@ struct fx_effect_shader {
+   GLuint program;
+   GLint proj, tex_proj, position, tex, sample_matrix;
+   GLint previous_tex, previous_sample_matrix;
+-  GLint incoming_tex, audio_tex;
++  GLint incoming_tex, audio_tex, shape_tex;
+   GLint progress, linear_progress, direction, random_seed;
+   GLint size, scale, expand;
+   bool shape_preserving;
 @@ -114,6 +115,23 @@ struct fx_effect_composite {
    const float* audio; // bands followed by availability; NULL supplies zero
  };
@@ -513,7 +526,7 @@ index 2dc2ca60..8b38db90 100644
  // through the composite's program.
  void fx_render_pass_end_effect(struct fx_gles_render_pass* pass, const struct fx_effect_composite* composite);
 diff --git a/umbrielfx/render/fx_renderer/effect_shader.c b/umbrielfx/render/fx_renderer/effect_shader.c
-index 89e0a448..c80007a2 100644
+index 89e0a448..33a26925 100644
 --- a/umbrielfx/render/fx_renderer/effect_shader.c
 +++ b/umbrielfx/render/fx_renderer/effect_shader.c
 @@ -42,13 +42,17 @@ static const char kPreamble[] =
@@ -534,21 +547,36 @@ index 89e0a448..c80007a2 100644
      "  vec2 p = (vec3(uv, 1.0) * umbriel_sample_matrix).xy;\n"
      "  if (any(lessThan(p, vec2(0.0))) || any(greaterThan(p, vec2(1.0)))) return vec4(0.0);\n"
      "  return texture2D(umbriel_incoming_texture, p);\n"
-@@ -121,6 +125,13 @@ static const char kMaskSection[] =
+@@ -121,6 +125,28 @@ static const char kMaskSection[] =
      "}\n";
  static const char kWindowSuffix[] =
      "\nvoid main() { gl_FragColor = mix(umbriel_sample(v_texcoord), window(v_texcoord), umbriel_mask(v_texcoord)); }\n";
 +// Backdrop: sampling may leave the drawn rectangle (up to the preset's padding),
 +// and the result covers only the rounded node shape; the window is drawn over it.
 +static const char kBackdropPrefix[] = "#define UMBRIEL_UNBOUNDED 1\n";
++// umbriel_shape: coverage of the surface's own drawn shape (alpha past the
++// blur's ignore_alpha threshold) in the same coordinates as umbriel_sample,
++// 0 outside it. Without a shape (windows) it is 1 inside the drawn rectangle.
 +static const char kBackdropSection[] =
-+    "vec4 umbriel_sample_raw(vec2 uv) { return umbriel_sample_incoming(uv); }\n";
++    "vec4 umbriel_sample_raw(vec2 uv) { return umbriel_sample_incoming(uv); }\n"
++    "uniform sampler2D umbriel_shape_texture;\n"
++    "uniform float umbriel_shape_available;\n"
++    "uniform float umbriel_shape_threshold;\n"
++    "float umbriel_shape(vec2 uv) {\n"
++    "  if (umbriel_shape_available < 0.5) {\n"
++    "    return any(lessThan(uv, vec2(0.0))) || any(greaterThan(uv, vec2(1.0))) ? 0.0 : 1.0;\n"
++    "  }\n"
++    "  vec2 p = (vec3(uv, 1.0) * umbriel_sample_matrix).xy;\n"
++    "  if (any(lessThan(p, vec2(0.0))) || any(greaterThan(p, vec2(1.0)))) return 0.0;\n"
++    "  float a = texture2D(umbriel_shape_texture, p).a;\n"
++    "  return smoothstep(umbriel_shape_threshold - 0.05, umbriel_shape_threshold + 0.05, a);\n"
++    "}\n";
 +static const char kBackdropSuffix[] =
 +    "\nvoid main() { gl_FragColor = backdrop(v_texcoord) * umbriel_mask(v_texcoord); }\n";
  static const char kScreenSuffix[] = "\nvoid main() { gl_FragColor = screen(v_texcoord); }\n";
  // The cursor kind is in place too, so it needs the mask helper before its own uniform.
  static const char kCursorSection[] = "uniform vec2 umbriel_pointer;\n"
-@@ -142,6 +153,8 @@ static const char* kind_name(enum fx_effect_kind kind) {
+@@ -142,6 +168,8 @@ static const char* kind_name(enum fx_effect_kind kind) {
      return "screen";
    case FX_EFFECT_CURSOR:
      return "cursor";
@@ -557,7 +585,7 @@ index 89e0a448..c80007a2 100644
    }
    return "effect";
  }
-@@ -171,6 +184,11 @@ static void kind_sections(enum fx_effect_kind kind, const char** section, const
+@@ -171,6 +199,11 @@ static void kind_sections(enum fx_effect_kind kind, const char** section, const
      *extra = kCursorSection;
      *suffix = kCursorSuffix;
      return;
@@ -569,7 +597,7 @@ index 89e0a448..c80007a2 100644
    }
    *section = "";
    *suffix = "";
-@@ -383,6 +401,7 @@ struct fx_effect_shader* fx_effect_shader_create(
+@@ -383,6 +416,7 @@ struct fx_effect_shader* fx_effect_shader_create(
    const char* extra = NULL;
    const char* suffix = NULL;
    kind_sections(kind, &section, &extra, &suffix);
@@ -577,7 +605,7 @@ index 89e0a448..c80007a2 100644
    struct fx_renderer* fx = fx_get_renderer(renderer);
    struct wlr_egl_context previous;
    if (!wlr_egl_make_current(fx->egl, &previous)) {
-@@ -391,7 +410,8 @@ struct fx_effect_shader* fx_effect_shader_create(
+@@ -391,7 +425,8 @@ struct fx_effect_shader* fx_effect_shader_create(
    struct fx_effect_shader* shader = calloc(1, sizeof(*shader));
    static const char line[] = "#line 1\n";
    const size_t length =
@@ -587,7 +615,7 @@ index 89e0a448..c80007a2 100644
    char* fragment = malloc(length);
    if (shader == NULL || fragment == NULL) {
      free(shader);
-@@ -399,7 +419,7 @@ struct fx_effect_shader* fx_effect_shader_create(
+@@ -399,7 +434,7 @@ struct fx_effect_shader* fx_effect_shader_create(
      wlr_egl_restore_context(&previous);
      return NULL;
    }
@@ -596,23 +624,56 @@ index 89e0a448..c80007a2 100644
    wlr_log(WLR_INFO, "Compiling %s shader: %s", kind_name(kind), label);
    shader->program = link_program(fragment);
    free(fragment);
+@@ -422,6 +457,7 @@ struct fx_effect_shader* fx_effect_shader_create(
+   shader->sample_matrix = glGetUniformLocation(shader->program, "umbriel_sample_matrix");
+   shader->audio_tex = glGetUniformLocation(shader->program, "umbriel_audio_bands");
+   shader->incoming_tex = glGetUniformLocation(shader->program, "umbriel_incoming_texture");
++  shader->shape_tex = glGetUniformLocation(shader->program, "umbriel_shape_texture");
+   shader->previous_tex = glGetUniformLocation(shader->program, "umbriel_previous_texture");
+   shader->previous_sample_matrix = glGetUniformLocation(shader->program, "umbriel_previous_sample_matrix");
+   shader->progress = glGetUniformLocation(shader->program, "umbriel_progress");
 diff --git a/umbrielfx/render/fx_renderer/fx_offscreen_buffers.c b/umbrielfx/render/fx_renderer/fx_offscreen_buffers.c
-index e7de290f..35071e6f 100644
+index e7de290f..91c03ad1 100644
 --- a/umbrielfx/render/fx_renderer/fx_offscreen_buffers.c
 +++ b/umbrielfx/render/fx_renderer/fx_offscreen_buffers.c
-@@ -73,6 +73,7 @@ static void clear_animation_buffers(struct fx_target_buffers* buffers) {
+@@ -73,6 +73,8 @@ static void clear_animation_buffers(struct fx_target_buffers* buffers) {
    }
    drop_framebuffer(&buffers->animation_backdrop);
    drop_framebuffer(&buffers->in_place_source);
 +  drop_framebuffer(&buffers->backdrop_source);
++  drop_framebuffer(&buffers->backdrop_shape);
  }
  
  static void clear_target_buffers(struct fx_target_buffers* buffers) {
 diff --git a/umbrielfx/render/fx_renderer/fx_pass.c b/umbrielfx/render/fx_renderer/fx_pass.c
-index e74cb674..41e85fa8 100644
+index e74cb674..c488c3e5 100644
 --- a/umbrielfx/render/fx_renderer/fx_pass.c
 +++ b/umbrielfx/render/fx_renderer/fx_pass.c
-@@ -876,7 +876,7 @@ static void draw_animation_texture(
+@@ -851,6 +851,23 @@ static void draw_animation_texture(
+     glUniform1i(shader->incoming_tex, 2);
+     glActiveTexture(GL_TEXTURE0);
+   }
++  if (shader->shape_tex >= 0) {
++    const float available = pass->backdrop_shape != NULL ? 1.0F : 0.0F;
++    fx_effect_shader_bind_uniform_data(
++        shader, "umbriel_shape_available", FX_UNIFORM_FLOAT, 1, &available, sizeof(available)
++    );
++    fx_effect_shader_bind_uniform_data(
++        shader, "umbriel_shape_threshold", FX_UNIFORM_FLOAT, 1, &pass->backdrop_shape_threshold,
++        sizeof(pass->backdrop_shape_threshold)
++    );
++    struct wlr_texture* shape = pass->backdrop_shape != NULL ? pass->backdrop_shape : wlr_texture;
++    glActiveTexture(GL_TEXTURE4);
++    glBindTexture(GL_TEXTURE_2D, fx_get_texture(shape)->tex);
++    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
++    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
++    glUniform1i(shader->shape_tex, 4);
++    glActiveTexture(GL_TEXTURE0);
++  }
+   glUniform1f(shader->progress, parameters->progress);
+   glUniform1f(shader->linear_progress, parameters->linear_progress);
+   glUniform1f(shader->direction, parameters->direction);
+@@ -876,7 +893,7 @@ static void draw_animation_texture(
      }
      fx_effect_shader_bind_uniform(shader, &radius);
    }
@@ -621,7 +682,7 @@ index e74cb674..41e85fa8 100644
      struct fx_uniform corners = {.name = "umbriel_corner_radius", .type = FX_UNIFORM_VEC4, .count = 1};
      if (corner_radius != NULL) {
        for (unsigned i = 0; i < 4; i++) {
-@@ -945,7 +945,9 @@ static void draw_animation_texture(
+@@ -945,7 +962,9 @@ static void draw_animation_texture(
      glDisable(GL_BLEND);
    }
    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
@@ -632,7 +693,19 @@ index e74cb674..41e85fa8 100644
    if (mark_updated) {
      render_pass_mark_updated(pass, box, clip);
    }
-@@ -3022,6 +3024,129 @@ finish:
+@@ -960,6 +979,11 @@ static void draw_animation_texture(
+     glBindTexture(GL_TEXTURE_2D, 0);
+     glActiveTexture(GL_TEXTURE0);
+   }
++  if (shader->shape_tex >= 0) {
++    glActiveTexture(GL_TEXTURE4);
++    glBindTexture(GL_TEXTURE_2D, 0);
++    glActiveTexture(GL_TEXTURE0);
++  }
+   glBindTexture(GL_TEXTURE_2D, 0);
+   if (shader->previous_tex >= 0) {
+     glActiveTexture(GL_TEXTURE1);
+@@ -3022,6 +3046,158 @@ finish:
    TRACY_BOTH_ZONES_END;
  }
  
@@ -719,6 +792,29 @@ index e74cb674..41e85fa8 100644
 +    goto finish;
 +  }
 +
++  // The surface's own alpha, output-aligned like the backdrop, so the program
++  // can find the edges of the shape it draws (layer surfaces with ignore_alpha).
++  struct wlr_texture* shape_texture = NULL;
++  if (fx_options->ignore_alpha > 0.0F && fx_options->tex_options.base.texture) {
++    struct fx_framebuffer* shape = ensure_offscreen_buffer(pass, &target_buffers(pass)->backdrop_shape, true);
++    if (shape != NULL) {
++      struct fx_framebuffer* saved = pass->buffer;
++      pass->buffer = shape;
++      fx_framebuffer_bind(shape);
++      glDisable(GL_SCISSOR_TEST);
++      glClearColor(0, 0, 0, 0);
++      glClear(GL_COLOR_BUFFER_BIT);
++      struct fx_render_texture_options shape_options = fx_options->tex_options;
++      shape_options.base.clip = NULL;
++      shape_options.base.blend_mode = WLR_RENDER_BLEND_MODE_NONE;
++      shape_options.discard_transparent = 0.0F;
++      fx_render_pass_add_texture(pass, &shape_options);
++      pass->buffer = saved;
++      fx_framebuffer_bind(saved);
++      shape_texture = fx_texture_from_buffer(&renderer->wlr_renderer, shape->buffer);
++    }
++  }
++
 +  // As the plain blur does: only where the surface is opaque enough (blur_ignore_alpha).
 +  bool masked = false;
 +  if (fx_options->ignore_alpha > 0.0F && fx_options->tex_options.base.texture) {
@@ -735,13 +831,19 @@ index e74cb674..41e85fa8 100644
 +  struct wlr_texture* saved_incoming = pass->workspace_incoming;
 +  pass->workspace_incoming = raw_texture;
 +  pass->effect_keeps_stencil = masked;
++  pass->backdrop_shape = shape_texture;
++  pass->backdrop_shape_threshold = fx_options->ignore_alpha;
 +  draw_animation_texture(
 +      pass, blurred_texture, effect->shader, effect->parameters, &box, &box, &effect->logical_box, 0, NULL,
 +      effect->corner_radius, NULL, NULL, NULL, WL_OUTPUT_TRANSFORM_NORMAL, clip, NULL, NULL, pass->projection_matrix,
 +      true, true
 +  );
 +  pass->effect_keeps_stencil = false;
++  pass->backdrop_shape = NULL;
 +  pass->workspace_incoming = saved_incoming;
++  if (shape_texture != NULL) {
++    wlr_texture_destroy(shape_texture);
++  }
 +  if (masked) {
 +    stencil_mask_fini();
 +  }

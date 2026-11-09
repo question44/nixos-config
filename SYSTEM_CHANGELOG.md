@@ -3,6 +3,26 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Umbriel patch: shape input for layer glass (option B) — 2026-11-09
+
+At the user's request, the Noctalia glass gets a rim that follows the shapes
+Noctalia draws. `patches/umbriel-backdrop-effect.patch` gains a third commit
+(`~/src/umbriel`, branch `backdrop-effect`, 8984c326). On a blur node with
+`blur_ignore_alpha` and a backdrop effect, the renderer draws the surface's own
+alpha into an output-aligned offscreen buffer, `backdrop_shape`. Backdrop
+programs read it as `umbriel_shape(uv)` (coverage past the threshold, same
+coordinates as `umbriel_sample`; 1 inside the box for windows). The matching
+`liquid-glass-layer.glsl` searches 16 directions up to 28 px for the nearest
+edge, refines it by bisection, and applies the window glass along it: fold,
+fringe, graded blur, hairline. An 8-probe pre-check skips the search deep
+inside panels. The shader stays on a branch until the next login, because the
+running compositor lacks `umbriel_shape` and its live compile would fail.
+Unit tests 149/150 (the known NVIDIA failure). Headless test with copies of
+the user's Noctalia config: the shader compiles, the rim follows the bar's
+outline and the panel's rounded corners, and nothing renders outside the
+shapes. The effect is subtle on this bar (background opacity 0.54) and the
+panels (0.88).
+
 # Umbriel patch: backdrop effects on layer surfaces — 2026-11-09
 
 At the user's request (option A for Noctalia), `patches/umbriel-backdrop-effect.patch`
