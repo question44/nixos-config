@@ -3,6 +3,33 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Umbriel patched with a backdrop effect kind — 2026-11-09
+
+At the user's request, Umbriel is built with a local patch,
+`patches/umbriel-backdrop-effect.patch`, applied to the flake input's package
+for both the system and Home Manager (`modules/umbriel.nix`). The patch adds an
+effect kind, `backdrop`. A preset of that kind, selected per window with the
+new `backdrop_effect` rule key, is drawn by the window's blur node in place of
+its blur, under the window. `umbriel_sample` reads the blurred backdrop and
+`umbriel_sample_raw` the unblurred one, both readable up to the preset's
+`padding` past the window edge. Damage around the node grows by that padding.
+This is what Hyprland's hyprglass and KWin's glass plugin get from their hooks:
+glass that bends the backdrop but never the window's own pixels. Source branch
+`backdrop-effect` in `~/src/umbriel` (on c6ad18d5). Umbriel's unit tests:
+149/150 pass. `hdr-sdr-capture` fails because the NVIDIA GBM cannot allocate
+its HDR capture format (`gbm_bo_create failed`); the patch does not touch
+that. A headless test instance showed the effect working: the text was
+unaffected, and the rim bent the sharp backdrop. New shader
+`home/umbriel/effects/liquid-glass-backdrop.glsl`, not yet referenced by
+the config: the running compositor would reject the new kind until the user
+logs in to the patched build. erebor-diff tier: different (only the umbriel
+package and the files that point at it). Activated with switch as generation
+340: the system and user `umbriel` both resolve to the patched
+`b038rzq5…-umbriel-0.1.0`. The running session keeps the old compositor until the
+next login. Generation 339 was an accidental switch of master without the patch,
+after a failed fast-forward: it activated only what other sessions had already
+merged.
+
 # Claude Desktop keeps GPU rendering after a switch — 2026-11-09
 
 Claude Desktop had been drawing in software since 2026-11-08: its GPU process
@@ -46,28 +73,6 @@ switch` made generation 340 persistent. The running Noctalia is
 `zk2wmw8i…-noctalia-5.4.1` (the patched build), loaded the scene (273 trees)
 and no longer warns about `desktop_speed`. The slower motion itself was not
 measured; the user is to confirm it by eye.
-# Umbriel patched with a backdrop effect kind — 2026-11-09
-
-At the user's request, Umbriel is built with a local patch,
-`patches/umbriel-backdrop-effect.patch`, applied to the flake input's package
-for both the system and Home Manager (`modules/umbriel.nix`). The patch adds an
-effect kind, `backdrop`. A preset of that kind, selected per window with the
-new `backdrop_effect` rule key, is drawn by the window's blur node in place of
-its blur, under the window. `umbriel_sample` reads the blurred backdrop and
-`umbriel_sample_raw` the unblurred one, both readable up to the preset's
-`padding` past the window edge. Damage around the node grows by that padding.
-This is what Hyprland's hyprglass and KWin's glass plugin get from their hooks:
-glass that bends the backdrop but never the window's own pixels. Source branch
-`backdrop-effect` in `~/src/umbriel` (on c6ad18d5). Umbriel's unit tests:
-149/150 pass. `hdr-sdr-capture` fails because the NVIDIA GBM cannot allocate
-its HDR capture format (`gbm_bo_create failed`); the patch does not touch
-that. A headless test instance showed the effect working: the text was
-unaffected, and the rim bent the sharp backdrop. New shader
-`home/umbriel/effects/liquid-glass-backdrop.glsl`, not yet referenced by
-the config: the running compositor would reject the new kind until the user
-logs in to the patched build. erebor-diff tier: different (only the umbriel
-package and the files that point at it).
-
 # Glass windows without a border — 2026-11-09
 
 At the user's request, the hairline was removed: the glass window rule sets
