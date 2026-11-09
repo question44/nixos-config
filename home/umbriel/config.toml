@@ -33,7 +33,7 @@ hdr = "on"
 # a cached wallpaper blur; costs GPU time while something behind changes.
 optimized = false
 radius = 12
-passes = 4
+passes = 2
 noise = 0.012
 brightness = 1.08
 contrast = 0.82
