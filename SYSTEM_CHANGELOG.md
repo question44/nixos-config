@@ -3,6 +3,16 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Liquid glass drawn under the window — 2026-11-09
+
+After the user logged in to the patched Umbriel (running binary
+`b038rzq5…-umbriel-0.1.0`), the glass rule for Ghostty and Monstar selects
+`backdrop_effect = "liquid-glass-backdrop"` and switches the in-window
+`liquid-glass` shader off. The new preset (`kind = "backdrop"`, padding 32) is
+drawn by each window's blur node under the window, so the lens bends the
+backdrop and never the terminal's text. Linked live; `umbriel config validate`
+passes with the patched CLI.
+
 # Umbriel patched with a backdrop effect kind — 2026-11-09
 
 At the user's request, Umbriel is built with a local patch,
