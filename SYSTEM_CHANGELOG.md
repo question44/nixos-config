@@ -426,9 +426,15 @@ request, `[shell] launch_apps_as_systemd_services = true` was added to
 `home/noctalia/config.toml`. With it, Noctalia runs each app with `systemd-run --user
 --slice=app.slice`. The file is linked live, so no rebuild or activation was
 needed. `noctalia config validate` passed, and the running Noctalia reloaded
-the config at 19:08:45 without errors. Not yet verified: whether an app
-launched from Noctalia gets its own unit and survives a Noctalia restart. A
-launch from the launcher or dock is needed first.
+the config at 19:08:45 without errors.
+
+Verified 2026-11-10 (no activation; generation 346 unchanged). Helium
+(launched 00:05:26) and Dolphin (23:15:52) each run in their own
+`app-<id>@<uuid>.service` under `app.slice`, and `noctalia.service`'s cgroup
+holds only Noctalia and its helpers. Dolphin outlived Noctalia's SEGV at
+23:22:31. `systemctl --user restart noctalia.service` at 00:17:52 left Helium's
+unit on the same invocation, main PID and 244 tasks, with its GPU process
+(868253) still running and no Chromium FATAL in the journal.
 
 # Live Sequoia wallpaper in Noctalia — 2026-11-09
 
