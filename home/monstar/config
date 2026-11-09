@@ -3,3 +3,6 @@
 # background-opacity is substituted from home/appearance.nix, the same source
 # Ghostty's background-opacity uses, so both terminals stay in step.
 background-opacity = @appOpacity@
+# Keep text off the refracting lip of Umbriel's liquid-glass effect.
+window-padding-x = 14
+window-padding-y = 9

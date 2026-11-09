@@ -27,19 +27,30 @@ position = [0, 0]
 hdr = "on"
 
 [appearance.blur]
-# Liquid-glass look: softer, brighter, more saturated frost.
-radius = 14
-passes = 3
-noise = 0.02
-brightness = 1.05
-contrast = 0.85
-saturation = 1.4
+# Liquid-glass look: a wide, smooth frost that keeps the backdrop's colour
+# (vibrancy) and lifts it slightly, with little grain.
+radius = 12
+passes = 4
+noise = 0.012
+brightness = 1.08
+contrast = 0.82
+saturation = 1.65
+
+# Large, soft shadow falling straight down, as macOS draws it.
+[appearance.shadow]
+softness = 32
+offset_x = 0
+offset_y = 8
 
 # Lens edge for the translucent terminals (both already use appOpacity).
 [effects.preset.liquid-glass]
 kind = "window"
 # Absolute: a relative path resolves beside the ~/.config link, not the repo.
 shader = "/etc/nixos/home/umbriel/effects/liquid-glass.glsl"
+
+[effects.preset.liquid-glass-rim]
+kind = "border"
+shader = "/etc/nixos/home/umbriel/effects/liquid-glass-rim.glsl"
 
 [[layer_rule]]
 match.namespace = "^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd)$"
@@ -62,6 +73,13 @@ blur_optimized = true
 [[window_rule]]
 match.app_id = "^(com\\.mitchellh\\.ghostty|dev\\.rockorager\\.monstar)$"
 window_effect = "liquid-glass"
+# The shader's R must equal this radius.
+corner_radius = 18
+# Blur the windows behind a glass window too, not only the wallpaper.
+blur_optimized = false
+# A hairline instead of the 2 px ring; focused, it is lit like the glass rim.
+border_width = 1
+border_effect = "liquid-glass-rim"
 
 # These destinations apply only while Sunshine's virtual monitor exists.
 [[window_rule]]
