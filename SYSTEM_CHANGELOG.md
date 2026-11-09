@@ -32,8 +32,15 @@ the screen exactly. Noctalia's test suite: 199 of 200 pass;
 `template_undo_signal` also fails on unpatched upstream sources. Helium dumped
 core (SIGTRAP) during the `test` activation, the second Noctalia restarted; the
 cause is not established. `switch` of 76bb225 (also stages the greeter still per
-output) failed twice for lack of touch approval:
-[SYS-095](tasks/SYS-095.md).
+output) at first failed for lack of approval ([SYS-095](tasks/SYS-095.md)).
+
+Switched from 2331b1d as generation 331 (`mszqcv12znzq0iy9p31j1bbxv72bmw0y`,
+same closure as the tested system) after the Mac approval went through; the
+two attempts before it failed because the Mac approval timed out and then
+the MacBook was unreachable. The restarted Noctalia wrote a new still and its
+greeter sync staged `wallpaper-DP-1.png` and `wallpaper-HDMI-A-1.png` with no
+"skip missing wallpaper" warning. Helium, not started from Noctalia this time,
+survived the restart ([SYS-096](tasks/SYS-096.md)).
 
 # Chomik styles, including KDE's desktop style — 2026-11-09
 
