@@ -3,6 +3,38 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Live Sequoia wallpaper in Noctalia — 2026-11-09
+
+At the user's request, the macOS Sequoia live wallpaper, reverse-engineered in
+`~/src/sequoia-re`, runs as a Noctalia wallpaper. A new patch
+(`patches/noctalia-sequoia-live-wallpaper.patch`, from the `sequoia-live` branch
+of `~/src/noctalia-sequoia`) adds the `sequoia:` wallpaper path: one shared
+GLES3 scene for the wallpaper and lock surfaces. It is still on the desktop,
+eases into motion on lock (2 s spring) and coasts to a stop after unlock (5 s
+spring), as on macOS. Each settled frame is saved as a PNG for the theme,
+backdrop and greeter. Noctalia's package is now built from
+`programs.noctalia.patches`: lockscreen-yubikey adds its patch first, the new
+`sequoia-wallpaper` aspect (`my.sequoiaWallpaper.enable`, on for erebor) adds
+this one after it. With Sequoia off, the package drv is identical to master's.
+`config.toml` gains `[wallpaper.sequoia]` (motion and frame caps). The scene
+file is user data (see SYSTEM_CONTEXT.md). erebor-diff tier: different (only
+the noctalia package, +136.5 KiB; /etc files differ only in store hashes).
+
+Activated with `test` (d6cfd29's system,
+`6l94dchq0c5lw9rdajhvm3illihmghyy`); the profile is still generation 330. The
+wallpaper was then set with `noctalia msg wallpaper-set sequoia:` (previously
+`~/Pictures/wallhaven-exy3ml.png`) and shows on DP-1 and HDMI-A-1. The user's
+lock/unlock cycles in the live session logged the ramp-up (≈2.9 s) and the stop
+(≈6–7 s after unlock). Headless Umbriel tests before activation: desktop
+idle CPU equal to a colour wallpaper once still, 29.5 fps with
+`desktop_motion = "animated"`, ≈60 fps while locked; the saved still matched
+the screen exactly. Noctalia's test suite: 199 of 200 pass;
+`template_undo_signal` also fails on unpatched upstream sources. Helium dumped
+core (SIGTRAP) during the `test` activation, the second Noctalia restarted; the
+cause is not established. `switch` of 76bb225 (also stages the greeter still per
+output) failed twice for lack of touch approval:
+[SYS-095](tasks/SYS-095.md).
+
 # Chomik styles, including KDE's desktop style — 2026-11-09
 
 At the user's request, the `apps/chomik-qml` submodule moves to 080a9b3:
