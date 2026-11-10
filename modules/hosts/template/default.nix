@@ -46,6 +46,7 @@ in
         # };
         # yubikey = { enable = true; };
         # sequoiaWallpaper = { enable = true; }; # needs ~/.local/share/sequoia/sequoia.scene
+        # liquidGlass = { enable = true; };      # Umbriel, lock screen and greeter glass
         # macApproval = { enable = true; };
         # nanokvm = { enable = true; url = "https://<kvm-name>:8443"; };
         # torrentVpn = { enable = true; };       # qBittorrent only via Proton VPN

@@ -10,6 +10,22 @@ a persistent named workspace `chat` on DP-1. A window rule opens Discord and
 ZapZap there (`default_workspace = "chat"`); Caps+M switches to it and
 Caps+Shift+M moves the focused window to it. Config-only (live reload, no
 rebuild); `umbriel config validate` ok.
+# Liquid glass behind `my.liquidGlass.enable` — 2026-11-10
+
+At the user's request ("make liquid glass optional nixos config"), a new
+toggle `my.liquidGlass.enable` (on for erebor, off by default and in the
+template) switches all of it. Umbriel's glass presets and rules move from
+`home/umbriel/config.toml` to `home/umbriel/glass.toml`, which config.toml
+includes optionally; Home Manager links it as `~/.config/umbriel/glass.toml`
+(live, out-of-store) only when enabled, so off leaves plain blur and the
+terminals' unlit 1 px border. The lock-screen and greeter glass patches are
+applied only when enabled. The Umbriel backdrop patch stays either way.
+`umbriel config validate` passes with and without glass.toml; `nix flake
+check` passes. `erebor-diff` tier: different — only the new `glass.toml`
+link and the home-manager unit's store hash; on the template (glass off) the
+link, the lock-screen patch and the greeter patch are gone (checked by
+evaluation; `erebor-diff --host template` fails on master too, on
+`sops.defaultSopsFile`).
 
 # Fish `mkcd` function — 2026-11-10
 

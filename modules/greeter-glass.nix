@@ -8,8 +8,13 @@
 { inputs, ... }:
 {
   flake.modules.nixos.greeter-glass =
-    { pkgs, ... }:
     {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
+    lib.mkIf config.my.liquidGlass.enable {
       services.displayManager.noctalia-greeter.package =
         inputs.noctalia-greeter.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs
           (old: {

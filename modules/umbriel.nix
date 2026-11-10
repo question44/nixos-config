@@ -57,6 +57,11 @@ in
         # through the symlinks, so a saved edit applies without a rebuild.
         settings = config.lib.file.mkOutOfStoreSymlink "${osConfig.my.flakePath}/home/umbriel/config.toml";
       };
+      # Liquid glass, an optional include of config.toml: without this link
+      # Umbriel ignores it and windows and panels keep plain blur. Also live.
+      xdg.configFile."umbriel/glass.toml" = lib.mkIf osConfig.my.liquidGlass.enable {
+        source = config.lib.file.mkOutOfStoreSymlink "${osConfig.my.flakePath}/home/umbriel/glass.toml";
+      };
       # Edge swipes, which libinput does not report: reads the touchpads' raw
       # touches beside libinput (no grab; janzon is in the input group).
       systemd.user.services.edge-swipe =
