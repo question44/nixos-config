@@ -17,9 +17,15 @@ adds a second `@import` of it after Noctalia's line in each profile's
 `userChrome.css` (Noctalia's apply.sh keeps other lines). Web pages stay
 opaque: each site paints its own background. `erebor-diff` tier: different,
 only `translucent.css` and the home-manager unit hash. Switched to generation
-366; the import line and CSS are in place. A live prototype of the same CSS
-(Zen restarted twice) showed the blurred wallpaper through the frame, focused
-and unfocused; Zen has not yet been restarted on the deployed path.
+366; the import line and CSS are in place. The user then reported unfocused
+windows still opaque: the earlier "unfocused" screenshot had only shown an
+empty tab. Firefox also paints `body` with the opaque
+`--toolbox-background-color-inactive` while unfocused (sampled sidebar pixel a
+flat `20 20 25` unfocused against `23 22 39` focused). `translucent.css` now
+clears that too. Switched to generation 367, prototype import removed and Zen
+restarted on the deployed file: sidebar pixels are wallpaper-tinted both
+focused (`22 21 31`, `21 29 74`) and unfocused (`27 22 64`, `21 28 73`), and a
+screenshot of the unfocused window shows the wallpaper through it.
 
 # YubiKey: lock on unplug — 2026-11-10
 
