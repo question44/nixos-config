@@ -3,11 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
-# Spotify window at 0.95 opacity — 2026-11-10
+# Spotify window at 0.98 opacity — 2026-11-10
 
 At the user's request, a window rule in `home/umbriel/config.toml` (app_id
-`^spotify$`) sets `opacity = 0.95`; it started at 0.92, which the user found
-too see-through. Being translucent gives the window a blur node, so the
+`^spotify$`) sets `opacity = 0.98`; the user tried 0.92 and 0.95 first. Being translucent gives the window a blur node, so the
 all-windows liquid glass backdrop now shows behind it.
 Live config only: no rebuild or generation change.
 
