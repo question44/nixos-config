@@ -16,7 +16,7 @@
 //   is continuous (the web map is 8-bit).
 // - The window's own corner radius is used, not radius="21".
 
-const float REFRACTION = 60.0; // bend at the very edge, logical px
+const float REFRACTION = 120.0; // bend at the very edge, logical px
 const float BEZEL = 42.0;      // width of the curved rim, logical px
 const float CURVATURE = 3.5;   // rim profile exponent: 2 circular, higher = steeper
 const float IOR = 1.5;         // index of refraction

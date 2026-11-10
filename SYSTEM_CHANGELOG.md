@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Umbriel: stronger lens refraction on windows — 2026-11-10
+
+At the user's request, liquid-glass-lens.glsl (window glass) REFRACTION 60 → 120 px of bend at the edge. Layers (bar, Vicinae, panels) unchanged at 60. Umbriel hot-reloads the shader.
+
 # Umbriel: bar glass edge light takes the backdrop's colour — 2026-11-10
 
 At the user's request, the white edge highlight on the Noctalia bar and other layers (Vicinae, panels) is coloured by what is behind: liquid-glass-lens-layer.glsl samples the blurred backdrop 6 px outside the edge, scales it to full brightness and keeps 25% white (LIGHT_TINT, LIGHT_OUT, LIGHT_WHITE; LIGHT_TINT = 0 restores white). Windows unchanged; Umbriel hot-reloads the shader.
