@@ -3,6 +3,16 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Umbriel: lens glass on Noctalia and Vicinae — 2026-11-10
+
+At the user's request: `liquid-glass-lens-layer`
+(`home/umbriel/effects/liquid-glass-lens-layer.glsl`), the window lens
+optics and coloured rim on the edge search of `liquid-glass-layer.glsl`. The
+bevel is at most 28 px (the search's reach); the shape's thickness along the
+normal is measured so thin bar capsules get a narrower bevel and never bend
+past their middle. Both layer rules in `glass.toml` now use it; set them back
+to `liquid-glass-layer` to revert. Headless: compiled.
+
 # Umbriel: lens-rim liquid glass preset — 2026-11-10
 
 At the user's request: a second backdrop preset, `liquid-glass-lens`

@@ -40,12 +40,12 @@ shader = "/etc/nixos/home/umbriel/effects/liquid-glass-rim.glsl"
 # Noctalia's surfaces; blur and blur_ignore_alpha are in config.toml.
 [[layer_rule]]
 match.namespace = "^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd)$"
-backdrop_effect = "liquid-glass-layer"
+backdrop_effect = "liquid-glass-lens-layer"
 
 # The Vicinae launcher; blur and blur_ignore_alpha are in config.toml.
 [[layer_rule]]
 match.namespace = "^vicinae$"
-backdrop_effect = "liquid-glass-layer"
+backdrop_effect = "liquid-glass-lens-layer"
 
 # Liquid glass behind every window. It is drawn by the window's blur node,
 # which exists only while the window is transparent, so opaque windows are
@@ -57,3 +57,11 @@ backdrop_effect = "liquid-glass-lens"
 [[window_rule]]
 match.app_id = "^(com\\.mitchellh\\.ghostty|dev\\.rockorager\\.monstar)$"
 border_effect = "liquid-glass-rim"
+
+# Lens glass for layer surfaces (Noctalia, Vicinae): the window lens optics on
+# the layer shader's edge search. Set the two layer rules above back to
+# "liquid-glass-layer" for the old fold glass.
+[effects.preset.liquid-glass-lens-layer]
+kind = "backdrop"
+shader = "/etc/nixos/home/umbriel/effects/liquid-glass-lens-layer.glsl"
+padding = 8
