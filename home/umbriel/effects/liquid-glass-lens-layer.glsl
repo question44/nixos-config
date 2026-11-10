@@ -107,18 +107,24 @@ float depth(vec2 uv, vec2 n) {
   return 1000.0;
 }
 
-// Coverage of the pixel at uv by the shape, from a 3x3 box of the mask at
+// Coverage of the pixel at uv by the shape, from a 5x5 box of the mask at
 // 1 px spacing. Noctalia draws its capsules with hard edges and the layer is
 // clipped by an on/off stencil, so the outline is a staircase; averaging the
-// mask gives the outermost pixels fractional coverage along it.
+// mask gives the outermost pixels fractional coverage along it. The mask
+// reaches about 2 px past the stencil, so the visible outermost pixel averages
+// only 0.82 to 0.87 (measured on the bar, 2026-11-10); COVER_LO..COVER_HI
+// stretches that to roughly 0.3 there and 0.8 one pixel in.
+const float COVER_LO = 0.74;
+const float COVER_HI = 0.98;
+
 float cover(vec2 uv) {
   float c = 0.0;
-  for (int i = -1; i <= 1; i++) {
-    for (int j = -1; j <= 1; j++) {
+  for (int i = -2; i <= 2; i++) {
+    for (int j = -2; j <= 2; j++) {
       c += umbriel_shape(uv + vec2(float(i), float(j)) / umbriel_size);
     }
   }
-  return c / 9.0;
+  return clamp((c / 25.0 - COVER_LO) / (COVER_HI - COVER_LO), 0.0, 1.0);
 }
 
 float profile(float s) {
@@ -164,6 +170,6 @@ vec4 backdrop(vec2 uv) {
   col = mix(col, max(mix(vec3(lum), col, RIM_SATURATION), 0.0), rim);
   col = mix(col, vec3(1.0), rim * RIM_WHITE);
 
-  float a = s < 2.0 ? cover(uv) : 1.0;
+  float a = s < 5.0 ? cover(uv) : 1.0;
   return vec4(col * a, a);
 }

@@ -5,7 +5,7 @@ entries directly below this header. Earlier months: [2026-10](changelog/2026-10.
 
 # Umbriel: bar glass edges at 80% — 2026-11-10
 
-At the user's request, the lens glass rim on the Noctalia bar and other layers (Vicinae, panels) is 80% of its previous brightness. In liquid-glass-lens-layer.glsl: SPECULAR 0.2 → 0.16, RIM_OPACITY 0.5 → 0.4, RIM_WHITE 0.2 → 0.16. Windows unchanged. The same day the bar ends looked aliased with a seam where the round cap starts: the shader now fades its outermost pixels by a 3x3 box filter of the shape mask (Noctalia draws hard-edged capsules and the layer is clipped by an on/off stencil, so there is no client antialiasing to use) and measures thickness to a fraction of a pixel instead of 8 px steps. Umbriel hot-reloads the shader file, so no rebuild.
+At the user's request, the lens glass rim on the Noctalia bar and other layers (Vicinae, panels) is 80% of its previous brightness. In liquid-glass-lens-layer.glsl: SPECULAR 0.2 → 0.16, RIM_OPACITY 0.5 → 0.4, RIM_WHITE 0.2 → 0.16. Windows unchanged. The same day the bar ends looked aliased with a seam where the round cap starts: the shader now fades its outermost pixels by a 5x5 box filter of the shape mask, remapped so the outermost pixel is about 0.3 (Noctalia draws hard-edged capsules and the layer is clipped by an on/off stencil, so there is no client antialiasing to use) and measures thickness to a fraction of a pixel instead of 8 px steps. Umbriel hot-reloads the shader file, so no rebuild.
 
 # Lock screen and greeter: lens glass — 2026-11-10
 
