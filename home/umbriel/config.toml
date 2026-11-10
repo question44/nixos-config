@@ -101,6 +101,12 @@ corner_radius = 18
 # No border ring: the backdrop shader's lit rim is the only edge.
 border_width = 0
 
+[[window_rule]]
+match.app_id = "^spotify$"
+# Slightly see-through, so the all-windows glass shows behind it. Fades the
+# whole window (text too), unlike the terminals' own background opacity.
+opacity = 0.92
+
 # These destinations apply only while Sunshine's virtual monitor exists.
 [[window_rule]]
 match.app_id = "^steam$"
