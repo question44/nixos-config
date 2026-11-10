@@ -3,6 +3,24 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Spotifast 0.17.1 — 2026-11-10
+
+At the user's request, Spotifast (native egui Spotify client,
+github.com/crmne/spotifast) is installed system-wide from `modules/spotify.nix`,
+next to the Spicetify-patched Spotify. nixpkgs ships 0.14.2, so the module
+overrides it to v0.17.1 (new `src` and `fetchCargoVendor` hashes; nixpkgs
+rustc 1.99 meets its `rust-version = 1.98`). `doCheck = false`: the first
+build compiled, but its test phase rebuilds everything with thin LTO and two
+such rustc jobs were OOM-killed (kernel log 10:10). Drop the override once
+nixpkgs has 0.17.1 or newer.
+
+`scripts/erebor-diff` against master: different, only `spotifast: ∅ → 0.17.1`
+(+53.6 MiB, `bin/spotifast` and its desktop entry). Activated with
+`erebor-rebuild switch` as generation 350; `spotifast --version` reports
+0.17.1. Not yet launched or signed in; Noctalia's `spotifast` template writes
+its theme once `~/.config/spotifast` exists, then pick `noctalia.json` in
+Settings → Appearance → Theme.
+
 # Liquid glass on the lock-screen widgets — 2026-11-10
 
 At the user's request, the lock-screen widgets that have a background
