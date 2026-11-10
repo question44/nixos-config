@@ -3,6 +3,24 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Zen: translucent chrome — 2026-11-10
+
+At the user's request ("why zen browser is not transparent"). Zen's own
+switches were already on (`zen.widget.linux.transparency`,
+`browser.tabs.allow_transparent_browser`), but Noctalia's community
+`zen-browser` template paints the frame, sidebar and toolbars with an opaque
+`--base`, and Zen's default `zen.view.grey-out-inactive-windows` fills
+`#zen-main-app-wrapper` with opaque `InactiveCaption` while unfocused. New
+aspect `modules/home/zen.nix` writes `~/.config/zen/translucent.css` from
+`home/zen/translucent.css` (`--base` at `appOpacity`, 75%) and, at activation,
+adds a second `@import` of it after Noctalia's line in each profile's
+`userChrome.css` (Noctalia's apply.sh keeps other lines). Web pages stay
+opaque: each site paints its own background. `erebor-diff` tier: different,
+only `translucent.css` and the home-manager unit hash. Switched to generation
+366; the import line and CSS are in place. A live prototype of the same CSS
+(Zen restarted twice) showed the blurred wallpaper through the frame, focused
+and unfocused; Zen has not yet been restarted on the deployed path.
+
 # YubiKey: lock on unplug — 2026-11-10
 
 At the user's request (lock erebor when the YubiKey is disconnected). New
