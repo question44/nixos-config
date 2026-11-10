@@ -4,11 +4,18 @@
 let
   # Upstream Umbriel plus local patches. backdrop-effect adds the "backdrop"
   # effect kind that the liquid-glass rule uses (shader drawn by the window's
-  # blur node, under the window). Both the system and Home Manager install it.
+  # blur node, under the window). touchpad-gestures adds
+  # input.touchpad.three_finger_drag, moves workspace swipes to four fingers
+  # and opens the overview with a four-finger pinch; it applies on top of
+  # backdrop-effect (~/src/umbriel, branch touchpad-gestures). Both the system
+  # and Home Manager install it.
   patched =
     pkgs:
     inputs.umbriel.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
-      patches = (old.patches or [ ]) ++ [ ../patches/umbriel-backdrop-effect.patch ];
+      patches = (old.patches or [ ]) ++ [
+        ../patches/umbriel-backdrop-effect.patch
+        ../patches/umbriel-touchpad-gestures.patch
+      ];
     });
 in
 {
