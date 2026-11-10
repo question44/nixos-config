@@ -14,7 +14,12 @@ refracting by Snell's law (ior 1.5), so the rim shows the frost from up to
 -120 degrees. The bezel is a fixed 42 px instead of 30% of the half-size.
 Switched on the same day at the user's request: the catch-all window rule
 now uses `liquid-glass-lens` (set it back to `liquid-glass-backdrop` to
-revert). Live config, no rebuild. Headless
+revert). Later the same day, at the user's request for more specular:
+the white rim glow went from 0.1 to 0.2, and a coloured rim as
+kube.io/blog/liquid-glass-css-svg builds it was added: in the outer 2 px,
+lit towards -60 degrees and the opposite side, the bent backdrop is
+saturated x6 at opacity 0.5 with a little white over it. Headless test:
+compiled; visible as a vivid edge on coloured backdrops. Live config, no rebuild. Headless
 test (1600x1000, mpv image behind a clear floating Ghostty, window blur on):
 `umbriel effects` reported `compiled` and the screenshot showed the bent
 rim and smooth corners. Not seen on the HDR screen or on Noctalia layers.

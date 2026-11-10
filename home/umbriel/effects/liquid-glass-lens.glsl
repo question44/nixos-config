@@ -21,9 +21,17 @@ const float BEZEL = 42.0;      // width of the curved rim, logical px
 const float CURVATURE = 3.5;   // rim profile exponent: 2 circular, higher = steeper
 const float IOR = 1.5;         // index of refraction
 const float CHROMA = 0.35;     // blue bends (1 + CHROMA)x, green (1 + CHROMA/2)x as far as red
-const float SPECULAR = 0.1;    // rim highlight strength
+const float SPECULAR = 0.2;    // rim highlight strength
 const float SPECULAR_W = 2.0;  // rim highlight width, px (glow reaches 5x this)
 const float LIGHT = -120.0;    // light direction, degrees; 0 = from the right, -90 = from the top
+// Coloured rim as kube.io/blog/liquid-glass-css-svg builds it: in a thin rim,
+// lit on the side facing the light and the opposite side, the bent backdrop
+// is shown heavily saturated, with a faint white line over it.
+const float RIM_OPACITY = 0.5;     // how much the rim shows (kube.io: 0.2 to 0.5)
+const float RIM_SATURATION = 6.0;  // saturation of the backdrop in the rim (kube.io: 4 to 9)
+const float RIM_WHITE = 0.2;       // white over the rim, fraction of its opacity
+const float RIM_W = 2.0;           // rim width, px
+const float RIM_LIGHT = -60.0;     // rim light direction, degrees (kube.io default: up-right)
 
 float sdRoundBox(vec2 p, vec2 b, float r) {
   vec2 q = abs(p) - b + r;
@@ -80,6 +88,16 @@ vec4 backdrop(vec2 uv) {
   float crisp = max(0.0, 1.0 - s / SPECULAR_W);
   float glow = max(0.0, 1.0 - s / (SPECULAR_W * 5.0));
   col += min(1.0, SPECULAR * (crisp * crisp + 0.3 * glow * glow) * shade);
+
+  // Coloured rim: strongest where the edge faces the light or faces away from
+  // it, fading over RIM_W px from the edge.
+  float ra = radians(RIM_LIGHT);
+  float edge = max(0.0, 1.0 - s / RIM_W);
+  float rim = RIM_OPACITY * edge * edge * abs(dot(n, vec2(cos(ra), sin(ra))));
+  float lum = dot(col, vec3(0.2126, 0.7152, 0.0722));
+  vec3 vivid = max(mix(vec3(lum), col, RIM_SATURATION), 0.0);
+  col = mix(col, vivid, rim);
+  col = mix(col, vec3(1.0), rim * RIM_WHITE);
 
   return vec4(col, 1.0);
 }
