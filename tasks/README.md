@@ -65,8 +65,8 @@ its own completion condition is met.
 2. Fill in what is wanted, the plan if known, and a concrete completion
    condition. For active work, record the next safe step and any recovery
    checkpoint.
-3. Commit the file to `master` soon, so the task is visible to everyone, then
-   continue on your branch. An abandoned reservation only skips a number.
+3. Commit the file on your branch; it lands with that branch's PR (a task on
+   its own is a small PR). An abandoned reservation only skips a number.
 
 ## Closing a task
 

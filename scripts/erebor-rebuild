@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 # Build or activate erebor, one agent at a time.
 #   scripts/erebor-rebuild build|dry-build   any checkout or worktree
-#   scripts/erebor-rebuild test|switch       /etc/nixos on master only
-# Activation from a branch would silently roll back everything else on master.
+#   scripts/erebor-rebuild test              /etc/nixos on master, or an agent/*
+#                                            worktree that contains origin/master
+#   scripts/erebor-rebuild switch            /etc/nixos on master, equal to
+#                                            origin/master (landed through a PR)
+# Activating a branch that lacks master would roll back everything else on it.
 set -euo pipefail
 
 mode=${1:?usage: erebor-rebuild build|dry-build|test|switch}
@@ -11,9 +14,26 @@ repo=$(git rev-parse --show-toplevel)
 case $mode in
   build | dry-build) ;;
   test | switch)
-    [[ $repo == /etc/nixos ]] || { echo "Activate only from /etc/nixos, not $repo." >&2; exit 1; }
     branch=$(git -C "$repo" branch --show-current)
-    [[ $branch == master ]] || { echo "Activate only from master (on $branch)." >&2; exit 1; }
+    git -C "$repo" fetch -q origin master 2>/dev/null ||
+      echo "Could not fetch origin; checking against the last fetched origin/master." >&2
+    remote=$(git -C "$repo" rev-parse origin/master)
+    if [[ $repo == /etc/nixos ]]; then
+      [[ $branch == master ]] || { echo "/etc/nixos is on $branch, not master." >&2; exit 1; }
+      if [[ $mode == switch && $(git -C "$repo" rev-parse HEAD) != "$remote" ]]; then
+        echo "master differs from origin/master: land through a PR, then git pull --ff-only." >&2
+        exit 1
+      fi
+    else
+      [[ $mode == test ]] || { echo "switch only from /etc/nixos on master; use test here." >&2; exit 1; }
+      [[ $branch == agent/* ]] || { echo "Test only agent/* branches (on ${branch:-detached HEAD})." >&2; exit 1; }
+      for base in "$remote" master; do
+        git -C "$repo" merge-base --is-ancestor "$base" HEAD ||
+          { echo "$branch lacks $base; git rebase origin/master first." >&2; exit 1; }
+      done
+      echo "Testing $branch. Live-linked configs (home/umbriel, home/noctalia, …) still" >&2
+      echo "come from /etc/nixos; they change when the PR lands." >&2
+    fi
     ;;
   *) echo "Unknown mode: $mode" >&2; exit 1 ;;
 esac
