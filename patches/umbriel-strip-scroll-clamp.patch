@@ -1,0 +1,61 @@
+diff --git a/src/input/gestures.cpp b/src/input/gestures.cpp
+index 142ff36b..a75b459f 100644
+--- a/src/input/gestures.cpp
++++ b/src/input/gestures.cpp
+@@ -215,6 +215,17 @@ namespace umbriel {
+     m_scrollWorkspace = workspace;
+     m_viewportPrimary = workspace->scrollViewportExtent();
+     m_scrollStart = scrolling->scroll();
++    m_scrollShift = 0;
++    // The strip stops at its first and last snap instead of overscrolling and springing back. A start outside them (a
++    // centered rest) widens the range, so the strip never jumps when the fingers land.
++    m_scrollMin = m_scrollStart;
++    m_scrollMax = m_scrollStart;
++    for (int i = 0; i < static_cast<int>(scrolling->columns().size()); ++i) {
++      for (const double snap : scrolling->snapScrolls(i, m_viewportPrimary)) {
++        m_scrollMin = std::min(m_scrollMin, snap);
++        m_scrollMax = std::max(m_scrollMax, snap);
++      }
++    }
+     m_scrollTracker.reset();
+     m_scrollStartCentered = scrolling->centeredRest();
+     m_scrollScale = scale;
+@@ -241,7 +252,11 @@ namespace umbriel {
+       return;
+     }
+     m_scrollTracker.push(delta, timeMsec);
+-    scrolling->setScroll(m_scrollStart - m_scrollTracker.pos() * m_scrollScale);
++    // Travel past an end is dropped rather than banked, so reversing moves the strip at once.
++    const double target = m_scrollStart + m_scrollShift - m_scrollTracker.pos() * m_scrollScale;
++    const double clamped = std::clamp(target, m_scrollMin, m_scrollMax);
++    m_scrollShift += clamped - target;
++    scrolling->setScroll(clamped);
+     m_scrollWorkspace->markArrange(false);
+   }
+ 
+@@ -619,7 +634,9 @@ namespace umbriel {
+ 
+     const double currentScroll = scrolling->scroll();
+     // Where the swipe would coast to a stop under deceleration.
+-    const double projected = m_scrollStart - m_scrollTracker.projectedEndPos() * m_scrollScale;
++    const double projected = std::clamp(
++        m_scrollStart + m_scrollShift - m_scrollTracker.projectedEndPos() * m_scrollScale, m_scrollMin, m_scrollMax
++    );
+ 
+     const auto columnCount = static_cast<int>(scrolling->columns().size());
+ 
+diff --git a/src/input/gestures.h b/src/input/gestures.h
+index 9429bb74..74dcaef1 100644
+--- a/src/input/gestures.h
++++ b/src/input/gestures.h
+@@ -102,6 +102,10 @@ namespace umbriel {
+     // Scroll state (4-finger across the workspace axis).
+     Workspace* m_scrollWorkspace = nullptr;
+     double m_scrollStart = 0;
++    // Range the strip may move in during the gesture, and the travel dropped at its ends so far.
++    double m_scrollMin = 0;
++    double m_scrollMax = 0;
++    double m_scrollShift = 0;
+     bool m_scrollStartCentered = false;
+     int m_viewportPrimary = 0;
+     double m_scrollScale = 1.0;
