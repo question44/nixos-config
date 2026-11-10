@@ -53,6 +53,15 @@ version changes. The config that uses `scroll` must go live only once the
 patched compositor runs (an unpatched one rejects the whole accel_profile and
 falls back to adaptive), so it lands separately after the next login.
 
+Activated with `erebor-rebuild switch` as generation 355; the installed
+Umbriel's derivation carries all three patches. The running compositor is still
+the pre-patch build (its validator rejects `scroll` and also
+`three_finger_drag`). Config on branch `agent/umbriel-scroll-config`:
+`accel_profile` gains `scroll 1 0 0.2238` (flat curve equal to libinput's
+adaptive touchpad scrolling, 0.9·0.2968·1000/(47·25.4)) and `scroll_factor`
+returns to 0.3; validated with the patched binary. Merge after the user logs in
+again.
+
 # Umbriel: macOS-style trackpad acceleration — 2026-11-10
 
 At the user's request (to get the macOS trackpad feel), `home/umbriel/config.toml`

@@ -17,18 +17,20 @@ options = "lv3:ralt_switch"
 # three fingers drag, four-finger swipes scroll the strip and switch workspaces,
 # a four-finger pinch in/out opens/closes the overview.
 [input.touchpad]
-# Two-finger scrolling in apps (2026-11-10). 0.1 is Umbriel's minimum. The custom
-# accel_profile below sends scrolling through libinput's 1:1 fallback (47 units/mm
-# instead of adaptive's ~10.5), so 0.1 here ~ 0.45 under the old profile.
-scroll_factor = 0.1
+# Two-finger scrolling in apps at 0.3x speed (2026-11-10, by feel; 0.5 was still
+# too fast). Relative to adaptive-profile scrolling, which the scroll curve at
+# the end of accel_profile below restores.
+scroll_factor = 0.3
 # macOS-style pointer acceleration (2026-11-10). libinput custom curve for the
 # Magic Trackpad 2 (47 units/mm): step 0.75 units/ms (~16 mm/s), points in px/ms.
 # Gain in px per mm of finger travel: g(v) = 2.4 + 40 * x^1.7 / (1 + x^1.7),
 # x = v / 250 mm/s -> ~2.9 px/mm when slow (raised from 1.6/1.8: slow glides
 # felt too slow), ~9 at 100 mm/s, ~19 at 200 mm/s, ~37 at
 # 800 mm/s (a flick crosses the ultrawide). Replaces libinput's "adaptive";
-# `sensitivity` has no effect on a custom curve.
-accel_profile = "custom 0.75 0.000 0.044 0.114 0.224 0.381 0.592 0.856 1.174 1.541 1.956 2.412 2.907 3.436 3.994 4.578 5.185 5.811 6.453 7.109 7.777 8.455 9.142 9.836 10.535 11.240 11.949 12.661 13.376 14.093 14.811 15.531 16.253 16.974 17.696 18.419 19.142 19.864 20.586 21.309 22.030 22.752 23.472 24.193 24.913 25.632 26.350 27.068 27.786 28.502 29.218 29.933 30.648 31.362 32.075 32.788 33.500 34.211 34.922 35.632 36.342 37.051 37.759 38.467 39.174"
+# `sensitivity` has no effect on a custom curve. "scroll 1 0 0.2238" (patched
+# Umbriel) is a flat scroll curve equal to libinput's adaptive touchpad scrolling
+# (0.9 * 0.2968 * 1000 / (47 * 25.4)); without it scrolling runs 1:1, ~4.5x faster.
+accel_profile = "custom 0.75 0.000 0.044 0.114 0.224 0.381 0.592 0.856 1.174 1.541 1.956 2.412 2.907 3.436 3.994 4.578 5.185 5.811 6.453 7.109 7.777 8.455 9.142 9.836 10.535 11.240 11.949 12.661 13.376 14.093 14.811 15.531 16.253 16.974 17.696 18.419 19.142 19.864 20.586 21.309 22.030 22.752 23.472 24.193 24.913 25.632 26.350 27.068 27.786 28.502 29.218 29.933 30.648 31.362 32.075 32.788 33.500 34.211 34.922 35.632 36.342 37.051 37.759 38.467 39.174 scroll 1 0 0.2238"
 three_finger_drag = true
 
 [input.cursor]
