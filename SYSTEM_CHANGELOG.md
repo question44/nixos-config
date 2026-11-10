@@ -3,6 +3,14 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Fish `mkcd` function — 2026-11-10
+
+At the user's request ("add mkcd alias"), the shared `shell` Home Manager
+aspect adds a Fish function `mkcd DIR` (`mkdir -p` then `cd`). A function
+rather than an alias, since an alias cannot `cd` into its argument; it also
+reaches the Mac profile. `erebor-diff` tier: different — only the new
+`mkcd.fish` and the home-manager unit's store hash.
+
 # Glass terminal hairline restored — 2026-11-10
 
 At the user's request ("restore hairline/border for glass windows"), the
