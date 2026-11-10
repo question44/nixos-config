@@ -1,0 +1,45 @@
+--- a/include/base/HyperHdrInstance.h
++++ b/include/base/HyperHdrInstance.h
+@@ -62,6 +62,10 @@
+ 	static bool isTerminated();
+ 	static int getTotalRunningCount();
+ 
++	// Set when the LED device was switched off through the API; a new
++	// source then no longer switches it back on until the API does.
++	void setLedDeviceHeldOff(bool held) { _ledDeviceHeldOff = held; }
++
+ public slots:
+ 	bool clear(int priority, bool forceClearAll = false);
+ 	QJsonObject getAverageColor();
+@@ -153,6 +157,7 @@
+ 	QString					_name;
+ 
+ 	bool					_disableOnStartup;
++	std::atomic<bool>		_ledDeviceHeldOff{ false };
+ 
+ 	static std::atomic<bool>	_signalTerminate;
+ 	static std::atomic<int>		_totalRunningCount;
+--- a/sources/api/BaseAPI.cpp
++++ b/sources/api/BaseAPI.cpp
+@@ -294,6 +294,8 @@
+ 	}
+ 	else if (component != COMP_INVALID)
+ 	{
++		if (component == COMP_LEDDEVICE)
++			_hyperhdr->setLedDeviceHeldOff(!compState);
+ 		emit _hyperhdr->SignalRequestComponent(component, compState);
+ 		return true;
+ 	}
+--- a/sources/base/HyperHdrInstance.cpp
++++ b/sources/base/HyperHdrInstance.cpp
+@@ -669,6 +669,10 @@
+ 			{
+ 				Warning(_log, "Components are disabled: ignoring switching LED-Device on");
+ 			}
++			else if (_ledDeviceHeldOff)
++			{
++				Info(_log, "LED-Device was switched off through the API: keeping it off");
++			}
+ 			else
+ 			{
+ 				emit SignalRequestComponent(hyperhdr::COMP_LEDDEVICE, true);

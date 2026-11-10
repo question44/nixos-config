@@ -40,6 +40,11 @@ stdenv.mkDerivation (finalAttrs: {
     qt6Packages.wrapQtAppsHook
   ];
 
+  # Keep the LED device off after it was switched off through the API (the
+  # dashboard's "ambilight off"), instead of switching it on when a capture
+  # source returns, e.g. after the session unlocks.
+  patches = [ ../patches/hyperhdr-keep-leds-off.patch ];
+
   postPatch = ''
     substituteInPlace sources/sound-capture/linux/SoundCaptureLinux.cpp \
       --replace-fail "libasound.so.2" "${lib.getLib alsa-lib}/lib/libasound.so.2"
