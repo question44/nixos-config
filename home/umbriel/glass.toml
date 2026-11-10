@@ -51,7 +51,7 @@ backdrop_effect = "liquid-glass-layer"
 # which exists only while the window is transparent, so opaque windows are
 # unaffected.
 [[window_rule]]
-backdrop_effect = "liquid-glass-backdrop"
+backdrop_effect = "liquid-glass-lens"
 
 # The terminals' 1 px hairline (config.toml), lit like the glass rim when focused.
 [[window_rule]]

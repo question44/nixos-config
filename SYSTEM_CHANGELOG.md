@@ -12,8 +12,9 @@ curvature="3.5" chroma="0.35" blur="4" specular="0.1">`): a rounded bevel
 refracting by Snell's law (ior 1.5), so the rim shows the frost from up to
 60 px inside, with a per-channel colour split and a faint rim light lit from
 -120 degrees. The bezel is a fixed 42 px instead of 30% of the half-size.
-Not in use: the catch-all window rule still uses `liquid-glass-backdrop`;
-set it to `liquid-glass-lens` to try it. Live config, no rebuild. Headless
+Switched on the same day at the user's request: the catch-all window rule
+now uses `liquid-glass-lens` (set it back to `liquid-glass-backdrop` to
+revert). Live config, no rebuild. Headless
 test (1600x1000, mpv image behind a clear floating Ghostty, window blur on):
 `umbriel effects` reported `compiled` and the screenshot showed the bent
 rim and smooth corners. Not seen on the HDR screen or on Noctalia layers.
