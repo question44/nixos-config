@@ -55,6 +55,7 @@ in
         };
         yubikey = {
           enable = true;
+          lockOnRemoval = true;
           sound = "${pkgs.kdePackages.oxygen-sounds}/share/sounds/oxygen/stereo/dialog-question.ogg";
         };
         sequoiaWallpaper.enable = true;

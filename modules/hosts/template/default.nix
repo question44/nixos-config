@@ -44,7 +44,7 @@ in
         #   musicSink = "alsa_output.…";
         #   wledUrl = "http://192.168.1.x";
         # };
-        # yubikey = { enable = true; };
+        # yubikey = { enable = true; lockOnRemoval = true; };
         # sequoiaWallpaper = { enable = true; }; # needs ~/.local/share/sequoia/sequoia.scene
         # liquidGlass = { enable = true; };      # Umbriel, lock screen and greeter glass
         # macApproval = { enable = true; };

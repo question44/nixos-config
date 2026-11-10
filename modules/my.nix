@@ -183,6 +183,9 @@
             example = lib.literalExpression ''"''${pkgs.kdePackages.oxygen-sounds}/share/sounds/oxygen/stereo/dialog-question.ogg"'';
             description = "Sound played (with pw-play) while the YubiKey waits for a touch.";
           };
+          lockOnRemoval = lib.mkEnableOption ''
+            locking every session (`loginctl lock-sessions`) when a YubiKey is unplugged and
+            none is back within two seconds. Password and fingerprint still unlock'';
         };
 
         sequoiaWallpaper = {

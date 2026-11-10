@@ -41,6 +41,7 @@ in
         nixos.yubikey-touch-notify
         nixos.approval-reason
         nixos.lockscreen-yubikey
+        nixos.yubikey-unplug-lock
       ];
 
       config = lib.mkMerge [
