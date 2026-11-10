@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Umbriel: bar and panel lens glass tuned by the user — 2026-11-11
+
+The user set the layer glass (liquid-glass-lens-layer.glsl: Noctalia bar, panels, Vicinae) with ~/src/glass-tuner: REACH 28 → 60, BEZEL 28 → 120, CURVATURE 3.5 → 3.7, IOR 1.5 → 1.91, CHROMA 0.35 → 0.88, SPECULAR_W 2 → 1.6. The edge search still walks at most 28 px (14 steps of 2 px) and the bevel is capped at 0.3 × the shape's thickness, so the wider REACH/BEZEL mostly do not widen the bevel on the thin bar. Umbriel hot-reloads the shader.
+
 # Umbriel: window lens glass tuned by the user — 2026-11-11
 
 The user set the window glass (liquid-glass-lens.glsl) by eye with the slider app ~/src/glass-tuner: REFRACTION 120 → 44, BEZEL 42 → 50, CURVATURE 3.5 → 4.8, IOR 1.5 → 2.12, CHROMA 0.35 → 0.8, SPECULAR 0.2 → 0.06, SPECULAR_W 2 → 6.6, LIGHT −120° → 41° (lit from lower right), RIM_OPACITY 0.5 → 0.48, RIM_SATURATION 6 → 3.5, RIM_WHITE 0.2 → 0.17, RIM_W 2 → 4.6, RIM_LIGHT −60° → −53°. Bar and panels unchanged. Umbriel hot-reloads the shader.

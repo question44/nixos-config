@@ -13,14 +13,14 @@
 // The outline is antialiased from a box filter of the mask (cover), and the
 // thickness is measured to a fraction of a pixel so the bevel does not jump.
 
-const float REACH = 28.0;      // how far the edge search looks, logical px
+const float REACH = 60.0;      // how far the edge search looks, logical px
 const float REFRACTION = 60.0; // bend at the very edge, logical px
-const float BEZEL = 28.0;      // width of the curved rim, px (at most REACH)
-const float CURVATURE = 3.5;   // rim profile exponent
-const float IOR = 1.5;         // index of refraction
-const float CHROMA = 0.35;     // blue bends (1 + CHROMA)x, green (1 + CHROMA/2)x as far as red
+const float BEZEL = 120.0;      // width of the curved rim, px (at most REACH)
+const float CURVATURE = 3.7;   // rim profile exponent
+const float IOR = 1.91;         // index of refraction
+const float CHROMA = 0.88;     // blue bends (1 + CHROMA)x, green (1 + CHROMA/2)x as far as red
 const float SPECULAR = 0.16;    // white rim highlight strength
-const float SPECULAR_W = 2.0;  // white rim width, px (glow reaches 5x this)
+const float SPECULAR_W = 1.6;  // white rim width, px (glow reaches 5x this)
 const float LIGHT = -120.0;    // white rim light direction, degrees
 const float RIM_OPACITY = 0.4;     // coloured rim (kube.io): how much it shows
 const float RIM_SATURATION = 6.0;  // saturation of the backdrop in it
