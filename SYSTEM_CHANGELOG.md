@@ -19,7 +19,10 @@ At the user's request, `modules/workstation/packages.nix` adds `zapzap`
 Chosen over `karere` (GTK4) and `whatsie` because it is Qt like the other
 desktop apps and actively maintained; `whatsapp-for-linux`/`wasistlos` are
 removed from nixpkgs. `scripts/erebor-diff` against master: different, only
-the added zapzap closure and its desktop entry and icon links.
+the added zapzap closure and its desktop entry and icon links. Activated
+with `erebor-rebuild switch` as generation 353; `zapzap` and its desktop entry
+are in `/run/current-system/sw`. Not yet launched or signed in (needs the
+user to scan the QR code).
 
 # Spotifast: audio libraries for Soloist — 2026-11-10
 
