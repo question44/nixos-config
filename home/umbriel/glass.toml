@@ -1,0 +1,45 @@
+# Liquid glass: Umbriel's effect presets and the rules that use them. Included
+# (optionally) by config.toml and linked as ~/.config/umbriel/glass.toml only
+# with my.liquidGlass.enable (modules/umbriel.nix). Included files apply
+# before config.toml, so its rules for the same windows still win on any field
+# they also set. Needs the patched Umbriel ("backdrop" effect kind).
+
+# Lens edge for the translucent terminals (both already use appOpacity).
+[effects.preset.liquid-glass]
+kind = "window"
+# Absolute: a relative path resolves beside the ~/.config link, not the repo.
+shader = "/etc/nixos/home/umbriel/effects/liquid-glass.glsl"
+
+# Glass under the window (patched Umbriel: patches/umbriel-backdrop-effect.patch).
+# padding: how far past the window edge the shader may read the backdrop (the
+# fold reads inward only; 8 px covers the blur at the edge).
+[effects.preset.liquid-glass-backdrop]
+kind = "backdrop"
+shader = "/etc/nixos/home/umbriel/effects/liquid-glass-backdrop.glsl"
+padding = 8
+
+# Glass body for Noctalia's surfaces (layer shapes are unknown, so no rim).
+[effects.preset.liquid-glass-layer]
+kind = "backdrop"
+shader = "/etc/nixos/home/umbriel/effects/liquid-glass-layer.glsl"
+padding = 8
+
+[effects.preset.liquid-glass-rim]
+kind = "border"
+shader = "/etc/nixos/home/umbriel/effects/liquid-glass-rim.glsl"
+
+# Noctalia's surfaces; blur and blur_ignore_alpha are in config.toml.
+[[layer_rule]]
+match.namespace = "^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd)$"
+backdrop_effect = "liquid-glass-layer"
+
+# Liquid glass behind every window. It is drawn by the window's blur node,
+# which exists only while the window is transparent, so opaque windows are
+# unaffected.
+[[window_rule]]
+backdrop_effect = "liquid-glass-backdrop"
+
+# The terminals' 1 px hairline (config.toml), lit like the glass rim when focused.
+[[window_rule]]
+match.app_id = "^(com\\.mitchellh\\.ghostty|dev\\.rockorager\\.monstar)$"
+border_effect = "liquid-glass-rim"

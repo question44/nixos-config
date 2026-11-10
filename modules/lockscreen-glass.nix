@@ -10,7 +10,9 @@
 {
   flake.modules.nixos.lockscreen-glass =
     { config, lib, ... }:
-    lib.mkIf (config.my.yubikey.enable && config.my.sequoiaWallpaper.enable) {
-      programs.noctalia.patches = lib.mkOrder 2000 [ ../patches/noctalia-lockscreen-liquid-glass.patch ];
-    };
+    lib.mkIf
+      (config.my.liquidGlass.enable && config.my.yubikey.enable && config.my.sequoiaWallpaper.enable)
+      {
+        programs.noctalia.patches = lib.mkOrder 2000 [ ../patches/noctalia-lockscreen-liquid-glass.patch ];
+      };
 }

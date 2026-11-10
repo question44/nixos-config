@@ -65,30 +65,6 @@ softness = 32
 offset_x = 0
 offset_y = 8
 
-# Lens edge for the translucent terminals (both already use appOpacity).
-[effects.preset.liquid-glass]
-kind = "window"
-# Absolute: a relative path resolves beside the ~/.config link, not the repo.
-shader = "/etc/nixos/home/umbriel/effects/liquid-glass.glsl"
-
-# Glass under the window (patched Umbriel: patches/umbriel-backdrop-effect.patch).
-# padding: how far past the window edge the shader may read the backdrop (the
-# fold reads inward only; 8 px covers the blur at the edge).
-[effects.preset.liquid-glass-backdrop]
-kind = "backdrop"
-shader = "/etc/nixos/home/umbriel/effects/liquid-glass-backdrop.glsl"
-padding = 8
-
-# Glass body for Noctalia's surfaces (layer shapes are unknown, so no rim).
-[effects.preset.liquid-glass-layer]
-kind = "backdrop"
-shader = "/etc/nixos/home/umbriel/effects/liquid-glass-layer.glsl"
-padding = 8
-
-[effects.preset.liquid-glass-rim]
-kind = "border"
-shader = "/etc/nixos/home/umbriel/effects/liquid-glass-rim.glsl"
-
 [[layer_rule]]
 match.namespace = "^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd)$"
 blur = true
@@ -97,7 +73,6 @@ blur = true
 # (chosen by eye, 2026-11-10). Must stay below the bar's and dock's
 # background_opacity (0.35 in home/noctalia/config.toml).
 blur_ignore_alpha = 0.05
-backdrop_effect = "liquid-glass-layer"
 
 [[layer_rule]]
 match.namespace = "^vicinae$"
@@ -108,19 +83,14 @@ blur = true
 # Qt menus, context menus, and combo boxes are descendant XDG popups rather
 # than toplevel windows, so they need this explicit opt-in.
 blur_popups = true
-# Liquid glass behind every window. It is drawn by the window's blur node,
-# which exists only while the window is transparent, so opaque windows are
-# unaffected.
-backdrop_effect = "liquid-glass-backdrop"
 
 [[window_rule]]
 match.app_id = "^(com\\.mitchellh\\.ghostty|dev\\.rockorager\\.monstar)$"
-# Glass comes from the all-windows rule; terminals get larger corners.
+# Glass (when on) comes from glass.toml; terminals get larger corners.
 window_effect = "off"
 corner_radius = 18
-# A hairline instead of the 2 px ring; focused, it is lit like the glass rim.
+# A hairline instead of the 2 px ring; glass.toml lights it like the glass rim.
 border_width = 1
-border_effect = "liquid-glass-rim"
 
 [[window_rule]]
 match.app_id = "^spotify$"
@@ -293,6 +263,8 @@ default_output = "sunshine"
 "XF86MonBrightnessDown" = { action = "spawn brightnessctl --class=backlight set 10%-", allow_when_locked = true }
 
 # Noctalia renders its theme to the writable ~/.config/umbriel/noctalia.toml;
-# keeping this include here makes its apply.sh hook a no-op.
+# keeping this include here makes its apply.sh hook a no-op. glass.toml is the
+# liquid glass, linked beside this file only with my.liquidGlass.enable
+# (modules/umbriel.nix); without it windows and panels keep plain blur.
 [include.optional]
-files = ["noctalia.toml"]
+files = ["noctalia.toml", "glass.toml"]

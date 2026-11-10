@@ -192,6 +192,13 @@
             in the repository'';
         };
 
+        liquidGlass = {
+          enable = lib.mkEnableOption ''
+            liquid glass: Umbriel's glass under windows, Noctalia's panels and the
+            terminals' rim (home/umbriel/glass.toml), and the glass under the lock
+            screen and greeter login boxes (Noctalia patches). Off, they keep plain blur'';
+        };
+
         macApproval = {
           enable = lib.mkEnableOption "sudo and polkit approval through a forwarded Mac SSH agent";
           addresses = lib.mkOption {
