@@ -27,6 +27,9 @@ const float RIM_SATURATION = 6.0;  // saturation of the backdrop in it
 const float RIM_WHITE = 0.16;       // white over it, fraction of its opacity
 const float RIM_W = 2.0;           // its width, px
 const float RIM_LIGHT = -60.0;     // its light direction, degrees
+const float LIGHT_TINT = 1.0;      // edge light colour: 0 white, 1 the backdrop just outside the edge
+const float LIGHT_OUT = 6.0;       // how far outside the edge that colour is taken, px (padding is 8)
+const float LIGHT_WHITE = 0.25;    // white kept in the tinted light, so dark backdrops still give a highlight
 
 bool outside(vec2 uv, vec2 dir, float px) {
   return umbriel_shape(uv + dir * px / umbriel_size) < 0.5;
@@ -161,14 +164,20 @@ vec4 backdrop(vec2 uv) {
   float shade = 0.12 + 0.88 * (facing > 0.0 ? facing : -0.4 * facing);
   float crisp = max(0.0, 1.0 - s / SPECULAR_W);
   float glow = max(0.0, 1.0 - s / (SPECULAR_W * 5.0));
-  col += min(1.0, SPECULAR * (crisp * crisp + 0.3 * glow * glow) * shade);
+  // Edge light coloured by what is behind: the blurred backdrop just outside
+  // the edge, brought up to full brightness so it still reads as light.
+  vec3 around = umbriel_sample(uv + n * (s + LIGHT_OUT) / umbriel_size).rgb;
+  vec3 hue = around / max(max(around.r, max(around.g, around.b)), 0.05);
+  vec3 light = mix(vec3(1.0), mix(hue, vec3(1.0), LIGHT_WHITE), LIGHT_TINT);
+
+  col += light * min(1.0, SPECULAR * (crisp * crisp + 0.3 * glow * glow) * shade);
 
   float ra = radians(RIM_LIGHT);
   float edgeW = max(0.0, 1.0 - s / RIM_W);
   float rim = RIM_OPACITY * edgeW * edgeW * abs(dot(n, vec2(cos(ra), sin(ra))));
   float lum = dot(col, vec3(0.2126, 0.7152, 0.0722));
   col = mix(col, max(mix(vec3(lum), col, RIM_SATURATION), 0.0), rim);
-  col = mix(col, vec3(1.0), rim * RIM_WHITE);
+  col = mix(col, light, rim * RIM_WHITE);
 
   float a = s < 5.0 ? cover(uv) : 1.0;
   return vec4(col * a, a);

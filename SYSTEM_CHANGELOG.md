@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Umbriel: bar glass edge light takes the backdrop's colour — 2026-11-10
+
+At the user's request, the white edge highlight on the Noctalia bar and other layers (Vicinae, panels) is coloured by what is behind: liquid-glass-lens-layer.glsl samples the blurred backdrop 6 px outside the edge, scales it to full brightness and keeps 25% white (LIGHT_TINT, LIGHT_OUT, LIGHT_WHITE; LIGHT_TINT = 0 restores white). Windows unchanged; Umbriel hot-reloads the shader.
+
 # Umbriel: bar glass edges at 80% — 2026-11-10
 
 At the user's request, the lens glass rim on the Noctalia bar and other layers (Vicinae, panels) is 80% of its previous brightness. In liquid-glass-lens-layer.glsl: SPECULAR 0.2 → 0.16, RIM_OPACITY 0.5 → 0.4, RIM_WHITE 0.2 → 0.16. Windows unchanged. The same day the bar ends looked aliased with a seam where the round cap starts: the shader now fades its outermost pixels by a 5x5 box filter of the shape mask, remapped so the outermost pixel is about 0.3 (Noctalia draws hard-edged capsules and the layer is clipped by an on/off stencil, so there is no client antialiasing to use) and measures thickness to a fraction of a pixel instead of 8 px steps. Umbriel hot-reloads the shader file, so no rebuild.
