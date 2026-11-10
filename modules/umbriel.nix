@@ -12,8 +12,11 @@ let
   # <step> <points...>"); it applies on top of touchpad-gestures (branch
   # touchpad-scroll-accel). strip-scroll-clamp stops the four-finger strip
   # scroll at its first and last column instead of overscrolling and bouncing
-  # back (branch strip-scroll-clamp, on touchpad-scroll-accel). Both the system
-  # and Home Manager install it.
+  # back (branch strip-scroll-clamp, on touchpad-scroll-accel).
+  # overview-scroll-handoff drops the rest of a two-finger scroll when the
+  # overview opens or closes under it, so an edge swipe that opens it does not
+  # also scroll it (branch overview-scroll-handoff, on touchpad-scroll-accel;
+  # touches only src/input/cursor.*). Both the system and Home Manager install it.
   patched =
     pkgs:
     inputs.umbriel.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
@@ -22,6 +25,7 @@ let
         ../patches/umbriel-touchpad-gestures.patch
         ../patches/umbriel-scroll-accel-curve.patch
         ../patches/umbriel-strip-scroll-clamp.patch
+        ../patches/umbriel-overview-scroll-handoff.patch
       ];
     });
 in

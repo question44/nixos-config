@@ -74,6 +74,17 @@ command now runs when the fingers lift (once the swipe has been recognised),
 so the rest of the slide stays outside the overview; the next gesture scrolls
 it normally.
 
+User preferred opening mid-swipe. New `patches/umbriel-overview-scroll-handoff.patch`
+(`~/src/umbriel`, branch `overview-scroll-handoff` on `touchpad-scroll-accel`,
+`git diff touchpad-scroll-accel HEAD -- src`): a two-finger scroll stays with
+what it started on; if the overview opens or closes while it is in flight, the
+rest of it (through libinput's scroll stop at lift) is dropped. Also covers
+opening the overview by key mid-scroll. `edge-swipe` fires mid-swipe again and
+logs the finger count. Unit tests 149/150 (`hdr-sdr-capture`, known NVIDIA
+failure); no harness check, as the drop needs a real finger-scroll stream.
+`erebor-diff`: different, only the umbriel package and the edge-swipe script.
+The compositor part needs a logout/login.
+
 # Umbriel: macOS-style trackpad gestures — 2026-11-10
 
 User asked for macOS trackpad behaviour: three-finger drag, four-finger
