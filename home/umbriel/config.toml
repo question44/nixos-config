@@ -16,6 +16,13 @@ options = "lv3:ralt_switch"
 [input.touchpad]
 # Two-finger scrolling in apps at 0.3x speed (2026-11-10, by feel; 0.5 was still too fast).
 scroll_factor = 0.3
+# macOS-style pointer acceleration (2026-11-10). libinput custom curve for the
+# Magic Trackpad 2 (47 units/mm): step 0.75 units/ms (~16 mm/s), points in px/ms.
+# Gain in px per mm of finger travel: g(v) = 1.6 + 40 * x^1.8 / (1 + x^1.8),
+# x = v / 250 mm/s -> ~2 px/mm when slow (precise), ~18 at 200 mm/s, ~37 at
+# 800 mm/s (a flick crosses the ultrawide). Replaces libinput's "adaptive";
+# `sensitivity` has no effect on a custom curve.
+accel_profile = "custom 0.75 0.000 0.030 0.082 0.170 0.304 0.490 0.731 1.028 1.377 1.777 2.223 2.710 3.234 3.791 4.375 4.983 5.612 6.258 6.918 7.591 8.274 8.966 9.664 10.368 11.076 11.788 12.503 13.219 13.938 14.657 15.377 16.098 16.818 17.539 18.259 18.979 19.698 20.416 21.134 21.851 22.567 23.282 23.996 24.709 25.421 26.133 26.843 27.552 28.261 28.968 29.675 30.381 31.086 31.789 32.493 33.195 33.896 34.597 35.297 35.996 36.694 37.391 38.088 38.785"
 
 [input.cursor]
 theme = "capitaine-cursors"

@@ -3,6 +3,21 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Umbriel: macOS-style trackpad acceleration — 2026-11-10
+
+At the user's request (to get the macOS trackpad feel), `home/umbriel/config.toml`
+sets `[input.touchpad] accel_profile = "custom 0.75 …"` (64 points), replacing
+libinput's `adaptive` profile. Stock Umbriel key (pinned rev parses
+`custom <step> <points…>` and applies it as `LIBINPUT_ACCEL_TYPE_MOTION`);
+libinput 1.31.3. For touchpads libinput feeds the custom curve raw device units
+(not 1000-dpi normalized): the Magic Trackpad 2 (05ac:0265) reports 47 units/mm
+(`evemu-describe`), output is px/ms, both outputs at scale 1. Curve from a
+Mac-shaped gain model, g(v) = 1.6 + 40·x^1.8/(1+x^1.8) px/mm, x = v/250 mm/s
+(about 2 px/mm slow, 18 at 200 mm/s, 37 at 800 mm/s); not measured from the
+Mac's HIDAccelCurves (Mac unreachable over SSH from erebor). `sensitivity`
+does not affect a custom curve. Live config, no rebuild or activation;
+`umbriel config validate` passed. Rollback: revert this commit.
+
 # Umbriel: slower touchpad scrolling — 2026-11-10
 
 At the user's request, `home/umbriel/config.toml` sets
