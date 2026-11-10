@@ -3,6 +3,27 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Umbriel: four-finger strip scroll stops at its ends — 2026-11-10
+
+User asked that the window-scrolling gesture not bounce back. New
+`patches/umbriel-strip-scroll-clamp.patch` (after scroll-accel-curve;
+`~/src/umbriel` branch `strip-scroll-clamp`, export with
+`git diff touchpad-scroll-accel strip-scroll-clamp -- src docs tests`) clamps
+the strip to the range of its column snap points during a gesture (widened to
+the start position for a centered rest) and drops travel past the ends, so
+reversing moves the strip at once; the release projection is clamped the same
+way. Applies to four-finger swipes and the held-button pointer strip scroll.
+
+Unit tests 149/150 (known NVIDIA `hdr-sdr-capture`). Harness checks drag/,
+overview/, input/, focus/layout_scroll, focus/scrolling and
+effect/workspace_reveal_gestures: 115/116; `drag/overview_card_workspace_edge_scroll`
+fails identically without this patch. The debug harness build needed
+`-Dwerror=false`: the scroll-accel-curve patch trips
+`-Wmissing-field-initializers` (`AccelProfile::scrollPoints`) under `-Werror`.
+`erebor-diff`: different, only umbriel and `sunshine-output` (references it).
+Switched to generation 360. Takes effect at the next login into Umbriel;
+not yet tried on the trackpad.
+
 # Greeter glass patch: stray debug log removed — 2026-11-10
 
 `patches/noctalia-greeter-liquid-glass.patch` also created a file named `1`
