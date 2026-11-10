@@ -3,6 +3,24 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# HyperHDR: ambilight off survives lock and unlock — 2026-11-10
+
+At the user's request after "ambilight stopped working". The dashboard's
+"ambilight off" (17:40) disables HyperHDR's LED device through the JSON API
+and sets WLED `lor=2`. When the YubiKey unplug locked the session (19:25), the
+screen capture went away. On unlock, HyperHDR's "New source available ->
+switch LED-Device on" turned the LEDs back on, and WLED, still overridden, lit
+in its own static orange. Fixed in place first (WLED `lor=0`, LEDs on, as
+"ambilight on" does). `patches/hyperhdr-keep-leds-off.patch`: an API
+`componentstate LEDDEVICE false` now holds the device off across source
+changes until the API turns it on (the web UI, the dashboard and
+`hyperhdr-restore-off` all use that path). `erebor-diff` tier: different, only
+the HyperHDR package. Switched to generation 368 (HyperHDR restarted on the
+patched build). Test: dashboard-style off, then `SYSTEMGRABBER` off/on through
+the API; HyperHDR logged "keeping it off" and WLED stayed `on=false, lor=2`.
+Ambilight was then turned back on and WLED is receiving UDP from erebor again.
+Not tested with a real lock and unlock.
+
 # Zen: translucent chrome — 2026-11-10
 
 At the user's request ("why zen browser is not transparent"). Zen's own
