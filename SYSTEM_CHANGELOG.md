@@ -41,6 +41,9 @@ compositor. `erebor-diff`: different, only the greeter package (greetd's
 command changes with it). greetd has `X-RestartIfChanged=false`, so the new
 greeter appears at the next logout or boot. If it fails to start, boot the
 previous generation or log in on a TTY.
+Activated with switch as generation 351; greetd was not restarted, as
+expected, and its config now points at `9dw31df9…-noctalia-greeter-1.7.0`. No
+failed units. Not yet seen on the real greeter.
 
 # Liquid glass on the lock-screen widgets — 2026-11-10
 
