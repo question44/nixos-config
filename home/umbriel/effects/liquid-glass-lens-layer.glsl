@@ -9,6 +9,9 @@
 // Thin shapes (a bar capsule) get a narrower bevel and a smaller bend: the
 // thickness along the normal is measured, and the bend never samples past
 // half of it.
+//
+// The outline is antialiased from the client's own alpha (rawAlpha), and the
+// thickness is measured to a fraction of a pixel so the bevel does not jump.
 
 const float REACH = 28.0;      // how far the edge search looks, logical px
 const float REFRACTION = 60.0; // bend at the very edge, logical px
@@ -81,15 +84,41 @@ vec3 edge(vec2 uv) {
   return vec3(0.5 * (lo + hi), n);
 }
 
-// Thickness of the shape along -n from uv: px to the opposite edge.
+// Thickness of the shape along -n from uv: px to the opposite edge, coarse
+// 8 px steps refined to a fraction of a pixel (a coarse value makes the bevel
+// width jump where the normal turns into a rounded end: a visible seam).
 float depth(vec2 uv, vec2 n) {
   for (int k = 1; k <= 32; k++) {
     float t = float(k) * 8.0;
     if (outside(uv, -n, t)) {
-      return t;
+      float lo = t - 8.0;
+      float hi = t;
+      for (int j = 0; j < 6; j++) {
+        float mid = 0.5 * (lo + hi);
+        if (outside(uv, -n, mid)) {
+          hi = mid;
+        } else {
+          lo = mid;
+        }
+      }
+      return 0.5 * (lo + hi);
     }
   }
   return 1000.0;
+}
+
+// The client's own (antialiased) alpha at uv. The layer is clipped by an
+// on/off stencil, so the glass is faded by this alpha, relative to the alpha
+// a few px inside, to give the outline the client's antialiasing.
+float rawAlpha(vec2 uv) {
+  if (umbriel_shape_available < 0.5) {
+    return 1.0;
+  }
+  vec2 p = (vec3(uv, 1.0) * umbriel_sample_matrix).xy;
+  if (any(lessThan(p, vec2(0.0))) || any(greaterThan(p, vec2(1.0)))) {
+    return 0.0;
+  }
+  return texture2D(umbriel_shape_texture, p).a;
 }
 
 float profile(float s) {
@@ -135,5 +164,10 @@ vec4 backdrop(vec2 uv) {
   col = mix(col, max(mix(vec3(lum), col, RIM_SATURATION), 0.0), rim);
   col = mix(col, vec3(1.0), rim * RIM_WHITE);
 
-  return vec4(col, 1.0);
+  float cover = 1.0;
+  if (s < 2.0) {
+    float inner = rawAlpha(uv - n * 3.0 / umbriel_size);
+    cover = inner > 0.0 ? clamp(rawAlpha(uv) / inner, 0.0, 1.0) : 1.0;
+  }
+  return vec4(col * cover, cover);
 }
