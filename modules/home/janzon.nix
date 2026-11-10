@@ -57,6 +57,7 @@ in
         xremap
         spotify
         steam-theme
+        zen
       ];
       home.stateVersion = "26.05";
       home.pointerCursor = {
