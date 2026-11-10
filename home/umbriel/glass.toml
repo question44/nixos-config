@@ -33,6 +33,11 @@ shader = "/etc/nixos/home/umbriel/effects/liquid-glass-rim.glsl"
 match.namespace = "^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd)$"
 backdrop_effect = "liquid-glass-layer"
 
+# The Vicinae launcher; blur and blur_ignore_alpha are in config.toml.
+[[layer_rule]]
+match.namespace = "^vicinae$"
+backdrop_effect = "liquid-glass-layer"
+
 # Liquid glass behind every window. It is drawn by the window's blur node,
 # which exists only while the window is transparent, so opaque windows are
 # unaffected.
