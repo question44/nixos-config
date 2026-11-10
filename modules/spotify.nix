@@ -79,6 +79,24 @@ in
       environment.systemPackages = [
         spotify
         pkgs.spicetify-cli
+        # Native Spotify client (egui); Noctalia's spotifast template themes it.
+        # nixpkgs ships 0.14.2; drop this override once it has 0.17.1 or newer.
+        (pkgs.spotifast.overrideAttrs (
+          finalAttrs: old: {
+            version = "0.17.1";
+            src = old.src.override {
+              tag = "v${finalAttrs.version}";
+              hash = "sha256-6BJpFjv0xSSQnk9/xRtsShsKUHup7uRDACPQLSKdwgg=";
+            };
+            cargoDeps = pkgs.rustPlatform.fetchCargoVendor {
+              inherit (finalAttrs) src;
+              hash = "sha256-4ozZxNRENy6qd9+l46dQQIx3bw0Ig/A1G4TXIYq0kMI=";
+            };
+            # The test phase recompiles everything with thin LTO; two of those
+            # rustc jobs at once were OOM-killed here (2026-11-10).
+            doCheck = false;
+          }
+        ))
       ];
     };
 
