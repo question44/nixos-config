@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Umbriel: dimmer lens glass edges — 2026-11-10
+
+The lens glass rim on windows, Noctalia and Vicinae was too bright. In both lens shaders: SPECULAR 0.2 → 0.1, RIM_OPACITY 0.5 → 0.3, RIM_WHITE 0.2 → 0.1. Shaders load from /etc/nixos, so no rebuild; Umbriel picks them up on config reload. Lock screen and greeter keep their compiled-in values.
+
 # Lock screen and greeter: lens glass — 2026-11-10
 
 At the user's request, after they kept the lens glass on the desktop: the
