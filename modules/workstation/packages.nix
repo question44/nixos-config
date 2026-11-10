@@ -13,6 +13,7 @@
       aiUsagebar = pkgs.callPackage ../../packages/ai-usagebar.nix { };
       auroraNcs = pkgs.callPackage ../../packages/aurora-ncs.nix { };
       ut2004 = pkgs.callPackage ../../packages/ut2004.nix { };
+      kwi = pkgs.callPackage ../../packages/kwi { };
       noctaliaPython = pkgs.callPackage ../../packages/noctalia-python.nix { };
       noctaliaPkgConfig = pkgs.writeShellScriptBin "pkg-config" ''
         export PKG_CONFIG_PATH="${pkgs.pipewire.dev}/lib/pkgconfig''${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
@@ -146,6 +147,8 @@
           kdePackages.kio-admin
           kdePackages.discover
           kdePackages.konsole
+          # KDE terminal on libghostty-vt (Konsole-compatible KPart, QML module).
+          kwi
           kdePackages.gwenview
           kdePackages.okular
           kdePackages.ark
