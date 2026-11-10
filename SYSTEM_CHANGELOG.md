@@ -51,6 +51,15 @@ Mac's HIDAccelCurves (Mac unreachable over SSH from erebor). `sensitivity`
 does not affect a custom curve. Live config, no rebuild or activation;
 `umbriel config validate` passed. Rollback: revert this commit.
 
+Same day, by feel: slow glides were too slow, so the curve was regenerated
+with g(v) = 2.4 + 40·x^1.7/(1+x^1.7) (about 2.9 px/mm slow, 9 at 100 mm/s,
+19 at 200 mm/s; top end unchanged). Side effect found: with a custom profile
+libinput routes touchpad scrolling through its 1:1 fallback curve (Umbriel sets
+only the motion curve), 47 units/mm instead of adaptive's 0.9·0.2968 per
+1000-dpi unit (~10.5/mm), so scrolling got ~4.5× faster. `scroll_factor` lowered
+from 0.3 to Umbriel's minimum 0.1 as a stopgap (~1.5× the old speed). A full fix
+needs an Umbriel patch that also sets a LIBINPUT_ACCEL_TYPE_SCROLL curve.
+
 # Umbriel: slower touchpad scrolling — 2026-11-10
 
 At the user's request, `home/umbriel/config.toml` sets
