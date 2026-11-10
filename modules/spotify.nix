@@ -95,6 +95,19 @@ in
             # The test phase recompiles everything with thin LTO; two of those
             # rustc jobs at once were OOM-killed here (2026-11-10).
             doCheck = false;
+            # Soloist, the Spotify player Spotifast downloads, runs through nix-ld
+            # and inherits this wrapper's environment. It dlopens its audio
+            # libraries, which are neither here nor in nix-ld's set, so it played
+            # nothing and paused every track at once.
+            postFixup = old.postFixup + ''
+              wrapProgram $out/bin/spotifast \
+                --prefix LD_LIBRARY_PATH : ${
+                  pkgs.lib.makeLibraryPath [
+                    pkgs.pipewire
+                    pkgs.libpulseaudio
+                  ]
+                }
+            '';
           }
         ))
       ];
