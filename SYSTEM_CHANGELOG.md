@@ -20,7 +20,10 @@ at least the bevel, so a 42 px bevel on a smaller corner no longer shows a
 seam along the corner diagonal (seen on the headless lock test). Headless
 lock test (built Noctalia, copied config/state): lens bend visible on both
 boxes, corner clean after the fix. Greeter not run headless (same shader
-text as the lock). 
+text as the lock). `erebor-diff` tier: different (the Noctalia and greeter packages and the
+units and configs that reference them). Switched to generation 369; Noctalia
+restarted on the patched build, and both the running Noctalia and the greeter
+binary contain the new shader. Not yet seen on a real lock or at login.
 
 # Umbriel: lens glass on Noctalia and Vicinae — 2026-11-10
 
