@@ -3,6 +3,39 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Umbriel: macOS-style trackpad gestures — 2026-11-10
+
+User asked for macOS trackpad behaviour: three-finger drag, four-finger
+window/workspace navigation, five fingers for the overview. libinput (1.31)
+never reports gestures with more than four fingers (`finger_count <= 4` in
+`tp_gesture_post_events`), so the overview uses a four-finger pinch instead
+(user chose this).
+
+New `patches/umbriel-touchpad-gestures.patch`, applied after the backdrop
+patch (`~/src/umbriel`, branch `touchpad-gestures` on `backdrop-effect`;
+export with `git diff backdrop-effect HEAD -- src docs tests`). It adds
+`input.touchpad.three_finger_drag` (libinput's native 3fg drag), moves the
+built-in swipe navigation from three to four fingers (along the workspace
+axis switches workspaces, across it scrolls the strip), and opens/closes the
+overview with a four-finger pinch (log of libinput's scale; spread 0.6 = fully
+open, same release physics as the old swipe). Two-finger pinches still reach
+apps. `home/umbriel/config.toml` sets `three_finger_drag = true`.
+
+Unit tests: 149/150 pass (`hdr-sdr-capture` is the known NVIDIA failure).
+Harness check `effect/workspace_reveal_gestures` passes with four-finger
+swipes. `erebor-diff`: different, only the umbriel package. Switched to
+generation 354. The merge into master hit a conflict in `config.toml`
+(parallel accel-curve commit 8aff96d) while the rebuild ran; the activated
+system is identical to the checked build, and the conflict was resolved
+keeping both edits within minutes. Until the next login the running compositor
+(pre-patch binary) rejects reloads of `config.toml`
+(unknown key `three_finger_drag`) and keeps its last good config, so the accel
+curve edit also waits for that login.
+
+Not yet verified on hardware: three-finger drag, four-finger swipes and the
+pinch need a logout/login into the new Umbriel and a test with the Magic
+Trackpad.
+
 # Umbriel: macOS-style trackpad acceleration — 2026-11-10
 
 At the user's request (to get the macOS trackpad feel), `home/umbriel/config.toml`
