@@ -61,6 +61,9 @@ the pre-patch build (its validator rejects `scroll` and also
 adaptive touchpad scrolling, 0.9·0.2968·1000/(47·25.4)) and `scroll_factor`
 returns to 0.3; validated with the patched binary. Merge after the user logs in
 again.
+Merged after the user logged in again: the running compositor is the
+generation-355 build (`jrhjh4mr…-umbriel-0.1.0`), and it logged `config reloaded`
+with no accel_profile warnings.
 
 # Umbriel: macOS-style trackpad acceleration — 2026-11-10
 
