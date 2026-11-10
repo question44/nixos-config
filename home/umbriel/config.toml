@@ -108,6 +108,10 @@ backdrop_effect = "liquid-glass-layer"
 [[layer_rule]]
 match.namespace = "^vicinae$"
 blur = true
+# Vicinae draws its own shadow (client-side decorations); keep the blur and
+# glass off it. Must stay below Vicinae's launcher opacity (home/appearance.nix).
+blur_ignore_alpha = 0.05
+backdrop_effect = "liquid-glass-layer"
 
 [[window_rule]]
 blur = true
