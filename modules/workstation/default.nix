@@ -37,6 +37,7 @@ in
       noctalia
       sequoia-wallpaper
       lockscreen-glass
+      greeter-glass
       umbriel
       dashboard-control
       vicinae

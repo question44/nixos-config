@@ -1,0 +1,707 @@
+diff --git a/1 b/1
+new file mode 100644
+index 0000000..ea88f6e
+--- /dev/null
++++ b/1
+@@ -0,0 +1,52 @@
++=== noctalia-greeter bootstrap pid=589257 uid=1000 euid=1000 exe=/home/janzon/src/noctalia-greeter/build/noctalia-greeter argv0=/home/janzon/src/noctalia-greeter/build/noctalia-greeter GREETD_SOCK=unset XDG_VTNR=1 ===
++2026-11-10 10:27:05.561 [INF] [main] noctalia-greeter 1.7.0
++2026-11-10 10:27:05.561 [DBG] [main] build fingerprint 3c45fa89de10b4a640b48968327141503779fc57f5d42632fe31dc848329d2a0
++2026-11-10 10:27:05.569 [INF] [wayland] connected to Wayland compositor
++2026-11-10 10:27:05.569 [DBG] [paths] using assets from /home/janzon/src/noctalia-greeter/assets
++2026-11-10 10:27:05.571 [INF] [glyph-registry] loaded 6013 Tabler glyph names from /home/janzon/src/noctalia-greeter/assets/fonts/tabler.json
++2026-11-10 10:27:05.603 [INF] [gl] initialized EGL 1.5 with shared root context
++2026-11-10 10:27:05.630 [INF] [render] EGL vendor="NVIDIA" version="1.5" APIs="OpenGL_ES OpenGL"
++2026-11-10 10:27:05.630 [INF] [render] OpenGL ES vendor="NVIDIA Corporation" renderer="NVIDIA GeForce RTX 4090/PCIe/SSE2" version="OpenGL ES 3.2 NVIDIA 615.78.08"
++2026-11-10 10:27:05.634 [ERR] [greetd] failed to connect to greetd: No such file or directory
++2026-11-10 10:27:05.634 [ERR] [greeter] failed to connect to greetd at /run/greetd/server.sock
++2026-11-10 10:27:05.634 [INF] [seat] pointer: bound
++2026-11-10 10:27:05.634 [INF] [wayland] output 'HEADLESS-1' ready 3440x1440 at (0,0) scale=1 transform=0 phys=0x0mm
++2026-11-10 10:27:05.634 [INF] [greeter] syncOutputWindows: 1 target output(s), 0 view(s)
++2026-11-10 10:27:05.636 [INF] [greeter-surface] AccountsService: 1 cached user(s), 1 after filters
++2026-11-10 10:27:05.654 [INF] [greeter-window] greeter surface created
++2026-11-10 10:27:05.654 [INF] [greeter] greeter view for output 'HEADLESS-1'
++2026-11-10 10:27:05.654 [INF] [greeter] syncOutputWindows: 1 target output(s), 1 view(s)
++2026-11-10 10:27:05.654 [INF] [greeter-window] configured 3440x1440 logical (scale=1.00)
++2026-11-10 10:27:05.654 [INF] [greeter-window] configured 3440x1420 logical (scale=1.00)
++2026-11-10 10:27:05.786 [DBG] [render] scene draw took 128.0ms (3440x1420 logical, 3440x1420 buffer)
++2026-11-10 10:27:05.787 [DBG] [render] renderScene took 130.5ms total
++2026-11-10 10:27:05.787 [INF] [greeter-window] presented first frame 3440x1420 logical (3440x1420 buffer, scale=1.00)
++2026-11-10 10:27:05.787 [INF] [greeter] greeter initialized (1 view(s))
++2026-11-10 10:27:05.788 [INF] [greeter-window] configured 3420x1420 logical (scale=1.00)
++2026-11-10 10:27:13.331 [ERR] [greeter] Wayland dispatch_pending failed (display error=32 errno=32 'Broken pipe')
++2026-11-10 10:27:13.331 [INF] [main] shutdown complete
++=== noctalia-greeter bootstrap pid=628603 uid=1000 euid=1000 exe=/home/janzon/src/noctalia-greeter/build/noctalia-greeter argv0=/home/janzon/src/noctalia-greeter/build/noctalia-greeter GREETD_SOCK=unset XDG_VTNR=1 ===
++2026-11-10 10:28:44.286 [INF] [main] noctalia-greeter 1.7.0
++2026-11-10 10:28:44.286 [DBG] [main] build fingerprint 3c45fa89de10b4a640b48968327141503779fc57f5d42632fe31dc848329d2a0
++2026-11-10 10:28:44.286 [INF] [wayland] connected to Wayland compositor
++2026-11-10 10:28:44.286 [DBG] [paths] using assets from /home/janzon/src/noctalia-greeter/assets
++2026-11-10 10:28:44.288 [INF] [glyph-registry] loaded 6013 Tabler glyph names from /home/janzon/src/noctalia-greeter/assets/fonts/tabler.json
++2026-11-10 10:28:44.318 [INF] [gl] initialized EGL 1.5 with shared root context
++2026-11-10 10:28:44.340 [INF] [render] EGL vendor="NVIDIA" version="1.5" APIs="OpenGL_ES OpenGL"
++2026-11-10 10:28:44.340 [INF] [render] OpenGL ES vendor="NVIDIA Corporation" renderer="NVIDIA GeForce RTX 4090/PCIe/SSE2" version="OpenGL ES 3.2 NVIDIA 615.78.08"
++2026-11-10 10:28:44.344 [ERR] [greetd] failed to connect to greetd: No such file or directory
++2026-11-10 10:28:44.344 [ERR] [greeter] failed to connect to greetd at /run/greetd/server.sock
++2026-11-10 10:28:44.344 [INF] [seat] pointer: bound
++2026-11-10 10:28:44.344 [INF] [wayland] output 'HEADLESS-1' ready 3440x1440 at (0,0) scale=1 transform=0 phys=0x0mm
++2026-11-10 10:28:44.344 [INF] [greeter] syncOutputWindows: 1 target output(s), 0 view(s)
++2026-11-10 10:28:44.345 [INF] [greeter-surface] AccountsService: 1 cached user(s), 1 after filters
++2026-11-10 10:28:44.357 [INF] [greeter-window] greeter surface created
++2026-11-10 10:28:44.357 [INF] [greeter] greeter view for output 'HEADLESS-1'
++2026-11-10 10:28:44.358 [INF] [greeter] syncOutputWindows: 1 target output(s), 1 view(s)
++2026-11-10 10:28:44.358 [INF] [greeter-window] configured 3440x1440 logical (scale=1.00)
++2026-11-10 10:28:44.530 [DBG] [render] scene draw took 111.2ms (3440x1440 logical, 3440x1440 buffer)
++2026-11-10 10:28:44.532 [DBG] [render] renderScene took 113.0ms total
++2026-11-10 10:28:44.532 [INF] [greeter-window] presented first frame 3440x1440 logical (3440x1440 buffer, scale=1.00)
++2026-11-10 10:28:44.532 [INF] [greeter] greeter initialized (1 view(s))
++2026-11-10 10:28:52.185 [ERR] [greeter] Wayland dispatch_pending failed (display error=32 errno=32 'Broken pipe')
++2026-11-10 10:28:52.185 [INF] [main] shutdown complete
+diff --git a/meson.build b/meson.build
+index 47aa1c2..15a78e5 100644
+--- a/meson.build
++++ b/meson.build
+@@ -134,6 +134,8 @@ _greeter_sources = files(
+   'src/render/scene/input_area.cpp',
+   'src/render/scene/input_dispatcher.cpp',
+   'src/render/scene/graph_node.cpp',
++  'src/render/scene/liquid_glass_node.cpp',
++  'src/render/programs/liquid_glass_program.cpp',
+   'src/render/text/cairo_text_renderer.cpp',
+   'src/render/text/cairo_glyph_renderer.cpp',
+   'src/render/text/glyph_registry.cpp',
+diff --git a/src/greeter/greeter_surface.cpp b/src/greeter/greeter_surface.cpp
+index 2c31be0..e5a80b5 100644
+--- a/src/greeter/greeter_surface.cpp
++++ b/src/greeter/greeter_surface.cpp
+@@ -1,5 +1,7 @@
+ #include "greeter/greeter_surface.h"
+ 
++#include "render/scene/liquid_glass_node.h"
++
+ #include "accounts/accounts_icon.h"
+ #include "core/key_modifiers.h"
+ #include "core/key_symbols.h"
+@@ -50,6 +52,10 @@
+ #include <wayland-client.h>
+ 
+ namespace {
++
++  // How much of the login panel's SurfaceVariant fill stays as a tint over the glass.
++  constexpr float kGlassTint = 0.25f;
++
+   constexpr Logger kLog("greeter-surface");
+   constexpr float kHeaderUserIconBase = 64.0f;
+   constexpr float kHeaderAvatarBorderScale = 2.0f;
+@@ -316,6 +322,12 @@ void GreeterSurface::initialize(RenderContext* context) {
+   m_panelDivider = divider.get();
+   m_root.addChild(std::move(divider));
+ 
++  // Liquid glass under the login panel: same z-index, added first, so it draws right before it.
++  auto glass = std::make_unique<LiquidGlassNode>();
++  m_loginGlass = glass.get();
++  m_loginGlass->setZIndex(1);
++  m_root.addChild(std::move(glass));
++
+   auto panel = std::make_unique<Box>();
+   m_loginPanel = panel.get();
+   m_loginPanel->setZIndex(1);
+@@ -1255,12 +1267,17 @@ void GreeterSurface::layoutScene(std::uint32_t width, std::uint32_t height) {
+   if (m_panelDivider != nullptr)
+     m_panelDivider->setVisible(false);
+ 
++  // The glass draws the body and the rim; the panel itself stays clear.
++  m_loginGlass->setPosition((panelX), (panelY));
++  m_loginGlass->setSize(panelWidth, panelHeight);
++  m_loginGlass->setRadius(Style::scaledRadiusXl());
++  m_loginGlass->setTint(colorForRole(ColorRole::SurfaceVariant, kGlassTint));
+   m_loginPanel->setPosition((panelX), (panelY));
+   m_loginPanel->setSize(panelWidth, panelHeight);
+   m_loginPanel->setStyle(
+       RoundedRectStyle{
+-          .fill = colorForRole(ColorRole::SurfaceVariant),
+-          .border = colorForRole(ColorRole::Outline),
++          .fill = rgba(0.0f, 0.0f, 0.0f, 0.0f),
++          .border = rgba(0.0f, 0.0f, 0.0f, 0.0f),
+           .fillMode = FillMode::Solid,
+           .radius = Style::scaledRadiusXl(),
+           .softness = 1.0f,
+diff --git a/src/greeter/greeter_surface.h b/src/greeter/greeter_surface.h
+index 4c5026c..7b25b48 100644
+--- a/src/greeter/greeter_surface.h
++++ b/src/greeter/greeter_surface.h
+@@ -37,6 +37,8 @@ class ImageNode;
+ class RectNode;
+ class WallpaperNode;
+ 
++class LiquidGlassNode;
++
+ class GreeterSurface {
+ public:
+   GreeterSurface();
+@@ -210,6 +212,7 @@ private:
+   Label* m_brandSubtitleLabel = nullptr;
+   Label* m_formSubtitleLabel = nullptr;
+   Node* m_panelDivider = nullptr;
++  LiquidGlassNode* m_loginGlass = nullptr;
+   Box* m_loginPanel = nullptr;
+   Box* m_userSelectBox = nullptr;
+   Glyph* m_userSelectIcon = nullptr;
+diff --git a/src/render/programs/liquid_glass_program.cpp b/src/render/programs/liquid_glass_program.cpp
+new file mode 100644
+index 0000000..a8bcd75
+--- /dev/null
++++ b/src/render/programs/liquid_glass_program.cpp
+@@ -0,0 +1,320 @@
++#include "render/programs/liquid_glass_program.h"
++
++#include <algorithm>
++#include <array>
++#include <cmath>
++#include <stdexcept>
++
++namespace {
++
++  constexpr char kVertexShaderSource[] = R"(
++precision highp float;
++
++attribute vec2 a_position;
++uniform vec2 u_surface_size;
++uniform vec2 u_size;
++uniform mat3 u_transform;
++varying vec2 v_local;
++
++vec2 to_ndc(vec2 pixel_pos) {
++    vec2 normalized = pixel_pos / u_surface_size;
++    return vec2(normalized.x * 2.0 - 1.0, 1.0 - normalized.y * 2.0);
++}
++
++void main() {
++    vec2 local = a_position * u_size;
++    vec3 pixel = u_transform * vec3(local, 1.0);
++    v_local = local;
++    gl_Position = vec4(to_ndc(pixel.xy), 0.0, 1.0);
++}
++)";
++
++  // Same glass as Umbriel's liquid-glass-backdrop.glsl: a mirrored fold near the edge (total
++  // internal reflection), colour fringe, blur that weakens towards the edge, Apple-like vibrancy
++  // and lift, a faint dark-and-light hairline. Distances are logical px; v_local is y-down.
++  constexpr char kFragmentShaderSource[] = R"(
++precision highp float;
++
++uniform sampler2D u_raw;
++uniform sampler2D u_frost;
++uniform vec4 u_region;   // copied region: origin and size in framebuffer px (y-up)
++uniform vec2 u_scale;    // framebuffer px per logical px
++uniform vec2 u_flip;     // -1 on an axis the node's transform mirrors
++uniform vec2 u_size;     // logical
++uniform float u_radius;  // logical
++uniform vec4 u_tint;     // premultiplied
++uniform float u_opacity;
++varying vec2 v_local;
++
++const float FOLD = 11.0;
++const float CREASE = 1.5;
++const float MAG = 1.2;
++const float FADE = 80.0;
++const float KERNEL = 5.0;
++const float EDGE_BLUR = 2.0;
++const float SPLIT = 0.12;
++const float MILK = 0.02;
++const float LIFT = 1.08;
++const float VIBRANCY = 1.25;
++const float LINE = 0.10;
++const float LINE_TOP = 0.08;
++const float OUTLINE = 0.22;
++
++float sdRoundBox(vec2 p, vec2 b, float r) {
++    vec2 q = abs(p) - b + r;
++    return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r;
++}
++
++// Texture coordinate of the fragment moved by o logical px (y-down).
++vec2 at(vec2 o) {
++    vec2 frag = gl_FragCoord.xy + vec2(o.x, -o.y) * u_flip * u_scale;
++    return (frag - u_region.xy) / u_region.zw;
++}
++
++vec3 graded(vec2 o, float w) {
++    vec3 frost = texture2D(u_frost, at(o)).rgb;
++    if (w >= 1.0) {
++        return frost;
++    }
++    float rad = mix(EDGE_BLUR, KERNEL, w);
++    vec3 acc = texture2D(u_raw, at(o)).rgb;
++    for (int i = 0; i < 19; i++) {
++        float a = float(i) * 2.39996;
++        float rr = rad * sqrt((float(i) + 0.5) / 19.0);
++        acc += texture2D(u_raw, at(o + vec2(cos(a), sin(a)) * rr)).rgb;
++    }
++    return mix(acc / 20.0, frost, smoothstep(0.3, 1.0, w));
++}
++
++void main() {
++    vec2 halfSize = u_size * 0.5;
++    vec2 p = v_local - halfSize;
++    float r = min(u_radius, min(halfSize.x, halfSize.y));
++    float d = sdRoundBox(p, halfSize, r);
++    float coverage = clamp(0.5 - d * max(u_scale.x, u_scale.y), 0.0, 1.0);
++    if (coverage <= 0.0) {
++        discard;
++    }
++    float s = max(-d, 0.0);
++
++    float h = 3.0;
++    vec2 g = vec2(
++        sdRoundBox(p + vec2(h, 0.0), halfSize, r) - sdRoundBox(p - vec2(h, 0.0), halfSize, r),
++        sdRoundBox(p + vec2(0.0, h), halfSize, r) - sdRoundBox(p - vec2(0.0, h), halfSize, r));
++    vec2 n = length(g) > 0.0 ? normalize(g) : vec2(0.0);
++
++    float fold = min(FOLD, min(halfSize.x, halfSize.y) * 0.25);
++    float x = fold - s;
++    float k = x > 0.0 ? 1.0 / MAG : 1.0;
++    float mirrored = fold + k * x * x / sqrt(x * x + CREASE * CREASE);
++    float bend = s - mirrored;
++
++    float fade = min(FADE, min(halfSize.x, halfSize.y));
++    float f = 1.0 - clamp(s / fade, 0.0, 1.0);
++    float w = 1.0 - f * f;
++    vec3 col = vec3(
++        graded(n * bend * (1.0 + SPLIT), w).r,
++        graded(n * bend, w).g,
++        graded(n * bend * (1.0 - SPLIT), w).b);
++
++    float lum = dot(col, vec3(0.2126, 0.7152, 0.0722));
++    col = max(mix(vec3(lum), col, VIBRANCY), 0.0);
++    col = mix(col * LIFT, vec3(1.0), MILK);
++    col = col * (1.0 - u_tint.a) + u_tint.rgb;
++
++    float up = max(-n.y, 0.0);
++    col *= 1.0 - OUTLINE * exp(-pow(s / 0.7, 2.0));
++    col += exp(-pow((s - 1.6) / 0.6, 2.0)) * (LINE + LINE_TOP * up);
++
++    float alpha = coverage * u_opacity;
++    gl_FragColor = vec4(col * alpha, alpha);
++}
++)";
++
++  void setSampling(TextureId texture) {
++    glBindTexture(GL_TEXTURE_2D, texture.value());
++    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
++    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
++    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
++    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
++  }
++
++} // namespace
++
++void LiquidGlassProgram::ensureInitialized() {
++  if (m_program.isValid()) {
++    return;
++  }
++
++  m_program.create(kVertexShaderSource, kFragmentShaderSource);
++  const GLuint id = m_program.id();
++  m_positionLocation = glGetAttribLocation(id, "a_position");
++  m_surfaceSizeLocation = glGetUniformLocation(id, "u_surface_size");
++  m_sizeLocation = glGetUniformLocation(id, "u_size");
++  m_transformLocation = glGetUniformLocation(id, "u_transform");
++  m_rawLocation = glGetUniformLocation(id, "u_raw");
++  m_frostLocation = glGetUniformLocation(id, "u_frost");
++  m_regionLocation = glGetUniformLocation(id, "u_region");
++  m_scaleLocation = glGetUniformLocation(id, "u_scale");
++  m_flipLocation = glGetUniformLocation(id, "u_flip");
++  m_radiusLocation = glGetUniformLocation(id, "u_radius");
++  m_tintLocation = glGetUniformLocation(id, "u_tint");
++  m_opacityLocation = glGetUniformLocation(id, "u_opacity");
++
++  if (m_positionLocation < 0
++      || m_surfaceSizeLocation < 0
++      || m_sizeLocation < 0
++      || m_transformLocation < 0
++      || m_rawLocation < 0
++      || m_frostLocation < 0
++      || m_regionLocation < 0
++      || m_scaleLocation < 0
++      || m_flipLocation < 0
++      || m_radiusLocation < 0
++      || m_tintLocation < 0
++      || m_opacityLocation < 0) {
++    throw std::runtime_error("failed to query liquid-glass shader locations");
++  }
++}
++
++LiquidGlassProgram& LiquidGlassProgram::instance() {
++  // Never destroyed: the greeter exits with its context, and a destructor would need it current.
++  static auto* program = new LiquidGlassProgram();
++  return *program;
++}
++
++LiquidGlassProgram::Buffers*
++LiquidGlassProgram::ensureBuffers(RenderBackend& backend, std::uint32_t width, std::uint32_t height) {
++  ++m_useCounter;
++  Buffers* oldest = &m_buffers[0];
++  for (auto& set : m_buffers) {
++    if (set.raw && set.width == width && set.height == height) {
++      set.lastUse = m_useCounter;
++      return &set;
++    }
++    if (set.lastUse < oldest->lastUse) {
++      oldest = &set;
++    }
++  }
++  Buffers& set = *oldest;
++  set = {};
++  set.raw = backend.createFramebuffer(width, height);
++  set.scratch = backend.createFramebuffer(width, height);
++  set.frost = backend.createFramebuffer(width, height);
++  if (!set.raw || !set.scratch || !set.frost || !set.raw->valid() || !set.scratch->valid() || !set.frost->valid()) {
++    set = {};
++    return nullptr;
++  }
++  for (const auto* fb : {set.raw.get(), set.scratch.get(), set.frost.get()}) {
++    setSampling(fb->colorTexture());
++  }
++  set.width = width;
++  set.height = height;
++  set.lastUse = m_useCounter;
++  return &set;
++}
++
++void LiquidGlassProgram::draw(RenderBackend& backend, const Params& params) {
++  if (!m_program.isValid() || params.width <= 0.0F || params.height <= 0.0F || params.opacity <= 0.0F) {
++    return;
++  }
++
++  // Everything below must leave GL as the scene renderer had it.
++  GLint prevFramebuffer = 0;
++  glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFramebuffer);
++  std::array<GLint, 4> viewport{};
++  glGetIntegerv(GL_VIEWPORT, viewport.data());
++  const bool scissorWasEnabled = glIsEnabled(GL_SCISSOR_TEST) == GL_TRUE;
++  std::array<GLint, 4> scissorBox{};
++  glGetIntegerv(GL_SCISSOR_BOX, scissorBox.data());
++  const auto viewportW = static_cast<float>(viewport[2]);
++  const auto viewportH = static_cast<float>(viewport[3]);
++
++  // The rectangle in framebuffer px (y-up), padded so the frost and the fold read real pixels.
++  // Axis-aligned transforms only (translation, possibly mirrored); the caller skips rotations.
++  const Mat3& m = params.transform;
++  const float flipX = m.m[0] < 0.0F ? -1.0F : 1.0F;
++  const float flipY = m.m[4] < 0.0F ? -1.0F : 1.0F;
++  const float left = std::min(m.m[6], m.m[6] + m.m[0] * params.width);
++  const float top = std::min(m.m[7], m.m[7] + m.m[4] * params.height);
++  const float sx = params.pixelScaleX;
++  const float sy = params.pixelScaleY;
++  constexpr float kPad = 24.0F;
++  const float x0 = std::clamp(std::floor((left - kPad) * sx), 0.0F, viewportW);
++  const float x1 = std::clamp(std::ceil((left + params.width + kPad) * sx), 0.0F, viewportW);
++  const float yTop = std::clamp(std::floor((top - kPad) * sy), 0.0F, viewportH);
++  const float yBottom = std::clamp(std::ceil((top + params.height + kPad) * sy), 0.0F, viewportH);
++  const auto regionW = static_cast<std::uint32_t>(x1 - x0);
++  const auto regionH = static_cast<std::uint32_t>(yBottom - yTop);
++  if (regionW == 0 || regionH == 0) {
++    return;
++  }
++  const float regionX = x0;
++  const float regionY = viewportH - yBottom;
++
++  Buffers* buffers = ensureBuffers(backend, regionW, regionH);
++  if (buffers == nullptr) {
++    glBindFramebuffer(GL_FRAMEBUFFER, static_cast<GLuint>(prevFramebuffer));
++    return;
++  }
++
++  glBindFramebuffer(GL_FRAMEBUFFER, static_cast<GLuint>(prevFramebuffer));
++  glActiveTexture(GL_TEXTURE0);
++  glBindTexture(GL_TEXTURE_2D, buffers->raw->colorTexture().value());
++  glCopyTexSubImage2D(
++      GL_TEXTURE_2D, 0, 0, 0, static_cast<GLint>(regionX), static_cast<GLint>(regionY), static_cast<GLsizei>(regionW),
++      static_cast<GLsizei>(regionH)
++  );
++
++  backend.disableScissor();
++  backend.setBlendMode(RenderBlendMode::Disabled);
++  backend.setViewport(regionW, regionH);
++  const float frost = std::clamp(params.frostRadius * std::max(sx, sy), 0.0F, 20.0F);
++  TextureId source = buffers->raw->colorTexture();
++  for (int round = 0; round < 2; ++round) {
++    backend.bindFramebuffer(*buffers->scratch);
++    backend.drawFramebufferBlur(source, regionW, regionH, 1.0F, 0.0F, frost);
++    backend.bindFramebuffer(*buffers->frost);
++    backend.drawFramebufferBlur(buffers->scratch->colorTexture(), regionW, regionH, 0.0F, 1.0F, frost);
++    source = buffers->frost->colorTexture();
++  }
++
++  glBindFramebuffer(GL_FRAMEBUFFER, static_cast<GLuint>(prevFramebuffer));
++  backend.setViewport(static_cast<std::uint32_t>(viewport[2]), static_cast<std::uint32_t>(viewport[3]));
++  backend.setBlendMode(RenderBlendMode::PremultipliedAlpha);
++  if (scissorWasEnabled) {
++    backend.setScissor(RenderScissor{scissorBox[0], scissorBox[1], scissorBox[2], scissorBox[3]});
++  }
++
++  const std::array<GLfloat, 12> vertices = {
++      0.0F, 0.0F, 1.0F, 0.0F, 0.0F, 1.0F, 0.0F, 1.0F, 1.0F, 0.0F, 1.0F, 1.0F,
++  };
++
++  glUseProgram(m_program.id());
++  glUniform2f(m_surfaceSizeLocation, params.surfaceWidth, params.surfaceHeight);
++  glUniform2f(m_sizeLocation, params.width, params.height);
++  glUniformMatrix3fv(m_transformLocation, 1, GL_FALSE, params.transform.m.data());
++  glUniform4f(m_regionLocation, regionX, regionY, static_cast<float>(regionW), static_cast<float>(regionH));
++  glUniform2f(m_scaleLocation, sx, sy);
++  glUniform2f(m_flipLocation, flipX, flipY);
++  glUniform1f(m_radiusLocation, params.radius);
++  glUniform4f(m_tintLocation, params.tint.r, params.tint.g, params.tint.b, params.tint.a);
++  glUniform1f(m_opacityLocation, params.opacity);
++
++  glActiveTexture(GL_TEXTURE1);
++  glBindTexture(GL_TEXTURE_2D, buffers->frost->colorTexture().value());
++  glUniform1i(m_frostLocation, 1);
++  glActiveTexture(GL_TEXTURE0);
++  glBindTexture(GL_TEXTURE_2D, buffers->raw->colorTexture().value());
++  glUniform1i(m_rawLocation, 0);
++
++  const auto posAttr = static_cast<GLuint>(m_positionLocation);
++  glVertexAttribPointer(posAttr, 2, GL_FLOAT, GL_FALSE, 0, vertices.data());
++  glEnableVertexAttribArray(posAttr);
++  glDrawArrays(GL_TRIANGLES, 0, 6);
++  glDisableVertexAttribArray(posAttr);
++
++  glActiveTexture(GL_TEXTURE1);
++  glBindTexture(GL_TEXTURE_2D, 0);
++  glActiveTexture(GL_TEXTURE0);
++}
+diff --git a/src/render/programs/liquid_glass_program.h b/src/render/programs/liquid_glass_program.h
+new file mode 100644
+index 0000000..f89c72c
+--- /dev/null
++++ b/src/render/programs/liquid_glass_program.h
+@@ -0,0 +1,68 @@
++#pragma once
++
++#include "render/backend/render_backend.h"
++#include "render/core/mat3.h"
++#include "render/core/shader_program.h"
++
++#include <GLES2/gl2.h>
++#include <array>
++#include <cstdint>
++#include <memory>
++
++// Liquid glass over whatever is already drawn under a rounded rectangle: copies that region
++// of the bound framebuffer, frosts the copy, and draws it back bent at the rim (a port of the
++// Umbriel window backdrop shader in /etc/nixos/home/umbriel/effects/liquid-glass-backdrop.glsl).
++class LiquidGlassProgram final {
++public:
++  struct Params {
++    float surfaceWidth = 0.0F;
++    float surfaceHeight = 0.0F;
++    float pixelScaleX = 1.0F;
++    float pixelScaleY = 1.0F;
++    float width = 0.0F;
++    float height = 0.0F;
++    float radius = 0.0F;
++    float opacity = 1.0F;
++    // Premultiplied colour laid over the glass body.
++    Color tint = rgba(0.0F, 0.0F, 0.0F, 0.0F);
++    // Frost strength, logical px.
++    float frostRadius = 10.0F;
++    Mat3 transform = Mat3::identity();
++  };
++
++  void ensureInitialized();
++  // One instance per process: GL objects live in the greeter's shared context.
++  static LiquidGlassProgram& instance();
++
++  void draw(RenderBackend& backend, const Params& params);
++
++private:
++  struct Buffers {
++    std::unique_ptr<RenderFramebuffer> raw;
++    std::unique_ptr<RenderFramebuffer> scratch;
++    std::unique_ptr<RenderFramebuffer> frost;
++    std::uint32_t width = 0;
++    std::uint32_t height = 0;
++    std::uint64_t lastUse = 0;
++  };
++
++  // A few panels of different sizes can share the program without reallocating every frame.
++  Buffers* ensureBuffers(RenderBackend& backend, std::uint32_t width, std::uint32_t height);
++
++  ShaderProgram m_program;
++  GLint m_positionLocation = -1;
++  GLint m_surfaceSizeLocation = -1;
++  GLint m_sizeLocation = -1;
++  GLint m_transformLocation = -1;
++  GLint m_rawLocation = -1;
++  GLint m_frostLocation = -1;
++  GLint m_regionLocation = -1;
++  GLint m_scaleLocation = -1;
++  GLint m_flipLocation = -1;
++  GLint m_radiusLocation = -1;
++  GLint m_tintLocation = -1;
++  GLint m_opacityLocation = -1;
++
++  std::array<Buffers, 4> m_buffers;
++  std::uint64_t m_useCounter = 0;
++};
+diff --git a/src/render/render_context.cpp b/src/render/render_context.cpp
+index a79888e..f9c143a 100644
+--- a/src/render/render_context.cpp
++++ b/src/render/render_context.cpp
+@@ -1,5 +1,7 @@
+ #include "render/render_context.h"
+ 
++#include "render/scene/custom_draw_node.h"
++
+ #include "core/log.h"
+ #include "core/resource_paths.h"
+ #include "core/ui_phase.h"
+@@ -372,6 +374,21 @@ void RenderContext::renderNode(
+     }
+     break;
+   }
++  case NodeType::CustomDraw:
++    static_cast<const CustomDrawNode*>(node)->draw(
++        *m_backend,
++        CustomDrawContext{
++            .surfaceWidth = sw,
++            .surfaceHeight = sh,
++            .pixelScaleX = sw > 0.0f ? bw / sw : 1.0f,
++            .pixelScaleY = sh > 0.0f ? bh / sh : 1.0f,
++            .transform = worldTransform,
++            .opacity = effectiveOpacity,
++            .width = node->width(),
++            .height = node->height(),
++        }
++    );
++    break;
+   case NodeType::Base:
+   case NodeType::InputArea:
+   case NodeType::Container:
+diff --git a/src/render/scene/custom_draw_node.h b/src/render/scene/custom_draw_node.h
+new file mode 100644
+index 0000000..0170f56
+--- /dev/null
++++ b/src/render/scene/custom_draw_node.h
+@@ -0,0 +1,29 @@
++#pragma once
++
++#include "render/core/mat3.h"
++#include "render/scene/node.h"
++
++class RenderBackend;
++
++struct CustomDrawContext {
++  // Surface size in logical pixels.
++  float surfaceWidth = 0.0f;
++  float surfaceHeight = 0.0f;
++  // Buffer pixels per logical pixel.
++  float pixelScaleX = 1.0f;
++  float pixelScaleY = 1.0f;
++  Mat3 transform = Mat3::identity();
++  // Node opacity multiplied by every ancestor's.
++  float opacity = 1.0f;
++  float width = 0.0f;
++  float height = 0.0f;
++};
++
++// A node that paints itself through the backend instead of a built-in primitive. RenderContext
++// calls draw() with the clip already applied; children render afterwards as usual.
++class CustomDrawNode : public Node {
++public:
++  CustomDrawNode() : Node(NodeType::CustomDraw) {}
++
++  virtual void draw(RenderBackend& backend, const CustomDrawContext& context) const = 0;
++};
+diff --git a/src/render/scene/liquid_glass_node.cpp b/src/render/scene/liquid_glass_node.cpp
+new file mode 100644
+index 0000000..618aa44
+--- /dev/null
++++ b/src/render/scene/liquid_glass_node.cpp
+@@ -0,0 +1,25 @@
++#include "render/scene/liquid_glass_node.h"
++
++#include "render/backend/render_backend.h"
++#include "render/programs/liquid_glass_program.h"
++
++void LiquidGlassNode::draw(RenderBackend& backend, const CustomDrawContext& context) const {
++  auto& program = LiquidGlassProgram::instance();
++  program.ensureInitialized();
++  program.draw(
++      backend,
++      LiquidGlassProgram::Params{
++          .surfaceWidth = context.surfaceWidth,
++          .surfaceHeight = context.surfaceHeight,
++          .pixelScaleX = context.pixelScaleX,
++          .pixelScaleY = context.pixelScaleY,
++          .width = context.width,
++          .height = context.height,
++          .radius = m_radius,
++          .opacity = context.opacity,
++          .tint = rgba(m_tint.r * m_tint.a, m_tint.g * m_tint.a, m_tint.b * m_tint.a, m_tint.a),
++          .frostRadius = m_frostRadius,
++          .transform = context.transform,
++      }
++  );
++}
+diff --git a/src/render/scene/liquid_glass_node.h b/src/render/scene/liquid_glass_node.h
+new file mode 100644
+index 0000000..daf8c85
+--- /dev/null
++++ b/src/render/scene/liquid_glass_node.h
+@@ -0,0 +1,41 @@
++#pragma once
++
++#include "render/core/color.h"
++#include "render/scene/custom_draw_node.h"
++
++// Liquid glass over what the scene has already drawn under this node's rounded rectangle.
++// Put it right before the panel it backs, in the same parent and z-index.
++class LiquidGlassNode : public CustomDrawNode {
++public:
++  void setRadius(float radius) {
++    if (m_radius == radius) {
++      return;
++    }
++    m_radius = radius;
++    markPaintDirty();
++  }
++
++  // Straight-alpha colour laid over the glass body.
++  void setTint(const Color& tint) {
++    if (m_tint == tint) {
++      return;
++    }
++    m_tint = tint;
++    markPaintDirty();
++  }
++
++  void setFrostRadius(float radius) {
++    if (m_frostRadius == radius) {
++      return;
++    }
++    m_frostRadius = radius;
++    markPaintDirty();
++  }
++
++  void draw(RenderBackend& backend, const CustomDrawContext& context) const override;
++
++private:
++  float m_radius = 0.0F;
++  float m_frostRadius = 10.0F;
++  Color m_tint = rgba(0.0F, 0.0F, 0.0F, 0.0F);
++};
+diff --git a/src/render/scene/node.h b/src/render/scene/node.h
+index fb7a892..dd4ff16 100644
+--- a/src/render/scene/node.h
++++ b/src/render/scene/node.h
+@@ -58,6 +58,7 @@ enum class NodeType : std::uint8_t {
+   Wallpaper,
+   InputArea,
+   Container,
++  CustomDraw,
+ };
+ 
+ class Node {

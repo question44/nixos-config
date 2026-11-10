@@ -20,6 +20,27 @@ nixpkgs has 0.17.1 or newer.
 0.17.1. Not yet launched or signed in; Noctalia's `spotifast` template writes
 its theme once `~/.config/spotifast` exists, then pick `noctalia.json` in
 Settings → Appearance → Theme.
+# Liquid glass on the Noctalia greeter — 2026-11-10
+
+At the user's request, the greeter's login panel gets the same glass as the
+lock screen. The greeter runs its own compositor, so neither Umbriel's
+backdrop patch nor the Noctalia patch reaches it. New
+`patches/noctalia-greeter-liquid-glass.patch` (module
+`modules/greeter-glass.nix`, overriding
+`services.displayManager.noctalia-greeter.package`) adds a CustomDraw node
+type to the greeter's renderer and a port of `LiquidGlassNode`. The panel
+keeps 25% of its SurfaceVariant fill as a tint and loses its border. Source:
+`~/src/noctalia-greeter`, branch `lockscreen-glass` on the pinned input rev
+(b8dd342).
+
+Headless check at 3440x1440: the Nix-built `noctalia-greeter` ran as a plain
+client in headless Umbriel. It used `NOCTALIA_GREETER_STATE_DIR` set to a copy
+of the shell's staged sync files (palette, sequoia still), and showed frost,
+the rim fold and the hairline. It ran without greetd and without its own
+compositor. `erebor-diff`: different, only the greeter package (greetd's
+command changes with it). greetd has `X-RestartIfChanged=false`, so the new
+greeter appears at the next logout or boot. If it fails to start, boot the
+previous generation or log in on a TTY.
 
 # Liquid glass on the lock-screen widgets — 2026-11-10
 
