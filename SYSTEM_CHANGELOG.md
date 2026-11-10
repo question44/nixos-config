@@ -3,6 +3,15 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Greeter glass patch: stray debug log removed — 2026-11-10
+
+`patches/noctalia-greeter-liquid-glass.patch` also created a file named `1`
+in the greeter source: a 52-line log from a local greeter run, exported with
+the patch by mistake. Removed that hunk; the other ten files are unchanged.
+`erebor-diff`: different, only the noctalia-greeter package and the units and
+configs that name its store path. Its binaries are byte-identical to master's
+once their own store hash is normalised.
+
 # Touchpad edge swipes — 2026-11-10
 
 User asked for edge swipes on the Magic Trackpad: top edge opens the overview,
