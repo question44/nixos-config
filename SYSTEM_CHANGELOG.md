@@ -23,6 +23,10 @@ rendering. Limits: SDR, no Noctalia layers, GPU mostly in P3.
 Unit tests 149/150 (the known NVIDIA `hdr-sdr-capture` failure).
 `nix flake check` passed. `erebor-diff`: different, only the Umbriel package
 and `sunshine-output`, which references it.
+Activated with switch as generation 347 (`k505hb1l…-umbriel-0.1.0`); no failed
+system or user units. Headless smoke test of the installed binary with the live
+config: both backdrop presets `compiled`, windows mapped, no errors. The
+running session keeps the previous compositor until the user's next login.
 
 # More transparent Noctalia bar and dock — 2026-11-09
 
