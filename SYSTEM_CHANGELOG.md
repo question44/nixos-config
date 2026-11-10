@@ -3,6 +3,24 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Liquid glass on the lock-screen widgets — 2026-11-10
+
+At the user's request, the lock-screen widgets that have a background
+(weather, calendar, the sysmon chips) get the same glass as the login box.
+`patches/noctalia-lockscreen-liquid-glass.patch` gains a second commit
+(`~/src/noctalia-glass`, 0025739b5). `DesktopWidget` puts a
+`LiquidGlassNode` under its background box. Only the lock screen turns it on,
+because desktop widgets sit on their own transparent layer, where the copy
+would be empty. A widget keeps 25% of its `background_color`/`opacity` as a
+tint. Rotated widgets keep their plain fill, and mirrored ones are handled.
+
+Headless check at 3440x1440 with copies of the user's config and settings
+state, DP-1's widgets moved to the headless output, using the Nix-built
+package: the weather, calendar and sysmon glass followed each widget's radius,
+with no errors. `erebor-diff`: different, only the Noctalia package. Limit:
+dark widget text reads less well over dark parts of the scene than over the
+old 80% fill.
+
 # Spotify window at 0.98 opacity — 2026-11-10
 
 At the user's request, a window rule in `home/umbriel/config.toml` (app_id

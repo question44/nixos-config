@@ -15,6 +15,99 @@ index 53e76b05a..bc6bbff78 100644
    'src/shell/render/wallpaper_mask_node.cpp',
    'src/shell/render/wallpaper_node.cpp',
    'src/shell/render/weather_effect_node.cpp',
+diff --git a/src/shell/desktop/desktop_widget.cpp b/src/shell/desktop/desktop_widget.cpp
+index 4e90624cc..9937d4815 100644
+--- a/src/shell/desktop/desktop_widget.cpp
++++ b/src/shell/desktop/desktop_widget.cpp
+@@ -1,5 +1,7 @@
+ #include "shell/desktop/desktop_widget.h"
+ 
++#include "shell/render/liquid_glass_node.h"
++
+ #include "core/ui_phase.h"
+ #include "ui/builders.h"
+ #include "ui/controls/box.h"
+@@ -10,6 +12,9 @@
+ #include <string>
+ 
+ namespace {
++
++  // How much of the configured background stays as a tint over the glass.
++  constexpr float kGlassTintScale = 0.25F;
+   constexpr float kMinContentFit = 0.05F;
+   constexpr float kMaxContentFit = 20.0F;
+ } // namespace
+@@ -152,6 +157,9 @@ void DesktopWidget::setRoot(std::unique_ptr<Node> root) {
+   m_contentRoot = root.get();
+   m_outerRoot = ui::node({});
+   if (m_bgEnabled) {
++    auto glass = std::make_unique<LiquidGlassNode>();
++    glass->setVisible(false);
++    m_glassNode = static_cast<LiquidGlassNode*>(m_outerRoot->addChild(std::move(glass)));
+     auto bg = ui::box({});
+     m_bgBox = bg.get();
+     m_outerRoot->addChild(std::move(bg));
+@@ -242,8 +250,21 @@ void DesktopWidget::applyBackground() {
+   if (m_bgEnabled && m_bgBox != nullptr) {
+     m_bgBox->setPosition(0.0F, 0.0F);
+     m_bgBox->setSize(boxW, boxH);
+-    m_bgBox->setFill(m_bgColor);
+     m_bgBox->setRadius(std::round(m_bgRadius * m_baseScale));
++    const bool glass = m_glass && m_glassNode != nullptr;
++    if (glass) {
++      // The glass draws the body and the rim; the box keeps a quarter of the fill as a tint.
++      m_glassNode->setPosition(0.0F, 0.0F);
++      m_glassNode->setSize(boxW, boxH);
++      m_glassNode->setRadius(std::round(m_bgRadius * m_baseScale));
++      m_glassNode->setTint(resolveColorSpec(scaleAlpha(m_bgColor, kGlassTintScale)));
++      m_bgBox->setFill(rgba(0.0F, 0.0F, 0.0F, 0.0F));
++    } else {
++      m_bgBox->setFill(m_bgColor);
++    }
++    if (m_glassNode != nullptr) {
++      m_glassNode->setVisible(glass);
++    }
+   }
+ 
+   Node* outerRoot = m_outerRoot ? m_outerRoot.get() : m_outerRootPtr;
+diff --git a/src/shell/desktop/desktop_widget.h b/src/shell/desktop/desktop_widget.h
+index 19a84178b..de2b2a1b2 100644
+--- a/src/shell/desktop/desktop_widget.h
++++ b/src/shell/desktop/desktop_widget.h
+@@ -14,6 +14,8 @@ class AnimationManager;
+ class Box;
+ class Renderer;
+ 
++class LiquidGlassNode;
++
+ class DesktopWidget {
+ public:
+   using UpdateCallback = std::function<void()>;
+@@ -79,6 +81,9 @@ public:
+   // Desktop widget editor keeps widgets visible for layout even when runtime idle-hide applies.
+   virtual void setEditorPreview(bool enabled) noexcept { (void)enabled; }
+   void setBackgroundStyle(const ColorSpec& color, float radius, float padding);
++  // Liquid glass under the background box (lock screen only: it bends what the same surface drew
++  // underneath, and desktop widgets sit on their own transparent layer). Call before layout().
++  void setGlass(bool enabled) noexcept { m_glass = enabled; }
+ 
+   bool hasBackground() const noexcept { return m_bgEnabled; }
+   bool hasVisibleBackground() const noexcept;
+@@ -162,12 +167,14 @@ protected:
+   Node* m_contentRoot = nullptr;
+   Node* m_outerRootPtr = nullptr;
+   Box* m_bgBox = nullptr;
++  LiquidGlassNode* m_glassNode = nullptr;
+   UpdateCallback m_updateCallback;
+   LayoutCallback m_layoutCallback;
+   RedrawCallback m_redrawCallback;
+   FrameTickRequestCallback m_frameTickRequestCallback;
+ 
+   bool m_bgEnabled = false;
++  bool m_glass = false;
+   ColorSpec m_bgColor;
+   float m_bgRadius = 0.0F;
+   float m_bgPadding = 0.0F;
 diff --git a/src/shell/lockscreen/lock_surface.cpp b/src/shell/lockscreen/lock_surface.cpp
 index 8887f7e34..c6bb481f1 100644
 --- a/src/shell/lockscreen/lock_surface.cpp
@@ -177,6 +270,27 @@ index 684c06a51..d5fab5a5d 100644
    Flex* m_authPanel = nullptr;
    Label* m_authLabel = nullptr;
    Glyph* m_authGlyph = nullptr;
+diff --git a/src/shell/lockscreen/lockscreen_widgets_host.cpp b/src/shell/lockscreen/lockscreen_widgets_host.cpp
+index 08e520f7c..b26ab7556 100644
+--- a/src/shell/lockscreen/lockscreen_widgets_host.cpp
++++ b/src/shell/lockscreen/lockscreen_widgets_host.cpp
+@@ -13,6 +13,7 @@
+ #include "wayland/wayland_connection.h"
+ 
+ #include <algorithm>
++#include <cmath>
+ #include <string>
+ 
+ namespace {
+@@ -235,6 +236,8 @@ void LockscreenWidgetsHost::createInstance(
+   }
+ 
+   widget->create();
++  // The glass assumes an axis-aligned box; rotated widgets keep their plain background.
++  widget->setGlass(std::abs(state.rotationRad) < 1e-4F);
+   widget->setBox(state.boxWidth, state.boxHeight);
+ 
+   if (surface.renderTarget().isReady()) {
 diff --git a/src/shell/render/liquid_glass_node.cpp b/src/shell/render/liquid_glass_node.cpp
 new file mode 100644
 index 000000000..3740d9dce
@@ -257,10 +371,10 @@ index 000000000..daf8c8587
 +};
 diff --git a/src/shell/render/programs/liquid_glass_program.cpp b/src/shell/render/programs/liquid_glass_program.cpp
 new file mode 100644
-index 000000000..a29e891b0
+index 000000000..3bc37ed17
 --- /dev/null
 +++ b/src/shell/render/programs/liquid_glass_program.cpp
-@@ -0,0 +1,325 @@
+@@ -0,0 +1,332 @@
 +#include "shell/render/programs/liquid_glass_program.h"
 +
 +#include <algorithm>
@@ -302,6 +416,7 @@ index 000000000..a29e891b0
 +uniform sampler2D u_frost;
 +uniform vec4 u_region;   // copied region: origin and size in framebuffer px (y-up)
 +uniform vec2 u_scale;    // framebuffer px per logical px
++uniform vec2 u_flip;     // -1 on an axis the node's transform mirrors
 +uniform vec2 u_size;     // logical
 +uniform float u_radius;  // logical
 +uniform vec4 u_tint;     // premultiplied
@@ -329,7 +444,7 @@ index 000000000..a29e891b0
 +
 +// Texture coordinate of the fragment moved by o logical px (y-down).
 +vec2 at(vec2 o) {
-+    vec2 frag = gl_FragCoord.xy + vec2(o.x, -o.y) * u_scale;
++    vec2 frag = gl_FragCoord.xy + vec2(o.x, -o.y) * u_flip * u_scale;
 +    return (frag - u_region.xy) / u_region.zw;
 +}
 +
@@ -418,6 +533,7 @@ index 000000000..a29e891b0
 +  m_frostLocation = glGetUniformLocation(id, "u_frost");
 +  m_regionLocation = glGetUniformLocation(id, "u_region");
 +  m_scaleLocation = glGetUniformLocation(id, "u_scale");
++  m_flipLocation = glGetUniformLocation(id, "u_flip");
 +  m_radiusLocation = glGetUniformLocation(id, "u_radius");
 +  m_tintLocation = glGetUniformLocation(id, "u_tint");
 +  m_opacityLocation = glGetUniformLocation(id, "u_opacity");
@@ -430,6 +546,7 @@ index 000000000..a29e891b0
 +      || m_frostLocation < 0
 +      || m_regionLocation < 0
 +      || m_scaleLocation < 0
++      || m_flipLocation < 0
 +      || m_radiusLocation < 0
 +      || m_tintLocation < 0
 +      || m_opacityLocation < 0) {
@@ -503,9 +620,12 @@ index 000000000..a29e891b0
 +  const auto viewportH = static_cast<float>(viewport[3]);
 +
 +  // The rectangle in framebuffer px (y-up), padded so the frost and the fold read real pixels.
++  // Axis-aligned transforms only (translation, possibly mirrored); the caller skips rotations.
 +  const Mat3& m = params.transform;
-+  const float left = m.m[6];
-+  const float top = m.m[7];
++  const float flipX = m.m[0] < 0.0F ? -1.0F : 1.0F;
++  const float flipY = m.m[4] < 0.0F ? -1.0F : 1.0F;
++  const float left = std::min(m.m[6], m.m[6] + m.m[0] * params.width);
++  const float top = std::min(m.m[7], m.m[7] + m.m[4] * params.height);
 +  const float sx = params.pixelScaleX;
 +  const float sy = params.pixelScaleY;
 +  constexpr float kPad = 24.0F;
@@ -565,6 +685,7 @@ index 000000000..a29e891b0
 +  glUniformMatrix3fv(m_transformLocation, 1, GL_FALSE, params.transform.m.data());
 +  glUniform4f(m_regionLocation, regionX, regionY, static_cast<float>(regionW), static_cast<float>(regionH));
 +  glUniform2f(m_scaleLocation, sx, sy);
++  glUniform2f(m_flipLocation, flipX, flipY);
 +  glUniform1f(m_radiusLocation, params.radius);
 +  glUniform4f(m_tintLocation, params.tint.r, params.tint.g, params.tint.b, params.tint.a);
 +  glUniform1f(m_opacityLocation, params.opacity);
@@ -588,10 +709,10 @@ index 000000000..a29e891b0
 +}
 diff --git a/src/shell/render/programs/liquid_glass_program.h b/src/shell/render/programs/liquid_glass_program.h
 new file mode 100644
-index 000000000..64d267ed4
+index 000000000..2596040db
 --- /dev/null
 +++ b/src/shell/render/programs/liquid_glass_program.h
-@@ -0,0 +1,68 @@
+@@ -0,0 +1,69 @@
 +#pragma once
 +
 +#include "render/backend/render_backend.h"
@@ -653,6 +774,7 @@ index 000000000..64d267ed4
 +  GLint m_frostLocation = -1;
 +  GLint m_regionLocation = -1;
 +  GLint m_scaleLocation = -1;
++  GLint m_flipLocation = -1;
 +  GLint m_radiusLocation = -1;
 +  GLint m_tintLocation = -1;
 +  GLint m_opacityLocation = -1;
