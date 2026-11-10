@@ -27,6 +27,12 @@ Switched to generation 356; the service ran but matched no device
 failed). Fixed with `capabilities(absinfo=False)`; the script then watches
 both Magic Trackpad nodes (event8, event9).
 
+User confirmed both edges work on the trackpad (generation 357), but a slide
+that went on past the trigger scrolled the overview it had just opened. The
+command now runs when the fingers lift (once the swipe has been recognised),
+so the rest of the slide stays outside the overview; the next gesture scrolls
+it normally.
+
 # Umbriel: macOS-style trackpad gestures — 2026-11-10
 
 User asked for macOS trackpad behaviour: three-finger drag, four-finger
