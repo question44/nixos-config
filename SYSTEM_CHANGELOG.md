@@ -31,6 +31,9 @@ showed the frost, the rim fold and the hairline, with no errors in the log.
 `erebor-diff`: different, only the Noctalia package. Limits: widgets behind
 the box are not bent, since the glass is drawn before the widget layer. The
 lock transition and HDR output were not checked headless.
+Activated with switch as generation 348; the Noctalia user service restarted
+on the patched package (`wvzvljs7…-noctalia-5.4.1`); no failed system or user
+units. Not yet seen on the real lock screen.
 
 # Noctalia layer blur cut-off 0.05 — 2026-11-10
 
