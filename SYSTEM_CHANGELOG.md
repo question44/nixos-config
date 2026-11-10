@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Umbriel: bar glass edges at 80% — 2026-11-10
+
+At the user's request, the lens glass rim on the Noctalia bar and other layers (Vicinae, panels) is 80% of its previous brightness. In liquid-glass-lens-layer.glsl: SPECULAR 0.2 → 0.16, RIM_OPACITY 0.5 → 0.4, RIM_WHITE 0.2 → 0.16. Windows unchanged. Umbriel hot-reloads the shader file, so no rebuild.
+
 # Lock screen and greeter: lens glass — 2026-11-10
 
 At the user's request, after they kept the lens glass on the desktop: the
