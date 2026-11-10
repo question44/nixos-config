@@ -19,7 +19,7 @@
         inputs.noctalia-greeter.nixosModules.default
         inputs.noctalia.nixosModules.default
         {
-          # Features that patch Noctalia (lockscreen-yubikey, sequoia-wallpaper) add
+          # Features that patch Noctalia (lockscreen-yubikey, sequoia-wallpaper, lockscreen-glass) add
           # their patch here; they apply in list order to the flake input's package.
           options.programs.noctalia.patches = lib.mkOption {
             type = lib.types.listOf lib.types.path;

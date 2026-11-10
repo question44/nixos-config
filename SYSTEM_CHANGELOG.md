@@ -9,6 +9,28 @@ At the user's request, a window rule in `home/umbriel/config.toml` (app_id
 `^spotify$`) sets `opacity = 0.98`; the user tried 0.92 and 0.95 first. Being translucent gives the window a blur node, so the
 all-windows liquid glass backdrop now shows behind it.
 Live config only: no rebuild or generation change.
+# Liquid glass on the Noctalia lock screen — 2026-11-10
+
+At the user's request, the lock screen's login box and its status box ("Touch
+your security key") get the liquid glass the windows have. Umbriel's backdrop
+patch cannot do it: Noctalia draws the lock as one opaque surface, so there is
+nothing under the box for the compositor to bend. New
+`patches/noctalia-lockscreen-liquid-glass.patch` (module
+`modules/lockscreen-glass.nix`, applied after the security-key and sequoia
+patches, whose context it needs) adds `LiquidGlassNode`. It copies what the
+lock screen has drawn under the box, frosts the copy and draws it back with the
+shader from `home/umbriel/effects/liquid-glass-backdrop.glsl`. This works for
+still, desktop-capture and live sequoia backgrounds. The boxes keep 25% of
+their configured fill as a tint and lose their border, since the shader's rim
+draws the edge. Source: `~/src/noctalia-glass`, branch `lockscreen-glass`
+(f69bc8267, on `sequoia-live` plus the security-key patch).
+
+Headless check at 3440x1440, using a copy of the user's Noctalia config and
+the Nix-built package, locked through `noctalia msg session lock`: the glass
+showed the frost, the rim fold and the hairline, with no errors in the log.
+`erebor-diff`: different, only the Noctalia package. Limits: widgets behind
+the box are not bent, since the glass is drawn before the widget layer. The
+lock transition and HDR output were not checked headless.
 
 # Noctalia layer blur cut-off 0.05 — 2026-11-10
 

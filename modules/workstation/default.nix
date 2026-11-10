@@ -36,6 +36,7 @@ in
       moonshine
       noctalia
       sequoia-wallpaper
+      lockscreen-glass
       umbriel
       dashboard-control
       vicinae
