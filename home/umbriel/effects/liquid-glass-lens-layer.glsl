@@ -10,7 +10,7 @@
 // thickness along the normal is measured, and the bend never samples past
 // half of it.
 //
-// The outline is antialiased from the client's own alpha (rawAlpha), and the
+// The outline is antialiased from a box filter of the mask (cover), and the
 // thickness is measured to a fraction of a pixel so the bevel does not jump.
 
 const float REACH = 28.0;      // how far the edge search looks, logical px
@@ -107,18 +107,18 @@ float depth(vec2 uv, vec2 n) {
   return 1000.0;
 }
 
-// The client's own (antialiased) alpha at uv. The layer is clipped by an
-// on/off stencil, so the glass is faded by this alpha, relative to the alpha
-// a few px inside, to give the outline the client's antialiasing.
-float rawAlpha(vec2 uv) {
-  if (umbriel_shape_available < 0.5) {
-    return 1.0;
+// Coverage of the pixel at uv by the shape, from a 3x3 box of the mask at
+// 1 px spacing. Noctalia draws its capsules with hard edges and the layer is
+// clipped by an on/off stencil, so the outline is a staircase; averaging the
+// mask gives the outermost pixels fractional coverage along it.
+float cover(vec2 uv) {
+  float c = 0.0;
+  for (int i = -1; i <= 1; i++) {
+    for (int j = -1; j <= 1; j++) {
+      c += umbriel_shape(uv + vec2(float(i), float(j)) / umbriel_size);
+    }
   }
-  vec2 p = (vec3(uv, 1.0) * umbriel_sample_matrix).xy;
-  if (any(lessThan(p, vec2(0.0))) || any(greaterThan(p, vec2(1.0)))) {
-    return 0.0;
-  }
-  return texture2D(umbriel_shape_texture, p).a;
+  return c / 9.0;
 }
 
 float profile(float s) {
@@ -164,10 +164,6 @@ vec4 backdrop(vec2 uv) {
   col = mix(col, max(mix(vec3(lum), col, RIM_SATURATION), 0.0), rim);
   col = mix(col, vec3(1.0), rim * RIM_WHITE);
 
-  float cover = 1.0;
-  if (s < 2.0) {
-    float inner = rawAlpha(uv - n * 3.0 / umbriel_size);
-    cover = inner > 0.0 ? clamp(rawAlpha(uv) / inner, 0.0, 1.0) : 1.0;
-  }
-  return vec4(col * cover, cover);
+  float a = s < 2.0 ? cover(uv) : 1.0;
+  return vec4(col * a, a);
 }
