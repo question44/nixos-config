@@ -17,8 +17,8 @@ duplicating package, service, mount and version inventories in them.
 - Record versions as dated evidence, not live state.
 - Keep entries concise. Routine inspections belong in a related task's
   evidence when they resolve a question, not in a new changelog entry.
-- Commit related records with the configuration change, in the same PR, and
-  leave unrelated working-tree edits alone.
+- Commit related records with the configuration change and leave unrelated
+  working-tree edits alone.
 
 ### Month rollover
 
@@ -43,7 +43,7 @@ Archived months are history: do not edit them except to fix links.
   `scripts/erebor-tasks` shows the board; read it rather than every file.
 - Create a task with `scripts/erebor-tasks new "Title"` (it reserves the ID
   under a lock), fill in a stable status, review date, concrete completion
-  condition and evidence links, and land it in the PR of its work (see the
+  condition and evidence links, and commit it to `master` soon (see the
   parallel-agents skill).
 - Statuses: OPEN for known work, ACTIVE for work underway, REVIEW for
   uncertain historical work, and DONE/CANCELLED with dated evidence or reason

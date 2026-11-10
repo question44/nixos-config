@@ -23,10 +23,9 @@ These files are linked live: Home Manager points `~/.config/…` at the file in
   scripts or other Nix code changes.
 - Edit the files in the repo, never the `~/.config` links.
 - Because `/etc/nixos` is the live copy, edit in your worktree, commit, and
-  land it through a PR with `scripts/erebor-land` (parallel-agents skill).
-  Landing (the fast-forward of `/etc/nixos`) is when the change goes live, so
-  validate before it; a fix found afterwards is a follow-up PR. Rollback is a
-  revert PR, not a previous generation.
+  merge into `master` (parallel-agents skill). The merge is when the change
+  goes live. Rollback is git (revert, or check out the previous version), not
+  a previous generation.
 
 ## Rules
 

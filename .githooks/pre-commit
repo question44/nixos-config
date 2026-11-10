@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-# Fail early instead of after the commit message: master takes no direct
-# commits (see reference-transaction). Override: EREBOR_ALLOW_MASTER=1.
-[[ ${EREBOR_ALLOW_MASTER:-} == 1 ]] && exit 0
-if [[ $(git branch --show-current) == master ]]; then
-  echo "No commits on master: work in a worktree (scripts/erebor-worktree <task>)" >&2
-  echo "and land it with scripts/erebor-land." >&2
-  exit 1
-fi

@@ -8,14 +8,10 @@ working Windows installation, and verify every material change.
 
 - Work in your own worktree (`scripts/erebor-worktree <task>`), never
   directly in `/etc/nixos`; leave changes you did not make alone.
-- Every change reaches `master` through a squash-merged GitHub PR
-  (`scripts/erebor-land`): one PR holds the configuration, its changelog
-  entry and its task files. Never commit, merge or reset on `master`; git
-  hooks and a GitHub ruleset refuse it.
-- Build with `scripts/erebor-rebuild build` and compare with
-  `scripts/erebor-diff` first; quote its tier in the changelog. Test your
-  branch with `scripts/erebor-rebuild test`; `switch` only from `/etc/nixos`
-  on `master` after the PR has landed.
+- Activate only from `/etc/nixos` on `master` through
+  `scripts/erebor-rebuild test|switch`. Build with
+  `scripts/erebor-rebuild build` and compare with `scripts/erebor-diff`
+  first; quote its tier in the changelog.
 - Read the relevant Nix files before editing. Keep changes small and
   declarative; do not duplicate facts derived from the flake in the
   operational documents.
@@ -30,9 +26,8 @@ working Windows installation, and verify every material change.
   SSH may have fish as their login shell (the Mac does): send scripts as
   `ssh <host> bash -s < script` or `ssh <host> bash -c '...'`, never bare
   POSIX syntax.
-- A change is complete when it is tested and verified, recorded in
-  `SYSTEM_CHANGELOG.md`, landed through its PR and switched to; a build alone
-  is not activation.
+- A change is complete when it is activated and verified, recorded in
+  `SYSTEM_CHANGELOG.md`, and committed; a build alone is not activation.
 
 ## Skills: read the one that matches the task
 
@@ -41,7 +36,7 @@ before acting; each holds the full rules for its area.
 
 | Skill | Use it when |
 |---|---|
-| `parallel-agents` | creating a worktree, comparing with `erebor-diff`, landing a PR on `master`, creating a `SYS-NNN` task |
+| `parallel-agents` | creating a worktree, comparing with `erebor-diff`, merging into `master`, creating a `SYS-NNN` task |
 | `activation-and-checkpoints` | activating, rebooting, or touching boot, ESP, storage, subvolumes or Windows |
 | `system-records` | writing `SYSTEM_CHANGELOG.md`, a task in `tasks/` or `SYSTEM_CONTEXT.md`, month rollover, `[PENDING]` checkpoints |
 | `secrets` | a service needs a secret, adding or rotating one, changing recipients, moving an on-disk credential into sops |
@@ -110,8 +105,8 @@ before acting; each holds the full rules for its area.
 - Keep the flake lock file committed and review `git diff` before committing.
 - Do not commit unencrypted secrets, machine-specific credentials, or unrelated
   user changes.
-- After a verified important system change, land the configuration and
-  changelog changes through their PR before declaring the work complete.
+- After a verified important system change, commit the relevant configuration
+  and changelog changes in Git before declaring the work complete.
 - Run `nix fmt` before committing (nixfmt, RFC 166 style; it formats every
   `.nix` file outside `apps/`). `nix flake check` fails on unformatted files.
 - Keep commits focused and descriptive; check `git status` after committing
