@@ -35,3 +35,16 @@
 hbox#titlebar {
   background: transparent !important;
 }
+
+/* Firefox's body switches to --toolbox-background-color-inactive (an opaque
+   headerbar colour) while the window is unfocused, under everything above. */
+:root,
+body,
+#main-window {
+  --toolbox-background-color-inactive: transparent !important;
+}
+
+body,
+body:-moz-window-inactive {
+  background-color: transparent !important;
+}
