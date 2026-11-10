@@ -41,6 +41,12 @@ size = 32
 back_and_forth = true
 empty_above = true
 
+# Communicators get their own persistent workspace on the main monitor
+# (2026-11-10); Caps+M switches to it.
+[[workspace]]
+name = "chat"
+output = "DP-1"
+
 [output.DP-1]
 mode = "3440x1440@164.899994"
 position = [0, 0]
@@ -128,6 +134,11 @@ match.app_id = "^spotify$"
 # whole window (text too), unlike the terminals' own background opacity.
 opacity = 0.98
 
+[[window_rule]]
+match.app_id = "^(discord|com\\.rtosta\\.zapzap)$"
+default_output = "DP-1"
+default_workspace = "chat"
+
 # These destinations apply only while Sunshine's virtual monitor exists.
 [[window_rule]]
 match.app_id = "^steam$"
@@ -214,6 +225,8 @@ default_output = "sunshine"
 "Ctrl+Alt+Super+7" = "workspace-switch 7"
 "Ctrl+Alt+Super+8" = "workspace-switch 8"
 "Ctrl+Alt+Super+9" = "workspace-switch 9"
+"Ctrl+Alt+Super+M" = "workspace-switch chat --output DP-1"
+"Ctrl+Alt+Shift+Super+M" = "window-move-to-workspace chat --output DP-1"
 "Ctrl+Alt+Super+Grave" = "overview-toggle"
 "Ctrl+Alt+Super+Tab" = "workspace-focus-last"
 

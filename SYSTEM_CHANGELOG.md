@@ -3,6 +3,14 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Umbriel: `chat` workspace for communicators — 2026-11-10
+
+At the user's request ("dedicated workspace for communicators"), Umbriel gets
+a persistent named workspace `chat` on DP-1. A window rule opens Discord and
+ZapZap there (`default_workspace = "chat"`); Caps+M switches to it and
+Caps+Shift+M moves the focused window to it. Config-only (live reload, no
+rebuild); `umbriel config validate` ok.
+
 # Fish `mkcd` function — 2026-11-10
 
 At the user's request ("add mkcd alias"), the shared `shell` Home Manager
