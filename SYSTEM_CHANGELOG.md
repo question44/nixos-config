@@ -3,6 +3,22 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Vicinae: liquid glass and shared opacity — 2026-11-10
+
+At the user's request ("add liquid glass and inherit opacity"). Vicinae's
+launcher opacity now comes from `home/appearance.nix` (`appOpacity`, via
+`modules/home/_opacity.nix`, the same 0.749 as Ghostty): Home Manager writes
+`~/.config/vicinae/nix.json`, and `~/.config/vicinae/settings.json` (GUI-owned,
+not in the repo) got `"imports": ["./nix.json"]` by hand, so a key set in the
+GUI still wins. Umbriel's `^vicinae$` layer rule gains `blur_ignore_alpha =
+0.05` (keeps blur off Vicinae's drawn shadow) in `config.toml`, and a
+`backdrop_effect = "liquid-glass-layer"` rule in `glass.toml` (the optional
+glass split from 797cf56). Both configs validate, and so does `config.toml` with
+no `glass.toml` beside it. `erebor-diff` tier: different, only the new
+`nix.json` and the home-manager unit hash. Switched to generation 364;
+`liquid-glass-layer` is compiled, and a screenshot shows the translucent glass
+launcher with no glass on its shadow.
+
 # Umbriel: `chat` workspace for communicators — 2026-11-10
 
 At the user's request ("dedicated workspace for communicators"), Umbriel gets
