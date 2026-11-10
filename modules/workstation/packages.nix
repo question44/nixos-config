@@ -160,6 +160,8 @@
           (google-chrome.override { commandLineArgs = "--password-store=gnome-libsecret"; })
           haruna
           moonlight-qt
+          # WhatsApp Web client (Qt WebEngine).
+          zapzap
           stremio-linux-shell
           # Windows-only apps such as ChomikBox, each in its own prefix under
           # ~/.local/share/wineprefixes.

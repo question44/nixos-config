@@ -3,6 +3,15 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# WhatsApp client: ZapZap — 2026-11-10
+
+At the user's request, `modules/workstation/packages.nix` adds `zapzap`
+(7.5.1, a PyQt6/Qt WebEngine WhatsApp Web client) to the system packages.
+Chosen over `karere` (GTK4) and `whatsie` because it is Qt like the other
+desktop apps and actively maintained; `whatsapp-for-linux`/`wasistlos` are
+removed from nixpkgs. `scripts/erebor-diff` against master: different, only
+the added zapzap closure and its desktop entry and icon links.
+
 # Spotifast: audio libraries for Soloist — 2026-11-10
 
 Spotifast's Soloist player (Spotify's own binary, downloaded to
