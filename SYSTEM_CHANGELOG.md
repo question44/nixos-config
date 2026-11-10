@@ -20,6 +20,8 @@ package: the weather, calendar and sysmon glass followed each widget's radius,
 with no errors. `erebor-diff`: different, only the Noctalia package. Limit:
 dark widget text reads less well over dark parts of the scene than over the
 old 80% fill.
+Activated with switch as generation 349; Noctalia restarted on
+`r4dln1lf…-noctalia-5.4.1`; no failed system or user units.
 
 # Spotify window at 0.98 opacity — 2026-11-10
 
