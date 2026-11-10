@@ -17,7 +17,7 @@
 // - The window's own corner radius is used, not radius="21".
 
 const float REFRACTION = 47.0; // bend at the very edge, logical px
-const float BEZEL = 50.0;      // width of the curved rim, logical px
+const float BEZEL = 61.0;      // width of the curved rim, logical px
 const float CURVATURE = 4.8;   // rim profile exponent: 2 circular, higher = steeper
 const float IOR = 2.12;         // index of refraction
 const float CHROMA = 0.8;     // blue bends (1 + CHROMA)x, green (1 + CHROMA/2)x as far as red

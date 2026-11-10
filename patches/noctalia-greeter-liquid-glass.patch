@@ -90,7 +90,7 @@ index 4c5026c..7b25b48 100644
    Glyph* m_userSelectIcon = nullptr;
 diff --git a/src/render/programs/liquid_glass_program.cpp b/src/render/programs/liquid_glass_program.cpp
 new file mode 100644
-index 0000000..506071b
+index 0000000..63e47e0
 --- /dev/null
 +++ b/src/render/programs/liquid_glass_program.cpp
 @@ -0,0 +1,321 @@
@@ -143,19 +143,19 @@ index 0000000..506071b
 +uniform float u_opacity;
 +varying vec2 v_local;
 +
-+const float REFRACTION = 60.0;
-+const float BEZEL = 42.0;
-+const float CURVATURE = 3.5;
-+const float IOR = 1.5;
-+const float CHROMA = 0.35;
-+const float SPECULAR = 0.2;
-+const float SPECULAR_W = 2.0;
-+const float LIGHT = -120.0;
-+const float RIM_OPACITY = 0.5;
-+const float RIM_SATURATION = 6.0;
-+const float RIM_WHITE = 0.2;
-+const float RIM_W = 2.0;
-+const float RIM_LIGHT = -60.0;
++const float REFRACTION = 47.0;
++const float BEZEL = 61.0;
++const float CURVATURE = 4.8;
++const float IOR = 2.12;
++const float CHROMA = 0.8;
++const float SPECULAR = 0.06;
++const float SPECULAR_W = 6.6;
++const float LIGHT = 41.0;
++const float RIM_OPACITY = 0.48;
++const float RIM_SATURATION = 3.5;
++const float RIM_WHITE = 0.17;
++const float RIM_W = 4.6;
++const float RIM_LIGHT = -53.0;
 +
 +float sdRoundBox(vec2 p, vec2 b, float r) {
 +    vec2 q = abs(p) - b + r;

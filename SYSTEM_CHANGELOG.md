@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Lock screen and greeter: user's tuned lens glass — 2026-11-11
+
+At the user's request the lock screen and greeter glass take the window glass values the user tuned with ~/src/glass-tuner (both ports are the window shader): REFRACTION 47, BEZEL 61, CURVATURE 4.8, IOR 2.12, CHROMA 0.8, SPECULAR 0.06, SPECULAR_W 6.6, LIGHT 41°, RIM_OPACITY 0.48, RIM_SATURATION 3.5, RIM_WHITE 0.17, RIM_W 4.6, RIM_LIGHT −53°. The window glass (liquid-glass-lens.glsl) is committed at the same values (REFRACTION 44 → 47, BEZEL 50 → 61 since the last entry). Patches re-exported: `git diff HEAD~4 HEAD` (noctalia-glass) and `git diff HEAD~3 HEAD -- . ':!1'` (noctalia-greeter).
+
 # Umbriel: bar and panel lens glass tuned by the user — 2026-11-11
 
 The user set the layer glass (liquid-glass-lens-layer.glsl: Noctalia bar, panels, Vicinae) with ~/src/glass-tuner: REACH 28 → 60, BEZEL 28 → 120, CURVATURE 3.5 → 3.7, IOR 1.5 → 1.91, CHROMA 0.35 → 0.88, SPECULAR_W 2 → 1.6. The edge search still walks at most 28 px (14 steps of 2 px) and the bevel is capped at 0.3 × the shape's thickness, so the wider REACH/BEZEL mostly do not widen the bevel on the thin bar. Umbriel hot-reloads the shader.
