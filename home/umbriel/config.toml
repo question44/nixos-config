@@ -73,9 +73,10 @@ shader = "/etc/nixos/home/umbriel/effects/liquid-glass-rim.glsl"
 match.namespace = "^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd)$"
 blur = true
 # Blur and glass only where Noctalia's pixels are at least this opaque: keeps
-# them off its transparent margins and soft shadows. Must stay below the bar's
-# and dock's background_opacity (0.35 in home/noctalia/config.toml).
-blur_ignore_alpha = 0.25
+# them off its fully transparent margins. At 0.05 its soft shadows count too
+# (chosen by eye, 2026-11-10). Must stay below the bar's and dock's
+# background_opacity (0.35 in home/noctalia/config.toml).
+blur_ignore_alpha = 0.05
 backdrop_effect = "liquid-glass-layer"
 
 [[layer_rule]]

@@ -3,6 +3,16 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Noctalia layer blur cut-off 0.05 — 2026-11-10
+
+The user tried the Noctalia layer rule's `blur_ignore_alpha` at 0.15, then
+0.05, through a temporary `config-replace` profile
+(`$XDG_RUNTIME_DIR/umbriel-cutoff-temp.toml`). They liked 0.05, so it replaces
+0.25 in `home/umbriel/config.toml`. At that value Noctalia's soft shadows count
+as part of its shapes, so blur and the glass edge reach them too. The session is
+back on the normal config (`config-replace ~/.config/umbriel/config.toml`), and
+the temporary profile is deleted.
+
 # Umbriel patch: stop reallocating the glass buffers every frame — 2026-11-10
 
 At the user's request, the liquid glass cost was measured, and the
