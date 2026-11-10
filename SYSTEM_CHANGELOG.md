@@ -3,6 +3,14 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Glass terminal hairline restored — 2026-11-10
+
+At the user's request ("restore hairline/border for glass windows"), the
+Ghostty/Monstar rule again sets `border_width = 1` and
+`border_effect = "liquid-glass-rim"`, reverting the border part of
+565fd13. Focused, the 1 px ring is lit from the top-left like the glass;
+unfocused, it is the native dark ring. Config-only (live reload, no rebuild).
+
 # Umbriel: four-finger strip scroll stops at its ends — 2026-11-10
 
 User asked that the window-scrolling gesture not bounce back. New

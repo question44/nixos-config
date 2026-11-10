@@ -118,8 +118,9 @@ match.app_id = "^(com\\.mitchellh\\.ghostty|dev\\.rockorager\\.monstar)$"
 # Glass comes from the all-windows rule; terminals get larger corners.
 window_effect = "off"
 corner_radius = 18
-# No border ring: the backdrop shader's lit rim is the only edge.
-border_width = 0
+# A hairline instead of the 2 px ring; focused, it is lit like the glass rim.
+border_width = 1
+border_effect = "liquid-glass-rim"
 
 [[window_rule]]
 match.app_id = "^spotify$"
