@@ -14,8 +14,8 @@ layout = "pl"
 options = "lv3:ralt_switch"
 
 [input.touchpad]
-# Two-finger scrolling in apps at half speed (2026-11-10, by feel).
-scroll_factor = 0.5
+# Two-finger scrolling in apps at 0.3x speed (2026-11-10, by feel; 0.5 was still too fast).
+scroll_factor = 0.3
 
 [input.cursor]
 theme = "capitaine-cursors"

@@ -10,6 +10,8 @@ At the user's request, `home/umbriel/config.toml` sets
 speed; gestures and overview scrolling unaffected). Stock Umbriel key, so the
 running compositor accepts it; live config, no rebuild or activation.
 `umbriel config validate` passed. Umbriel has no per-window scroll factor.
+Lowered to `scroll_factor = 0.3` the same day at the user's request (0.5
+was still too fast).
 
 # Spotifast: audio libraries for Soloist — 2026-11-10
 
