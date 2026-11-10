@@ -633,18 +633,21 @@ index 89e0a448..33a26925 100644
    shader->previous_sample_matrix = glGetUniformLocation(shader->program, "umbriel_previous_sample_matrix");
    shader->progress = glGetUniformLocation(shader->program, "umbriel_progress");
 diff --git a/umbrielfx/render/fx_renderer/fx_offscreen_buffers.c b/umbrielfx/render/fx_renderer/fx_offscreen_buffers.c
-index e7de290f..91c03ad1 100644
+index e7de290f..862315af 100644
 --- a/umbrielfx/render/fx_renderer/fx_offscreen_buffers.c
 +++ b/umbrielfx/render/fx_renderer/fx_offscreen_buffers.c
-@@ -73,6 +73,8 @@ static void clear_animation_buffers(struct fx_target_buffers* buffers) {
-   }
-   drop_framebuffer(&buffers->animation_backdrop);
-   drop_framebuffer(&buffers->in_place_source);
-+  drop_framebuffer(&buffers->backdrop_source);
-+  drop_framebuffer(&buffers->backdrop_shape);
- }
+@@ -77,6 +77,11 @@ static void clear_animation_buffers(struct fx_target_buffers* buffers) {
  
  static void clear_target_buffers(struct fx_target_buffers* buffers) {
+   clear_animation_buffers(buffers);
++  // Backdrop buffers live with the target, not the animation: the scene clears
++  // animation buffers on every frame that shows no animation, and reallocating
++  // two output-sized buffers there cost ~0.45 ms CPU and ~1 ms GPU per frame.
++  drop_framebuffer(&buffers->backdrop_source);
++  drop_framebuffer(&buffers->backdrop_shape);
+   drop_framebuffer(&buffers->effects_buffer);
+   drop_framebuffer(&buffers->effects_buffer_swapped);
+ }
 diff --git a/umbrielfx/render/fx_renderer/fx_pass.c b/umbrielfx/render/fx_renderer/fx_pass.c
 index e74cb674..c488c3e5 100644
 --- a/umbrielfx/render/fx_renderer/fx_pass.c

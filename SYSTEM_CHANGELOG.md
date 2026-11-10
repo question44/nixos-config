@@ -3,6 +3,27 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Umbriel patch: stop reallocating the glass buffers every frame — 2026-11-10
+
+At the user's request, the liquid glass cost was measured, and the
+measurement found a bug in `patches/umbriel-backdrop-effect.patch`. The patch
+freed the output-sized `backdrop_source` and `backdrop_shape` buffers in
+`clear_animation_buffers()`. The scene calls that on every frame that shows
+no animation, so both buffers were reallocated each frame. They are now freed
+with the target's other buffers (`clear_target_buffers()`). The allocator
+already recreates them on a size or format change. Branch `backdrop-effect`
+gains a fourth commit (`~/src/umbriel`, 70776e86).
+
+Measured headless at 3440x1440@165 with the live config: a 60 fps video under
+a floating translucent Ghostty, 20 s runs. The GPU time comes from timestamp
+queries around each frame's render pass; the stock fx render timer is wrong
+on NVIDIA 615. Glass frames went from 2.17 to 1.04 ms GPU mean (stock blur
+0.97, no blur 0.10; p99 4.5 to 4.1 ms) and from 0.50 to 0.07 ms CPU before
+rendering. Limits: SDR, no Noctalia layers, GPU mostly in P3.
+Unit tests 149/150 (the known NVIDIA `hdr-sdr-capture` failure).
+`nix flake check` passed. `erebor-diff`: different, only the Umbriel package
+and `sunshine-output`, which references it.
+
 # More transparent Noctalia bar and dock — 2026-11-09
 
 At the user's request, the Noctalia layer rule's `blur_ignore_alpha` went from
