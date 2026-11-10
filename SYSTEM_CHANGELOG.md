@@ -3,6 +3,23 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# YubiKey: lock on unplug — 2026-11-10
+
+At the user's request (lock erebor when the YubiKey is disconnected). New
+toggle `my.yubikey.lockOnRemoval` (on for erebor, off in the template) and
+`modules/yubikey-unplug-lock.nix`: a udev `remove` rule for USB vendor 1050
+starts the oneshot `yubikey-unplug-lock.service`, which waits 2 s, does
+nothing if a YubiKey is present again (mode switch, re-enumeration), and
+otherwise runs `loginctl lock-sessions`. Noctalia locks on logind's `Lock`
+signal and ignores it while already locked. Password and fingerprint still
+unlock; touch-unlock needs the key, so it is unavailable while unplugged.
+Removal during suspend is not handled specially: Noctalia already locks
+before sleep. `erebor-diff` tier: different, only the udev rule, the new unit
+and the udevd override hash. The template still fails to evaluate on
+`sops.defaultSopsFile`, as on master before this change. Switched to
+generation 365; unplugging the key at 19:25:06 started the service, and
+Noctalia logged "session is locked" at 19:25:08 (`LockedHint=yes`).
+
 # Vicinae: liquid glass and shared opacity — 2026-11-10
 
 At the user's request ("add liquid glass and inherit opacity"). Vicinae's
