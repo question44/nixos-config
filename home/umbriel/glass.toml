@@ -18,6 +18,15 @@ kind = "backdrop"
 shader = "/etc/nixos/home/umbriel/effects/liquid-glass-backdrop.glsl"
 padding = 8
 
+# Alternative glass under the window: liquidglass.dev's refracting lens rim
+# (a 42 px bevel bending up to 60 px inward, colour fringe, faint rim light)
+# instead of the mirrored fold. To try it, set the catch-all window_rule
+# below to backdrop_effect = "liquid-glass-lens".
+[effects.preset.liquid-glass-lens]
+kind = "backdrop"
+shader = "/etc/nixos/home/umbriel/effects/liquid-glass-lens.glsl"
+padding = 8
+
 # Glass body for Noctalia's surfaces (layer shapes are unknown, so no rim).
 [effects.preset.liquid-glass-layer]
 kind = "backdrop"
