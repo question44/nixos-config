@@ -61,10 +61,13 @@ vec4 backdrop(vec2 uv) {
   float s = max(-sdRoundBox(p, halfSize, r), 0.0);  // px in from the edge
 
   // Smooth outward direction: a wide difference keeps the corners from creasing.
+  // The bend direction comes from the shape rounded to at least the bevel, so it turns
+  // smoothly round the corners (no seam along the corner diagonal).
+  float rn = min(max(r, min(BEZEL, min(halfSize.x, halfSize.y) * 0.5)), min(halfSize.x, halfSize.y));
   float h = 3.0;
   vec2 g = vec2(
-    sdRoundBox(p + vec2(h, 0.0), halfSize, r) - sdRoundBox(p - vec2(h, 0.0), halfSize, r),
-    sdRoundBox(p + vec2(0.0, h), halfSize, r) - sdRoundBox(p - vec2(0.0, h), halfSize, r));
+    sdRoundBox(p + vec2(h, 0.0), halfSize, rn) - sdRoundBox(p - vec2(h, 0.0), halfSize, rn),
+    sdRoundBox(p + vec2(0.0, h), halfSize, rn) - sdRoundBox(p - vec2(0.0, h), halfSize, rn));
   vec2 n = length(g) > 0.0 ? normalize(g) : vec2(0.0);
 
   // Small windows: keep the rim within half the shorter side.

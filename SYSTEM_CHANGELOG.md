@@ -3,6 +3,25 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Lock screen and greeter: lens glass — 2026-11-10
+
+At the user's request, after they kept the lens glass on the desktop: the
+Noctalia lock screen (login box, status box, widgets) and the greeter's login
+panel now draw the same lens optics as `liquid-glass-lens.glsl` (refracting
+bevel up to 42 px, 60 px bend, colour split, white rim 0.2, kube.io coloured
+rim). New commits on the `lockscreen-glass` branches of ~/src/noctalia-glass
+and ~/src/noctalia-greeter (history not rewritten), so the exports are now
+`git diff HEAD~3 HEAD` (lock) and `git diff HEAD~2 HEAD -- . ':!1'`
+(greeter; a stray log file `1` sits in the greeter glass commit). The
+fragment shader no longer reads `u_raw`, so its location may be -1; the
+fatal check for it was dropped. Also fixed in all three lens shaders
+(window, lock, greeter): the bend direction comes from the shape rounded to
+at least the bevel, so a 42 px bevel on a smaller corner no longer shows a
+seam along the corner diagonal (seen on the headless lock test). Headless
+lock test (built Noctalia, copied config/state): lens bend visible on both
+boxes, corner clean after the fix. Greeter not run headless (same shader
+text as the lock). 
+
 # Umbriel: lens glass on Noctalia and Vicinae — 2026-11-10
 
 At the user's request: `liquid-glass-lens-layer`
