@@ -3,6 +3,25 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Workflow: every change lands through a squash-merged PR — 2026-11-10
+
+At the user's request ("every merge to nixos config needs to be done by PR"),
+with squash merges so one PR holds the configuration, its changelog entry and
+task files. New `scripts/erebor-land` pushes the agent branch, opens and
+squash-merges its PR and fast-forwards `/etc/nixos`. Hooks in `.githooks/`
+(`core.hooksPath`, set by `erebor-worktree`) refuse commits on `master` and
+any move of `master` to a commit not on `origin/master`; `EREBOR_ALLOW_MASTER=1`
+overrides. `erebor-rebuild test` now also runs in an `agent/*` worktree that
+contains `origin/master`, and `switch` requires `master` equal to
+`origin/master`; worktrees start from `origin/master`. On GitHub a ruleset on
+`master` requires a PR and blocks force pushes and deletion; the repository
+allows only squash merges. AGENTS.md, the parallel-agents,
+activation-and-checkpoints, desktop-config and system-records skills,
+`tasks/README.md` and `docs/noctalia-settings.md` describe the new flow. No
+Nix code changed; nothing to activate. The hooks were tested in a scratch
+repository (direct commit, fast-forward merge and reset refused; `pull
+--ff-only` after a remote merge and the override allowed).
+
 # Vicinae: liquid glass and shared opacity — 2026-11-10
 
 At the user's request ("add liquid glass and inherit opacity"). Vicinae's

@@ -75,13 +75,14 @@ belong in the config.
    `git diff` of `home/noctalia/config.toml` and ask before going on.
 
 6. Add a `SYSTEM_CHANGELOG.md` entry, run `nix fmt`, `nix flake check` and
-   `scripts/erebor-rebuild build`, commit and merge into `master`. The config
-   is linked live from `/etc/nixos`, so the merge applies it; no activation is
-   needed unless the change also touched Nix code.
+   `scripts/erebor-rebuild build`, commit and land it with
+   `scripts/erebor-land`. The config is linked live from `/etc/nixos`, so
+   landing applies it; no activation is needed unless the change also touched
+   Nix code.
 
 7. Only after the merged config is live, back up the overrides:
    `cp -p ~/.local/state/noctalia/settings.toml ~/.local/state/noctalia/settings.toml.bak-<date>`.
-   Trimming before the merge drops the user's changes from the live desktop
+   Trimming before landing drops the user's changes from the live desktop
    until the new config is in `/etc/nixos`.
 
 8. Rewrite `settings.toml` to `config_version = <current version>` plus the

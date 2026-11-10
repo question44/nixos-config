@@ -17,15 +17,15 @@ description: Use before activating (nixos-rebuild test/switch via erebor-rebuild
 
 ## Activating
 
-- Activate only from `/etc/nixos` on `master` with
-  `scripts/erebor-rebuild test|switch` (see the parallel-agents skill). It
-  needs the user's YubiKey or fingerprint.
-- Prefer `test` for live validation. Use `switch` only when the change is
+- `scripts/erebor-rebuild test` in your worktree, `switch` only from
+  `/etc/nixos` on `master` after the PR has landed (see the parallel-agents
+  skill). Both need the user's YubiKey or fingerprint.
+- Validate live with `test` before landing. Use `switch` only when the change is
   verified and the user has requested activation, or activation is the normal
   completion of the task.
 - After activation, verify the affected services, the generation, mounts and
-  the user-facing behavior. Record the result in `SYSTEM_CHANGELOG.md` before
-  declaring the change complete (see the system-records skill).
+  the user-facing behavior. Record the result in `SYSTEM_CHANGELOG.md` in the
+  change's PR (see the system-records skill).
 
 ## Rebooting after a material change
 
@@ -34,7 +34,8 @@ description: Use before activating (nixos-rebuild test/switch via erebor-rebuild
 2. Read the checkpoint back.
 3. Do not reboot with an unresolved pending safety check.
 4. After the reboot, verify the generation, mounts, bootability, the affected
-   services and the user-facing behavior, and record the result.
+   services and the user-facing behavior, and record the result in a
+   follow-up PR.
 
 ## Storage and boot safety
 
