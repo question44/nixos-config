@@ -105,7 +105,7 @@ border_width = 0
 match.app_id = "^spotify$"
 # Slightly see-through, so the all-windows glass shows behind it. Fades the
 # whole window (text too), unlike the terminals' own background opacity.
-opacity = 0.92
+opacity = 0.95
 
 # These destinations apply only while Sunshine's virtual monitor exists.
 [[window_rule]]
