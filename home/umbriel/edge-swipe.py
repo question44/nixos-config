@@ -131,7 +131,7 @@ class Pad:
 
 
 def is_touchpad(device):
-    caps = device.capabilities()
+    caps = device.capabilities(absinfo=False)
     abs_codes = caps.get(ecodes.EV_ABS, [])
     keys = caps.get(ecodes.EV_KEY, [])
     return (

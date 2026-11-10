@@ -22,6 +22,11 @@ Synthetic-touch test of the detector: top and right swipes fire once; middle,
 outward, diagonal, unbound-edge and three-finger touches do not. `erebor-diff`:
 different, only the new service and python3-evdev.
 
+Switched to generation 356; the service ran but matched no device
+(`capabilities()` returns `(code, AbsInfo)` pairs by default, so the axis test
+failed). Fixed with `capabilities(absinfo=False)`; the script then watches
+both Magic Trackpad nodes (event8, event9).
+
 # Umbriel: macOS-style trackpad gestures — 2026-11-10
 
 User asked for macOS trackpad behaviour: three-finger drag, four-finger
