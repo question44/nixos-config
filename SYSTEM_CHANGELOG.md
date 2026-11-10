@@ -83,7 +83,11 @@ opening the overview by key mid-scroll. `edge-swipe` fires mid-swipe again and
 logs the finger count. Unit tests 149/150 (`hdr-sdr-capture`, known NVIDIA
 failure); no harness check, as the drop needs a real finger-scroll stream.
 `erebor-diff`: different, only the umbriel package and the edge-swipe script.
-The compositor part needs a logout/login.
+Switched to generation 361 (merged beside the parallel strip-scroll-clamp
+patch; both apply, touching different files). edge-swipe restarted and watches
+both trackpad nodes. The scroll drop is in the new Umbriel binary, so it needs
+a logout/login; until then an edge swipe opens the overview mid-swipe and the
+rest of a two-finger slide can still scroll it.
 
 # Umbriel: macOS-style trackpad gestures — 2026-11-10
 
