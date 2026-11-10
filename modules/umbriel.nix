@@ -36,6 +36,7 @@ in
     {
       config,
       osConfig,
+      lib,
       pkgs,
       ...
     }:
@@ -48,6 +49,36 @@ in
         # through the symlinks, so a saved edit applies without a rebuild.
         settings = config.lib.file.mkOutOfStoreSymlink "${osConfig.my.flakePath}/home/umbriel/config.toml";
       };
+      # Edge swipes, which libinput does not report: reads the touchpads' raw
+      # touches beside libinput (no grab; janzon is in the input group).
+      systemd.user.services.edge-swipe =
+        let
+          edgeSwipe = pkgs.writers.writePython3Bin "edge-swipe" {
+            libraries = [ pkgs.python3Packages.evdev ];
+            flakeIgnore = [
+              "E501"
+              "W503"
+            ];
+          } (builtins.readFile ../home/umbriel/edge-swipe.py);
+        in
+        {
+          Unit = {
+            Description = "Touchpad edge swipes";
+            PartOf = [ "graphical-session.target" ];
+            After = [ "graphical-session.target" ];
+          };
+          Service = {
+            ExecStart = lib.escapeShellArgs [
+              (lib.getExe edgeSwipe)
+              "top=umbriel msg overview-toggle"
+              "right=noctalia msg panel-toggle control-center notifications"
+            ];
+            Environment = [ "PATH=${config.home.profileDirectory}/bin:/run/current-system/sw/bin" ];
+            Restart = "on-failure";
+            RestartSec = 2;
+          };
+          Install.WantedBy = [ "graphical-session.target" ];
+        };
       home.file.".local/bin/umbriel-scratchpad-hint" = {
         source = pkgs.replaceVars ../home/umbriel/scratchpad-hint {
           inherit (pkgs) libnotify systemd;

@@ -3,6 +3,25 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Touchpad edge swipes — 2026-11-10
+
+User asked for edge swipes on the Magic Trackpad: top edge opens the overview,
+right edge the notifications. libinput has no edge gestures and passes the
+compositor no touch positions, so a new Home Manager user service
+`edge-swipe` (`modules/umbriel.nix`, script `home/umbriel/edge-swipe.py`,
+python-evdev) reads every touchpad's raw multitouch events next to libinput
+(no grab; janzon is in `input`). A finger that lands in the outer 8% of an
+edge and moves 12 mm inward within 0.6 s (sideways travel at most 0.6x the
+inward travel, at most two fingers down) runs that edge's command once per
+touch sequence: top runs `umbriel msg overview-toggle`, right runs
+`noctalia msg panel-toggle control-center notifications` (what the bar's bell
+runs). Without a grab libinput still sees the touch, so the pointer moves a
+little (one finger) or the page scrolls (two).
+
+Synthetic-touch test of the detector: top and right swipes fire once; middle,
+outward, diagonal, unbound-edge and three-finger touches do not. `erebor-diff`:
+different, only the new service and python3-evdev.
+
 # Umbriel: macOS-style trackpad gestures — 2026-11-10
 
 User asked for macOS trackpad behaviour: three-finger drag, four-finger
