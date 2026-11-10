@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Umbriel: window lens glass tuned by the user — 2026-11-11
+
+The user set the window glass (liquid-glass-lens.glsl) by eye with the slider app ~/src/glass-tuner: REFRACTION 120 → 44, BEZEL 42 → 50, CURVATURE 3.5 → 4.8, IOR 1.5 → 2.12, CHROMA 0.35 → 0.8, SPECULAR 0.2 → 0.06, SPECULAR_W 2 → 6.6, LIGHT −120° → 41° (lit from lower right), RIM_OPACITY 0.5 → 0.48, RIM_SATURATION 6 → 3.5, RIM_WHITE 0.2 → 0.17, RIM_W 2 → 4.6, RIM_LIGHT −60° → −53°. Bar and panels unchanged. Umbriel hot-reloads the shader.
+
 # Umbriel: stronger lens refraction on windows — 2026-11-10
 
 At the user's request, liquid-glass-lens.glsl (window glass) REFRACTION 60 → 120 px of bend at the edge. Layers (bar, Vicinae, panels) unchanged at 60. Umbriel hot-reloads the shader.

@@ -16,22 +16,22 @@
 //   is continuous (the web map is 8-bit).
 // - The window's own corner radius is used, not radius="21".
 
-const float REFRACTION = 120.0; // bend at the very edge, logical px
-const float BEZEL = 42.0;      // width of the curved rim, logical px
-const float CURVATURE = 3.5;   // rim profile exponent: 2 circular, higher = steeper
-const float IOR = 1.5;         // index of refraction
-const float CHROMA = 0.35;     // blue bends (1 + CHROMA)x, green (1 + CHROMA/2)x as far as red
-const float SPECULAR = 0.2;    // rim highlight strength
-const float SPECULAR_W = 2.0;  // rim highlight width, px (glow reaches 5x this)
-const float LIGHT = -120.0;    // light direction, degrees; 0 = from the right, -90 = from the top
+const float REFRACTION = 47.0; // bend at the very edge, logical px
+const float BEZEL = 50.0;      // width of the curved rim, logical px
+const float CURVATURE = 4.8;   // rim profile exponent: 2 circular, higher = steeper
+const float IOR = 2.12;         // index of refraction
+const float CHROMA = 0.8;     // blue bends (1 + CHROMA)x, green (1 + CHROMA/2)x as far as red
+const float SPECULAR = 0.06;    // rim highlight strength
+const float SPECULAR_W = 6.6;  // rim highlight width, px (glow reaches 5x this)
+const float LIGHT = 41.0;    // light direction, degrees; 0 = from the right, -90 = from the top
 // Coloured rim as kube.io/blog/liquid-glass-css-svg builds it: in a thin rim,
 // lit on the side facing the light and the opposite side, the bent backdrop
 // is shown heavily saturated, with a faint white line over it.
-const float RIM_OPACITY = 0.5;     // how much the rim shows (kube.io: 0.2 to 0.5)
-const float RIM_SATURATION = 6.0;  // saturation of the backdrop in the rim (kube.io: 4 to 9)
-const float RIM_WHITE = 0.2;       // white over the rim, fraction of its opacity
-const float RIM_W = 2.0;           // rim width, px
-const float RIM_LIGHT = -60.0;     // rim light direction, degrees (kube.io default: up-right)
+const float RIM_OPACITY = 0.48;     // how much the rim shows (kube.io: 0.2 to 0.5)
+const float RIM_SATURATION = 3.5;  // saturation of the backdrop in the rim (kube.io: 4 to 9)
+const float RIM_WHITE = 0.17;       // white over the rim, fraction of its opacity
+const float RIM_W = 4.6;           // rim width, px
+const float RIM_LIGHT = -53.0;     // rim light direction, degrees (kube.io default: up-right)
 
 float sdRoundBox(vec2 p, vec2 b, float r) {
   vec2 q = abs(p) - b + r;
