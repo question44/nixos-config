@@ -12,6 +12,14 @@ running compositor accepts it; live config, no rebuild or activation.
 `umbriel config validate` passed. Umbriel has no per-window scroll factor.
 Lowered to `scroll_factor = 0.3` the same day at the user's request (0.5
 was still too fast).
+# WhatsApp client: ZapZap — 2026-11-10
+
+At the user's request, `modules/workstation/packages.nix` adds `zapzap`
+(7.5.1, a PyQt6/Qt WebEngine WhatsApp Web client) to the system packages.
+Chosen over `karere` (GTK4) and `whatsie` because it is Qt like the other
+desktop apps and actively maintained; `whatsapp-for-linux`/`wasistlos` are
+removed from nixpkgs. `scripts/erebor-diff` against master: different, only
+the added zapzap closure and its desktop entry and icon links.
 
 # Spotifast: audio libraries for Soloist — 2026-11-10
 
