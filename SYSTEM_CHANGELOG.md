@@ -3,6 +3,14 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Umbriel: slower touchpad scrolling — 2026-11-10
+
+At the user's request, `home/umbriel/config.toml` sets
+`[input.touchpad] scroll_factor = 0.5` (two-finger scrolling in apps at half
+speed; gestures and overview scrolling unaffected). Stock Umbriel key, so the
+running compositor accepts it; live config, no rebuild or activation.
+`umbriel config validate` passed. Umbriel has no per-window scroll factor.
+
 # Spotifast: audio libraries for Soloist — 2026-11-10
 
 Spotifast's Soloist player (Spotify's own binary, downloaded to

@@ -13,6 +13,10 @@ QT_QPA_PLATFORMTHEME = "kde"
 layout = "pl"
 options = "lv3:ralt_switch"
 
+[input.touchpad]
+# Two-finger scrolling in apps at half speed (2026-11-10, by feel).
+scroll_factor = 0.5
+
 [input.cursor]
 theme = "capitaine-cursors"
 size = 32
