@@ -10,7 +10,10 @@ let
   # backdrop-effect (~/src/umbriel, branch touchpad-gestures). scroll-accel-curve
   # lets a custom accel_profile carry a libinput scroll curve ("... scroll
   # <step> <points...>"); it applies on top of touchpad-gestures (branch
-  # touchpad-scroll-accel). Both the system and Home Manager install it.
+  # touchpad-scroll-accel). overview-scroll-handoff drops the rest of a
+  # two-finger scroll when the overview opens or closes under it, so an edge
+  # swipe that opens it does not also scroll it (branch overview-scroll-handoff,
+  # on touchpad-scroll-accel). Both the system and Home Manager install it.
   patched =
     pkgs:
     inputs.umbriel.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
@@ -18,6 +21,7 @@ let
         ../patches/umbriel-backdrop-effect.patch
         ../patches/umbriel-touchpad-gestures.patch
         ../patches/umbriel-scroll-accel-curve.patch
+        ../patches/umbriel-overview-scroll-handoff.patch
       ];
     });
 in

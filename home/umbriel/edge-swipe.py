@@ -2,9 +2,10 @@
 
 Reads the raw multitouch stream of every touchpad next to libinput (no grab,
 so libinput still sees the same touches) and runs a command when a finger
-lands in a strip along one edge and moves inward. The command runs when the
-fingers lift, so the rest of the slide cannot carry on into what it opens
-(scrolling the overview it just opened). One trigger per touch sequence.
+lands in a strip along one edge and moves inward. One trigger per touch
+sequence: nothing more fires until every finger has lifted. The command runs
+mid-swipe; Umbriel drops the rest of a two-finger scroll once the overview
+opens or closes under it (patches/umbriel-overview-scroll-handoff.patch).
 
 Usage: edge-swipe [--debug] EDGE=COMMAND...   (EDGE: top, bottom, left, right)
 """
@@ -47,7 +48,7 @@ class Pad:
         self.y = absinfo[ecodes.ABS_MT_POSITION_Y]
         self.slot = 0
         self.touches = {}  # slot -> touch state
-        self.armed = None  # Edge whose swipe is recognised, run on lift.
+        self.fired = False
         self.max_fingers = 0
 
     def mm(self, axis, units):
@@ -95,10 +96,7 @@ class Pad:
     def frame(self):
         active = [t for t in self.touches.values() if t.get("id", -1) >= 0]
         if not active:
-            if self.armed is not None and self.max_fingers <= MAX_FINGERS:
-                log(f"{self.armed} edge swipe: {self.commands[self.armed]}")
-                subprocess.Popen(shlex.split(self.commands[self.armed]), start_new_session=True)
-            self.armed = None
+            self.fired = False
             self.max_fingers = 0
             return
         self.max_fingers = max(self.max_fingers, len(active))
@@ -112,7 +110,7 @@ class Pad:
                 if DEBUG:
                     log(f"touch {t['id']} at {t['x']},{t['y']} edge={t['edge']}")
             edge = t.get("edge")
-            if self.armed is not None or edge is None or edge not in self.commands:
+            if self.fired or edge is None or edge not in self.commands:
                 continue
             if self.max_fingers > MAX_FINGERS:
                 continue
@@ -129,7 +127,9 @@ class Pad:
                 "right": (-dx, dy),
             }[edge]
             if inward >= TRAVEL_MM and abs(sideways) <= MAX_SIDEWAYS * inward:
-                self.armed = edge
+                self.fired = True
+                log(f"{edge} edge swipe, {self.max_fingers} finger(s): {self.commands[edge]}")
+                subprocess.Popen(shlex.split(self.commands[edge]), start_new_session=True)
 
 
 def is_touchpad(device):

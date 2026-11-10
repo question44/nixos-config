@@ -1,0 +1,44 @@
+diff --git a/src/input/cursor.cpp b/src/input/cursor.cpp
+index eff21c43..bacf8367 100644
+--- a/src/input/cursor.cpp
++++ b/src/input/cursor.cpp
+@@ -2036,6 +2036,24 @@ namespace umbriel {
+     m_server->cancelModifierTap();
+     cancelHotCorner();
+ 
++    if (event->source == WL_POINTER_AXIS_SOURCE_FINGER) {
++      const Overview* overview = m_server->overview();
++      const bool inOverview = overview != nullptr && overview->active();
++      if (event->delta == 0) {
++        // libinput's scroll stop: the fingers lifted. A dropped scroll stays dropped through its stop.
++        const bool dropped = m_fingerScrolling && inOverview != m_fingerScrollInOverview;
++        m_fingerScrolling = false;
++        if (dropped) {
++          return;
++        }
++      } else if (!m_fingerScrolling) {
++        m_fingerScrolling = true;
++        m_fingerScrollInOverview = inOverview;
++      } else if (inOverview != m_fingerScrollInOverview) {
++        return;
++      }
++    }
++
+     const uint32_t modifiers = m_server->keyboardModifiers();
+     const uint32_t effective = modifiers & ~(WLR_MODIFIER_CAPS | WLR_MODIFIER_MOD2);
+ 
+diff --git a/src/input/cursor.h b/src/input/cursor.h
+index 7656c3c9..dcf0a24a 100644
+--- a/src/input/cursor.h
++++ b/src/input/cursor.h
+@@ -458,6 +458,10 @@ namespace umbriel {
+     // Last layout output under the pointer; crossing heads updates seat focus like workspace switch.
+     wlr_output* m_pointerOutput = nullptr;
+     double m_wheelAccum[2]{};
++    // A two-finger scroll stays with what it started on: while one is in flight, whether the overview was up when it
++    // began. When the overview opens or closes under the fingers, the rest of that scroll is dropped until they lift.
++    bool m_fingerScrolling = false;
++    bool m_fingerScrollInOverview = false;
+     // Presses consumed by config binds or ignored during an interactive move;
+     // their release is swallowed too, even if the grab ended first.
+     std::vector<uint32_t> m_swallowedButtons;
