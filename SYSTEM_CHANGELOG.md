@@ -11,6 +11,9 @@ the patch by mistake. Removed that hunk; the other ten files are unchanged.
 `erebor-diff`: different, only the noctalia-greeter package and the units and
 configs that name its store path. Its binaries are byte-identical to master's
 once their own store hash is normalised.
+Switched to generation 359; the live system uses the new greeter build
+(`289gfiwy…-noctalia-greeter-1.7.0`). The greeter itself is first seen at the
+next login screen.
 
 # Touchpad edge swipes — 2026-11-10
 
