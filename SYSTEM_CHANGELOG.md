@@ -3,6 +3,25 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Spotifast: audio libraries for Soloist — 2026-11-10
+
+Spotifast's Soloist player (Spotify's own binary, downloaded to
+`~/.local/state/spotifast/soloist/builds/`, run through nix-ld) started each
+track and paused it within milliseconds: its log showed `playing` → `paused …
+?:??`, and its private PipeWire sink stayed suspended. It dlopens libpulse and
+libpipewire, which were neither in nix-ld's library set nor on the
+LD_LIBRARY_PATH it inherits from the Spotifast wrapper. The `modules/spotify.nix`
+override now wraps `spotifast` again, prefixing `pipewire` and `libpulseaudio`
+to LD_LIBRARY_PATH. Spotifast's built-in librespot player was unaffected (it
+links PipeWire at build time).
+
+`scripts/erebor-diff` against master: different, only the spotifast store path
+(and its `bin`, desktop entry and icon links). Activated with
+`erebor-rebuild switch` as generation 352. Verified live: after a relaunch,
+Soloist maps `libpulse.so.0` and its log advances through a track
+(0:20 → 0:50); the user confirmed audio. Not checked: whether Spotify
+actually delivers lossless (Soloist does not report the format).
+
 # Spotifast 0.17.1 — 2026-11-10
 
 At the user's request, Spotifast (native egui Spotify client,
