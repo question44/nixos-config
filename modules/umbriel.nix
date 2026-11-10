@@ -7,14 +7,17 @@ let
   # blur node, under the window). touchpad-gestures adds
   # input.touchpad.three_finger_drag, moves workspace swipes to four fingers
   # and opens the overview with a four-finger pinch; it applies on top of
-  # backdrop-effect (~/src/umbriel, branch touchpad-gestures). Both the system
-  # and Home Manager install it.
+  # backdrop-effect (~/src/umbriel, branch touchpad-gestures). scroll-accel-curve
+  # lets a custom accel_profile carry a libinput scroll curve ("... scroll
+  # <step> <points...>"); it applies on top of touchpad-gestures (branch
+  # touchpad-scroll-accel). Both the system and Home Manager install it.
   patched =
     pkgs:
     inputs.umbriel.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
       patches = (old.patches or [ ]) ++ [
         ../patches/umbriel-backdrop-effect.patch
         ../patches/umbriel-touchpad-gestures.patch
+        ../patches/umbriel-scroll-accel-curve.patch
       ];
     });
 in

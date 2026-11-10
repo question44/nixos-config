@@ -1,0 +1,186 @@
+diff --git a/docs/user/input.md b/docs/user/input.md
+index 4cf5fe5f..8c35469e 100644
+--- a/docs/user/input.md
++++ b/docs/user/input.md
+@@ -192,6 +192,12 @@ Omitting `accel_profile` preserves the device default. A custom libinput curve u
+ accel_profile = "custom 0.2 0.0 0.5 1.0 2.0"
+ ```
+ 
++A custom curve can also set the scroll curve that libinput applies to touchpad and button scrolling. Without it, a custom profile scrolls through libinput's 1:1 fallback curve, which is faster than the `adaptive` and `flat` profiles on most touchpads:
++
++```toml
++accel_profile = "custom 0.2 0.0 0.5 1.0 2.0 scroll 1.0 0.0 0.25"
++```
++
+ `scroll_button` turns pointer motion into scrolling while the named button is held. Set `scroll_button_lock = true` to toggle that mode with a press instead. Accepted names are `MouseLeft`, `MouseRight`, `MouseMiddle`, `MouseBack`, and `MouseForward`.
+ 
+ `scroll_wheel_step` controls the distance used by layout scroll actions, not the scrolling sent to applications.
+diff --git a/src/config/config.h b/src/config/config.h
+index a3a7d847..155ffd79 100644
+--- a/src/config/config.h
++++ b/src/config/config.h
+@@ -87,6 +87,10 @@ namespace umbriel {
+     } kind = Kind::Flat;
+     double step = 0.0;
+     std::vector<double> points;
++    // Custom only: optional curve for scrolling (`... scroll <step> <points...>`). Empty leaves libinput's
++    // fallback curve, which is 1:1 in device units.
++    double scrollStep = 0.0;
++    std::vector<double> scrollPoints;
+     bool operator==(const AccelProfile&) const = default;
+   };
+ 
+diff --git a/src/config/fields_input.cpp b/src/config/fields_input.cpp
+index ddbfd8b9..34d582bb 100644
+--- a/src/config/fields_input.cpp
++++ b/src/config/fields_input.cpp
+@@ -66,39 +66,63 @@ namespace umbriel {
+             .points = {},
+         };
+       }
+-      if (profile != "custom" || tokens.size() < 4) {
++      const auto scrollKeyword = std::ranges::find_if(tokens, [](std::string_view token) {
++        return lowercase(token) == "scroll";
++      });
++      const size_t motionEnd = static_cast<size_t>(scrollKeyword - tokens.begin());
++      const bool hasScroll = scrollKeyword != tokens.end();
++      if (profile != "custom" || motionEnd < 4 || (hasScroll && tokens.size() - motionEnd - 1 < 3)) {
+         warnAt(
+-            node.source(), R"(invalid {} "{}" (expected "flat", "adaptive", or "custom <step> <points...>"))", path,
+-            value->get()
++            node.source(),
++            R"(invalid {} "{}" (expected "flat", "adaptive", or "custom <step> <points...> [scroll <step> <points...>]"))",
++            path, value->get()
+         );
+         return std::nullopt;
+       }
+ 
+-      std::vector<double> values;
+-      values.reserve(tokens.size() - 1);
+-      for (size_t index = 1; index < tokens.size(); ++index) {
+-        const std::string_view token = tokens[index];
+-        double number = 0.0;
+-        const auto [end, error] = std::from_chars(token.data(), token.data() + token.size(), number);
+-        if (error != std::errc{} || end != token.data() + token.size() || !std::isfinite(number)) {
+-          warnAt(node.source(), R"(invalid number "{}" in {})", token, path);
++      // One curve: a step followed by at least two points.
++      const auto parseCurve = [&](size_t first, size_t last, const char* what) -> std::optional<std::vector<double>> {
++        std::vector<double> values;
++        values.reserve(last - first);
++        for (size_t index = first; index < last; ++index) {
++          const std::string_view token = tokens[index];
++          double number = 0.0;
++          const auto [end, error] = std::from_chars(token.data(), token.data() + token.size(), number);
++          if (error != std::errc{} || end != token.data() + token.size() || !std::isfinite(number)) {
++            warnAt(node.source(), R"(invalid number "{}" in {})", token, path);
++            return std::nullopt;
++          }
++          values.push_back(number);
++        }
++        if (values.front() <= 0.0) {
++          warnAt(node.source(), "{} custom {}step must be greater than zero", path, what);
+           return std::nullopt;
+         }
+-        values.push_back(number);
+-      }
+-      if (values.front() <= 0.0) {
+-        warnAt(node.source(), "{} custom step must be greater than zero", path);
+-        return std::nullopt;
+-      }
+-      if (std::ranges::any_of(values.begin() + 1, values.end(), [](double point) { return point < 0.0; })) {
+-        warnAt(node.source(), "{} custom points must be non-negative", path);
++        if (std::ranges::any_of(values.begin() + 1, values.end(), [](double point) { return point < 0.0; })) {
++          warnAt(node.source(), "{} custom {}points must be non-negative", path, what);
++          return std::nullopt;
++        }
++        return values;
++      };
++
++      const auto motion = parseCurve(1, motionEnd, "");
++      if (!motion) {
+         return std::nullopt;
+       }
+-      return AccelProfile{
++      AccelProfile result{
+           .kind = AccelProfile::Kind::Custom,
+-          .step = values.front(),
+-          .points = std::vector<double>(values.begin() + 1, values.end()),
++          .step = motion->front(),
++          .points = std::vector<double>(motion->begin() + 1, motion->end()),
+       };
++      if (hasScroll) {
++        const auto scroll = parseCurve(motionEnd + 1, tokens.size(), "scroll ");
++        if (!scroll) {
++          return std::nullopt;
++        }
++        result.scrollStep = scroll->front();
++        result.scrollPoints = std::vector<double>(scroll->begin() + 1, scroll->end());
++      }
++      return result;
+     }
+ 
+     // `accel_profile` on any device class whose struct has an `accelProfile` member.
+diff --git a/src/server/server_events.cpp b/src/server/server_events.cpp
+index 7ce367f0..ebf70ab3 100644
+--- a/src/server/server_events.cpp
++++ b/src/server/server_events.cpp
+@@ -514,9 +514,15 @@ namespace umbriel {
+               acceleration, LIBINPUT_ACCEL_TYPE_MOTION, configuredProfile->step, configuredProfile->points.size(),
+               configuredProfile->points.data()
+           );
+-          const auto applyStatus = pointsStatus == LIBINPUT_CONFIG_STATUS_SUCCESS
+-              ? libinput_device_config_accel_apply(libinputDevice, acceleration)
++          const auto scrollStatus = pointsStatus == LIBINPUT_CONFIG_STATUS_SUCCESS && !configuredProfile->scrollPoints.empty()
++              ? libinput_config_accel_set_points(
++                    acceleration, LIBINPUT_ACCEL_TYPE_SCROLL, configuredProfile->scrollStep,
++                    configuredProfile->scrollPoints.size(), configuredProfile->scrollPoints.data()
++                )
+               : pointsStatus;
++          const auto applyStatus = scrollStatus == LIBINPUT_CONFIG_STATUS_SUCCESS
++              ? libinput_device_config_accel_apply(libinputDevice, acceleration)
++              : scrollStatus;
+           libinput_config_accel_destroy(acceleration);
+           if (applyStatus != LIBINPUT_CONFIG_STATUS_SUCCESS) {
+             kLog.warn("input: failed to apply {} to '{}'", accelSetting, deviceName(device));
+diff --git a/tests/unit/config_load.cpp b/tests/unit/config_load.cpp
+index d57337de..baf36bc9 100644
+--- a/tests/unit/config_load.cpp
++++ b/tests/unit/config_load.cpp
+@@ -3177,6 +3177,37 @@ accel_profile = "custom 0.2 1.0"
+   CHECK(containsDiagnostic(store, "custom <step> <points...>"));
+ }
+ 
++UMBRIEL_TEST(customAccelerationCurveAcceptsScrollCurve) {
++  const TempConfig file;
++  file.write(R"(
++[input.touchpad]
++accel_profile = "custom 0.5 0.0 1.0 3.0 scroll 1.0 0.0 0.25"
++)");
++
++  ConfigStore& store = umbriel::configStore();
++  store.setRootPath(file.path(), true);
++  CHECK(store.reload().success);
++  const auto& profile = store.config().input.touchpad.accelProfile;
++  CHECK(profile.has_value());
++  if (profile.has_value()) {
++    CHECK(profile->kind == umbriel::AccelProfile::Kind::Custom);
++    CHECK_EQ(profile->step, 0.5);
++    CHECK_EQ(profile->points, std::vector<double>({0.0, 1.0, 3.0}));
++    CHECK_EQ(profile->scrollStep, 1.0);
++    CHECK_EQ(profile->scrollPoints, std::vector<double>({0.0, 0.25}));
++  }
++
++  file.write("[input.touchpad]\naccel_profile = \"custom 0.5 0.0 1.0 scroll 1.0 0.25\"\n");
++  CHECK(store.reload().success);
++  CHECK(!store.config().input.touchpad.accelProfile.has_value());
++  CHECK(containsDiagnostic(store, "[scroll <step> <points...>]"));
++
++  file.write("[input.touchpad]\naccel_profile = \"custom 0.5 0.0 1.0 scroll 0.0 0.0 0.25\"\n");
++  CHECK(store.reload().success);
++  CHECK(!store.config().input.touchpad.accelProfile.has_value());
++  CHECK(containsDiagnostic(store, "custom scroll step must be greater than zero"));
++}
++
+ UMBRIEL_TEST(invalidClickMethodIsRejectedAndStillClaimsTheKey) {
+   const TempConfig file;
+   file.write(R"(

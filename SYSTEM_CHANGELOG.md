@@ -36,6 +36,23 @@ Not yet verified on hardware: three-finger drag, four-finger swipes and the
 pinch need a logout/login into the new Umbriel and a test with the Magic
 Trackpad.
 
+# Umbriel: scroll curve for custom acceleration profiles — 2026-11-10
+
+Follow-up to the macOS-style trackpad curve below, at the user's request.
+New `patches/umbriel-scroll-accel-curve.patch` (~/src/umbriel, branch
+`touchpad-scroll-accel` on top of `touchpad-gestures`), wired in
+`modules/umbriel.nix` after the gestures patch: `accel_profile` accepts
+`"custom <step> <points...> scroll <step> <points...>"` and also applies the
+second curve as `LIBINPUT_ACCEL_TYPE_SCROLL`. Without it a custom profile
+scrolls through libinput's 1:1 fallback curve (~4.5× the adaptive speed on the
+Magic Trackpad). Config parser test added; unit suite 149/150 (only the known
+NVIDIA `hdr-sdr-capture` failure). `scripts/erebor-diff` against master:
+different, only the Umbriel store path and units/links that reference it
+(greetd, umbriel.service, home-manager); `nix store diff-closures` shows no
+version changes. The config that uses `scroll` must go live only once the
+patched compositor runs (an unpatched one rejects the whole accel_profile and
+falls back to adaptive), so it lands separately after the next login.
+
 # Umbriel: macOS-style trackpad acceleration — 2026-11-10
 
 At the user's request (to get the macOS trackpad feel), `home/umbriel/config.toml`
