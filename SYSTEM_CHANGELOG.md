@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Dashboard Sequoia: glass toggles, switch, hover, better title — 2026-11-11
+
+At the user's request: device-card toggle rows get a sliding thumb (frontend/src/toggles.ts: spring ~0.45 s with small overshoot, stretch along the motion, swell while pressed, moves on press before the API confirms) in every background mode, drawn as liquid glass in Sequoia mode; the Show hidden switch gets a glass track (accent-tinted when on) and knob; cards light up under the pointer and lift 2 px on hover; the title's glass is rounded rods with edge lighting and a much lighter shadow (and a fixed vertical normal). Card tints moved from CSS into the glass shader so glass on top of cards composites correctly. Tested on a local copy in Chromium (light and dark; thumb motion traced frame by frame; no actions enabled, a fake toggle card injected). Dashboard commit on sequoia-background (not pushed).
+
 # Vitrum installed (apps/vitrum submodule) — 2026-11-11
 
 At the user's request the umbriel_glass_v1 demo is packaged like Chomik: private repo `question44/vitrum` (pushed, commit 919877f), submodule `apps/vitrum`, flake input `vitrum` (`path:`, nixpkgs follows), installed in modules/workstation/packages.nix. `vitrum` and its `dev.erebor.vitrum` desktop entry are on PATH / in the launcher; glass.toml already has its window rule. The glass needs the patched Umbriel from generation 377 to be running (next login).
