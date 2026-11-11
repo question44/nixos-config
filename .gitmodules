@@ -4,3 +4,6 @@
 [submodule "apps/chomik-qml"]
 	path = apps/chomik-qml
 	url = git@github.com:question44/chomik-qml.git
+[submodule "apps/vitrum"]
+	path = apps/vitrum
+	url = git@github.com:question44/vitrum.git

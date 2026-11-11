@@ -16,6 +16,11 @@
       url = "path:./apps/chomik-qml";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Vitrum, the liquid glass demo for umbriel_glass_v1 (apps/vitrum submodule).
+    vitrum = {
+      url = "path:./apps/vitrum";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     moonshine = {
       url = "github:hgaiser/moonshine/79554f853135cbac44502b58093a4eb0f0f5e6f1";
       inputs.nixpkgs.follows = "nixpkgs";

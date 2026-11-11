@@ -21,6 +21,7 @@
 
       system = pkgs.stdenv.hostPlatform.system;
       chomik = inputs.chomik.packages.${system}.default;
+      vitrum = inputs.vitrum.packages.${system}.default;
       # The app turns hardware acceleration off for good when its GPU process
       # fails to relaunch, which a nixos-rebuild switch triggers by killing its
       # helpers. Clear that flag at every launch so one switch does not leave it
@@ -211,6 +212,8 @@
           auroraNcs
           # Chomikuj.pl client; also the chomik:// link handler (modules/home/desktop.nix).
           chomik
+          # Liquid glass demo for the umbriel_glass_v1 patch (glass.toml has its rule).
+          vitrum
           ut2004.ut2004
           ut2004.ut2004-import-rpm
           ut2004.ut2004-setup
