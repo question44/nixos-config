@@ -1,7 +1,12 @@
 # Cockpit system console (served at sys.<domain>).
 {
   flake.modules.nixos.cockpit =
-    { config, lib, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     let
       domain = config.my.network.domain;
     in
@@ -16,6 +21,7 @@
         (lib.mkIf config.my.services.cockpit.enable {
           services.cockpit = {
             enable = true;
+            plugins = [ pkgs.cockpit-files ];
             openFirewall = false;
             allowed-origins = [
               "https://sys.${domain}"

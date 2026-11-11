@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Cockpit Files prepared; activation outstanding — 2026-11-11
+
+Added Cockpit Files through `services.cockpit.plugins` at the user's request. `nix fmt`, `nix flake check` and `scripts/erebor-rebuild build` passed; the built system contains the Files manifest with the "File browser" menu entry. `erebor-diff` tier: different (adds cockpit-files 46, 8.9 MiB, and its Cockpit web assets). The comparison used the existing local dashboard submodule as its source because its pinned commit was unavailable remotely. Not activated: the user is away from Touch ID/YubiKey but has terminal access; existing sudo Unix password fallback is available, with no authentication changes. Live generation remains 389. Activation and live verification tracked in [SYS-099](tasks/SYS-099.md).
+
 # Crucial MX500 reformatted as ext4 — 2026-11-11
 
 At the user's request `/srv/external/crucial` (CT500MX500SSD1, serial 1824E143D803) went from exFAT (UUID 604F-A363) to ext4, label `crucial`, UUID `60ea8fa7-a76b-46d7-af9b-baa589e3e131` (set at mkfs so the config could be built first), no reserved blocks (`-m 0`); mount options `rw,noatime,nofail,x-systemd.automount` (the exFAT uid/gid/mask options dropped; root owned 1000:1000, mode 775). The drive held 364 MB: system leftovers, a stale `.parts` file and 443 `.torrent` files in `vr/`, which the user chose not to keep; only the 2020 RSA key pair (`id_rsa`, not in `~/.ssh`) was copied to `~/Documents/crucial-ssh-key/` first. Before formatting the device was matched by by-id serial and old UUID, and qbittorrent, jellyfin and nextcloud were stopped. erebor-diff against master: different (only the fstab line). Activated with switch, generation 389. Verified: mounted ext4 `rw,noatime`, writable as janzon; qbittorrent, jellyfin and nextcloud see `/dev/sda1` ext4 inside the container (nextcloud needed a second restart: its first start bound the empty btrfs directory under the mount point). The dirty-page udev rule matches by serial and still applies. No failed units.
