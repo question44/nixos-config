@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Dashboard: glass menus, per-device switching, phone fixes — 2026-11-11
+
+At the user's request: the account and Background menus are liquid glass after liquidglass.dev's menu (refracting body via the vendored engine in Chromium, blur fallback elsewhere; spring open that unrolls the panel and a quick roll-back on close within Material's 200 ms; hover lens over an accent copy of the items). A toggle command now marks only its own device as "Switching…"; the other cards keep their last state until a forced status refresh replaces all at once (devices interact: display power, screen choice and ambilight all follow Umbriel's outputs). Phone reports: the task panel widened the page (grid items with no-wrap titles; fixed with minmax(0, 1fr) columns, statuses wrap under titles below 600 px), and the bottom of the page lost its background while scrolling (Sequoia canvas now 100lvh with a ResizeObserver redraw, wallpaper-like html colour, no overscroll bounce). Tested on a local copy in Chromium at desktop and 375 px. Dashboard commit on sequoia-background (not pushed).
+
 # Dashboard: toggles slide and no longer flash — 2026-11-11
 
 User report: the segmented toggles did not animate, and switching one made the others flicker. Cause: the dashboard clears all device states while a command runs, so every row briefly had no current option; the lens was hidden and its position forgotten (flash on every row, jump instead of slide), and all options faded to 40% while disabled. The lens now stays on its last option until the new state arrives, and busy-disabled options keep their look (main.busy). Tested with two simulated rows on a local copy: no lens hidden, the pressed row slides. Dashboard commit on sequoia-background (not pushed).
