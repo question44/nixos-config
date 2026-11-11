@@ -1,0 +1,518 @@
+diff --git a/meson.build b/meson.build
+index 352b1482..5f36aed2 100644
+--- a/meson.build
++++ b/meson.build
+@@ -165,6 +165,19 @@ input_capture_protocol_c = custom_target(
+   command: [wayland_scanner, 'private-code', '@INPUT@', '@OUTPUT@'],
+ )
+ 
++glass_server_h = custom_target(
++  'umbriel-glass-v1-server-protocol.h',
++  input: 'protocols/umbriel-glass-v1.xml',
++  output: 'umbriel-glass-v1-server-protocol.h',
++  command: [wayland_scanner, 'server-header', '@INPUT@', '@OUTPUT@'],
++)
++glass_protocol_c = custom_target(
++  'umbriel-glass-v1-protocol.c',
++  input: 'protocols/umbriel-glass-v1.xml',
++  output: 'umbriel-glass-v1-protocol.c',
++  command: [wayland_scanner, 'private-code', '@INPUT@', '@OUTPUT@'],
++)
++
+ # umbrielfx's vendored layer-shell scene helper needs this server header, so it
+ # is generated before the subdir that consumes it.
+ layer_shell_protocol_h = custom_target(
+@@ -817,6 +830,7 @@ core_sources = files(
+   'src/xwayland/shape.cpp',
+   'src/input/eis.cpp',
+   'src/input/input_capture.cpp',
++  'src/view/glass_regions.cpp',
+   'src/input/input_capture_permissions.cpp',
+   'src/input/eis_socket.cpp',
+   'src/xwayland/window.cpp',
+@@ -894,6 +908,8 @@ umbriel_core = static_library(
+   core_sources + [
+     input_capture_server_h,
+     input_capture_protocol_c,
++    glass_server_h,
++    glass_protocol_c,
+     toplevel_drag_server_h,
+     toplevel_drag_c,
+     xdg_shell_client_c,
+diff --git a/protocols/umbriel-glass-v1.xml b/protocols/umbriel-glass-v1.xml
+new file mode 100644
+index 00000000..b65d29af
+--- /dev/null
++++ b/protocols/umbriel-glass-v1.xml
+@@ -0,0 +1,80 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<protocol name="umbriel_glass_v1">
++  <copyright>
++    Copyright © 2026 erebor
++
++    Permission is hereby granted, free of charge, to any person obtaining a
++    copy of this software and associated documentation files (the "Software"),
++    to deal in the Software without restriction, including without limitation
++    the rights to use, copy, modify, merge, publish, distribute, sublicense,
++    and/or sell copies of the Software, and to permit persons to whom the
++    Software is furnished to do so, subject to the following conditions:
++
++    The above copyright notice and this permission notice (including the next
++    paragraph) shall be included in all copies or substantial portions of the
++    Software.
++
++    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
++  </copyright>
++
++  <description summary="glass regions behind a toplevel">
++    Lets a client describe rounded rectangles of its toplevel surface that the
++    compositor draws as glass: the desktop behind the window, blurred and
++    refracted, under the client's own (translucent) pixels. Outside the
++    shapes nothing is drawn behind the window.
++
++    The compositor decides how the glass looks (its effect preset); the
++    client only says where it is. The shapes need a translucent surface: an
++    opaque region hides them.
++  </description>
++
++  <interface name="umbriel_glass_manager_v1" version="1">
++    <description summary="glass regions factory"/>
++
++    <request name="destroy" type="destructor">
++      <description summary="destroy the manager">
++        Existing umbriel_glass_v1 objects stay valid.
++      </description>
++    </request>
++
++    <enum name="error">
++      <entry name="already_exists" value="0" summary="the surface already has a glass object"/>
++    </enum>
++
++    <request name="get_glass">
++      <description summary="glass regions for a surface">
++        Creates the glass object of a toplevel's root surface. A surface may
++        have one at a time.
++      </description>
++      <arg name="id" type="new_id" interface="umbriel_glass_v1"/>
++      <arg name="surface" type="object" interface="wl_surface"/>
++    </request>
++  </interface>
++
++  <interface name="umbriel_glass_v1" version="1">
++    <description summary="glass regions of one surface">
++      The shapes are double-buffered: set_shapes takes effect on the next
++      wl_surface.commit, together with the buffer drawn for them.
++    </description>
++
++    <enum name="error">
++      <entry name="invalid_shapes" value="0" summary="array size is not a whole number of shapes"/>
++      <entry name="too_many_shapes" value="1" summary="more shapes than the compositor accepts (16)"/>
++    </enum>
++
++    <request name="destroy" type="destructor">
++      <description summary="remove the glass">
++        Removes the shapes at the next wl_surface.commit.
++      </description>
++    </request>
++
++    <request name="set_shapes">
++      <description summary="set the glass shapes">
++        An array of shapes, each six int32 values in surface-local logical
++        pixels: x, y, width, height, corner radius, flags (reserved, 0).
++        Shapes should not overlap. An empty array removes the glass.
++      </description>
++      <arg name="shapes" type="array"/>
++    </request>
++  </interface>
++</protocol>
+diff --git a/src/server/server.cpp b/src/server/server.cpp
+index aaee6dd4..4c79d571 100644
+--- a/src/server/server.cpp
++++ b/src/server/server.cpp
+@@ -13,6 +13,7 @@
+ #include "input/eis.h"
+ #include "input/gestures.h"
+ #include "input/input_capture.h"
++#include "view/glass_regions.h"
+ #include "input/keyboard.h"
+ #include "input/keyboard_leds.h"
+ #include "input/seat.h"
+@@ -957,6 +958,7 @@ namespace umbriel {
+     m_stopping = true;
+     updateDrmLeaseState();
+     m_inputCapture.reset();
++    m_glassRegions.reset();
+     if (m_sessionActive.link.next != nullptr) {
+       wl_list_remove(&m_sessionActive.link);
+     }
+@@ -1250,6 +1252,7 @@ namespace umbriel {
+       setenv("XCURSOR_THEME", cursorCfg.theme.c_str(), 1);
+     }
+ 
++    m_glassRegions = std::make_unique<GlassRegions>(*this);
+     m_inputCapture = std::make_unique<InputCapture>(*this);
+     m_inputCapture->setAuthorize([this](uint64_t id, std::string_view name, uint32_t persistMode) {
+       requestInputCapture(id, name, persistMode);
+diff --git a/src/server/server.h b/src/server/server.h
+index 5c9b5767..95b783fb 100644
+--- a/src/server/server.h
++++ b/src/server/server.h
+@@ -133,6 +133,7 @@ namespace umbriel {
+   class Cursor;
+   class EisInput;
+   class InputCapture;
++  class GlassRegions;
+   class BackendManager;
+   class DrmLeaseManager;
+   class FocusManager;
+@@ -951,6 +952,7 @@ namespace umbriel {
+     std::unique_ptr<Xwayland> m_xwayland;
+     std::unique_ptr<EisInput> m_eisInput;
+     std::unique_ptr<InputCapture> m_inputCapture;
++    std::unique_ptr<GlassRegions> m_glassRegions;
+     uint64_t m_pendingCaptureId = 0;
+     uint32_t m_inputCaptureCapabilities = 0;
+     uint64_t m_pendingInputId = 0;
+diff --git a/src/view/effects.cpp b/src/view/effects.cpp
+index aee045dd..4432e600 100644
+--- a/src/view/effects.cpp
++++ b/src/view/effects.cpp
+@@ -2,6 +2,7 @@
+ 
+ #include "config/config.h"
+ #include "scene/effect_registry.h"
++#include "view/glass_regions.h"
+ 
+ #include <algorithm>
+ 
+@@ -61,6 +62,37 @@ namespace umbriel {
+     effectRegistry().removeInstance(owner);
+   }
+ 
++
++  namespace {
++    // umbriel_glass_v1 shapes for a shader that reads them, relative to the blur node (the window geometry). Always
++    // filled when read, count 0 without shapes: the program is shared, so stale values would leak between windows.
++    void fillGlassUniforms(fx_animation_parameters& parameters, const fx_effect_shader* shader, const ViewEffects::ApplyInput& input) {
++      if (!fx_effect_shader_reads(shader, "umbriel_glass_count")) {
++        return;
++      }
++      const std::vector<GlassShape>* shapes =
++          input.glassSurface != nullptr ? GlassRegions::shapes(input.glassSurface) : nullptr;
++      const std::size_t count = shapes != nullptr ? std::min(shapes->size(), kMaxGlassShapes) : 0;
++      fx_uniform* a = fx_parameters_add_uniform(&parameters, "umbriel_glass_rect_a", FX_UNIFORM_VEC4, 8);
++      fx_uniform* b = fx_parameters_add_uniform(&parameters, "umbriel_glass_rect_b", FX_UNIFORM_VEC4, 8);
++      fx_uniform* radius = fx_parameters_add_uniform(&parameters, "umbriel_glass_radius", FX_UNIFORM_VEC4, 4);
++      fx_uniform* total = fx_parameters_add_uniform(&parameters, "umbriel_glass_count", FX_UNIFORM_FLOAT, 1);
++      if (a == nullptr || b == nullptr || radius == nullptr || total == nullptr) {
++        return;
++      }
++      for (std::size_t i = 0; i < count; i++) {
++        const GlassShape& shape = (*shapes)[i];
++        float* rect = i < 8 ? &a->floats[i * 4] : &b->floats[(i - 8) * 4];
++        rect[0] = static_cast<float>(shape.x - input.geometry.x);
++        rect[1] = static_cast<float>(shape.y - input.geometry.y);
++        rect[2] = static_cast<float>(shape.width);
++        rect[3] = static_cast<float>(shape.height);
++        radius->floats[i] = static_cast<float>(shape.radius);
++      }
++      total->floats[0] = static_cast<float>(count);
++    }
++  } // namespace
++
+   void ViewEffects::applyBackdrop(const ApplyInput& input) {
+     if (input.blur == nullptr) {
+       return;
+@@ -77,6 +109,7 @@ namespace umbriel {
+     fx_animation_parameters parameters{};
+     parameters.scale = input.scale;
+     registry.fillTimeUniforms(parameters, 0.0F, *preset, shader);
++    fillGlassUniforms(parameters, shader, input);
+     wlr_scene_blur_set_effect(input.blur, shader, &parameters, preset->padding);
+     m_backdropBound = true;
+   }
+diff --git a/src/view/effects.h b/src/view/effects.h
+index ed943c3b..996aa13f 100644
+--- a/src/view/effects.h
++++ b/src/view/effects.h
+@@ -12,6 +12,7 @@ extern "C" {
+ 
+ struct wlr_scene_node;
+ struct wlr_scene_blur;
++struct wlr_surface;
+ 
+ namespace umbriel {
+ 
+@@ -51,6 +52,10 @@ namespace umbriel {
+       const void* output = nullptr; // the output driving this instance's frames
+       wlr_box outputBox{};          // that output's layout box: an instance is visible only inside it
+       wlr_scene_blur* blur = nullptr; // the window's blur node, which draws a backdrop preset
++      // The toplevel's root surface and its window geometry (surface-local): glass shapes (umbriel_glass_v1) are
++      // given relative to the surface, the blur node covers the geometry.
++      wlr_surface* glassSurface = nullptr;
++      wlr_box geometry{};
+     };
+     // True when a border or window preset is selected for this view: the caller reads the clock only then.
+     bool configured() const { return !m_border.empty() || !m_window.empty() || !m_backdrop.empty() || m_backdropBound; }
+diff --git a/src/view/glass_regions.cpp b/src/view/glass_regions.cpp
+new file mode 100644
+index 00000000..af5f958a
+--- /dev/null
++++ b/src/view/glass_regions.cpp
+@@ -0,0 +1,196 @@
++#include "view/glass_regions.h"
++
++#include "server/server.h"
++#include "view/view.h"
++
++#include <algorithm>
++#include <cstdint>
++#include <unordered_map>
++
++extern "C" {
++#include <wayland-server-core.h>
++#include <wlr/types/wlr_compositor.h>
++#include <wlr/util/log.h>
++
++#include "umbriel-glass-v1-server-protocol.h"
++}
++
++namespace umbriel {
++
++  namespace {
++
++    constexpr std::size_t kShapeInts = 6; // x, y, width, height, radius, flags
++
++    struct Glass {
++      wl_resource* resource = nullptr;
++      wlr_surface* surface = nullptr;
++      std::vector<GlassShape> pending;
++      std::vector<GlassShape> current;
++      bool dirty = false;
++      wl_listener commit{};
++      wl_listener surfaceDestroy{};
++    };
++
++    std::unordered_map<wlr_surface*, Glass*>& registry() {
++      static std::unordered_map<wlr_surface*, Glass*> glasses;
++      return glasses;
++    }
++
++    void refreshView(wlr_surface* surface) {
++      if (View* view = View::fromSurface(surface)) {
++        view->syncAnimationEffects();
++      }
++    }
++
++    // Unhooks `glass` from its surface; the resource (if any) stays inert.
++    void detach(Glass* glass) {
++      if (glass->surface == nullptr) {
++        return;
++      }
++      wl_list_remove(&glass->commit.link);
++      wl_list_remove(&glass->surfaceDestroy.link);
++      registry().erase(glass->surface);
++      glass->surface = nullptr;
++    }
++
++    void handleCommit(wl_listener* listener, void*) {
++      Glass* glass = wl_container_of(listener, glass, commit); // NOLINT(modernize-use-auto)
++      if (!glass->dirty) {
++        return;
++      }
++      glass->dirty = false;
++      if (glass->pending == glass->current) {
++        return;
++      }
++      glass->current = glass->pending;
++      refreshView(glass->surface);
++    }
++
++    void handleSurfaceDestroy(wl_listener* listener, void*) {
++      Glass* glass = wl_container_of(listener, glass, surfaceDestroy); // NOLINT(modernize-use-auto)
++      detach(glass);
++    }
++
++    void destroyResource(wl_resource* resource) {
++      auto* glass = static_cast<Glass*>(wl_resource_get_user_data(resource));
++      if (glass == nullptr) {
++        return;
++      }
++      wlr_surface* surface = glass->surface;
++      const bool hadShapes = !glass->current.empty();
++      detach(glass);
++      delete glass;
++      if (surface != nullptr && hadShapes) {
++        refreshView(surface);
++      }
++    }
++
++    void destroyRequest(wl_client*, wl_resource* resource) { wl_resource_destroy(resource); }
++
++    void setShapes(wl_client*, wl_resource* resource, wl_array* array) {
++      auto* glass = static_cast<Glass*>(wl_resource_get_user_data(resource));
++      if (array->size % (kShapeInts * sizeof(int32_t)) != 0) {
++        wl_resource_post_error(resource, UMBRIEL_GLASS_V1_ERROR_INVALID_SHAPES, "shape array of %zu bytes", array->size);
++        return;
++      }
++      const std::size_t count = array->size / (kShapeInts * sizeof(int32_t));
++      if (count > kMaxGlassShapes) {
++        wl_resource_post_error(
++            resource, UMBRIEL_GLASS_V1_ERROR_TOO_MANY_SHAPES, "%zu shapes, at most %zu", count, kMaxGlassShapes
++        );
++        return;
++      }
++      if (glass == nullptr) {
++        return;
++      }
++      const auto* data = static_cast<const int32_t*>(array->data);
++      glass->pending.clear();
++      for (std::size_t i = 0; i < count; i++) {
++        const int32_t* v = data + (i * kShapeInts);
++        if (v[2] <= 0 || v[3] <= 0) {
++          continue;
++        }
++        glass->pending.push_back({
++            .x = v[0],
++            .y = v[1],
++            .width = v[2],
++            .height = v[3],
++            .radius = std::clamp(v[4], 0, std::min(v[2], v[3]) / 2),
++        });
++      }
++      glass->dirty = true;
++    }
++
++    const struct umbriel_glass_v1_interface kGlass{
++        .destroy = destroyRequest,
++        .set_shapes = setShapes,
++    };
++
++    void getGlass(wl_client* client, wl_resource* manager, uint32_t id, wl_resource* surfaceResource) {
++      wlr_surface* surface = wlr_surface_from_resource(surfaceResource);
++      if (registry().contains(surface)) {
++        wl_resource_post_error(manager, UMBRIEL_GLASS_MANAGER_V1_ERROR_ALREADY_EXISTS, "surface already has glass");
++        return;
++      }
++      wl_resource* resource = wl_resource_create(client, &umbriel_glass_v1_interface, wl_resource_get_version(manager), id);
++      if (resource == nullptr) {
++        wl_client_post_no_memory(client);
++        return;
++      }
++      auto* glass = new Glass();
++      glass->resource = resource;
++      glass->surface = surface;
++      glass->commit.notify = handleCommit;
++      wl_signal_add(&surface->events.commit, &glass->commit);
++      glass->surfaceDestroy.notify = handleSurfaceDestroy;
++      wl_signal_add(&surface->events.destroy, &glass->surfaceDestroy);
++      registry()[surface] = glass;
++      wl_resource_set_implementation(resource, &kGlass, glass, destroyResource);
++    }
++
++    const struct umbriel_glass_manager_v1_interface kManager{
++        .destroy = destroyRequest,
++        .get_glass = getGlass,
++    };
++
++  } // namespace
++
++  struct GlassRegions::Impl {
++    wl_global* global = nullptr;
++  };
++
++  GlassRegions::GlassRegions(Server& server) : m_impl(std::make_unique<Impl>()) {
++    m_impl->global = wl_global_create(
++        server.display(), &umbriel_glass_manager_v1_interface, 1, nullptr,
++        [](wl_client* client, void*, uint32_t version, uint32_t id) {
++          wl_resource* resource = wl_resource_create(client, &umbriel_glass_manager_v1_interface, version, id);
++          if (resource == nullptr) {
++            wl_client_post_no_memory(client);
++            return;
++          }
++          wl_resource_set_implementation(resource, &kManager, nullptr, nullptr);
++        }
++    );
++    if (m_impl->global == nullptr) {
++      wlr_log(WLR_ERROR, "failed to create the umbriel_glass_manager_v1 global");
++    }
++  }
++
++  GlassRegions::~GlassRegions() {
++    if (m_impl->global != nullptr) {
++      wl_global_destroy(m_impl->global);
++    }
++    // Leave resources alive (their clients go with the display) but stop them touching surfaces.
++    auto& glasses = registry();
++    while (!glasses.empty()) {
++      detach(glasses.begin()->second);
++    }
++  }
++
++  const std::vector<GlassShape>* GlassRegions::shapes(wlr_surface* surface) {
++    const auto& glasses = registry();
++    const auto it = glasses.find(surface);
++    return it == glasses.end() ? nullptr : &it->second->current;
++  }
++
++} // namespace umbriel
+diff --git a/src/view/glass_regions.h b/src/view/glass_regions.h
+new file mode 100644
+index 00000000..263aaf9b
+--- /dev/null
++++ b/src/view/glass_regions.h
+@@ -0,0 +1,41 @@
++#pragma once
++
++#include <cstddef>
++#include <memory>
++#include <vector>
++
++struct wlr_surface;
++
++namespace umbriel {
++
++  class Server;
++
++  // One glass shape of a toplevel, in surface-local logical pixels.
++  struct GlassShape {
++    int x = 0;
++    int y = 0;
++    int width = 0;
++    int height = 0;
++    int radius = 0;
++    bool operator==(const GlassShape&) const = default;
++  };
++  inline constexpr std::size_t kMaxGlassShapes = 16;
++
++  // umbriel_glass_v1: clients name rounded rectangles of their toplevel that the backdrop effect draws as glass.
++  // Shapes latch on wl_surface.commit, then the view's effects are re-applied.
++  class GlassRegions {
++  public:
++    explicit GlassRegions(Server& server);
++    ~GlassRegions();
++    GlassRegions(const GlassRegions&) = delete;
++    GlassRegions& operator=(const GlassRegions&) = delete;
++
++    // The committed shapes of `surface`, or null when it has no glass object.
++    static const std::vector<GlassShape>* shapes(wlr_surface* surface);
++
++  private:
++    struct Impl;
++    std::unique_ptr<Impl> m_impl;
++  };
++
++} // namespace umbriel
+diff --git a/src/view/view_animation.cpp b/src/view/view_animation.cpp
+index 9efdd7e8..8f68da65 100644
+--- a/src/view/view_animation.cpp
++++ b/src/view/view_animation.cpp
+@@ -869,6 +869,8 @@ namespace umbriel {
+           .output = output,
+           .outputBox = output != nullptr ? output->layoutBox() : wlr_box{},
+           .blur = m_decoration.blurNode(),
++          .glassSurface = rootSurface(),
++          .geometry = geometryBox(),
+       });
+     }
+   }

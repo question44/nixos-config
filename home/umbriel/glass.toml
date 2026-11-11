@@ -32,6 +32,14 @@ kind = "backdrop"
 shader = "/etc/nixos/home/umbriel/effects/liquid-glass-lens.glsl"
 padding = 88
 
+# Glass only in the shapes a client names over umbriel_glass_v1
+# (patches/umbriel-glass-regions.patch): same optics and constants as
+# liquid-glass-lens, per shape. Without shapes it draws nothing.
+[effects.preset.liquid-glass-lens-regions]
+kind = "backdrop"
+shader = "/etc/nixos/home/umbriel/effects/liquid-glass-lens-regions.glsl"
+padding = 88
+
 # Glass body for Noctalia's surfaces (layer shapes are unknown, so no rim).
 [effects.preset.liquid-glass-layer]
 kind = "backdrop"
@@ -71,3 +79,14 @@ kind = "backdrop"
 shader = "/etc/nixos/home/umbriel/effects/liquid-glass-lens-layer.glsl"
 # Inward reach REFRACTION * (1 + CHROMA) = 60 * 1.88 = 113 px (see liquid-glass-lens).
 padding = 116
+
+# Vitrum (~/src/vitrum), the umbriel_glass_v1 demo: a frameless, clear window
+# whose panels are glass shapes. After the catch-all rule above, so it wins.
+[[window_rule]]
+match.app_id = "^dev\\.erebor\\.vitrum$"
+blur = true
+backdrop_effect = "liquid-glass-lens-regions"
+border_width = 0
+shadow = false
+corner_radius = 0
+default_floating = true

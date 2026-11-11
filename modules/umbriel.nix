@@ -16,7 +16,11 @@ let
   # overview-scroll-handoff drops the rest of a two-finger scroll when the
   # overview opens or closes under it, so an edge swipe that opens it does not
   # also scroll it (branch overview-scroll-handoff, on touchpad-scroll-accel;
-  # touches only src/input/cursor.*). Both the system and Home Manager install it.
+  # touches only src/input/cursor.*). glass-regions adds the umbriel_glass_v1
+  # protocol: a client names rounded rectangles of its window and the backdrop
+  # preset (liquid-glass-lens-regions.glsl) draws glass only there (branch
+  # glass-regions, on strip-scroll-clamp; ~/src/vitrum is the demo client).
+  # Both the system and Home Manager install it.
   patched =
     pkgs:
     inputs.umbriel.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
@@ -26,6 +30,7 @@ let
         ../patches/umbriel-scroll-accel-curve.patch
         ../patches/umbriel-strip-scroll-clamp.patch
         ../patches/umbriel-overview-scroll-handoff.patch
+        ../patches/umbriel-glass-regions.patch
       ];
     });
 in
