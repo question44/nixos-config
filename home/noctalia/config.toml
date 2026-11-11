@@ -123,7 +123,7 @@ enabled = true
 sidebar = "full"
 
     [[control_center.shortcuts]]
-    type = "weather"
+    type = "janzon/toggles:headphone-eq-tile"
 
     [[control_center.shortcuts]]
     type = "caffeine"
@@ -139,9 +139,6 @@ sidebar = "full"
 
     [[control_center.shortcuts]]
     type = "dark_mode"
-
-    [[control_center.shortcuts]]
-    type = "janzon/toggles:headphone-eq-tile"
 
 [dock]
 background_opacity = 0.35
