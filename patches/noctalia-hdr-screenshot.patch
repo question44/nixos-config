@@ -1,0 +1,588 @@
+diff --git a/meson.build b/meson.build
+index bc6bbff78..231bea93e 100644
+--- a/meson.build
++++ b/meson.build
+@@ -848,6 +848,7 @@ _noctalia_sources = files(
+   'src/system/location_service.cpp',
+   'src/capture/screencopy_capture.cpp',
+   'src/capture/pointer_cursor_capture.cpp',
++  'src/capture/output_image_capture.cpp',
+   'src/capture/toplevel_thumbnail_capture.cpp',
+   'src/capture/screencopy_util.cpp',
+   'src/capture/screenshot_capture.cpp',
+diff --git a/src/capture/output_image_capture.cpp b/src/capture/output_image_capture.cpp
+new file mode 100644
+index 000000000..291e3efa1
+--- /dev/null
++++ b/src/capture/output_image_capture.cpp
+@@ -0,0 +1,379 @@
++#include "capture/output_image_capture.h"
++
++#include "ext-image-capture-source-v1-client-protocol.h"
++#include "ext-image-copy-capture-v1-client-protocol.h"
++#include "shell/wayland/capture_globals.h"
++#include "wayland/wayland_connection.h"
++
++#include <cerrno>
++#include <chrono>
++#include <cstring>
++#include <limits>
++#include <new>
++#include <sys/mman.h>
++#include <unistd.h>
++#include <utility>
++
++namespace {
++  // Higher is better; 0 = unsupported. 8-bit layouts first: no precision to lose and no conversion work.
++  int formatPreference(std::uint32_t format) noexcept {
++    switch (format) {
++    case WL_SHM_FORMAT_XRGB8888:
++      return 8;
++    case WL_SHM_FORMAT_ARGB8888:
++      return 7;
++    case WL_SHM_FORMAT_XBGR8888:
++      return 6;
++    case WL_SHM_FORMAT_ABGR8888:
++      return 5;
++    case WL_SHM_FORMAT_XRGB2101010:
++      return 4;
++    case WL_SHM_FORMAT_ARGB2101010:
++      return 3;
++    case WL_SHM_FORMAT_XBGR2101010:
++      return 2;
++    case WL_SHM_FORMAT_ABGR2101010:
++      return 1;
++    default:
++      return 0;
++    }
++  }
++} // namespace
++
++std::optional<std::vector<std::uint8_t>> capture::shmToRgba(
++    std::span<const std::uint8_t> pixels, int width, int height, int stride, std::uint32_t format
++) {
++  if (width <= 0 || height <= 0 || stride < width * 4 || formatPreference(format) == 0) {
++    return std::nullopt;
++  }
++  const auto w = static_cast<std::size_t>(width);
++  const auto h = static_cast<std::size_t>(height);
++  const auto s = static_cast<std::size_t>(stride);
++  if (pixels.size() < s * (h - 1) + w * 4) {
++    return std::nullopt;
++  }
++  std::vector<std::uint8_t> rgba(w * h * 4);
++  for (std::size_t y = 0; y < h; ++y) {
++    const std::uint8_t* src = pixels.data() + y * s;
++    std::uint8_t* dst = rgba.data() + y * w * 4;
++    for (std::size_t x = 0; x < w; ++x, src += 4, dst += 4) {
++      // wl_shm formats name the channels of a little-endian 32-bit word, high bits first.
++      std::uint32_t word = 0;
++      std::memcpy(&word, src, 4);
++      std::uint8_t r = 0;
++      std::uint8_t g = 0;
++      std::uint8_t b = 0;
++      switch (format) {
++      case WL_SHM_FORMAT_XRGB8888:
++      case WL_SHM_FORMAT_ARGB8888:
++        r = static_cast<std::uint8_t>(word >> 16);
++        g = static_cast<std::uint8_t>(word >> 8);
++        b = static_cast<std::uint8_t>(word);
++        break;
++      case WL_SHM_FORMAT_XBGR8888:
++      case WL_SHM_FORMAT_ABGR8888:
++        r = static_cast<std::uint8_t>(word);
++        g = static_cast<std::uint8_t>(word >> 8);
++        b = static_cast<std::uint8_t>(word >> 16);
++        break;
++      case WL_SHM_FORMAT_XRGB2101010:
++      case WL_SHM_FORMAT_ARGB2101010:
++        r = static_cast<std::uint8_t>((word >> 22) & 0xff);
++        g = static_cast<std::uint8_t>((word >> 12) & 0xff);
++        b = static_cast<std::uint8_t>((word >> 2) & 0xff);
++        break;
++      default: // XBGR2101010, ABGR2101010
++        r = static_cast<std::uint8_t>((word >> 2) & 0xff);
++        g = static_cast<std::uint8_t>((word >> 12) & 0xff);
++        b = static_cast<std::uint8_t>((word >> 22) & 0xff);
++        break;
++      }
++      // A screen has no transparency: whatever alpha the compositor left in the buffer, keep it opaque.
++      dst[0] = r;
++      dst[1] = g;
++      dst[2] = b;
++      dst[3] = 0xff;
++    }
++  }
++  return rgba;
++}
++
++struct OutputImageCapturePending {
++  OutputImageCapture* owner = nullptr;
++  ext_image_capture_source_v1* source = nullptr;
++  ext_image_copy_capture_session_v1* session = nullptr;
++  ext_image_copy_capture_frame_v1* frame = nullptr;
++  wl_shm_pool* pool = nullptr;
++  wl_buffer* buffer = nullptr;
++  void* mapped = MAP_FAILED;
++  std::size_t mappedSize = 0;
++  int fd = -1;
++  std::uint32_t width = 0;
++  std::uint32_t height = 0;
++  std::uint32_t format = 0;
++  bool hasFormat = false;
++  bool receivingConstraints = false;
++  std::uint32_t bufferFormat = 0;
++  int bufferWidth = 0;
++  int bufferHeight = 0;
++  int bufferStride = 0;
++
++  ~OutputImageCapturePending() {
++    if (frame != nullptr) {
++      ext_image_copy_capture_frame_v1_destroy(frame);
++    }
++    if (session != nullptr) {
++      ext_image_copy_capture_session_v1_destroy(session);
++    }
++    if (source != nullptr) {
++      ext_image_capture_source_v1_destroy(source);
++    }
++    if (buffer != nullptr) {
++      wl_buffer_destroy(buffer);
++    }
++    if (pool != nullptr) {
++      wl_shm_pool_destroy(pool);
++    }
++    if (mapped != MAP_FAILED) {
++      munmap(mapped, mappedSize);
++    }
++    if (fd >= 0) {
++      close(fd);
++    }
++  }
++
++  void beginConstraints() {
++    if (!receivingConstraints) {
++      receivingConstraints = true;
++      width = 0;
++      height = 0;
++      hasFormat = false;
++    }
++  }
++
++  static void bufferSize(void* data, ext_image_copy_capture_session_v1*, std::uint32_t width, std::uint32_t height) {
++    auto& pending = *static_cast<OutputImageCapturePending*>(data);
++    pending.beginConstraints();
++    pending.width = width;
++    pending.height = height;
++  }
++
++  static void shmFormat(void* data, ext_image_copy_capture_session_v1*, std::uint32_t format) {
++    auto& pending = *static_cast<OutputImageCapturePending*>(data);
++    pending.beginConstraints();
++    const int preference = formatPreference(format);
++    if (preference > 0 && (!pending.hasFormat || preference > formatPreference(pending.format))) {
++      pending.format = format;
++      pending.hasFormat = true;
++    }
++  }
++
++  static void dmabufDevice(void* data, ext_image_copy_capture_session_v1*, wl_array*) {
++    static_cast<OutputImageCapturePending*>(data)->beginConstraints();
++  }
++
++  static void dmabufFormat(void* data, ext_image_copy_capture_session_v1*, std::uint32_t, wl_array*) {
++    static_cast<OutputImageCapturePending*>(data)->beginConstraints();
++  }
++
++  static void constraintsDone(void* data, ext_image_copy_capture_session_v1*) {
++    auto& pending = *static_cast<OutputImageCapturePending*>(data);
++    pending.receivingConstraints = false;
++    if (pending.frame == nullptr) {
++      pending.captureFrame();
++    }
++  }
++
++  static void stopped(void* data, ext_image_copy_capture_session_v1*) {
++    static_cast<OutputImageCapturePending*>(data)->owner->fail("output capture session stopped");
++  }
++
++  // The buffer comes in the output's buffer orientation; ScreenshotCapture orients it like a screencopy frame.
++  static void frameTransform(void*, ext_image_copy_capture_frame_v1*, std::uint32_t) {}
++  static void damage(void*, ext_image_copy_capture_frame_v1*, std::int32_t, std::int32_t, std::int32_t, std::int32_t) {}
++  static void presentationTime(void*, ext_image_copy_capture_frame_v1*, std::uint32_t, std::uint32_t, std::uint32_t) {}
++
++  static void ready(void* data, ext_image_copy_capture_frame_v1*) {
++    auto& pending = *static_cast<OutputImageCapturePending*>(data);
++    try {
++      auto rgba = capture::shmToRgba(
++          std::span(static_cast<const std::uint8_t*>(pending.mapped), pending.mappedSize), pending.bufferWidth,
++          pending.bufferHeight, pending.bufferStride, pending.bufferFormat
++      );
++      if (!rgba) {
++        pending.owner->fail("failed to decode output capture");
++        return;
++      }
++      ScreencopyImage image;
++      image.width = pending.bufferWidth;
++      image.height = pending.bufferHeight;
++      image.yInvert = false;
++      image.rgba = std::move(*rgba);
++      pending.owner->finish(std::move(image));
++    } catch (const std::bad_alloc&) {
++      pending.owner->fail("failed to allocate output capture");
++    }
++  }
++
++  static void failed(void* data, ext_image_copy_capture_frame_v1*, std::uint32_t reason) {
++    auto* owner = static_cast<OutputImageCapturePending*>(data)->owner;
++    switch (reason) {
++    case EXT_IMAGE_COPY_CAPTURE_FRAME_V1_FAILURE_REASON_BUFFER_CONSTRAINTS:
++      owner->fail("output capture buffer constraints changed");
++      return;
++    case EXT_IMAGE_COPY_CAPTURE_FRAME_V1_FAILURE_REASON_STOPPED:
++      owner->fail("output capture session stopped");
++      return;
++    default:
++      owner->fail("compositor failed to capture the output");
++      return;
++    }
++  }
++
++  inline static const ext_image_copy_capture_session_v1_listener sessionListener = {
++      .buffer_size = bufferSize,
++      .shm_format = shmFormat,
++      .dmabuf_device = dmabufDevice,
++      .dmabuf_format = dmabufFormat,
++      .done = constraintsDone,
++      .stopped = stopped,
++  };
++  inline static const ext_image_copy_capture_frame_v1_listener frameListener = {
++      .transform = frameTransform,
++      .damage = damage,
++      .presentation_time = presentationTime,
++      .ready = ready,
++      .failed = failed,
++  };
++
++  void captureFrame() {
++    if (width == 0 || height == 0) {
++      owner->fail("output image is unavailable (empty buffer constraints)");
++      return;
++    }
++    if (!hasFormat) {
++      owner->fail("output capture has no supported shared-memory format");
++      return;
++    }
++    const auto maxPoolSize = static_cast<std::uint32_t>(std::numeric_limits<std::int32_t>::max());
++    if (width > maxPoolSize / 4U || height > maxPoolSize / (width * 4U)) {
++      owner->fail("output capture buffer is too large");
++      return;
++    }
++    bufferWidth = static_cast<int>(width);
++    bufferHeight = static_cast<int>(height);
++    bufferFormat = format;
++    bufferStride = bufferWidth * 4;
++    mappedSize = static_cast<std::size_t>(bufferStride) * height;
++#ifdef __linux__
++    fd = memfd_create("noctalia-output-capture", MFD_CLOEXEC | MFD_ALLOW_SEALING);
++#endif
++    if (fd < 0 || ftruncate(fd, static_cast<off_t>(mappedSize)) < 0) {
++      owner->fail("failed to allocate output capture shared-memory file");
++      return;
++    }
++    mapped = mmap(nullptr, mappedSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
++    if (mapped == MAP_FAILED) {
++      owner->fail("failed to map output capture shared-memory buffer");
++      return;
++    }
++    pool = wl_shm_create_pool(owner->m_wayland.shm(), fd, static_cast<std::int32_t>(mappedSize));
++    if (pool == nullptr) {
++      owner->fail("failed to create output capture shared-memory pool");
++      return;
++    }
++    buffer = wl_shm_pool_create_buffer(pool, 0, bufferWidth, bufferHeight, bufferStride, bufferFormat);
++    if (buffer == nullptr) {
++      owner->fail("failed to create output capture shared-memory buffer");
++      return;
++    }
++    frame = ext_image_copy_capture_session_v1_create_frame(session);
++    if (frame == nullptr || ext_image_copy_capture_frame_v1_add_listener(frame, &frameListener, this) != 0) {
++      owner->fail("failed to create output capture frame");
++      return;
++    }
++    ext_image_copy_capture_frame_v1_attach_buffer(frame, buffer);
++    ext_image_copy_capture_frame_v1_damage_buffer(frame, 0, 0, bufferWidth, bufferHeight);
++    ext_image_copy_capture_frame_v1_capture(frame);
++    if (wl_display_flush(owner->m_wayland.display()) < 0 && errno != EAGAIN) {
++      owner->fail("failed to submit output capture frame");
++    }
++  }
++};
++
++OutputImageCapture::OutputImageCapture(WaylandConnection& wayland)
++    : m_wayland(wayland), m_imageCapture(wayland.extension<ImageCaptureGlobals>()) {}
++
++OutputImageCapture::~OutputImageCapture() { cancelInFlight(); }
++
++bool OutputImageCapture::available() const noexcept {
++  return m_imageCapture.copyCaptureManager() != nullptr
++      && m_imageCapture.outputSourceManager() != nullptr
++      && m_wayland.shm() != nullptr
++      && m_wayland.display() != nullptr;
++}
++
++void OutputImageCapture::capture(wl_output* output, bool paintCursors, CompletionCallback onComplete) {
++  if (busy() || !available() || output == nullptr) {
++    if (onComplete) {
++      onComplete(std::nullopt, busy() ? "output capture already in progress" : "output capture unavailable");
++    }
++    return;
++  }
++  try {
++    m_pending = std::make_unique<OutputImageCapturePending>();
++  } catch (const std::bad_alloc&) {
++    if (onComplete) {
++      onComplete(std::nullopt, "failed to allocate output capture session");
++    }
++    return;
++  }
++  m_onComplete = std::move(onComplete);
++  m_pending->owner = this;
++  m_pending->source =
++      ext_output_image_capture_source_manager_v1_create_source(m_imageCapture.outputSourceManager(), output);
++  if (m_pending->source == nullptr) {
++    fail("failed to create output capture source");
++    return;
++  }
++  const std::uint32_t options = paintCursors ? EXT_IMAGE_COPY_CAPTURE_MANAGER_V1_OPTIONS_PAINT_CURSORS : 0;
++  m_pending->session =
++      ext_image_copy_capture_manager_v1_create_session(m_imageCapture.copyCaptureManager(), m_pending->source, options);
++  if (m_pending->session == nullptr
++      || ext_image_copy_capture_session_v1_add_listener(
++             m_pending->session, &OutputImageCapturePending::sessionListener, m_pending.get()
++         ) != 0) {
++    fail("failed to create output image capture session");
++    return;
++  }
++  m_timeout.start(std::chrono::seconds(1), [this] {
++    fail("output capture timed out: compositor did not provide a capturable image");
++  });
++  if (wl_display_flush(m_wayland.display()) < 0 && errno != EAGAIN) {
++    fail("failed to submit output capture session");
++  }
++}
++
++void OutputImageCapture::cancelInFlight() {
++  m_timeout.stop();
++  m_pending.reset();
++  m_onComplete = {};
++}
++
++void OutputImageCapture::fail(std::string message) {
++  auto onComplete = std::exchange(m_onComplete, {});
++  m_timeout.stop();
++  m_pending.reset();
++  if (onComplete) {
++    onComplete(std::nullopt, std::move(message));
++  }
++}
++
++void OutputImageCapture::finish(ScreencopyImage image) {
++  auto onComplete = std::exchange(m_onComplete, {});
++  m_timeout.stop();
++  m_pending.reset();
++  if (onComplete) {
++    onComplete(std::move(image), {});
++  }
++}
+diff --git a/src/capture/output_image_capture.h b/src/capture/output_image_capture.h
+new file mode 100644
+index 000000000..545aa5dab
+--- /dev/null
++++ b/src/capture/output_image_capture.h
+@@ -0,0 +1,50 @@
++#pragma once
++
++#include "capture/screencopy_capture.h"
++#include "core/timer_manager.h"
++
++#include <cstdint>
++#include <functional>
++#include <memory>
++#include <optional>
++#include <span>
++#include <string>
++
++class ImageCaptureGlobals;
++class WaylandConnection;
++struct OutputImageCapturePending;
++struct wl_output;
++
++namespace capture {
++  // Converts a 32-bit wl_shm buffer (8888 or 2101010 layouts) to opaque RGBA8; nullopt for other formats.
++  std::optional<std::vector<std::uint8_t>>
++  shmToRgba(std::span<const std::uint8_t> pixels, int width, int height, int stride, std::uint32_t format);
++} // namespace capture
++
++// One full-output frame over ext-image-copy-capture, as raw (untransformed, not y-inverted) RGBA like a
++// wlr-screencopy frame. ScreenshotCapture falls back to it when wlr-screencopy refuses an output: wlroots'
++// screencopy has no shared-memory format for an HDR output's 10-bit or float buffers, while compositors
++// convert ext-image-copy-capture frames.
++class OutputImageCapture {
++public:
++  using CompletionCallback = std::function<void(std::optional<ScreencopyImage>, std::string error)>;
++
++  explicit OutputImageCapture(WaylandConnection& wayland);
++  ~OutputImageCapture();
++
++  bool available() const noexcept;
++  bool busy() const noexcept { return m_pending != nullptr; }
++  void capture(wl_output* output, bool paintCursors, CompletionCallback onComplete);
++  void cancelInFlight();
++
++private:
++  friend struct OutputImageCapturePending;
++  void fail(std::string message);
++  void finish(ScreencopyImage image);
++
++  WaylandConnection& m_wayland;
++  ImageCaptureGlobals& m_imageCapture;
++  std::unique_ptr<OutputImageCapturePending> m_pending;
++  CompletionCallback m_onComplete;
++  Timer m_timeout;
++};
+diff --git a/src/capture/screenshot_capture.cpp b/src/capture/screenshot_capture.cpp
+index 2aaf843a9..181b73bd5 100644
+--- a/src/capture/screenshot_capture.cpp
++++ b/src/capture/screenshot_capture.cpp
+@@ -8,11 +8,13 @@
+ #include <utility>
+ 
+ ScreenshotCapture::ScreenshotCapture(WaylandConnection& wayland)
+-    : m_wayland(wayland), m_backgroundCapture(wayland), m_cursorCapture(wayland) {}
++    : m_wayland(wayland), m_backgroundCapture(wayland), m_fallbackCapture(wayland), m_cursorCapture(wayland) {}
+ 
+ ScreenshotCapture::~ScreenshotCapture() { cancelInFlight(); }
+ 
+-bool ScreenshotCapture::available() const noexcept { return m_backgroundCapture.available(); }
++bool ScreenshotCapture::available() const noexcept {
++  return m_backgroundCapture.available() || m_fallbackCapture.available();
++}
+ 
+ void ScreenshotCapture::capture(
+     wl_output* output, std::optional<LogicalRect> region, bool showCursor, bool retainCursor,
+@@ -29,6 +31,7 @@ void ScreenshotCapture::capture(
+   m_region = region;
+   m_showCursor = showCursor;
+   m_cursor.reset();
++  m_fallbackCrop.reset();
+   m_cursorStatus = capture::CursorToggleStatus::NotCaptured;
+   m_onComplete = std::move(onComplete);
+   if (retainCursor && m_cursorCapture.available() && output != nullptr) {
+@@ -50,10 +53,42 @@ void ScreenshotCapture::captureBackground() {
+     m_backgroundCapture.cancelInFlight();
+     finish(std::nullopt, "screencopy frame timed out");
+   });
++  if (!m_backgroundCapture.available()) {
++    captureBackgroundFallback("wlr-screencopy unavailable");
++    return;
++  }
+   // Capturing an overlaid wlr frame would bake the cursor into every concurrent output copy.
+   m_backgroundCapture.capture(
+       m_output, m_cursor ? std::nullopt : m_region, m_cursor ? false : m_showCursor,
+-      [this](std::optional<ScreencopyImage> image, std::string error) { finish(std::move(image), std::move(error)); }
++      [this](std::optional<ScreencopyImage> image, std::string error) {
++        if (!image && m_fallbackCapture.available()) {
++          captureBackgroundFallback(std::move(error));
++          return;
++        }
++        finish(std::move(image), std::move(error));
++      }
++  );
++}
++
++void ScreenshotCapture::captureBackgroundFallback(std::string screencopyError) {
++  if (!m_fallbackCapture.available()) {
++    finish(std::nullopt, std::move(screencopyError));
++    return;
++  }
++  m_timeout.start(std::chrono::seconds(1), [this] {
++    m_fallbackCapture.cancelInFlight();
++    finish(std::nullopt, "output capture timed out");
++  });
++  // A whole-output frame: crop to the region afterwards (the cursor path crops on its own).
++  m_fallbackCrop = m_cursor ? std::nullopt : m_region;
++  m_fallbackCapture.capture(
++      m_output, m_cursor ? false : m_showCursor,
++      [this, screencopyError](std::optional<ScreencopyImage> image, std::string error) {
++        if (!image) {
++          error = screencopyError + "; " + error;
++        }
++        finish(std::move(image), std::move(error));
++      }
+   );
+ }
+ 
+@@ -61,7 +96,9 @@ void ScreenshotCapture::cancelInFlight() {
+   m_timeout.stop();
+   m_cursorCapture.cancelInFlight();
+   m_backgroundCapture.cancelInFlight();
++  m_fallbackCapture.cancelInFlight();
+   m_cursor.reset();
++  m_fallbackCrop.reset();
+   m_busy = false;
+   m_onComplete = {};
+ }
+@@ -78,6 +115,17 @@ void ScreenshotCapture::finish(std::optional<ScreencopyImage> image, std::string
+           .cursorVisible = m_showCursor,
+           .cursorStatus = m_cursorStatus,
+       };
++      if (m_fallbackCrop) {
++        const auto output = std::ranges::find(m_wayland.outputs(), m_output, &WaylandOutput::output);
++        if (output == m_wayland.outputs().end()) {
++          result.reset();
++        } else {
++          result = capture::cropScreenshotImage(*result, output->logicalWidth, output->logicalHeight, *m_fallbackCrop);
++        }
++        if (!result) {
++          error = "Failed to crop screenshot";
++        }
++      }
+     } else {
+       result = capture::composeCapturedCursor(std::move(*image), std::move(*m_cursor));
+       if (m_region) {
+@@ -100,6 +148,7 @@ void ScreenshotCapture::finish(std::optional<ScreencopyImage> image, std::string
+     }
+   }
+   m_cursor.reset();
++  m_fallbackCrop.reset();
+   m_busy = false;
+   auto onComplete = std::exchange(m_onComplete, {});
+   if (onComplete) {
+diff --git a/src/capture/screenshot_capture.h b/src/capture/screenshot_capture.h
+index 49f0c1bb3..59ca2eed4 100644
+--- a/src/capture/screenshot_capture.h
++++ b/src/capture/screenshot_capture.h
+@@ -1,5 +1,6 @@
+ #pragma once
+ 
++#include "capture/output_image_capture.h"
+ #include "capture/pointer_cursor_capture.h"
+ #include "capture/screenshot_image.h"
+ #include "core/timer_manager.h"
+@@ -26,10 +27,15 @@ public:
+ 
+ private:
+   void captureBackground();
++  void captureBackgroundFallback(std::string screencopyError);
+   void finish(std::optional<ScreencopyImage> image, std::string error);
+ 
+   WaylandConnection& m_wayland;
+   ScreencopyCapture m_backgroundCapture;
++  // ext-image-copy-capture, for outputs wlr-screencopy refuses (HDR outputs on wlroots compositors).
++  OutputImageCapture m_fallbackCapture;
++  // The region to crop after a fallback frame: it always covers the whole output.
++  std::optional<LogicalRect> m_fallbackCrop;
+   PointerCursorCapture m_cursorCapture;
+   Timer m_timeout;
+   wl_output* m_output = nullptr;
