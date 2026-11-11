@@ -141,7 +141,7 @@ sidebar = "full"
     type = "dark_mode"
 
     [[control_center.shortcuts]]
-    type = "janzon/toggles:headphone-eq"
+    type = "janzon/toggles:headphone-eq-tile"
 
 [dock]
 background_opacity = 0.35

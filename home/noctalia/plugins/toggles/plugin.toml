@@ -33,6 +33,7 @@ entry = "headphone_eq_service.luau"
 id = "headphone-eq"
 entry = "headphone_eq_widget.luau"
 
+# Entry ids are unique across kinds, so the tile has its own.
 [[shortcut]]
-id = "headphone-eq"
+id = "headphone-eq-tile"
 entry = "headphone_eq_shortcut.luau"
