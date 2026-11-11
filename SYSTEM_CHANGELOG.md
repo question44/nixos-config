@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Dashboard: per-device transparent background — 2026-11-11
+
+At the user's request the erebor dashboard has a per-browser "Transparent background" toggle in the account menu (localStorage `erebor-dashboard-glass`). On, the page background is the theme page colour at 50% (light) / 80% (dark), so Umbriel's blur and glass show through in Zen's web-app window (Zen already has browser.tabs.allow_transparent_browser and zen.widget.linux.transparency). Off by default: Helium/Chromium and phones cannot show a see-through page. Submodule commit on branch glass-background (not pushed; built with the git insteadOf workaround).
+
 # Desktop: lower opacity in light mode — 2026-11-11
 
 At the user's request, app opacity follows Noctalia's theme mode: home/appearance.nix `appOpacity` is now `{ dark = 0.8; light = 0.5; }` (dark was 0.75). New aspect modules/home/theme-opacity.nix installs `erebor-theme-opacity`, run by Noctalia's new `[hooks] started` and `theme_mode_changed` (home/noctalia/config.toml). It links the per-mode Ghostty include, Monstar config and Vicinae nix.json from ~/.local/state/erebor-theme-opacity (Monstar's config and Vicinae's nix.json are now out-of-store links there; Ghostty's config includes `config-file = ?…/ghostty`) and signals Ghostty (SIGUSR2, checked: it survives and reloads) and Monstar (SIGUSR1). On a mode change it also stores Noctalia's bar background/capsule, OSD and notification opacities and Darkly's `*Opacity` keys for the old mode and restores the new mode's (first time: scaled by light/dark = 0.625), then sends Darkly's `reparseConfiguration` D-Bus signal. Zed's template uses the light alpha in "Noctalia Light Transparent" (Zed's light theme is still One Light, the user's setting); Zen's translucent.css switches with `prefers-color-scheme`. Detached Noctalia panels use the fixed glass transparency mode (0.55) and the dock (0.06) is left alone. erebor-diff: different (home-manager generation only).
