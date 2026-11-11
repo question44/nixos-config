@@ -1,0 +1,189 @@
+#!/usr/bin/env python3
+"""Back up and restore this machine's Tailscale node identity with sops.
+
+  erebor-tailscale-state backup    copy /var/lib/tailscale/tailscaled.state into
+                                   secrets/<hostname>.yaml as `tailscale_state`
+  erebor-tailscale-state check     say whether the backup matches the live state
+                                   (names the differing keys, never values)
+  erebor-tailscale-state restore [--yes]
+                                   replace the live state with the backup and
+                                   restart tailscaled, then confirm the node ID
+                                   and key did not change
+
+Run from a checkout of the repository (a worktree for `backup`, then commit
+the re-encrypted file). Needs sudo (touch approval) for the root-only state
+file, and the personal age key (~/.config/sops/age/keys.txt) for `check` and
+`restore`. The state only travels through pipes: it is never written in
+plaintext outside /var/lib/tailscale and never printed.
+
+Restore the newest backup: if the node re-authenticated since the backup
+(a new node key), the old state may need `tailscale up` again. Run `check`
+first. Restoring stops tailscaled for a moment, so run it over the LAN or
+locally, not over Tailscale.
+"""
+
+import base64
+import json
+import shutil
+import socket
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+STATE = "/var/lib/tailscale/tailscaled.state"
+KEY = '["tailscale_state"]'
+SUDO = "/run/wrappers/bin/sudo"
+
+
+def secrets_file():
+    top = subprocess.run(
+        ["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True
+    )
+    if top.returncode != 0:
+        sys.exit("erebor-tailscale-state: run inside the nixos repository")
+    path = Path(top.stdout.strip()) / "secrets" / f"{socket.gethostname()}.yaml"
+    if not path.exists():
+        sys.exit(f"erebor-tailscale-state: {path} does not exist")
+    return path
+
+
+def sops():
+    found = shutil.which("sops")
+    return [found] if found else ["nix", "run", "nixpkgs#sops", "--"]
+
+
+def parse(raw, what):
+    # A sudo or touch prompt could end up in captured output, so insist on the
+    # shape of tailscaled's state: one JSON object holding the machine key.
+    try:
+        doc = json.loads(raw)
+    except ValueError:
+        sys.exit(f"erebor-tailscale-state: {what} is not tailscaled state JSON")
+    if not isinstance(doc, dict) or "_machinekey" not in doc:
+        sys.exit(f"erebor-tailscale-state: {what} has no _machinekey")
+    return doc
+
+
+def live_state():
+    run = subprocess.run(
+        [SUDO, "cat", STATE], stdin=subprocess.DEVNULL, stdout=subprocess.PIPE
+    )
+    if run.returncode != 0:
+        sys.exit(f"erebor-tailscale-state: could not read {STATE}")
+    parse(run.stdout, STATE)
+    return run.stdout
+
+
+def backup_state(path):
+    run = subprocess.run(
+        [*sops(), "decrypt", "--extract", KEY, str(path)],
+        stdout=subprocess.PIPE,
+    )
+    if run.returncode != 0:
+        sys.exit(f"erebor-tailscale-state: no readable tailscale_state in {path}")
+    raw = base64.b64decode(run.stdout, validate=True)
+    parse(raw, "the backup")
+    return raw
+
+
+def identity():
+    run = subprocess.run(
+        ["tailscale", "status", "--json"], capture_output=True, text=True
+    )
+    if run.returncode != 0:
+        return None
+    status = json.loads(run.stdout)
+    me = status.get("Self") or {}
+    return {
+        "BackendState": status.get("BackendState"),
+        "ID": me.get("ID"),
+        "PublicKey": me.get("PublicKey"),
+        "HostName": me.get("HostName"),
+        "TailscaleIPs": me.get("TailscaleIPs"),
+    }
+
+
+def show(ident):
+    return ", ".join(f"{k} {v}" for k, v in ident.items()) if ident else "unavailable"
+
+
+def differing_keys(a, b):
+    da, db = json.loads(a), json.loads(b)
+    return sorted(k for k in set(da) | set(db) if da.get(k) != db.get(k))
+
+
+def cmd_backup():
+    path = secrets_file()
+    raw = live_state()
+    value = json.dumps(base64.b64encode(raw).decode())
+    run = subprocess.run(
+        [*sops(), "set", "--value-stdin", str(path), KEY], input=value.encode()
+    )
+    if run.returncode != 0:
+        sys.exit("erebor-tailscale-state: sops set failed")
+    if backup_state(path) != raw:
+        sys.exit("erebor-tailscale-state: read-back differs from the live state")
+    print(f"Backed up {len(raw)} bytes of Tailscale state into {path} (read back OK).")
+    print("Commit the re-encrypted file.")
+
+
+def cmd_check():
+    path = secrets_file()
+    live, saved = live_state(), backup_state(path)
+    if live == saved:
+        print("The backup matches the live Tailscale state.")
+        return
+    keys = differing_keys(live, saved)
+    print("The backup differs from the live state in: " + ", ".join(keys))
+    sys.exit(1)
+
+
+def cmd_restore(assume_yes):
+    path = secrets_file()
+    saved = backup_state(path)
+    before = identity()
+    print(f"Before: {show(before)}")
+    if not assume_yes:
+        answer = input("Replace the live Tailscale state and restart tailscaled? [y/N] ")
+        if answer.strip().lower() != "y":
+            sys.exit("Restore cancelled.")
+    # Write next to the live file (same 0700 directory), then swap it in while
+    # tailscaled is stopped, so a failure never leaves a partial state file.
+    script = (
+        "set -e; umask 077; "
+        f"cat > {STATE}.restore; chown root:root {STATE}.restore; "
+        f"systemctl stop tailscaled; mv {STATE}.restore {STATE}; "
+        "systemctl start tailscaled"
+    )
+    run = subprocess.run([SUDO, "sh", "-c", script], input=saved)
+    if run.returncode != 0:
+        subprocess.run([SUDO, "systemctl", "start", "tailscaled"], stdin=subprocess.DEVNULL)
+        sys.exit("erebor-tailscale-state: restore failed; tailscaled restarted")
+    after = None
+    for _ in range(30):
+        time.sleep(1)
+        after = identity()
+        if after and after["BackendState"] == "Running":
+            break
+    print(f"After:  {show(after)}")
+    if not after or after["BackendState"] != "Running":
+        sys.exit("erebor-tailscale-state: tailscaled is not running after the restore")
+    if before and (after["ID"], after["PublicKey"]) != (before["ID"], before["PublicKey"]):
+        sys.exit("erebor-tailscale-state: the node ID or key changed")
+    print("Restored; the node identity is unchanged.")
+
+
+def main(argv):
+    if argv[:1] == ["backup"] and len(argv) == 1:
+        cmd_backup()
+    elif argv[:1] == ["check"] and len(argv) == 1:
+        cmd_check()
+    elif argv[:1] == ["restore"] and argv[1:] in ([], ["--yes"]):
+        cmd_restore(argv[1:] == ["--yes"])
+    else:
+        sys.exit(__doc__)
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

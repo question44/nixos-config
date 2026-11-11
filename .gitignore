@@ -1,4 +1,4 @@
-# Never stage plaintext or incomplete Tailscale state backups.
+# Never stage temporary or plaintext files next to the sops secrets.
 secrets/*.tmp.*
 secrets/*.tar
 

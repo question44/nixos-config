@@ -207,10 +207,20 @@
                       "lowshelf"
                       "highshelf"
                     ];
+                    description = "Filter shape.";
                   };
-                  freq = lib.mkOption { type = lib.types.number; };
-                  gain = lib.mkOption { type = lib.types.number; };
-                  q = lib.mkOption { type = lib.types.number; };
+                  freq = lib.mkOption {
+                    type = lib.types.number;
+                    description = "Centre or corner frequency in Hz.";
+                  };
+                  gain = lib.mkOption {
+                    type = lib.types.number;
+                    description = "Gain in dB.";
+                  };
+                  q = lib.mkOption {
+                    type = lib.types.number;
+                    description = "Quality factor (bandwidth).";
+                  };
                 };
               }
             );

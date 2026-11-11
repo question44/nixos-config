@@ -29,23 +29,14 @@ are in [AGENTS.md](AGENTS.md).
 
 Shared modules read `config.my.*` instead of hard-coding the user, domain,
 addresses or devices. A host sets these values in `modules/hosts/<name>/default.nix`.
-The full declarations, with descriptions, are in
-[modules/my.nix](modules/my.nix).
+Every option, with its type, default and description, is listed in
+[docs/my-options.md](docs/my-options.md), generated from the declarations
+(`nix run .#write-docs` after changing one; `nix flake check` fails while the
+file is stale).
 
-| Option | Purpose |
-|---|---|
-| `my.user.name`, `my.user.description` | Login name and full name of the main user. |
-| `my.network.domain` | Public domain. Services are served on its subdomains. |
-| `my.network.lanInterface` | LAN interface whose firewall allows local services (e.g. `br0`). |
-| `my.services.<name>.enable` | Turns on a web service from `modules/services/`. Its Caddy routes, `/etc/hosts` names and LAN firewall port are generated from the registry (`port`, `localName`, `publicName`, `lanPort`, `proxy.*`, `extraConfig`). |
-| `my.streaming.sunshine.enable` | The Sunshine game-streaming setup. |
-| `my.streaming.moonshine.enable` | The Moonshine game-streaming server. |
-| `my.ambilight.{enable, musicSink, wledUrl}` | HyperHDR ambient lighting, the PipeWire sink it captures for music effects, and the WLED controller. |
-| `my.yubikey.{enable, sound}` | YubiKey touch for sudo, and the sound played while it waits. |
-| `my.macApproval.{enable, addresses}` | Approving sudo and polkit through a forwarded Mac SSH agent. See [docs/mac-approval.md](docs/mac-approval.md). |
-| `my.nanokvm.{enable, url}` | NanoKVM wake and outlet readings in the dashboard. |
-| `my.xremap.devices` | Input devices that xremap remaps, given by name and optionally USB IDs (`modules/xremap.nix`). |
-| `virtualisation.windowsGpuPassthrough.enable` | Passes the RTX 4090 to the `windows11` VM instead of the host (`modules/windows-vm.nix`). Shut the VM down before toggling. See [docs/windows-vm.md](docs/windows-vm.md). |
+`virtualisation.windowsGpuPassthrough.enable` passes the RTX 4090 to the
+`windows11` VM instead of the host (`modules/windows-vm.nix`). Shut the VM down
+before toggling. See [docs/windows-vm.md](docs/windows-vm.md).
 
 Upstream options (anything from NixOS or Home Manager) work as usual. Search
 them on [search.nixos.org](https://search.nixos.org/options) or in the
