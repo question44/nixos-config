@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Dashboard: toggles slide and no longer flash — 2026-11-11
+
+User report: the segmented toggles did not animate, and switching one made the others flicker. Cause: the dashboard clears all device states while a command runs, so every row briefly had no current option; the lens was hidden and its position forgotten (flash on every row, jump instead of slide), and all options faded to 40% while disabled. The lens now stays on its last option until the new state arrives, and busy-disabled options keep their look (main.busy). Tested with two simulated rows on a local copy: no lens hidden, the pressed row slides. Dashboard commit on sequoia-background (not pushed).
+
 # Dashboard: liquidglass.dev toggles and switch — 2026-11-11
 
 At the user's request (cards fine, but toggles and interactive elements should look like https://liquidglass.dev): the dashboard vendors liquidglass.dev's MIT lens engine (frontend/src/vendor/liquid-glass.js, license kept) and rebuilds the device toggle rows as its segmented control (lens over a copy of the labels, spring 380/28 with stretch, soft track) and the Show hidden switch as its switch (white knob swelling into a lens while pressed; Material's slide toggle removed); glass buttons squish while pressed. These work through SVG filter: url() on a content copy, so in every background mode and in Firefox/Zen; the WebGL thumb/switch glass from earlier today is removed. Tested on a local copy in Chromium, light and dark (fake toggle card; switch pressed and toggled). Dashboard commit on sequoia-background (not pushed).
