@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Umbriel: lens glass edges no longer flicker on partial redraws — 2026-11-11
+
+The user saw window glass edges flicker (Claude's bottom edge now and then; Dolphin's edge next to a hovered sidebar item). Cause: a backdrop preset's `padding` is also how far Umbriel grows a partial redraw around damage, but the lens shaders read the backdrop far further *inward* than the 8 px padding: REFRACTION × (1 + CHROMA) = 47 × 1.8 ≈ 85 px on windows, 60 × 1.88 ≈ 113 px on layers. A redraw near the edge made the rim sample framebuffer pixels outside the redrawn area, which still held last frame's finished composite (the window's own content), for one frame. glass.toml: `liquid-glass-lens` padding 8 → 88, `liquid-glass-lens-layer` 8 → 116 (comment notes padding must follow the shader constants). Config only, live reload; no rebuild (tier: identical, no Nix change).
+
 # Lock screen and greeter: user's tuned lens glass — 2026-11-11
 
 At the user's request the lock screen and greeter glass take the window glass values the user tuned with ~/src/glass-tuner (both ports are the window shader): REFRACTION 47, BEZEL 61, CURVATURE 4.8, IOR 2.12, CHROMA 0.8, SPECULAR 0.06, SPECULAR_W 6.6, LIGHT 41°, RIM_OPACITY 0.48, RIM_SATURATION 3.5, RIM_WHITE 0.17, RIM_W 4.6, RIM_LIGHT −53°. The window glass (liquid-glass-lens.glsl) is committed at the same values (REFRACTION 44 → 47, BEZEL 50 → 61 since the last entry). Patches re-exported: `git diff HEAD~4 HEAD` (noctalia-glass) and `git diff HEAD~3 HEAD -- . ':!1'` (noctalia-greeter).

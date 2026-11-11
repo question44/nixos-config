@@ -22,10 +22,15 @@ padding = 8
 # (a 42 px bevel bending up to 60 px inward, colour fringe, faint rim light)
 # instead of the mirrored fold. To try it, set the catch-all window_rule
 # below to backdrop_effect = "liquid-glass-lens".
+# padding must cover the farthest read in ANY direction, inward too: it is also
+# how far a partial redraw is grown around damage. The lens bends inward up to
+# REFRACTION * (1 + CHROMA) px (47 * 1.8 = 85); with only 8, a redraw near the
+# edge (a blinking cursor, a hover) let the rim refract last frame's window
+# content and flicker. Raise it if the shader's constants grow.
 [effects.preset.liquid-glass-lens]
 kind = "backdrop"
 shader = "/etc/nixos/home/umbriel/effects/liquid-glass-lens.glsl"
-padding = 8
+padding = 88
 
 # Glass body for Noctalia's surfaces (layer shapes are unknown, so no rim).
 [effects.preset.liquid-glass-layer]
@@ -64,4 +69,5 @@ border_effect = "liquid-glass-rim"
 [effects.preset.liquid-glass-lens-layer]
 kind = "backdrop"
 shader = "/etc/nixos/home/umbriel/effects/liquid-glass-lens-layer.glsl"
-padding = 8
+# Inward reach REFRACTION * (1 + CHROMA) = 60 * 1.88 = 113 px (see liquid-glass-lens).
+padding = 116
