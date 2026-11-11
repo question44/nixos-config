@@ -119,7 +119,6 @@ in
       systemd.user.services =
         lib.genAttrs
           [
-            "umbriel"
             "xremap"
             "pipewire"
             "pipewire-pulse"
@@ -129,6 +128,15 @@ in
           (_: {
             serviceConfig.ManagedOOMPreference = "omit";
           })
+        // {
+          # The kernel OOM killer ignores ManagedOOMPreference. On 2026-11-11 it
+          # killed the compositor (oom_score_adj 200, the user default) and ended
+          # the session; at -200 it is chosen only after every other process.
+          umbriel.serviceConfig = {
+            ManagedOOMPreference = "omit";
+            OOMScoreAdjust = -200;
+          };
+        }
         //
           lib.genAttrs
             [

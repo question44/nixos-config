@@ -45,7 +45,13 @@
       systemd.services."user@".serviceConfig = {
         ManagedOOMMemoryPressure = "kill";
         ManagedOOMMemoryPressureLimit = "80%";
+        # Unprivileged processes cannot lower oom_score_adj below what their root
+        # parent set, so the user manager starts at -200 (upstream 100) to let
+        # session-core user units go below the default...
+        OOMScoreAdjust = -200;
       };
+      # ...while ordinary user units keep the usual 200 (upstream: manager + 100).
+      systemd.user.settings.Manager.DefaultOOMScoreAdjust = 200;
       nix.gc = {
         automatic = true;
         dates = "weekly";
@@ -152,6 +158,16 @@
       boot.kernel.sysctl = {
         "vm.swappiness" = 180;
         "vm.page-cluster" = 0;
+        # On 2026-11-11 a 32 KiB (order-3) nvidia_drm allocation failed with 5 GB
+        # free, all in 4-8 KiB pieces, and the OOM killer ended the session.
+        # Wake kswapd/kcompactd earlier (2% of RAM between watermarks) and keep a
+        # larger reserve, so contiguous blocks stay available.
+        "vm.watermark_scale_factor" = 200;
+        "vm.min_free_kbytes" = 262144;
+        # Cap dirty page cache (default 20% of RAM, ~6 GB) so writeback to slow
+        # USB disks cannot pin gigabytes that reclaim and compaction cannot move.
+        "vm.dirty_background_bytes" = 268435456;
+        "vm.dirty_bytes" = 1073741824;
       };
 
       programs.dconf.enable = true;
