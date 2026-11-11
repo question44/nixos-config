@@ -15,6 +15,7 @@
         "ovh_application_secret"
         "ovh_consumer_key"
       ];
+      ovhDns = config.my.network.ovhDns.enable;
       dashboard = config.services.erebor-dashboard.package;
       # Spliced into the indented Caddyfile below; the text keeps its layout.
       hyperhdrRoute =
@@ -56,11 +57,14 @@
       ) withPublic;
     in
     {
-      sops.secrets = lib.genAttrs ovhKeys (_: { });
-      sops.templates."caddy-ovh.env" = {
-        content = lib.concatMapStrings (k: "${lib.toUpper k}=${config.sops.placeholder.${k}}\n") ovhKeys;
-        owner = "caddy";
-        restartUnits = [ "caddy.service" ];
+      # OVH DNS API credentials for certificates, from secrets/<host>.yaml.
+      sops = lib.mkIf ovhDns {
+        secrets = lib.genAttrs ovhKeys (_: { });
+        templates."caddy-ovh.env" = {
+          content = lib.concatMapStrings (k: "${lib.toUpper k}=${config.sops.placeholder.${k}}\n") ovhKeys;
+          owner = "caddy";
+          restartUnits = [ "caddy.service" ];
+        };
       };
 
       services.caddy = {
@@ -69,8 +73,7 @@
           plugins = [ "github.com/caddy-dns/ovh@v1.1.0" ];
           hash = "sha256-VJgAmT1q1wcqt7o7HrK2+ONfZrfI/QW2v3d6ZSMh718=";
         };
-        # OVH DNS API credentials for certificates, from secrets/<host>.yaml.
-        environmentFile = config.sops.templates."caddy-ovh.env".path;
+        environmentFile = lib.mkIf ovhDns config.sops.templates."caddy-ovh.env".path;
         globalConfig = "auto_https disable_redirects";
         extraConfig = ''
           (dashboard_controls) {
@@ -84,15 +87,17 @@
           }
 
           (ovh_tls) {
-            tls {
-              dns ovh {
-                endpoint {$OVH_ENDPOINT}
-                application_key {$OVH_APPLICATION_KEY}
-                application_secret {$OVH_APPLICATION_SECRET}
-                consumer_key {$OVH_CONSUMER_KEY}
+            ${lib.optionalString ovhDns ''
+              tls {
+                dns ovh {
+                  endpoint {$OVH_ENDPOINT}
+                  application_key {$OVH_APPLICATION_KEY}
+                  application_secret {$OVH_APPLICATION_SECRET}
+                  consumer_key {$OVH_CONSUMER_KEY}
+                }
+                resolvers 1.1.1.1 9.9.9.9
               }
-              resolvers 1.1.1.1 9.9.9.9
-            }
+            ''}
           }
 
           :80 {

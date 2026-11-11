@@ -37,6 +37,7 @@ in
         network = {
           domain = "template.example.com";
           lanInterface = "enp1s0";
+          # ovhDns.enable = true;              # needs ovh_* in secrets/<host>.yaml
         };
         # Everything below defaults to off; enable what this machine has.
         # ambilight = {

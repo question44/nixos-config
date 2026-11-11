@@ -236,6 +236,11 @@ let
         };
       })) "two services on one port are not reported"
       ++ check (failedWith { } == [ ]) "the template itself fails an assertion";
+
+    # The template's system derivation instantiates: a shared module that needs
+    # something only erebor has (a secrets file, hardware) fails here, which
+    # evaluating the template's options alone does not show.
+    template-instantiates = check (builtins.tryEval hosts.template.config.system.build.toplevel.drvPath).success "template: system.build.toplevel does not evaluate (run nix eval .#nixosConfigurations.template.config.system.build.toplevel.drvPath)";
   };
 in
 {

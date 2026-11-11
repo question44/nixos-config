@@ -602,6 +602,40 @@ string matching the pattern \[A-Za-z0-9\._-]{1,15}
 
 
 
+## my\.network\.ovhDns\.enable
+
+
+
+Whether to enable certificates for my\.network\.domain and its subdomains through OVH’s DNS
+API\. Needs the ovh_\* secrets in secrets/\<host>\.yaml; off, Caddy uses its
+default ACME challenges, which cannot issue the wildcard certificate\.
+
+
+
+*Type:*
+boolean
+
+
+
+*Default:*
+
+```nix
+false
+```
+
+
+
+*Example:*
+
+```nix
+true
+```
+
+*Declared by:*
+ - [modules/my\.nix](../modules/my.nix)
+
+
+
 ## my\.sequoiaWallpaper\.enable
 
 

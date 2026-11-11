@@ -156,6 +156,10 @@
             example = "br0";
             description = "LAN interface whose firewall allows local services (SSH, media, sync).";
           };
+          ovhDns.enable = lib.mkEnableOption ''
+            certificates for my.network.domain and its subdomains through OVH's DNS
+            API. Needs the ovh_* secrets in secrets/<host>.yaml; off, Caddy uses its
+            default ACME challenges, which cannot issue the wildcard certificate'';
         };
 
         spotify.desktopApp.enable = lib.mkEnableOption ''

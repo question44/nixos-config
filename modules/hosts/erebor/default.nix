@@ -34,6 +34,7 @@ in
         network = {
           domain = "erebor.jzon.pl";
           lanInterface = "br0";
+          ovhDns.enable = true;
         };
         ambilight = {
           enable = true;
