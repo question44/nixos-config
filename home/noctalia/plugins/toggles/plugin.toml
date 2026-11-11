@@ -22,9 +22,9 @@ entry = "sequoia_motion.luau"
 id = "bar-pin"
 entry = "bar_pin.luau"
 
-# Headphone EQ (my.headphoneEq): default output is the FiiO FT1 EQ sink or
-# the plain DAC. The service polls `headphone-eq status`; tile and widget
-# toggle it.
+# Headphone EQ (my.headphoneEq): default output is a preset's EQ sink or the
+# plain DAC. The service polls `headphone-eq status`; the tile and bar widget
+# open the panel (preset picker) and toggle on right-click.
 [[service]]
 id = "headphone-eq-state"
 entry = "headphone_eq_service.luau"
@@ -37,3 +37,13 @@ entry = "headphone_eq_widget.luau"
 [[shortcut]]
 id = "headphone-eq-tile"
 entry = "headphone_eq_shortcut.luau"
+
+[[panel]]
+id = "eq"
+entry = "headphone_eq_panel.luau"
+width = 300
+height = "content"
+max_height = 240
+placement = "attached"
+position = "auto"
+open_near_click = true

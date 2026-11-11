@@ -13,14 +13,14 @@ order = [ "default", "stats" ]
     capsule_thickness = 0.82
     center = [ "show_vicinae_button", "taskbar" ]
     contact_shadow = true
-    end = [ "tray", "group:g2", "group:g6", "volume", "group:g5", "battery", "group:g4", "session" ]
+    end = [ "tray", "group:g2", "group:g6", "headphone-eq", "volume", "group:g5", "battery", "group:g4", "session" ]
     margin_edge = 4
     margin_ends = 20
     margin_opposite_edge = 4
     position = "bottom"
     radius = 16
     shadow = false
-    start = [ "cat", "bar_3", "audio_visualizer", "headphone-eq", "lyrics_2", "bar-pin", "bar_4" ]
+    start = [ "cat", "bar_3", "audio_visualizer", "lyrics_2", "bar-pin", "bar_4" ]
     thickness = 48
 
         [bar.default.dead_zone.actions]

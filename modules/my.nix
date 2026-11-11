@@ -178,8 +178,8 @@
           enable = lib.mkEnableOption "a parametric headphone EQ sink (PipeWire filter-chain), switched on with `headphone-eq on`";
           name = lib.mkOption {
             type = lib.types.str;
-            default = "FiiO FT1 EQ";
-            description = "Sink name shown in the volume and output menus.";
+            default = "FiiO FT1";
+            description = "Preset name: the EQ panel's choice, and the sink is \"<name> EQ\".";
           };
           target = lib.mkOption {
             type = lib.types.nullOr lib.types.str;

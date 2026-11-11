@@ -2,8 +2,9 @@
 # profile and plays into a fixed output device. The default profile is the
 # FiiO FT1 "Super review" curve the user runs in SoundSource on the Mac.
 # The DAC also drives speakers, so the EQ is off unless chosen: `headphone-eq
-# on|off|toggle|status` swaps the default sink between the EQ and the DAC
-# (the Noctalia janzon/toggles plugin calls it).
+# on|off|toggle|set PRESET` swaps the default sink between the EQ and the DAC;
+# `status` prints the active preset or "off", `list` the presets (the Noctalia
+# janzon/toggles plugin calls it).
 { ... }:
 {
   flake.modules.nixos.headphone-eq =
@@ -55,14 +56,17 @@
             eq=effect_input.headphone_eq
             dac=${lib.escapeShellArg cfg.target}
 
+            preset=${lib.escapeShellArg cfg.name}
+
             id_of() {
               pw-dump | jq -r --arg n "$1" \
                 'first(.[] | select(.info.props."node.name" == $n) | .id) // empty'
             }
+            # The active preset's name, or "off" when the plain DAC is default.
             state() {
               if wpctl inspect @DEFAULT_AUDIO_SINK@ 2>/dev/null |
                 grep -q "node.name = \"$eq\""; then
-                echo on
+                echo "$preset"
               else
                 echo off
               fi
@@ -81,11 +85,25 @@
               on) set_default "$eq" ;;
               off) set_default "$dac" ;;
               toggle)
-                if [ "$(state)" = on ]; then set_default "$dac"; else set_default "$eq"; fi
+                if [ "$(state)" = off ]; then set_default "$eq"; else set_default "$dac"; fi
+                ;;
+              set)
+                case "''${2:-}" in
+                  off) set_default "$dac" ;;
+                  "$preset") set_default "$eq" ;;
+                  *)
+                    echo "headphone-eq: unknown preset ''${2:-}" >&2
+                    exit 2
+                    ;;
+                esac
+                ;;
+              list)
+                echo "$preset"
+                exit 0
                 ;;
               status) ;;
               *)
-                echo "usage: headphone-eq [on|off|toggle|status]" >&2
+                echo "usage: headphone-eq [on|off|toggle|status|list|set PRESET|set off]" >&2
                 exit 2
                 ;;
             esac
@@ -99,8 +117,8 @@
           {
             name = "libpipewire-module-filter-chain";
             args = {
-              "node.description" = cfg.name;
-              "media.name" = cfg.name;
+              "node.description" = "${cfg.name} EQ";
+              "media.name" = "${cfg.name} EQ";
               "filter.graph" = {
                 nodes = lib.imap0 node filters;
                 links = map (i: {
