@@ -47,5 +47,9 @@ in
       update-branch
       secrets
     ];
+    # On only through nixpkgs' graphical-desktop default; its eSpeak NG pulls
+    # every MBROLA voice (0.7 GB). Browsers and Qt link their own minimal
+    # libspeechd, so read-aloud just has no system voices (SYS-097).
+    services.speechd.enable = false;
   };
 }

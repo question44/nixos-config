@@ -160,10 +160,8 @@ icon_size = 42
 item_spacing = 8
 launcher_position = "start"
 pinned = [
-    "com.spotify.Client",
     "helium",
     "t3_code_alpha",
-    "spotify",
     "org.kde.dolphin",
     "com.mitchellh.ghostty",
     "discord",
@@ -795,8 +793,7 @@ wallpaper_scheme = "m3-tonal-spot"
         "steam",
         "vicinae",
         "fastfetch",
-        "bat",
-        "konsole"
+        "bat"
     ]
 
         # Keep palette colors dynamic; template alpha comes from home/appearance.nix.
@@ -939,7 +936,7 @@ capsule_radius = "auto"
 group_by_workspace = true
 icon_scale = 2.0
 minimal = true
-pinned = [ "org.kde.dolphin", "helium", "zen", "com.spotify.Client" ]
+pinned = [ "org.kde.dolphin", "helium", "zen" ]
 show_window_title = true
 workspace_label_placement = "inside"
 

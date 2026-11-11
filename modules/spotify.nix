@@ -1,5 +1,6 @@
-# Spotify themed by Noctalia through Spicetify (Comfy theme): the patched
-# launcher system-wide, and the theme files and first-run setup for the user.
+# Spotifast always; with my.spotify.desktopApp.enable also the official app
+# themed by Noctalia through Spicetify (Comfy theme): the patched launcher
+# system-wide, and the theme files and first-run setup for the user.
 let
   comfyFor =
     pkgs:
@@ -49,7 +50,12 @@ let
 in
 {
   flake.modules.nixos.spotify =
-    { pkgs, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     let
       prepare = prepareFor pkgs;
       launcher = pkgs.writeShellApplication {
@@ -74,51 +80,63 @@ in
             --replace-fail 'Exec=spotify' "Exec=$out/bin/spotify"
         '';
       };
+      spotifyLauncher = pkgs.writeShellScriptBin "spotify-launcher" ''
+        exec /run/current-system/sw/bin/spotify "$@"
+      '';
     in
     {
-      environment.systemPackages = [
-        spotify
-        pkgs.spicetify-cli
-        # Native Spotify client (egui); Noctalia's spotifast template themes it.
-        # nixpkgs ships 0.14.2; drop this override once it has 0.17.1 or newer.
-        (pkgs.spotifast.overrideAttrs (
-          finalAttrs: old: {
-            version = "0.17.1";
-            src = old.src.override {
-              tag = "v${finalAttrs.version}";
-              hash = "sha256-6BJpFjv0xSSQnk9/xRtsShsKUHup7uRDACPQLSKdwgg=";
-            };
-            cargoDeps = pkgs.rustPlatform.fetchCargoVendor {
-              inherit (finalAttrs) src;
-              hash = "sha256-4ozZxNRENy6qd9+l46dQQIx3bw0Ig/A1G4TXIYq0kMI=";
-            };
-            # The test phase recompiles everything with thin LTO; two of those
-            # rustc jobs at once were OOM-killed here (2026-11-10).
-            doCheck = false;
-            # Soloist, the Spotify player Spotifast downloads, runs through nix-ld
-            # and inherits this wrapper's environment. It dlopens its audio
-            # libraries, which are neither here nor in nix-ld's set, so it played
-            # nothing and paused every track at once.
-            postFixup = old.postFixup + ''
-              wrapProgram $out/bin/spotifast \
-                --prefix LD_LIBRARY_PATH : ${
-                  pkgs.lib.makeLibraryPath [
-                    pkgs.pipewire
-                    pkgs.libpulseaudio
-                  ]
-                }
-            '';
-          }
-        ))
-      ];
+      environment.systemPackages =
+        lib.optionals config.my.spotify.desktopApp.enable [
+          spotify
+          pkgs.spicetify-cli
+          spotifyLauncher
+        ]
+        ++ [
+          # Native Spotify client (egui); Noctalia's spotifast template themes it.
+          # nixpkgs ships 0.14.2; drop this override once it has 0.17.1 or newer.
+          (pkgs.spotifast.overrideAttrs (
+            finalAttrs: old: {
+              version = "0.17.1";
+              src = old.src.override {
+                tag = "v${finalAttrs.version}";
+                hash = "sha256-6BJpFjv0xSSQnk9/xRtsShsKUHup7uRDACPQLSKdwgg=";
+              };
+              cargoDeps = pkgs.rustPlatform.fetchCargoVendor {
+                inherit (finalAttrs) src;
+                hash = "sha256-4ozZxNRENy6qd9+l46dQQIx3bw0Ig/A1G4TXIYq0kMI=";
+              };
+              # The test phase recompiles everything with thin LTO; two of those
+              # rustc jobs at once were OOM-killed here (2026-11-10).
+              doCheck = false;
+              # Soloist, the Spotify player Spotifast downloads, runs through nix-ld
+              # and inherits this wrapper's environment. It dlopens its audio
+              # libraries, which are neither here nor in nix-ld's set, so it played
+              # nothing and paused every track at once.
+              postFixup = old.postFixup + ''
+                wrapProgram $out/bin/spotifast \
+                  --prefix LD_LIBRARY_PATH : ${
+                    pkgs.lib.makeLibraryPath [
+                      pkgs.pipewire
+                      pkgs.libpulseaudio
+                    ]
+                  }
+              '';
+            }
+          ))
+        ];
     };
 
   flake.modules.homeManager.spotify =
-    { lib, pkgs, ... }:
+    {
+      lib,
+      osConfig,
+      pkgs,
+      ...
+    }:
     let
       comfy = comfyFor pkgs;
     in
-    {
+    lib.mkIf osConfig.my.spotify.desktopApp.enable {
       xdg.configFile."spicetify/Themes/Comfy/user.css".source = "${comfy}/Comfy/app.css";
       xdg.configFile."spicetify/Themes/Comfy/theme.js".source = "${comfy}/Comfy/theme.script.js";
       xdg.configFile."spicetify/Themes/Comfy/assets".source = "${comfy}/Comfy/assets";

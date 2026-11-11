@@ -158,6 +158,11 @@
           };
         };
 
+        spotify.desktopApp.enable = lib.mkEnableOption ''
+          the official Spotify desktop app, themed by Noctalia through Spicetify
+          (Spotifast is installed either way)
+        '';
+
         ambilight = {
           enable = lib.mkEnableOption "HyperHDR ambient lighting from screen capture";
           musicSink = lib.mkOption {

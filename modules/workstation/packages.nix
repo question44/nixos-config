@@ -1,4 +1,4 @@
-# Unfree allowlist, system packages, application menu and Flatpak.
+# Unfree allowlist, system packages and application menu.
 { inputs, ... }:
 {
   flake.modules.nixos.packages =
@@ -44,25 +44,6 @@
         export QT_PLUGIN_PATH="${pkgs.kdePackages.kio-extras}/lib/qt-6/plugins''${QT_PLUGIN_PATH:+:$QT_PLUGIN_PATH}"
         export XDG_DATA_DIRS="${pkgs.kdePackages.kio-extras}/share:''${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
         exec ${pkgs.kdePackages.kdialog}/bin/kdialog "$@"
-      '';
-
-      # Tauon imports pypresence for Discord Rich Presence, but nixpkgs ships it with
-      # lynxpresence; nixpkgs' pypresence predates the StatusDisplayType it needs.
-      tauon = pkgs.tauon.overridePythonAttrs (old: {
-        pythonPath = old.pythonPath ++ [
-          (pkgs.python3Packages.pypresence.overridePythonAttrs {
-            version = "4.6.2";
-            src = pkgs.fetchPypi {
-              pname = "pypresence";
-              version = "4.6.2";
-              hash = "sha256-fn6T3g6UpCMUMA720V3SxExk73S3x0kkO8Imviq5Boc=";
-            };
-          })
-        ];
-      });
-
-      spotifyLauncher = pkgs.writeShellScriptBin "spotify-launcher" ''
-        exec /run/current-system/sw/bin/spotify "$@"
       '';
 
       # essential [--omit] <command> [args]: run a command in its own user scope
@@ -112,7 +93,6 @@
           "unrar"
           "steam"
           "steam-unwrapped"
-          "google-chrome"
           "claude-code"
         ];
 
@@ -145,8 +125,6 @@
           kdePackages.dolphin
           # Dolphin's admin mode (admin:/, "Open as Administrator"), approved through polkit.
           kdePackages.kio-admin
-          kdePackages.discover
-          kdePackages.konsole
           kdePackages.gwenview
           kdePackages.okular
           kdePackages.ark
@@ -158,7 +136,6 @@
           kdePackages.plasma-disks
           kdePackages.kded
           smartmontools
-          (google-chrome.override { commandLineArgs = "--password-store=gnome-libsecret"; })
           haruna
           moonlight-qt
           # WhatsApp Web client (Qt WebEngine).
@@ -218,7 +195,6 @@
           ut2004.ut2004-import-rpm
           ut2004.ut2004-setup
           noctaliaPython
-          spotifyLauncher
           cava
           jq
           playerctl
@@ -237,7 +213,12 @@
           qrencode
           speedtest
           slurp
-          tesseract
+          (tesseract.override {
+            enableLanguages = [
+              "eng"
+              "pol"
+            ];
+          })
           imagemagick
           zbar
           translate-shell
@@ -248,8 +229,6 @@
           bc
           pulseaudio
           mpv
-          # Music player; reads CUE sheets for single-file album rips.
-          tauon
           fooyin
           noctaliaPkgConfig
           pipewire.dev
@@ -291,19 +270,5 @@
           djvulibre
         ];
 
-      services.flatpak.enable = true;
-      systemd.services.flatpak-flathub = {
-        description = "Register the Flathub Flatpak repository";
-        wantedBy = [ "multi-user.target" ];
-        wants = [ "network-online.target" ];
-        after = [ "network-online.target" ];
-        serviceConfig = {
-          Type = "oneshot";
-          RemainAfterExit = true;
-        };
-        script = ''
-          ${pkgs.flatpak}/bin/flatpak remote-add --system --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-        '';
-      };
     };
 }
