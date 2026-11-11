@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Dashboard: Tasks card unrolls, connection chip removed — 2026-11-11
+
+At the user's request the Tasks card opens and folds with a liquid spring (height 340/26 with a small overshoot, board fading in from a blur and melting away on fold, glass following the card; reduced motion skips it), and the header's "Local & tailnet" chip is removed (the offline notice still covers losing the connection). Tested on a local copy with the task board enabled: open 64 → 392 → 382 px in ~0.45 s, fold to 64 px with the board removed at 0.4 s. Dashboard commit on sequoia-background (not pushed).
+
 # Dashboard: glass menus, per-device switching, phone fixes — 2026-11-11
 
 At the user's request: the account and Background menus are liquid glass after liquidglass.dev's menu (refracting body via the vendored engine in Chromium, blur fallback elsewhere; spring open that unrolls the panel and a quick roll-back on close within Material's 200 ms; hover lens over an accent copy of the items). A toggle command now marks only its own device as "Switching…"; the other cards keep their last state until a forced status refresh replaces all at once (devices interact: display power, screen choice and ambilight all follow Umbriel's outputs). Phone reports: the task panel widened the page (grid items with no-wrap titles; fixed with minmax(0, 1fr) columns, statuses wrap under titles below 600 px), and the bottom of the page lost its background while scrolling (Sequoia canvas now 100lvh with a ResizeObserver redraw, wallpaper-like html colour, no overscroll bounce). Tested on a local copy in Chromium at desktop and 375 px. Dashboard commit on sequoia-background (not pushed).
