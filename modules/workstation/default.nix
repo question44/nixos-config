@@ -15,6 +15,7 @@ in
       packages
       my
       ambilight
+      headphone-eq
       mac-approval
       spotify
       sunshine

@@ -40,6 +40,10 @@ in
           musicSink = "alsa_output.usb-iFi__by_AMR__iFi__by_AMR__HD_USB_Audio_0003-00.analog-stereo";
           wledUrl = "http://192.168.1.118";
         };
+        headphoneEq = {
+          enable = true;
+          target = "alsa_output.usb-iFi__by_AMR__iFi__by_AMR__HD_USB_Audio_0003-00.analog-stereo";
+        };
         xremap = {
           devices = [
             "Telink IQUNIX 2.4GHz"

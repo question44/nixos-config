@@ -174,6 +174,108 @@
           };
         };
 
+        headphoneEq = {
+          enable = lib.mkEnableOption "a parametric headphone EQ sink (PipeWire filter-chain), switched on with `headphone-eq on`";
+          name = lib.mkOption {
+            type = lib.types.str;
+            default = "FiiO FT1 EQ";
+            description = "Sink name shown in the volume and output menus.";
+          };
+          target = lib.mkOption {
+            type = lib.types.nullOr lib.types.str;
+            default = null;
+            example = "alsa_output.usb-iFi__by_AMR__iFi__by_AMR__HD_USB_Audio_0003-00.analog-stereo";
+            description = "PipeWire sink the equalised audio plays into (`pw-cli ls Node`).";
+          };
+          preamp = lib.mkOption {
+            type = lib.types.float;
+            default = -4.7;
+            description = "Preamp gain in dB, applied before the bands.";
+          };
+          bands = lib.mkOption {
+            type = lib.types.listOf (
+              lib.types.submodule {
+                options = {
+                  type = lib.mkOption {
+                    type = lib.types.enum [
+                      "peak"
+                      "lowshelf"
+                      "highshelf"
+                    ];
+                  };
+                  freq = lib.mkOption { type = lib.types.number; };
+                  gain = lib.mkOption { type = lib.types.number; };
+                  q = lib.mkOption { type = lib.types.number; };
+                };
+              }
+            );
+            # FiiO FT1, "Super review" profile (SoundSource Headphone EQ on the Mac).
+            default = [
+              {
+                type = "peak";
+                freq = 63;
+                gain = 1.4;
+                q = 3.18;
+              }
+              {
+                type = "lowshelf";
+                freq = 105;
+                gain = -3.4;
+                q = 0.7;
+              }
+              {
+                type = "peak";
+                freq = 151;
+                gain = -3.0;
+                q = 1.51;
+              }
+              {
+                type = "peak";
+                freq = 465;
+                gain = 1.4;
+                q = 1.66;
+              }
+              {
+                type = "peak";
+                freq = 1625;
+                gain = -2.0;
+                q = 1.01;
+              }
+              {
+                type = "peak";
+                freq = 3697;
+                gain = 5.1;
+                q = 3.64;
+              }
+              {
+                type = "peak";
+                freq = 5160;
+                gain = -5.6;
+                q = 5.03;
+              }
+              {
+                type = "peak";
+                freq = 6011;
+                gain = 4.8;
+                q = 3.01;
+              }
+              {
+                type = "peak";
+                freq = 9024;
+                gain = 5.0;
+                q = 2.13;
+              }
+              {
+                type = "highshelf";
+                freq = 10000;
+                gain = -6.6;
+                q = 0.7;
+              }
+            ];
+            description = "Parametric EQ bands (frequency in Hz, gain in dB).";
+          };
+        };
+
         yubikey = {
           enable = lib.mkEnableOption "YubiKey (pam_u2f) touch for sudo, with a touch notification";
           sound = lib.mkOption {
@@ -228,6 +330,10 @@
 
       # Each message names the my.* setting to change in modules/hosts/<name>.
       config.assertions = [
+        {
+          assertion = cfg.headphoneEq.enable -> cfg.headphoneEq.target != null;
+          message = "my.headphoneEq.enable needs my.headphoneEq.target: the PipeWire sink the EQ plays into (`pw-cli ls Node`).";
+        }
         {
           assertion = cfg.ambilight.enable -> cfg.ambilight.musicSink != null;
           message = "my.ambilight.enable needs my.ambilight.musicSink: the PipeWire sink HyperHDR captures (`pw-cli ls Node`).";

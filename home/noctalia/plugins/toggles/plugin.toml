@@ -10,7 +10,7 @@ author = "janzon"
 license = "MIT"
 tags = ["bar"]
 icon = "toggle-right"
-description = "Stateful bar toggles: Sequoia wallpaper motion and bar pinning."
+description = "Stateful toggles: Sequoia wallpaper motion, bar pinning and headphone EQ."
 
 # Sequoia wallpaper on the desktop: animated or still.
 [[widget]]
@@ -21,3 +21,18 @@ entry = "sequoia_motion.luau"
 [[widget]]
 id = "bar-pin"
 entry = "bar_pin.luau"
+
+# Headphone EQ (my.headphoneEq): default output is the FiiO FT1 EQ sink or
+# the plain DAC. The service polls `headphone-eq status`; tile and widget
+# toggle it.
+[[service]]
+id = "headphone-eq-state"
+entry = "headphone_eq_service.luau"
+
+[[widget]]
+id = "headphone-eq"
+entry = "headphone_eq_widget.luau"
+
+[[shortcut]]
+id = "headphone-eq"
+entry = "headphone_eq_shortcut.luau"
