@@ -19,14 +19,15 @@
       # regenerate with home/zed/generate-keymap.py after a Zed upgrade.
       xdg.configFile."zed/keymap.json".source =
         config.lib.file.mkOutOfStoreSymlink "${osConfig.my.flakePath}/home/zed/keymap.json";
-      # Monstar shares Ghostty's background opacity (_opacity.nix).
-      xdg.configFile."monstar/config".source = pkgs.replaceVars ../../home/monstar/config {
-        appOpacity = opacity.value;
-      };
+      # Monstar shares Ghostty's background opacity, per theme mode: the link
+      # points at the variant erebor-theme-opacity picked (theme-opacity.nix).
+      xdg.configFile."monstar/config".source =
+        config.lib.file.mkOutOfStoreSymlink "${config.xdg.stateHome}/erebor-theme-opacity/monstar";
       xdg.configFile."noctalia/templates/zed.json".source =
         pkgs.replaceVars ../../home/noctalia/templates/zed.json
           {
-            appOpacityAlpha = opacity.alpha;
+            appOpacityAlpha = opacity.dark.alpha;
+            appOpacityAlphaLight = opacity.light.alpha;
           };
       # Keep Vencord settings writable and let Noctalia generate its CSS.
       home.activation.discordNoctaliaTheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''

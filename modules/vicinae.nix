@@ -13,14 +13,14 @@
     };
 
   flake.modules.homeManager.vicinae =
-    { lib, ... }:
+    { config, ... }:
     {
       # Vicinae's GUI rewrites settings.json, so the Nix-managed values live in
       # an import it lists ("imports": ["./nix.json"]); settings.json still wins
-      # for any key it sets itself.
-      xdg.configFile."vicinae/nix.json".text = builtins.toJSON {
-        launcher_window.opacity = builtins.fromJSON (import ./home/_opacity.nix lib).value;
-      };
+      # for any key it sets itself. nix.json is the launcher opacity for the
+      # current theme mode, picked by erebor-theme-opacity (home/theme-opacity.nix).
+      xdg.configFile."vicinae/nix.json".source =
+        config.lib.file.mkOutOfStoreSymlink "${config.xdg.stateHome}/erebor-theme-opacity/vicinae.json";
       xdg.configFile."systemd/user/graphical-session.target.wants/vicinae.service".source =
         "${inputs.vicinae.packages.x86_64-linux.default}/share/systemd/user/vicinae.service";
       xdg.configFile."systemd/user/vicinae.service.d/override.conf".text = ''

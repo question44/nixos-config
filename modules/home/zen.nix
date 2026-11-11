@@ -1,5 +1,5 @@
 # Zen browser: translucent chrome over Noctalia's zen-browser theme, at the
-# shared app opacity (home/appearance.nix). Noctalia's apply.sh owns the first
+# shared app opacity for the current theme mode (home/appearance.nix). Noctalia's apply.sh owns the first
 # @import in each profile's userChrome.css and keeps other lines; this adds a
 # second @import after it. Zen reads userChrome.css only at startup.
 {
@@ -11,12 +11,13 @@
       ...
     }:
     let
-      appearance = import ../../home/appearance.nix;
+      opacity = import ./_opacity.nix lib;
       css = "${config.xdg.configHome}/zen/translucent.css";
     in
     {
       xdg.configFile."zen/translucent.css".source = pkgs.replaceVars ../../home/zen/translucent.css {
-        appOpacityPercent = toString (builtins.floor (appearance.appOpacity * 100 + 0.5));
+        darkPercent = opacity.dark.percent;
+        lightPercent = opacity.light.percent;
       };
 
       # Profiles are created by Zen under random names, so patch each one in

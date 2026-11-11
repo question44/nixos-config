@@ -163,6 +163,11 @@ shadow = false
 show_dots = true
 smart_auto_hide = true
 
+# Lower app and surface opacity in light mode (modules/home/theme-opacity.nix).
+[hooks]
+started = "/etc/profiles/per-user/janzon/bin/erebor-theme-opacity"
+theme_mode_changed = "/etc/profiles/per-user/janzon/bin/erebor-theme-opacity"
+
 [hot_corners]
 delay_ms = 300
 enabled = true

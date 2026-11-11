@@ -58,6 +58,7 @@ in
         spotify
         steam-theme
         zen
+        theme-opacity
       ];
       home.stateVersion = "26.05";
       home.pointerCursor = {

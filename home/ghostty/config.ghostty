@@ -1,5 +1,8 @@
 theme = noctalia
+# Dark-mode default; the file below (written by erebor-theme-opacity on each
+# Noctalia theme mode change, modules/home/theme-opacity.nix) overrides it.
 background-opacity = @appOpacity@
+config-file = ?@opacityFile@
 # Keep text off the refracting lip of Umbriel's liquid-glass effect.
 window-padding-x = 14
 window-padding-y = 9
