@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Dashboard: liquidglass.dev toggles and switch — 2026-11-11
+
+At the user's request (cards fine, but toggles and interactive elements should look like https://liquidglass.dev): the dashboard vendors liquidglass.dev's MIT lens engine (frontend/src/vendor/liquid-glass.js, license kept) and rebuilds the device toggle rows as its segmented control (lens over a copy of the labels, spring 380/28 with stretch, soft track) and the Show hidden switch as its switch (white knob swelling into a lens while pressed; Material's slide toggle removed); glass buttons squish while pressed. These work through SVG filter: url() on a content copy, so in every background mode and in Firefox/Zen; the WebGL thumb/switch glass from earlier today is removed. Tested on a local copy in Chromium, light and dark (fake toggle card; switch pressed and toggled). Dashboard commit on sequoia-background (not pushed).
+
 # Dashboard Sequoia: glass toggles, switch, hover, better title — 2026-11-11
 
 At the user's request: device-card toggle rows get a sliding thumb (frontend/src/toggles.ts: spring ~0.45 s with small overshoot, stretch along the motion, swell while pressed, moves on press before the API confirms) in every background mode, drawn as liquid glass in Sequoia mode; the Show hidden switch gets a glass track (accent-tinted when on) and knob; cards light up under the pointer and lift 2 px on hover; the title's glass is rounded rods with edge lighting and a much lighter shadow (and a fixed vertical normal). Card tints moved from CSS into the glass shader so glass on top of cards composites correctly. Tested on a local copy in Chromium (light and dark; thumb motion traced frame by frame; no actions enabled, a fake toggle card injected). Dashboard commit on sequoia-background (not pushed).
