@@ -6,6 +6,9 @@ entries directly below this header. Earlier months: [2026-10](changelog/2026-10.
 # Vitrum installed (apps/vitrum submodule) — 2026-11-11
 
 At the user's request the umbriel_glass_v1 demo is packaged like Chomik: private repo `question44/vitrum` (pushed, commit 919877f), submodule `apps/vitrum`, flake input `vitrum` (`path:`, nixpkgs follows), installed in modules/workstation/packages.nix. `vitrum` and its `dev.erebor.vitrum` desktop entry are on PATH / in the launcher; glass.toml already has its window rule. The glass needs the patched Umbriel from generation 377 to be running (next login).
+# Dashboard Sequoia: glass title, folded cards, legible header — 2026-11-11
+
+At the user's request (folded sections kept their cards' glass; header text and buttons hard to read; title as liquid glass text): the glass pass clips cards to their folded `.fold-clip.clipped` section and skips invisible ones; the "erebor" title is glass text (glyph mask + distance fields, shallow lens, rim, soft shadow; DOM text transparent); the header chip, account and edit buttons are glass pills; intro, headings and footer get a page-colour halo. Tested on a local copy in Chromium, light and dark, folded and unfolded. Dashboard commit on sequoia-background (not pushed).
 
 # Umbriel: umbriel_glass_v1 glass regions + Vitrum demo app — 2026-11-11
 
