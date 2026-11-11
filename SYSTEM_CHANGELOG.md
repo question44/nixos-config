@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Dashboard: transparent background fully clear — 2026-11-11
+
+At the user's request the dashboard's per-device "Transparent background" no longer keeps 50% / 80% of the page colour: `html.glass` is `background: transparent` in both modes (submodule commit 4d32447, branch glass-background, not pushed). Cards stay opaque.
+
 # Zen: chrome opacity 0.7 in both modes — 2026-11-11
 
 At the user's request Zen's translucent chrome uses a fixed 0.7 (home/appearance.nix `zenOpacity`; null would follow appOpacity's 0.8 dark / 0.5 light again). Zen reads userChrome.css only at startup, so it applies after a Zen restart.
