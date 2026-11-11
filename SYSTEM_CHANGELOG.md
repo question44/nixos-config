@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Acceptance checks confirmed by the user: SYS-068, SYS-040, SYS-070 — 2026-11-11
+
+The user replied "ok" to the remaining checks of three tasks, closed as DONE: the restricted-user and wake checks of dashboard accounts ([SYS-068](tasks/SYS-068.md)), NanoKVM ATX wake from real sleep through the PWA over Tailscale ([SYS-040](tasks/SYS-040.md)), and signing in from a recent-account tile and switching performance profiles ([SYS-070](tasks/SYS-070.md)). User confirmation only; no logs were collected for these runs.
+
 # Template host builds again: Caddy's OVH DNS behind `my.network.ovhDns` — 2026-11-11
 
 `nixosConfigurations.template` could not evaluate `system.build.toplevel` (also on master before this change). The error was "`sops.defaultSopsFile` was accessed but has no value defined": the caddy aspect declared the four `ovh_*` sops secrets and `caddy-ovh.env` on every host, but the template has no secrets file. `nix flake check` passed because it only evaluated the template's options, and `scripts/erebor-diff --host template` failed. The OVH DNS setup (secrets, environment file, the `tls { dns ovh … }` block in the `ovh_tls` snippet) is now behind the new `my.network.ovhDns.enable`, which erebor sets; without it the snippet is empty and Caddy uses its default ACME challenges. New eval test `eval-template-instantiates` checks that the template's toplevel evaluates; it returns false against the previous master. `docs/my-options.md` was regenerated. erebor-diff against master: equivalent (only store hashes in caddy.service's override; the formatted Caddyfile is identical). The template's toplevel built (143 derivations). The template comparison could not run because master's template, its base, is the broken one. `nix flake check` passed. Activated with switch, generation 387 (the first attempt timed out at the sudo prompt). caddy.service reloaded with no errors logged; erebor.jzon.pl and code.erebor.jzon.pl answer 200 with verified certificates; no failed system or user units.
