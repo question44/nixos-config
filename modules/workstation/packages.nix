@@ -147,7 +147,7 @@
           winetricks
           ddcutil
           kdePackages.breeze
-          candy-icons
+          fluent-icon-theme
           (discord.override {
             withVencord = true;
             # nixpkgs still ships Vencord 1.15.13, which hangs Discord on "Starting..."

@@ -4,6 +4,8 @@
 #   mode (Ghostty's include, Monstar's config, Vicinae's nix.json) from
 #   ~/.local/state/erebor-theme-opacity, then makes the running terminals reload
 #   (Ghostty: SIGUSR2, Monstar: SIGUSR1; Vicinae watches its files);
+# - sets the icon theme to Fluent-dark / Fluent-light (dconf for GTK,
+#   kdeglobals for Qt/KDE) and tells running apps to reload their icons;
 # - on a mode change, remembers Noctalia's surface opacities and Darkly's (Qt
 #   apps: Dolphin...) as they were in the old mode and restores the new mode's.
 #   A mode never seen before gets the old mode's values scaled by
@@ -44,6 +46,8 @@
           gawk
           procps
           dbus
+          dconf
+          kdePackages.kconfig
         ];
         text = ''
           # Usage: erebor-theme-opacity [dark|light] [--links-only]
@@ -80,6 +84,14 @@
             ln -sfn "$variants/$mode/$f" "$state/$f"
           done
           printf '%s\n' "$mode" > "$state/mode"
+
+          # Icon theme follows the mode too: GTK reads dconf, Qt/KDE kdeglobals.
+          icons="Fluent-$mode"
+          dconf write /org/gnome/desktop/interface/icon-theme "'$icons'" || true
+          kwriteconfig6 --file "''${XDG_CONFIG_HOME:-$HOME/.config}/kdeglobals" \
+            --group Icons --key Theme "$icons" || true
+          dbus-send --session --type=signal /KIconLoader org.kde.KIconLoader.iconChanged int32:0 || true
+          dbus-send --session --type=signal /KGlobalSettings org.kde.KGlobalSettings.notifyChange int32:4 int32:0 || true
           [ "''${2:-}" = --links-only ] && exit 0
 
           pkill -USR2 -x 'ghostty|\.ghostty-wrappe' || true
@@ -142,7 +154,7 @@
       home.packages = [ script ];
       # Keep the links valid after a rebuild (new variants), in the last mode used;
       # dark before the first switch.
-      home.activation.themeOpacityLinks = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      home.activation.themeOpacityLinks = lib.hm.dag.entryAfter [ "writeBoundary" "dconfSettings" ] ''
         mode="$(${pkgs.coreutils}/bin/cat ${lib.escapeShellArg state}/mode 2>/dev/null || echo dark)"
         run ${script}/bin/erebor-theme-opacity "$mode" --links-only
       '';

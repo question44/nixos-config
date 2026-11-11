@@ -34,9 +34,11 @@
       };
       gtk = {
         enable = true;
+        # Default only: erebor-theme-opacity (theme-opacity.nix) switches
+        # Fluent-dark / Fluent-light with Noctalia's light/dark mode.
         iconTheme = {
-          name = "candy-icons";
-          package = pkgs.candy-icons;
+          name = "Fluent-dark";
+          package = pkgs.fluent-icon-theme;
         };
       };
       home.activation.dolphinColorScheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
@@ -76,12 +78,6 @@
               "windowsimagethumbnail"
             ]
           }"
-      '';
-      home.activation.kdeIconTheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-        run ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 \
-          --file "$HOME/.config/kdeglobals" \
-          --group Icons \
-          --key Theme "candy-icons"
       '';
       xdg.userDirs = {
         enable = true;

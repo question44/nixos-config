@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Icon theme: Fluent, following light/dark mode — 2026-11-11
+
+At the user's request, after comparing 21 icon themes against the 38 icon names the visible launchers ask for: Candy 26/38, Fluent 29/38 (Gruvbox Plus 30, Zafiro 29, Papirus 28). `candy-icons` is replaced by `fluent-icon-theme` (system package and `gtk.iconTheme`). The user has Noctalia's automatic light/dark switch on, so the icon theme follows it: `erebor-theme-opacity` (Noctalia's `started` and `theme_mode_changed` hooks, and the `themeOpacityLinks` activation, now ordered after `dconfSettings`) writes `Fluent-dark` / `Fluent-light` to dconf `org/gnome/desktop/interface/icon-theme` (GTK) and kdeglobals `[Icons] Theme` (Qt/KDE), then sends KIconLoader `iconChanged` and KGlobalSettings `notifyChange` (IconChanged). The variants differ only in their symbolic icons (#dedede vs #363636); the app icons are shared. The static `kdeIconTheme` activation is removed; `gtk.iconTheme` stays as `Fluent-dark` (settings.ini and the HM dconf default, which the hook overrides). erebor-diff against master: different (the package, settings.ini, the HM dconf ini and the hook script).
+
 # Acceptance checks confirmed by the user: SYS-068, SYS-040, SYS-070 — 2026-11-11
 
 The user replied "ok" to the remaining checks of three tasks, closed as DONE: the restricted-user and wake checks of dashboard accounts ([SYS-068](tasks/SYS-068.md)), NanoKVM ATX wake from real sleep through the PWA over Tailscale ([SYS-040](tasks/SYS-040.md)), and signing in from a recent-account tile and switching performance profiles ([SYS-070](tasks/SYS-070.md)). User confirmation only; no logs were collected for these runs.
