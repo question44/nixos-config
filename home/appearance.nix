@@ -6,4 +6,7 @@
     dark = 0.8;
     light = 0.5;
   };
+  # Zen's chrome (home/zen/translucent.css), the same in both modes; null
+  # follows appOpacity instead.
+  zenOpacity = 0.7;
 }

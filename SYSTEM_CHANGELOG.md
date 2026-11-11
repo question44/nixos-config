@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Zen: chrome opacity 0.7 in both modes — 2026-11-11
+
+At the user's request Zen's translucent chrome uses a fixed 0.7 (home/appearance.nix `zenOpacity`; null would follow appOpacity's 0.8 dark / 0.5 light again). Zen reads userChrome.css only at startup, so it applies after a Zen restart.
+
 # Dashboard: per-device transparent background — 2026-11-11
 
 At the user's request the erebor dashboard has a per-browser "Transparent background" toggle in the account menu (localStorage `erebor-dashboard-glass`). On, the page background is the theme page colour at 50% (light) / 80% (dark), so Umbriel's blur and glass show through in Zen's web-app window (Zen already has browser.tabs.allow_transparent_browser and zen.widget.linux.transparency). Off by default: Helium/Chromium and phones cannot show a see-through page. Submodule commit on branch glass-background (not pushed; built with the git insteadOf workaround).
