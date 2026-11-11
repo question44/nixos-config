@@ -161,7 +161,6 @@ item_spacing = 8
 launcher_position = "start"
 pinned = [
     "helium",
-    "t3_code_alpha",
     "org.kde.dolphin",
     "com.mitchellh.ghostty",
     "discord",
