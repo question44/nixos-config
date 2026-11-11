@@ -29,6 +29,8 @@ At the user's request, app opacity follows Noctalia's theme mode: home/appearanc
 
 # Headphone EQ: preset panel, button beside volume — 2026-11-11
 
+Follow-up: the EQ button and volume share a capsule group g7 (styled like g6), added in settings.toml (backup in the session scratchpad) and config.toml. Checked on screen.
+
 At the user's request, a `janzon/toggles:eq` panel (attached, near the click) holds an on/off switch and a preset picker (Off, FiiO FT1). The bar button moved next to volume (config.toml and, since the settings override owns the bar order, `noctalia msg config-set bar.default.start/end`); the control-center tile is labelled "EQ" (was cut off). Click on either opens the panel, right-click toggles. `headphone-eq` gains `list` and `set PRESET|off`; `status` prints the preset or "off"; `my.headphoneEq.name` is now the preset name ("FiiO FT1", sink "FiiO FT1 EQ"). Activated gen 377 (first two attempts failed: sudo approval not given). A new plugin panel registers only when Noctalia starts or the plugin is enabled, so Noctalia was restarted. Verified: panel opens and shows the live state; `set off`, `set "FiiO FT1"` work and an unknown preset exits 2; button sits beside volume. Not verified: clicking the panel's switch and dropdown, and opening near the bar button (tested via IPC only).
 
 # Headphone EQ: FiiO FT1 profile with a Noctalia toggle — 2026-11-11

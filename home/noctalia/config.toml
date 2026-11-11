@@ -13,7 +13,7 @@ order = [ "default", "stats" ]
     capsule_thickness = 0.82
     center = [ "show_vicinae_button", "taskbar" ]
     contact_shadow = true
-    end = [ "tray", "group:g2", "group:g6", "headphone-eq", "volume", "group:g5", "battery", "group:g4", "session" ]
+    end = [ "tray", "group:g2", "group:g6", "group:g7", "group:g5", "battery", "group:g4", "session" ]
     margin_edge = 4
     margin_ends = 20
     margin_opposite_edge = 4
@@ -76,6 +76,18 @@ order = [ "default", "stats" ]
         fill = "surface_container"
         id = "g6"
         members = [ "network", "status", "bluetooth" ]
+        opacity = 1.0
+        padding = 6.0
+        radius = 8.0
+
+        [[bar.default.capsule_group]]
+        accordion = false
+        accordion_direction = "end"
+        border_width = 1.0
+        enabled = true
+        fill = "surface_container"
+        id = "g7"
+        members = [ "headphone-eq", "volume" ]
         opacity = 1.0
         padding = 6.0
         radius = 8.0
