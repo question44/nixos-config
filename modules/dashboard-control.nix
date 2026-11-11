@@ -101,6 +101,12 @@
                 "reboot-windows"
                 "moonshine-pair"
               ];
+              # The "Sequoia" page background: Apple's scene data extracted by
+              # ~/src/sequoia-re/tools/web_data.py; read at request time, never copied
+              # into the store. Hidden in the menu while the file is missing.
+              sequoiaData = lib.mkIf my.sequoiaWallpaper.enable "${
+                config.users.users.${user}.home
+              }/.local/share/sequoia/web.json";
               # The board reads the live checkout; only the script itself is pinned.
               tasks = lib.mkIf my.taskBoard.enable {
                 command = [

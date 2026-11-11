@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Dashboard: "Sequoia" background with liquid glass cards — 2026-11-11
+
+At the user's request the dashboard's per-browser background setting (account menu → Background: Solid / Transparent / Sequoia / Sequoia (still); the old Transparent toggle carries over) can draw macOS Sequoia's wallpaper in the page with WebGL2 and liquid glass under every card (frontend/src/sequoia.ts: port of sequoia-re's renderer at desktop_speed 0.5, dual Kawase frost radius 2 × 2 passes, saturation 1.1, and liquid-glass-lens.glsl with the user's tuned values). The gradient follows the page's light/dark (solar noon / solar midnight) so text stays readable. Works in Firefox/Zen too, since nothing relies on backdrop-filter. Apple's data never enters git or the store: ~/src/sequoia-re/tools/web_data.py writes ~/.local/share/sequoia/web.json, and the control API serves it to signed-in users only (`GET /api/control/sequoia`, private 1-day cache; new option `services.erebor-dashboard.control.sequoiaData`, set here when my.sequoiaWallpaper is on). Tested on a throwaway copy of the API: Chromium shows wallpaper, motion, light/dark crossfade and aligned glass while scrolling; Zen headless compiles all shaders with no GL errors and reads back real wallpaper pixels (its headless screenshots don't capture WebGL). Dashboard branch sequoia-background (not pushed).
+
 # Dashboard: transparent background fully clear — 2026-11-11
 
 At the user's request the dashboard's per-device "Transparent background" no longer keeps 50% / 80% of the page colour: `html.glass` is `background: transparent` in both modes (submodule commit 4d32447, branch glass-background, not pushed). Cards stay opaque.
