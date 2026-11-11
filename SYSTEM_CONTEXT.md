@@ -46,6 +46,13 @@ Unfinished work and verification checks belong in
 
 ## Reusable operational pitfalls
 
+- Activation does not restart `xrdp-sesman` (that would end open RDP
+  sessions), so it keeps its old `sesman.ini` and session script. After a
+  change to the xrdp session or config, run
+  `sudo systemctl restart xrdp-sesman xrdp` once no RDP session is open; a
+  stale sesman whose session packages are gone shows "unable to load failsafe
+  session".
+
 - `xremap.service` reads `~/.config/xremap/config.yml` only at startup and
   activation does not restart it. After any xremap config change, run
   `systemctl --user restart xremap` and verify the remap.
