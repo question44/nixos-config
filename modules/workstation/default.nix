@@ -38,6 +38,7 @@ in
       noctalia
       sequoia-wallpaper
       lockscreen-glass
+      noctalia-hdr-screenshot
       greeter-glass
       umbriel
       dashboard-control
