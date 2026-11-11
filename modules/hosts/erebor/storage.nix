@@ -12,17 +12,14 @@
         ];
       };
       fileSystems."/srv/external/crucial" = {
-        device = "/dev/disk/by-uuid/604F-A363";
-        fsType = "exfat";
+        device = "/dev/disk/by-uuid/60ea8fa7-a76b-46d7-af9b-baa589e3e131";
+        fsType = "ext4";
         options = [
           "rw"
+          "noatime"
           "nofail"
           "x-systemd.automount"
           "x-systemd.device-timeout=10s"
-          "uid=1000"
-          "gid=1000"
-          "fmask=0002"
-          "dmask=0002"
         ];
       };
       fileSystems."/srv/external/seagate" = {
