@@ -792,7 +792,8 @@ wallpaper_scheme = "m3-tonal-spot"
         "steam",
         "vicinae",
         "fastfetch",
-        "bat"
+        "bat",
+        "strata"
     ]
 
         # Keep palette colors dynamic; template alpha comes from home/appearance.nix.
