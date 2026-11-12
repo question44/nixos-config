@@ -5,7 +5,7 @@ entries directly below this header. Earlier months: [2026-10](changelog/2026-10.
 
 # Strata terminal opens at a 66/34 split — 2026-11-12
 
-At the user's request, matching the split they had set by hand (Strata 891 px over Monstar 461 px), `home/strata/terminal` now runs `umbriel msg window-set-secondary-extent 0.34` on the new Monstar right after stacking it below Strata. Found while testing: `window-modify-height-*` takes a fraction of the column, and an explicit extent on Strata stays with it (alone in its column it then stops filling it); setting only the terminal's extent avoids that. Tested before activation with the built script, Strata alone in its column: Monstar 460 px under Strata 892 px, column filled (test window closed and the user's paired terminal restacked at 0.34). SPLIT_PENDING
+At the user's request, matching the split they had set by hand (Strata 891 px over Monstar 461 px), `home/strata/terminal` now runs `umbriel msg window-set-secondary-extent 0.34` on the new Monstar right after stacking it below Strata. Found while testing: `window-modify-height-*` takes a fraction of the column, and an explicit extent on Strata stays with it (alone in its column it then stops filling it); setting only the terminal's extent avoids that. Tested before activation with the built script, Strata alone in its column: Monstar 460 px under Strata 892 px, column filled (test window closed and the user's paired terminal restacked at 0.34). Activated with switch, generation 400; no failed units. A Strata started before the switch keeps its old $TERMINAL (a store path) until it is restarted.
 
 # Strata ↔ terminal folder sync — 2026-11-12
 
