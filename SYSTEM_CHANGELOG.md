@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Signal Desktop installed — 2026-11-11
+
+At the user's request `signal-desktop` (8.32.0) is added to the workstation packages next to ZapZap. erebor-diff against master: different (only signal-desktop joining the system path, plus store hashes in /etc). Activated with switch, generation 390 (two earlier sudo attempts timed out with no key touch; the Mac approval host was unreachable). Verified: `signal-desktop` on the system path and `signal.desktop` in the system applications; no failed system or user units. Not tested: linking a phone and sending a message.
+
 # Noctalia: region screenshots on the HDR display — 2026-11-12; verified 2026-11-12
 
 Noctalia's region screenshot failed with "failed to crop image": its freeze step captures every output through wlr-screencopy, and wlroots' screencopy offers no shared-memory format for the AW3423DWF (DP-1) in HDR (a test client got `failed` on DP-1 and a frame on HDMI-A-1). New `patches/noctalia-hdr-screenshot.patch` (`modules/noctalia-hdr-screenshot.nix`, ordered after the lock-screen glass patch; source branch `hdr-screenshot` in `~/src/noctalia-hdr-shot`): when screencopy refuses or is missing for an output, `ScreenshotCapture` takes that output over ext-image-copy-capture instead (Umbriel converts those frames to SDR), handling 8888 and 2101010 shm formats, and crops the region after orienting the image. The patch also applies to upstream f90f230f8 alone. Built without warnings. erebor-diff against master: different (only the noctalia package, +32 KiB). Included in generation 390 (activated together with Cockpit Files, above); Noctalia restarted on the patched build on 2026-11-12; the user confirmed a region screenshot on the HDR display works.
