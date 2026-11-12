@@ -2,13 +2,17 @@
 # starts it in the folder to open, or with `-e command args...` to run a
 # command. It opens Monstar there and has Umbriel stack the new window below
 # the focused one (Strata) in the same column, the way umbriel-monstar-tab
-# stacks a tab.
+# stacks a tab. A shell opened on a folder follows Strata's folder and
+# moves Strata along when it changes directory (home/strata/sync.fish).
 app_id="dev.rockorager.monstar"
 
 args=(monstar --working-directory "$PWD")
 if [ "${1:-}" = "-e" ]; then
   shift
   args+=(-e "$@")
+else
+  # A folder: the shell keeps its folder in sync with Strata (sync.fish).
+  args+=(-e fish -C "source @syncFish@")
 fi
 
 focused="$(umbriel focused-window --json 2>/dev/null || echo '{}')"

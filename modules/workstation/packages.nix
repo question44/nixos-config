@@ -24,6 +24,26 @@
       # Strata opens its terminal through $TERMINAL: Monstar, stacked below
       # Strata in its Umbriel column (home/strata/terminal). The launcher
       # entry calls the binary by store path, so it is rewritten to the wrapper.
+      strataSyncTell = pkgs.writeShellApplication {
+        name = "strata-sync-tell";
+        runtimeInputs = [
+          pkgs.jq
+          pkgs.glib.bin
+        ];
+        text = builtins.readFile ../../home/strata/sync-tell;
+      };
+      strataSyncWatch = pkgs.writeShellApplication {
+        name = "strata-sync-watch";
+        runtimeInputs = [
+          pkgs.coreutils
+          pkgs.inotify-tools
+        ];
+        text = builtins.readFile ../../home/strata/sync-watch;
+      };
+      strataSyncFish = pkgs.replaceVars ../../home/strata/sync.fish {
+        tell = "${strataSyncTell}/bin/strata-sync-tell";
+        watch = "${strataSyncWatch}/bin/strata-sync-watch";
+      };
       strataTerminal = pkgs.writeShellApplication {
         name = "strata-terminal";
         runtimeInputs = [
@@ -31,9 +51,16 @@
           pkgs.coreutils
           inputs.monstar.packages.${system}.default
         ];
-        text = builtins.readFile ../../home/strata/terminal;
+        text = builtins.replaceStrings [ "@syncFish@" ] [ "${strataSyncFish}" ] (
+          builtins.readFile ../../home/strata/terminal
+        );
       };
-      strataUnwrapped = inputs.strata.packages.${system}.default;
+      # Strata with the terminal-sync patch (~/src/strata-sync, branch
+      # terminal-sync): it publishes the focused window's folder and takes a
+      # sync-navigate action. Strata is built from source again because of it.
+      strataUnwrapped = inputs.strata.packages.${system}.default.overrideAttrs (old: {
+        patches = (old.patches or [ ]) ++ [ ../../patches/strata-terminal-sync.patch ];
+      });
       strata = pkgs.symlinkJoin {
         name = "strata-${strataUnwrapped.version or "wrapped"}";
         paths = [ strataUnwrapped ];

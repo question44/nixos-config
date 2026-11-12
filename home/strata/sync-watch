@@ -1,0 +1,11 @@
+# strata-sync-watch PID: signal the shell PID (SIGUSR1) whenever Strata
+# publishes a new folder; ends with that shell.
+pid="$1"
+dir="${XDG_RUNTIME_DIR:?}/strata"
+mkdir -p "$dir"
+while kill -0 "$pid" 2>/dev/null; do
+  # A timeout lets the loop notice the shell is gone.
+  if inotifywait -qq -t 30 -e moved_to -e close_write "$dir" 2>/dev/null; then
+    kill -USR1 "$pid" 2>/dev/null || exit 0
+  fi
+done

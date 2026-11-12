@@ -1,0 +1,5 @@
+# strata-sync-tell DIR: move Strata's focused window to DIR (sync-navigate).
+# The path becomes a file:// URI with each segment percent-encoded, which
+# also keeps quotes out of the GVariant string literal.
+uri="$(jq -rn --arg p "$1" '"file://" + ($p | split("/") | map(@uri) | join("/"))')"
+gapplication action io.github.lgse.Strata sync-navigate "'$uri'" >/dev/null 2>&1 || true
