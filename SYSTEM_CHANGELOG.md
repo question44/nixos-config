@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Strata follows Noctalia's palette, translucent — 2026-11-12
+
+At the user's request Strata gets a Noctalia theme. The community `strata` template (enabled briefly first, commit d8664e3) is replaced by user templates `strata_dark` / `strata_light` (`home/noctalia/templates/strata.toml`, rendered per mode by `modules/home/apps.nix`). They carry home/appearance.nix's appOpacity as the alpha of Strata's `background` and `surface` (dark `cc`, light `80`) and write `~/.config/strata/noctalia/{dark,light}.toml`; `erebor-theme-opacity` links `~/.config/strata/themes/noctalia.toml` at the current mode's file, and Strata re-reads it live. erebor-diff: not run separately; the closure differs from generation 391 only by the two template files and the hook script. STRATA_PENDING
+
 # Strata file manager installed — 2026-11-12
 
 At the user's request the Strata file manager (lgse/strata v1.2.1, a GTK4 Miller-column file manager made for Omarchy) is added as the flake input `strata`, pinned at the v1.2.1 commit `491e6ba` and following nixpkgs, and its package joins the workstation packages. Dolphin stays the default folder handler; Strata's optional file-chooser portal, FileManager1 D-Bus service and udiskie unlock hook are not enabled. erebor-diff against master: different (only strata 1.2.1, 53.3 MiB, plus ffmpegthumbnailer, gst-libav, gtksourceview, libraw and squashfs-tools, and store hashes in /etc). Activated with switch, generation 391. Verified: `strata --version` reports 1.2.1 from the system path, `io.github.lgse.Strata.desktop` is in the system applications, and no system or user units failed. A harmless libpcre2 "no version information" warning prints at startup. Not tested: browsing in the GUI.

@@ -2,7 +2,7 @@
 # hooks (home/noctalia/config.toml) run `erebor-theme-opacity`, which
 # - links the app configs that carry home/appearance.nix's appOpacity for that
 #   mode (Ghostty's include, Monstar's config, Vicinae's nix.json) from
-#   ~/.local/state/erebor-theme-opacity, then makes the running terminals reload
+#   ~/.local/state/erebor-theme-opacity, and Strata's Noctalia theme, then makes the running terminals reload
 #   (Ghostty: SIGUSR2, Monstar: SIGUSR1; Vicinae watches its files);
 # - sets the icon theme to Fluent-dark / Fluent-light (dconf for GTK,
 #   kdeglobals for Qt/KDE) and tells running apps to reload their icons;
@@ -84,6 +84,11 @@
             ln -sfn "$variants/$mode/$f" "$state/$f"
           done
           printf '%s\n' "$mode" > "$state/mode"
+          # Strata: its Noctalia theme for this mode (rendered by Noctalia's
+          # strata_dark/strata_light templates); Strata re-reads it live.
+          strata="''${XDG_CONFIG_HOME:-$HOME/.config}/strata"
+          mkdir -p "$strata/themes"
+          ln -sfn "$strata/noctalia/$mode.toml" "$strata/themes/noctalia.toml"
 
           # Icon theme follows the mode too: GTK reads dconf, Qt/KDE kdeglobals.
           icons="Fluent-$mode"

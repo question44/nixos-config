@@ -1,0 +1,20 @@
+# Noctalia template for Strata (lgse/strata), based on the community "strata"
+# template. modules/home/apps.nix renders it once per theme mode with
+# home/appearance.nix's appOpacity on the window and panel backgrounds;
+# erebor-theme-opacity links ~/.config/strata/themes/noctalia.toml at the
+# current mode's output.
+name = "Noctalia"
+background = "{{colors.background.@mode@.hex}}@alpha@"
+surface = "{{colors.surface.@mode@.hex}}@alpha@"
+text = "{{colors.on_surface.@mode@.hex}}"
+accent = "{{colors.primary.@mode@.hex}}"
+danger = "{{colors.error.@mode@.hex}}"
+muted = "{{colors.surface_container.@mode@.hex}}"
+highlight = "{{colors.surface_container_highest.@mode@.hex}}"
+border = "{{colors.outline_variant.@mode@.hex}}"
+dim_text = "{{colors.on_surface_variant.@mode@.hex}}"
+syntax_keyword = "{{colors.terminal_normal_magenta.@mode@.hex}}"
+syntax_string = "{{colors.terminal_normal_green.@mode@.hex}}"
+syntax_constant = "{{colors.terminal_normal_yellow.@mode@.hex}}"
+syntax_type = "{{colors.terminal_normal_cyan.@mode@.hex}}"
+syntax_preprocessor = "{{colors.terminal_normal_blue.@mode@.hex}}"
