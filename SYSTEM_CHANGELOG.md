@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Noctalia: region screenshots on the HDR display — 2026-11-12
+
+Noctalia's region screenshot failed with "failed to crop image": its freeze step captures every output through wlr-screencopy, and wlroots' screencopy offers no shared-memory format for the AW3423DWF (DP-1) in HDR (a test client got `failed` on DP-1 and a frame on HDMI-A-1). New `patches/noctalia-hdr-screenshot.patch` (`modules/noctalia-hdr-screenshot.nix`, ordered after the lock-screen glass patch; source branch `hdr-screenshot` in `~/src/noctalia-hdr-shot`): when screencopy refuses or is missing for an output, `ScreenshotCapture` takes that output over ext-image-copy-capture instead (Umbriel converts those frames to SDR), handling 8888 and 2101010 shm formats, and crops the region after orienting the image. The patch also applies to upstream f90f230f8 alone. Built without warnings. erebor-diff against master: different (only the noctalia package, +32 KiB). Included in generation 390 (activated together with Cockpit Files, above); Noctalia restarted on the patched build on 2026-11-12. Not yet verified: a real region screenshot on DP-1 in HDR (a headless output is never HDR, so it could not be tested there).
+
 # Cockpit Files — 2026-11-11; verified 2026-11-12
 
 Added Cockpit Files through `services.cockpit.plugins` at the user's request. `nix fmt`, `nix flake check` and `scripts/erebor-rebuild build` passed; the built system contains the Files manifest with the "File browser" menu entry. `erebor-diff` tier: different (adds cockpit-files 46, 8.9 MiB, and its Cockpit web assets). The comparison used the existing local dashboard submodule as its source because its pinned commit was unavailable remotely. Activated as generation 390, verified on 2026-11-12: the active system matches the built output, Files manifest is installed, cockpit.socket is active, and no system units are failed. The user confirmed file browsing works. Authentication settings were unchanged. [SYS-099](tasks/SYS-099.md) closed.
