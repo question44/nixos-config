@@ -442,7 +442,6 @@
         "strata": "strata",
         "umbriel": "umbriel",
         "vicinae": "vicinae",
-        "vitrum": "vitrum",
         "zen-browser": "zen-browser"
       }
     },
@@ -568,22 +567,6 @@
         "rev": "0ed7dcce1f530067aa251d1beab1a57760e385b4",
         "type": "github"
       }
-    },
-    "vitrum": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "path": "./apps/vitrum",
-        "type": "path"
-      },
-      "original": {
-        "path": "./apps/vitrum",
-        "type": "path"
-      },
-      "parent": []
     },
     "xdg-desktop-portal-umbriel": {
       "inputs": {
