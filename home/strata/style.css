@@ -15,3 +15,9 @@ listview, columnview, gridview,
 .preview-source-lines {
   background: transparent;
 }
+
+/* The sidebar keeps one tint layer (about 0.96 opaque over the dark-mode
+   window, 0.75 in light) so it reads apart from the glassy columns. */
+.sidebar {
+  background: @strata_surface;
+}

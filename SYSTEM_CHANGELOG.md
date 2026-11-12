@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Strata: sidebar tint — 2026-11-12
+
+The user found the cleared sidebar (entry below) too translucent: `home/strata/style.css` now gives `.sidebar` one `@strata_surface` layer again (about 0.96 opaque over the dark-mode window, 0.75 in light), while the columns and preview stay cleared. Tried live first: `alpha(@strata_surface, 0.5)` on `.sidebar-shell` and 0.7 on `.sidebar` were too faint over the bright wallpaper; a red probe confirmed `.sidebar` is the painted element and that Strata reloads the file. SIDEBAR_PENDING
+
 # Strata: translucent sidebar and columns — 2026-11-12
 
 At the user's request, after the translucent Noctalia theme (below) left Strata's sidebar and file column nearly opaque: `home/strata/style.css`, linked as `~/.config/strata/style.css` by `modules/home/apps.nix`, clears the extra `@strata_bg` / `@strata_surface` layers of the sidebar, columns, list and preview panes, so the window background is the only translucent layer. Tested live first (the hand-written test file was removed before activation). erebor-diff: not run separately; the closure differs only by the stylesheet. Activated with switch, generation 394. Verified: `~/.config/strata/style.css` links to the Home Manager file, no failed system or user units, and a screenshot shows the wallpaper through the sidebar, the file column (text still readable) and the preview pane.
