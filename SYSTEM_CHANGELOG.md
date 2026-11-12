@@ -5,7 +5,7 @@ entries directly below this header. Earlier months: [2026-10](changelog/2026-10.
 
 # Strata: translucent sidebar and columns — 2026-11-12
 
-At the user's request, after the translucent Noctalia theme (below) left Strata's sidebar and file column nearly opaque: `home/strata/style.css`, linked as `~/.config/strata/style.css` by `modules/home/apps.nix`, clears the extra `@strata_bg` / `@strata_surface` layers of the sidebar, columns, list and preview panes, so the window background is the only translucent layer. Tested live first (the hand-written test file was removed before activation). erebor-diff: not run separately; the closure differs only by the stylesheet. CSS_PENDING
+At the user's request, after the translucent Noctalia theme (below) left Strata's sidebar and file column nearly opaque: `home/strata/style.css`, linked as `~/.config/strata/style.css` by `modules/home/apps.nix`, clears the extra `@strata_bg` / `@strata_surface` layers of the sidebar, columns, list and preview panes, so the window background is the only translucent layer. Tested live first (the hand-written test file was removed before activation). erebor-diff: not run separately; the closure differs only by the stylesheet. Activated with switch, generation 394. Verified: `~/.config/strata/style.css` links to the Home Manager file, no failed system or user units, and a screenshot shows the wallpaper through the sidebar, the file column (text still readable) and the preview pane.
 
 # kmscon on the text VTs; Vitrum dropped from the system — 2026-11-12
 
