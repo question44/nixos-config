@@ -155,8 +155,9 @@ let
                 22000
               ];
               udp = [ 22000 ];
-              tcpRanges = [ ];
-              udpRanges = [ ];
+              # KDE Connect from devices added by tailnet IP.
+              tcpRanges = kdeconnect;
+              udpRanges = kdeconnect;
             };
           };
         };
