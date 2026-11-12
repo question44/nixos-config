@@ -109,7 +109,7 @@ match.app_id = "^spotify$"
 opacity = 0.98
 
 [[window_rule]]
-match.app_id = "^(discord|com\\.rtosta\\.zapzap)$"
+match.app_id = "^(discord|com\\.rtosta\\.zapzap|signal)$"
 default_output = "DP-1"
 default_workspace = "chat"
 
