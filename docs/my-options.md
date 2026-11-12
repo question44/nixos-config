@@ -636,6 +636,96 @@ true
 
 
 
+## my\.phoneApproval\.enable
+
+
+
+Whether to enable sudo approval from the phone: a one-time link goes to the phone through
+KDE Connect, and a passkey on the phone approves it\. The YubiKey and the
+password still work; enroll the phone with ` phone-approval-enroll `\.
+
+
+
+*Type:*
+boolean
+
+
+
+*Default:*
+
+```nix
+false
+```
+
+
+
+*Example:*
+
+```nix
+true
+```
+
+*Declared by:*
+ - [modules/my\.nix](../modules/my.nix)
+
+
+
+## my\.phoneApproval\.device
+
+
+
+KDE Connect ID of the phone (` kdeconnect-cli -l `)\.
+
+
+
+*Type:*
+null or string matching the pattern \[A-Za-z0-9_]+
+
+
+
+*Default:*
+
+```nix
+null
+```
+
+
+
+*Example:*
+
+```nix
+"ef29f572ee6b420a92c63e19a994e155"
+```
+
+*Declared by:*
+ - [modules/my\.nix](../modules/my.nix)
+
+
+
+## my\.phoneApproval\.timeout
+
+
+
+Seconds sudo waits for the phone before trying the next method\.
+
+
+
+*Type:*
+integer between 5 and 120 (both inclusive)
+
+
+
+*Default:*
+
+```nix
+30
+```
+
+*Declared by:*
+ - [modules/my\.nix](../modules/my.nix)
+
+
+
 ## my\.sequoiaWallpaper\.enable
 
 

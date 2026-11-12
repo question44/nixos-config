@@ -18,6 +18,7 @@ in
       ambilight
       headphone-eq
       mac-approval
+      phone-approval
       spotify
       sunshine
       remote-desktop

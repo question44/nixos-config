@@ -87,6 +87,19 @@
           }
         ];
       };
+      # KDE Connect over the tailnet (devices added by IP; discovery is LAN-only).
+      networking.firewall.interfaces.tailscale0.allowedTCPPortRanges = [
+        {
+          from = 1714;
+          to = 1764;
+        }
+      ];
+      networking.firewall.interfaces.tailscale0.allowedUDPPortRanges = [
+        {
+          from = 1714;
+          to = 1764;
+        }
+      ];
       networking.firewall.interfaces.tailscale0.allowedTCPPorts = [
         22
         80
