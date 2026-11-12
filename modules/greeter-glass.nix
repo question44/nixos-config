@@ -5,20 +5,10 @@
 # is drawn under the panel, frosts it and bends it at the rim.
 # Source: ~/src/noctalia-greeter, branch lockscreen-glass on the pinned input
 # rev; the patch is `git diff HEAD~1 HEAD` there. Re-export on an input bump.
-{ inputs, ... }:
 {
   flake.modules.nixos.greeter-glass =
-    {
-      config,
-      lib,
-      pkgs,
-      ...
-    }:
+    { config, lib, ... }:
     lib.mkIf config.my.liquidGlass.enable {
-      services.displayManager.noctalia-greeter.package =
-        inputs.noctalia-greeter.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs
-          (old: {
-            patches = (old.patches or [ ]) ++ [ ../patches/noctalia-greeter-liquid-glass.patch ];
-          });
+      programs.noctalia.greeterPatches = [ ../patches/noctalia-greeter-liquid-glass.patch ];
     };
 }

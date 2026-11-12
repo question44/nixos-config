@@ -1,0 +1,444 @@
+From 15dd5b5982932d6003b437f4bb4a0685826ee83e Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20Zo=C5=84?= <jmmzon@gmail.com>
+Date: Thu, 12 Nov 2026 12:23:45 +0100
+Subject: [PATCH] Compositor: keep the boot splash on screen until the greeter
+ draws
+
+If Plymouth is still running (deactivated, its last frame scanned out),
+copy each output's current framebuffer before the first modeset and draw it
+instead of black, keeping it under the scene until the greeter's surface
+covers the output (or 15 s pass). NOCTALIA_GREETER_KEEP_SPLASH=0/1 overrides
+the /run/plymouth/pid check.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ meson.build                          |   2 +
+ src/compositor/noctalia_compositor.c | 285 ++++++++++++++++++++++++++-
+ 2 files changed, 286 insertions(+), 1 deletion(-)
+
+diff --git a/meson.build b/meson.build
+index 47aa1c2..1ab8ac9 100644
+--- a/meson.build
++++ b/meson.build
+@@ -44,6 +44,7 @@ tomlplusplus_dep   = dependency('tomlplusplus')
+ nlohmann_dep       = dependency('nlohmann_json')
+ wlroots_dep = dependency('wlroots-0.20')
+ libinput_dep = dependency('libinput')
++libdrm_dep = dependency('libdrm')
+ 
+ egl_dep = dependency('egl', required: false)
+ gles2_dep = dependency('glesv2', required: false)
+@@ -304,6 +305,7 @@ noctalia_greeter_compositor_executable = executable('noctalia-greeter-compositor
+   dependencies: [
+     wlroots_dep,
+     libinput_dep,
++    libdrm_dep,
+     wayland_server_dep,
+     xkbcommon_dep,
+     tomlplusplus_dep,
+diff --git a/src/compositor/noctalia_compositor.c b/src/compositor/noctalia_compositor.c
+index 5b5d5f7..5efa4c3 100644
+--- a/src/compositor/noctalia_compositor.c
++++ b/src/compositor/noctalia_compositor.c
+@@ -6,6 +6,7 @@
+ 
+ #include <ctype.h>
+ #include <dirent.h>
++#include <drm_fourcc.h>
+ #include <libinput.h>
+ #include <limits.h>
+ #include <signal.h>
+@@ -15,6 +16,7 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
++#include <sys/mman.h>
+ #include <sys/stat.h>
+ #include <sys/timerfd.h>
+ #include <sys/wait.h>
+@@ -24,8 +26,10 @@
+ #include <wayland-server-core.h>
+ #include <wayland-server-protocol.h>
+ #include <wlr/backend.h>
++#include <wlr/backend/drm.h>
+ #include <wlr/backend/libinput.h>
+ #include <wlr/backend/session.h>
++#include <wlr/interfaces/wlr_buffer.h>
+ #include <wlr/interfaces/wlr_keyboard.h>
+ #include <wlr/render/allocator.h>
+ #include <wlr/render/pass.h>
+@@ -51,6 +55,8 @@
+ #include <xkbcommon/xkbcommon-keysyms.h>
+ #include <xkbcommon/xkbcommon-names.h>
+ #include <xkbcommon/xkbcommon.h>
++#include <xf86drm.h>
++#include <xf86drmMode.h>
+ 
+ #ifndef NOCTALIA_GREETER_INSTALLED_BINDIR
+ #define NOCTALIA_GREETER_INSTALLED_BINDIR "/usr/local/bin"
+@@ -172,6 +178,10 @@ struct greeter_output {
+   struct wl_listener request_state;
+   struct wl_listener destroy;
+   struct greeter_view* view;
++  // Copy of the boot splash this output showed when the compositor started;
++  // drawn instead of black until the greeter has drawn a full-size frame.
++  struct wlr_buffer* splash;
++  struct wlr_scene_buffer* splash_node;
+   bool active;
+   bool render_initialized;
+   bool lid_suppressed;
+@@ -272,6 +282,7 @@ struct greeter_server {
+   struct wl_listener session_active;
+   struct wl_event_source* sigchld_source;
+   struct wl_event_source* launch_timer;
++  struct wl_event_source* splash_timer;
+   pid_t child_pid;
+   bool child_launched;
+   int child_argc;
+@@ -1281,6 +1292,245 @@ static bool initialize_output_render(struct greeter_output* output) {
+   return true;
+ }
+ 
++// ── Boot splash hand-off ─────────────────────────────────────────────────────
++// When the boot splash is still on screen (Plymouth was told to `deactivate`,
++// which drops DRM master but leaves its last frame scanned out), copy that
++// frame from each output's CRTC before the first modeset and show it instead of
++// black until the greeter has drawn a full-size frame. Boot then goes from the
++// splash straight to the greeter, as with GDM. Needs DRM master (which the
++// compositor holds) to read the framebuffer, and a dumb (linear) XRGB/ARGB
++// framebuffer, which is what Plymouth uses; anything else keeps the old black.
++
++#define SPLASH_TIMEOUT_MS 15000
++
++struct splash_buffer {
++  struct wlr_buffer base;
++  void* data;
++  size_t stride;
++};
++
++static void splash_buffer_destroy(struct wlr_buffer* buffer) {
++  struct splash_buffer* splash = wl_container_of(buffer, splash, base);
++  wlr_buffer_finish(buffer);
++  free(splash->data);
++  free(splash);
++}
++
++static bool splash_buffer_begin_data_ptr_access(
++    struct wlr_buffer* buffer, uint32_t flags, void** data, uint32_t* format, size_t* stride
++) {
++  struct splash_buffer* splash = wl_container_of(buffer, splash, base);
++  if ((flags & WLR_BUFFER_DATA_PTR_ACCESS_WRITE) != 0) {
++    return false;
++  }
++  *data = splash->data;
++  *format = DRM_FORMAT_XRGB8888;
++  *stride = splash->stride;
++  return true;
++}
++
++static void splash_buffer_end_data_ptr_access(struct wlr_buffer* buffer) { (void)buffer; }
++
++static const struct wlr_buffer_impl splash_buffer_impl = {
++    .destroy = splash_buffer_destroy,
++    .begin_data_ptr_access = splash_buffer_begin_data_ptr_access,
++    .end_data_ptr_access = splash_buffer_end_data_ptr_access,
++};
++
++static bool boot_splash_running(void) {
++  const char* force = getenv("NOCTALIA_GREETER_KEEP_SPLASH");
++  if (force != NULL && force[0] != '\0') {
++    return strcmp(force, "0") != 0;
++  }
++  return access("/run/plymouth/pid", F_OK) == 0;
++}
++
++static uint32_t scanout_fb_for_output(int fd, struct wlr_output* wlr_output) {
++  uint32_t fb_id = 0;
++  drmModeConnector* connector = drmModeGetConnector(fd, wlr_drm_connector_get_id(wlr_output));
++  if (connector == NULL) {
++    return 0;
++  }
++  if (connector->encoder_id != 0) {
++    drmModeEncoder* encoder = drmModeGetEncoder(fd, connector->encoder_id);
++    if (encoder != NULL) {
++      if (encoder->crtc_id != 0) {
++        drmModeCrtc* crtc = drmModeGetCrtc(fd, encoder->crtc_id);
++        if (crtc != NULL) {
++          if (crtc->mode_valid) {
++            fb_id = crtc->buffer_id;
++          }
++          drmModeFreeCrtc(crtc);
++        }
++      }
++      drmModeFreeEncoder(encoder);
++    }
++  }
++  drmModeFreeConnector(connector);
++  return fb_id;
++}
++
++static void close_fb_handles(int fd, const drmModeFB2* fb) {
++  for (int i = 0; i < 4; ++i) {
++    if (fb->handles[i] == 0) {
++      continue;
++    }
++    bool seen = false;
++    for (int j = 0; j < i; ++j) {
++      seen = seen || fb->handles[j] == fb->handles[i];
++    }
++    if (!seen) {
++      drmCloseBufferHandle(fd, fb->handles[i]);
++    }
++  }
++}
++
++static void capture_boot_splash(struct greeter_output* output) {
++  struct wlr_output* wlr_output = output->wlr_output;
++  if (output->splash != NULL || output->server->child_launched || !wlr_output_is_drm(wlr_output)
++      || !boot_splash_running()) {
++    return;
++  }
++  const int fd = wlr_backend_get_drm_fd(wlr_output->backend);
++  if (fd < 0) {
++    return;
++  }
++  const uint32_t fb_id = scanout_fb_for_output(fd, wlr_output);
++  if (fb_id == 0) {
++    wlr_log(WLR_INFO, "boot splash: %s has no framebuffer to keep", wlr_output->name);
++    return;
++  }
++
++  struct timespec start;
++  clock_gettime(CLOCK_MONOTONIC, &start);
++  drmModeFB2* fb = drmModeGetFB2(fd, fb_id);
++  if (fb == NULL) {
++    wlr_log(WLR_INFO, "boot splash: cannot query framebuffer %u on %s", fb_id, wlr_output->name);
++    return;
++  }
++
++  const bool linear = (fb->flags & DRM_MODE_FB_MODIFIERS) == 0 || fb->modifier == DRM_FORMAT_MOD_LINEAR;
++  const bool xrgb = fb->pixel_format == DRM_FORMAT_XRGB8888 || fb->pixel_format == DRM_FORMAT_ARGB8888;
++  if (fb->handles[0] == 0 || !linear || !xrgb || fb->width == 0 || fb->height == 0) {
++    wlr_log(
++        WLR_INFO, "boot splash: framebuffer on %s not readable (handle %u, format 0x%08x, linear %d)",
++        wlr_output->name, fb->handles[0], fb->pixel_format, linear
++    );
++    close_fb_handles(fd, fb);
++    drmModeFreeFB2(fb);
++    return;
++  }
++
++  struct drm_mode_map_dumb map = {.handle = fb->handles[0]};
++  const size_t map_size = (size_t)fb->offsets[0] + (size_t)fb->pitches[0] * fb->height;
++  uint8_t* pixels = MAP_FAILED;
++  if (drmIoctl(fd, DRM_IOCTL_MODE_MAP_DUMB, &map) == 0) {
++    pixels = mmap(NULL, map_size, PROT_READ, MAP_SHARED, fd, (off_t)map.offset);
++  }
++
++  struct splash_buffer* splash = NULL;
++  if (pixels != MAP_FAILED) {
++    splash = calloc(1, sizeof(*splash));
++    if (splash != NULL) {
++      splash->stride = (size_t)fb->width * 4;
++      splash->data = malloc(splash->stride * fb->height);
++      if (splash->data == NULL) {
++        free(splash);
++        splash = NULL;
++      }
++    }
++    if (splash != NULL) {
++      for (uint32_t y = 0; y < fb->height; ++y) {
++        memcpy(
++            (uint8_t*)splash->data + (size_t)y * splash->stride,
++            pixels + fb->offsets[0] + (size_t)y * fb->pitches[0], splash->stride
++        );
++      }
++      wlr_buffer_init(&splash->base, &splash_buffer_impl, (int)fb->width, (int)fb->height);
++      output->splash = &splash->base;
++    }
++    munmap(pixels, map_size);
++  } else {
++    wlr_log(WLR_INFO, "boot splash: cannot map framebuffer on %s", wlr_output->name);
++  }
++
++  struct timespec end;
++  clock_gettime(CLOCK_MONOTONIC, &end);
++  if (output->splash != NULL) {
++    const long ms = (end.tv_sec - start.tv_sec) * 1000L + (end.tv_nsec - start.tv_nsec) / 1000000L;
++    wlr_log(WLR_INFO, "boot splash: kept %ux%u frame on %s (%ld ms)", fb->width, fb->height, wlr_output->name, ms);
++  }
++  close_fb_handles(fd, fb);
++  drmModeFreeFB2(fb);
++}
++
++static void drop_output_splash(struct greeter_output* output, const char* reason) {
++  if (output->splash == NULL && output->splash_node == NULL) {
++    return;
++  }
++  if (output->splash_node != NULL) {
++    wlr_scene_node_destroy(&output->splash_node->node);
++    output->splash_node = NULL;
++  }
++  if (output->splash != NULL) {
++    wlr_buffer_drop(output->splash);
++    output->splash = NULL;
++  }
++  wlr_log(WLR_INFO, "boot splash: released on %s (%s)", output->wlr_output->name, reason);
++}
++
++static int splash_timeout(void* data) {
++  struct greeter_server* server = data;
++  struct greeter_output* output;
++  wl_list_for_each(output, &server->outputs, link) {
++    drop_output_splash(output, "timeout");
++  }
++  return 0;
++}
++
++static void arm_splash_timeout(struct greeter_server* server) {
++  if (server->splash_timer == NULL) {
++    server->splash_timer =
++        wl_event_loop_add_timer(wl_display_get_event_loop(server->display), splash_timeout, server);
++  }
++  if (server->splash_timer != NULL) {
++    wl_event_source_timer_update(server->splash_timer, SPLASH_TIMEOUT_MS);
++  }
++}
++
++// Keep the splash in the scene, under everything, until the greeter draws.
++static void place_output_splash(struct greeter_output* output) {
++  if (output->splash == NULL || output->layout_output == NULL) {
++    return;
++  }
++  struct greeter_server* server = output->server;
++  if (output->splash_node == NULL) {
++    output->splash_node = wlr_scene_buffer_create(&server->scene->tree, output->splash);
++    if (output->splash_node == NULL) {
++      return;
++    }
++    wlr_scene_node_lower_to_bottom(&output->splash_node->node);
++  }
++  struct wlr_box box;
++  wlr_output_layout_get_box(server->output_layout, output->wlr_output, &box);
++  wlr_scene_node_set_position(&output->splash_node->node, box.x, box.y);
++  wlr_scene_buffer_set_dest_size(output->splash_node, box.width, box.height);
++}
++
++static void maybe_drop_splash_for_view(struct greeter_view* view) {
++  struct greeter_output* output = view->output;
++  if (output == NULL || output->splash == NULL || !view->mapped) {
++    return;
++  }
++  int width = 0;
++  int height = 0;
++  wlr_output_effective_resolution(output->wlr_output, &width, &height);
++  const struct wlr_surface* surface = view->toplevel->base->surface;
++  if (surface->current.width >= width && surface->current.height >= height) {
++    drop_output_splash(output, "greeter drew a full frame");
++  }
++}
++
+ static bool render_output_black(struct greeter_output* output, struct wlr_output_state* state) {
+   struct wlr_render_pass* pass = wlr_output_begin_render_pass(output->wlr_output, state, NULL);
+   if (pass == NULL) {
+@@ -1296,7 +1546,25 @@ static bool render_output_black(struct greeter_output* output, struct wlr_output
+           .blend_mode = WLR_RENDER_BLEND_MODE_NONE,
+       }
+   );
+-  if (!wlr_render_pass_submit(pass)) {
++  struct wlr_texture* splash = NULL;
++  if (output->splash != NULL) {
++    splash = wlr_texture_from_buffer(output->server->renderer, output->splash);
++    if (splash != NULL) {
++      wlr_render_pass_add_texture(
++          pass,
++          &(struct wlr_render_texture_options){
++              .texture = splash,
++              .dst_box = {.width = state->buffer->width, .height = state->buffer->height},
++              .blend_mode = WLR_RENDER_BLEND_MODE_NONE,
++          }
++      );
++    }
++  }
++  const bool submitted = wlr_render_pass_submit(pass);
++  if (splash != NULL) {
++    wlr_texture_destroy(splash);
++  }
++  if (!submitted) {
+     wlr_log(WLR_ERROR, "failed to render black frame for output %s", output->wlr_output->name);
+     return false;
+   }
+@@ -1335,6 +1603,7 @@ static void disable_output(struct greeter_output* output) {
+   // Disabling the CRTC does not overwrite its framebuffer, and some displays
+   // keep showing that last scanout after signal loss. Replace it with black
+   // first, but still attempt the disable if rendering fails.
++  drop_output_splash(output, "output disabled");
+   clear_output_before_disable(output);
+ 
+   if (!output->active && !output->wlr_output->enabled) {
+@@ -1554,6 +1823,7 @@ static bool layout_output_at(struct greeter_output* output, int layout_x, int la
+     if (output->scene_output != NULL) {
+       wlr_scene_output_layout_add_output(server->scene_output_layout, output->layout_output, output->scene_output);
+     }
++    place_output_splash(output);
+     if (output->view != NULL && output->view->mapped) {
+       configure_view(output->view);
+     }
+@@ -1583,6 +1853,7 @@ static bool enable_layout_output(struct greeter_output* output, int layout_x, in
+     return false;
+   }
+   wlr_scene_output_layout_add_output(server->scene_output_layout, output->layout_output, output->scene_output);
++  place_output_splash(output);
+ 
+   output->active = true;
+   restore_lid_suppressed_output(output);
+@@ -1802,6 +2073,7 @@ static void handle_output_destroy(struct wl_listener* listener, void* data) {
+   struct greeter_output* output = wl_container_of(listener, output, destroy);
+   struct greeter_server* server = output->server;
+ 
++  drop_output_splash(output, "output removed");
+   wl_list_remove(&output->frame.link);
+   wl_list_remove(&output->request_state.link);
+   wl_list_remove(&output->destroy.link);
+@@ -1831,6 +2103,11 @@ static void handle_new_output(struct wl_listener* listener, void* data) {
+   wl_signal_add(&wlr_output->events.destroy, &output->destroy);
+   wl_list_insert(&server->outputs, &output->link);
+ 
++  // Copy the boot splash before choose_outputs() modesets or clears anything.
++  capture_boot_splash(output);
++  if (output->splash != NULL) {
++    arm_splash_timeout(server);
++  }
+   choose_outputs(server);
+ }
+ 
+@@ -2309,6 +2586,7 @@ static void handle_xdg_commit(struct wl_listener* listener, void* data) {
+     wlr_xdg_surface_schedule_configure(xdg);
+     return;
+   }
++  maybe_drop_splash_for_view(view);
+   schedule_output_frames(view->server);
+ }
+ 
+@@ -2321,6 +2599,7 @@ static void handle_view_map(struct wl_listener* listener, void* data) {
+     notify_surface_scale(view->server, view->toplevel->base->surface, view->output);
+   }
+   configure_view(view);
++  maybe_drop_splash_for_view(view);
+ }
+ 
+ static void handle_view_unmap(struct wl_listener* listener, void* data) {
+@@ -2543,6 +2822,10 @@ static void cleanup_server_resources(struct greeter_server* server) {
+     wl_event_source_remove(server->launch_timer);
+     server->launch_timer = NULL;
+   }
++  if (server->splash_timer != NULL) {
++    wl_event_source_remove(server->splash_timer);
++    server->splash_timer = NULL;
++  }
+   if (server->idle_timerfd_source != NULL) {
+     wl_event_source_remove(server->idle_timerfd_source);
+     server->idle_timerfd_source = NULL;
+-- 
+2.56.0
+

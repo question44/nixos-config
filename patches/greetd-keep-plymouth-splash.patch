@@ -1,0 +1,30 @@
+--- a/greetd/src/session/worker.rs	2026-11-12 12:40:47.038016022 +0100
++++ b/greetd/src/session/worker.rs	2026-11-12 12:40:47.057390760 +0100
+@@ -176,13 +176,21 @@
+             // Opening our target terminal.
+             let target_term = terminal::Terminal::open(&path)?;
+ 
+-            // Set the target VT mode to text for compatibility. Other login managers
+-            // set this to graphics, but that disallows start of textual applications,
+-            // which greetd aims to support.
+-            target_term.kd_setmode(terminal::KdMode::Text)?;
++            // While the Plymouth boot splash is still on this VT (it was only
++            // deactivated, to hand its last frame to the greeter), leave the VT in
++            // graphics mode and do not clear it: switching it to text mode lets the
++            // console repaint over the splash.
++            let splash_on_vt = std::path::Path::new("/run/plymouth/pid").exists();
+ 
+-            // Clear TTY so that it will be empty when we switch to it.
+-            target_term.term_clear()?;
++            if !splash_on_vt {
++                // Set the target VT mode to text for compatibility. Other login managers
++                // set this to graphics, but that disallows start of textual applications,
++                // which greetd aims to support.
++                target_term.kd_setmode(terminal::KdMode::Text)?;
++
++                // Clear TTY so that it will be empty when we switch to it.
++                target_term.term_clear()?;
++            }
+ 
+             // A bit more work if a VT switch is required.
+             if switch && vt != target_term.vt_get_current()? {

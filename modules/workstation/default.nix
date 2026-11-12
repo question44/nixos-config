@@ -41,6 +41,7 @@ in
       lockscreen-glass
       noctalia-hdr-screenshot
       greeter-glass
+      plymouth-greeter-handoff
       umbriel
       dashboard-control
       vicinae

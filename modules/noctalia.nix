@@ -13,6 +13,7 @@
       user = config.my.user.name;
       noctaliaPython = pkgs.callPackage ../packages/noctalia-python.nix { };
       inherit (config.programs.noctalia) patches;
+      greeterPatches = config.programs.noctalia.greeterPatches;
     in
     {
       imports = [
@@ -26,6 +27,13 @@
             default = [ ];
             internal = true;
             description = "Patches applied, in order, to Noctalia from the flake input.";
+          };
+          # Features that patch the greeter (greeter-glass, plymouth-greeter-handoff) add their patch here.
+          options.programs.noctalia.greeterPatches = lib.mkOption {
+            type = lib.types.listOf lib.types.path;
+            default = [ ];
+            internal = true;
+            description = "Patches applied, in order, to the Noctalia greeter from the flake input.";
           };
         }
       ];
@@ -51,6 +59,12 @@
 
       services.displayManager.noctalia-greeter = {
         enable = true;
+        package = lib.mkIf (greeterPatches != [ ]) (
+          inputs.noctalia-greeter.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
+            patches = (old.patches or [ ]) ++ greeterPatches;
+            buildInputs = (old.buildInputs or [ ]) ++ [ pkgs.libdrm ];
+          })
+        );
         passwordless-sync-users = [ "${user}" ];
         settings = {
           appearance.scheme = "Synced";
