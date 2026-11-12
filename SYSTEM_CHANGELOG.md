@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Strata: Open in Terminal opens Monstar below — 2026-11-12
+
+At the user's request Strata's "Open in Terminal" opens Monstar stacked below Strata in its Umbriel column. Strata takes `$TERMINAL` before its built-in list and starts an unknown program in the target folder (or with `-e command…`), so `modules/workstation/packages.nix` wraps Strata (`symlinkJoin` + `wrapProgram --set TERMINAL`, launcher entry rewritten to the wrapper, so Strata is not rebuilt) with `strata-terminal` (`home/strata/terminal`): it spawns `monstar --working-directory "$PWD"` through `umbriel msg spawn` and runs `window-consume-left` when the new window opened in the column right of Strata, like `umbriel-monstar-tab` without tabbing. `$TERMINAL` is set only for Strata. Tested before activation by running the built script from `~/Downloads` with Strata focused: Monstar opened in `~/Downloads` at row 1 of Strata's column (test window closed afterwards). TERMINAL_PENDING
+
 # Strata: sidebar tint — 2026-11-12
 
 The user found the cleared sidebar (entry below) too translucent: `home/strata/style.css` now gives `.sidebar` one `@strata_surface` layer again (about 0.96 opaque over the dark-mode window, 0.75 in light), while the columns and preview stay cleared. Tried live first: `alpha(@strata_surface, 0.5)` on `.sidebar-shell` and 0.7 on `.sidebar` were too faint over the bright wallpaper; a red probe confirmed `.sidebar` is the painted element and that Strata reloads the file. Activated with switch, generation 395; the user then found the sidebar completely opaque, so a middle value (`alpha(@strata_surface, 0.85)`, about 0.94) is being tried live in an unmanaged copy of the file; the user chose to keep it, and it was committed to `home/strata/style.css`. Activated with switch, generation 396; `~/.config/strata/style.css` links to the Home Manager file again, no failed units.

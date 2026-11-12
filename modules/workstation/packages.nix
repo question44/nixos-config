@@ -21,6 +21,33 @@
 
       system = pkgs.stdenv.hostPlatform.system;
       chomik = inputs.chomik.packages.${system}.default;
+      # Strata opens its terminal through $TERMINAL: Monstar, stacked below
+      # Strata in its Umbriel column (home/strata/terminal). The launcher
+      # entry calls the binary by store path, so it is rewritten to the wrapper.
+      strataTerminal = pkgs.writeShellApplication {
+        name = "strata-terminal";
+        runtimeInputs = [
+          pkgs.jq
+          pkgs.coreutils
+          inputs.monstar.packages.${system}.default
+        ];
+        text = builtins.readFile ../../home/strata/terminal;
+      };
+      strataUnwrapped = inputs.strata.packages.${system}.default;
+      strata = pkgs.symlinkJoin {
+        name = "strata-${strataUnwrapped.version or "wrapped"}";
+        paths = [ strataUnwrapped ];
+        nativeBuildInputs = [ pkgs.makeWrapper ];
+        postBuild = ''
+          wrapProgram "$out/bin/strata" --set TERMINAL ${strataTerminal}/bin/strata-terminal
+          for f in "$out"/share/applications/*.desktop; do
+            target="$(readlink -f "$f")"
+            rm "$f"
+            sed "s|${strataUnwrapped}/bin/strata|$out/bin/strata|g" "$target" > "$f"
+          done
+        '';
+        meta.mainProgram = "strata";
+      };
       # The app turns hardware acceleration off for good when its GPU process
       # fails to relaunch, which a nixos-rebuild switch triggers by killing its
       # helpers. Clear that flag at every launch so one switch does not leave it
@@ -235,7 +262,7 @@
         ++ [
           inputs.zen-browser.packages.${system}.default
           inputs.monstar.packages.${system}.default
-          inputs.strata.packages.${system}.default
+          strata
           (callPackage ../../packages/umbriel-display-mode.nix { })
           claudeDesktop
           claude-code
