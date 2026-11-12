@@ -161,6 +161,7 @@ item_spacing = 8
 launcher_position = "start"
 pinned = [
     "helium",
+    "io.github.lgse.Strata",
     "com.mitchellh.ghostty",
     "discord",
     "steam"
