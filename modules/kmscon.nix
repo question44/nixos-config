@@ -151,7 +151,8 @@ in
     { lib, ... }:
     {
       # Rendered by Noctalia (home/noctalia/config.toml, theme.templates.user.kmscon)
-      # from the same terminal colours as its Ghostty theme.
+      # from the same terminal colours as its Ghostty theme, always the dark
+      # variant (the user wants a dark console in both theme modes).
       xdg.configFile."noctalia/templates/kmscon.conf".text =
         let
           terminal = [
@@ -177,7 +178,7 @@ in
         in
         lib.concatStrings (
           lib.zipListsWith (
-            key: color: "palette-${key}={{colors.terminal_${color}.default.rgb_csv}}\n"
+            key: color: "palette-${key}={{colors.terminal_${color}.dark.rgb_csv}}\n"
           ) keys terminal
         );
     };
