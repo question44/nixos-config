@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Strata: translucent sidebar and columns — 2026-11-12
+
+At the user's request, after the translucent Noctalia theme (below) left Strata's sidebar and file column nearly opaque: `home/strata/style.css`, linked as `~/.config/strata/style.css` by `modules/home/apps.nix`, clears the extra `@strata_bg` / `@strata_surface` layers of the sidebar, columns, list and preview panes, so the window background is the only translucent layer. Tested live first (the hand-written test file was removed before activation). erebor-diff: not run separately; the closure differs only by the stylesheet. CSS_PENDING
+
 # kmscon on the text VTs; Vitrum dropped from the system — 2026-11-12
 
 At the user's request the text VTs use kmscon (`services.kmscon` in `modules/workstation/base.nix`) instead of agetty on the kernel console, so Powerline/Nerd Font glyphs and truecolor render: font `JetBrainsMono Nerd Font Mono` size 14 (`nerd-fonts.jetbrains-mono` added to `fonts.packages`), hwaccel, xkb layout `pl`. greetd keeps tty1 (display manager enabled, so kmscon does not claim tty1); `console.*` still covers boot and the initrd. Also at the user's request the `vitrum` flake input and package are removed from the system for now (the `apps/vitrum` submodule stays). erebor-diff against master: different (kmscon units and package, the Nerd Font, vitrum gone, store hashes in /etc). Before building, the erebor-dashboard submodule (9 commits, to `main`) and nixos-config `master` (88 commits) were pushed to GitHub at the user's request; Vitrum was already on GitHub. Activated with switch, generation 392. Verified: `autovt@` resolves to `kmsconvt@`; `kmsconvt@tty3` started and runs with `JetBrainsMono NFM Regular/Bold`, cell 6x14 px; no failed units. Not yet seen: the console on screen, the cell size on the 3440x1440 panel (14 may be too small), and logging in on a VT.

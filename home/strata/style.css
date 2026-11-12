@@ -1,0 +1,17 @@
+/* Strata user stylesheet (linked as ~/.config/strata/style.css by
+   modules/home/apps.nix). The Noctalia theme already gives the window
+   background appOpacity's alpha; Strata paints its sidebar, columns, list
+   and preview over it with further @strata_bg / @strata_surface layers,
+   which stack to near-opaque. Clear those so the window is the only
+   translucent layer. Strata re-reads this file live; class names are not a
+   stable interface, so check after Strata upgrades. */
+.sidebar-shell, .sidebar, .sidebar-scroll, .sidebar-scroll viewport,
+.columns, .directory-column, .directory-column listview, .columns-scroll,
+.mode-list listview, .mode-scroll, scrolledwindow > viewport,
+listview, columnview, gridview,
+.mode-pane-header, .preview-pane, .preview-content viewport,
+.preview-document, .preview-document text, .preview-text text,
+.preview-text border.left, .preview-virtual-row, .preview-source-row,
+.preview-source-lines {
+  background: transparent;
+}

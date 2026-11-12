@@ -43,6 +43,8 @@
             mode = "light";
             alpha = lib.toLower opacity.light.alpha;
           };
+      # Strata: clear the extra pane layers so its translucent theme shows.
+      xdg.configFile."strata/style.css".source = ../../home/strata/style.css;
       # Keep Vencord settings writable and let Noctalia generate its CSS.
       home.activation.discordNoctaliaTheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         run ${pkgs.coreutils}/bin/mkdir -p "$HOME/.config/Vencord/themes" "$HOME/.config/Vencord/settings"
