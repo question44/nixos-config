@@ -8,6 +8,16 @@
     }:
     let
       domain = config.my.network.domain;
+      home = config.users.users.${config.my.user.name}.home;
+      # XDG folders shown read-only in Nextcloud (a "Home" external storage
+      # limited to the user). Only these folders are mounted, never all of ~.
+      homeDirs = [
+        "Desktop"
+        "Documents"
+        "Downloads"
+        "Pictures"
+        "Projects"
+      ];
     in
     {
       config = lib.mkMerge [
@@ -52,7 +62,8 @@
                 "/srv/external/seagate:/var/www/external/seagate:ro"
                 "/srv/external/expansion:/var/www/external/expansion:ro"
                 "/srv/external/bigdaddy:/var/www/external/bigdaddy:ro"
-              ];
+              ]
+              ++ map (d: "${home}/${d}:/var/www/home/${d}:ro") homeDirs;
               environmentFiles = [ "/etc/nextcloud/db.env" ];
               environment = {
                 POSTGRES_HOST = "nextcloud-db";
@@ -69,6 +80,10 @@
               ];
             };
           };
+
+          # ~/Downloads is private (0700); let the container's www-data (uid 33)
+          # read it, including files added later.
+          systemd.tmpfiles.rules = [ "A+ ${home}/Downloads - - - - u:33:rX,d:u:33:rX" ];
 
           systemd.services.nextcloud-cron = {
             description = "Run Nextcloud background jobs";
