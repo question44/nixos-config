@@ -3,9 +3,9 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
-# Cockpit Files prepared; activation outstanding — 2026-11-11
+# Cockpit Files — 2026-11-11; verified 2026-11-12
 
-Added Cockpit Files through `services.cockpit.plugins` at the user's request. `nix fmt`, `nix flake check` and `scripts/erebor-rebuild build` passed; the built system contains the Files manifest with the "File browser" menu entry. `erebor-diff` tier: different (adds cockpit-files 46, 8.9 MiB, and its Cockpit web assets). The comparison used the existing local dashboard submodule as its source because its pinned commit was unavailable remotely. Not activated: the user is away from Touch ID/YubiKey but has terminal access; existing sudo Unix password fallback is available, with no authentication changes. Live generation remains 389. Activation and live verification tracked in [SYS-099](tasks/SYS-099.md).
+Added Cockpit Files through `services.cockpit.plugins` at the user's request. `nix fmt`, `nix flake check` and `scripts/erebor-rebuild build` passed; the built system contains the Files manifest with the "File browser" menu entry. `erebor-diff` tier: different (adds cockpit-files 46, 8.9 MiB, and its Cockpit web assets). The comparison used the existing local dashboard submodule as its source because its pinned commit was unavailable remotely. Activated as generation 390, verified on 2026-11-12: the active system matches the built output, Files manifest is installed, cockpit.socket is active, and no system units are failed. The user confirmed file browsing works. Authentication settings were unchanged. [SYS-099](tasks/SYS-099.md) closed.
 
 # Crucial MX500 reformatted as ext4 — 2026-11-11
 
