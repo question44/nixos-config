@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# GVfs enabled — 2026-11-12
+
+At the user's request, after listing Strata's missing optional pieces: `services.gvfs.enable = true` (`modules/workstation/base.nix`, next to udisks2), so GTK apps such as Strata get network shares (SMB, SFTP), phones over MTP and other gio locations (Strata's Network entry and `smb://`/`sftp://` locations need it). The closure adds gvfs 1.60.3 (15.7 MiB) with gcr 4.4.0.1 (a library; GNOME Keyring stays absent), gnome-online-accounts 3.58.1, libnfs, libmsgraph and librest. Other missing optional pieces were left out: ntfs-3g (NTFS formatting), Strata's unfree RAR support, udiskie, classic dcraw. GVFS_PENDING
+
 # Strata footer shows free space — 2026-11-12
 
 At the user's request Strata's footer shows the free space of the current folder's filesystem after the item count ("28 items · 120.5 GB free"). New `patches/strata-footer-free-space.patch` (second commit on `~/src/strata-sync` branch `terminal-sync`): `update_item_count` appends it from `gio` `filesystem::free`, read with `query_filesystem_info_async` (a slow mount cannot block the UI), cached per folder for 10 s, and applied only while the label still shows the text it was requested for. Native folders only. Compiled without new warnings (one existing upstream warning); Strata takes ~12 min to build (`lto = true`, `codegen-units = 1`). Built and merged; activation pending (sudo had no approval path: "a password is required"). FREE_PENDING

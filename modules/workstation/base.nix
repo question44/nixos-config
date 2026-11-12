@@ -145,6 +145,9 @@
       services.dbus.enable = true;
 
       services.udisks2.enable = true;
+      # GVfs: network shares (SMB, SFTP), phones over MTP and other gio
+      # locations for GTK apps such as Strata (its Network entry needs it).
+      services.gvfs.enable = true;
       # SMART disk health monitoring; warnings go to logged-in terminals (wall).
       services.smartd.enable = true;
 
