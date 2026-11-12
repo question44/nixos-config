@@ -5,7 +5,7 @@ entries directly below this header. Earlier months: [2026-10](changelog/2026-10.
 
 # Strata footer shows free space — 2026-11-12
 
-At the user's request Strata's footer shows the free space of the current folder's filesystem after the item count ("28 items · 120.5 GB free"). New `patches/strata-footer-free-space.patch` (second commit on `~/src/strata-sync` branch `terminal-sync`): `update_item_count` appends it from `gio` `filesystem::free`, read with `query_filesystem_info_async` (a slow mount cannot block the UI), cached per folder for 10 s, and applied only while the label still shows the text it was requested for. Native folders only. Compiled without new warnings (one existing upstream warning); Strata takes ~12 min to build (`lto = true`, `codegen-units = 1`). FREE_PENDING
+At the user's request Strata's footer shows the free space of the current folder's filesystem after the item count ("28 items · 120.5 GB free"). New `patches/strata-footer-free-space.patch` (second commit on `~/src/strata-sync` branch `terminal-sync`): `update_item_count` appends it from `gio` `filesystem::free`, read with `query_filesystem_info_async` (a slow mount cannot block the UI), cached per folder for 10 s, and applied only while the label still shows the text it was requested for. Native folders only. Compiled without new warnings (one existing upstream warning); Strata takes ~12 min to build (`lto = true`, `codegen-units = 1`). Built and merged; activation pending (sudo had no approval path: "a password is required"). FREE_PENDING
 
 # Edge swipes need two fingers — 2026-11-12
 
