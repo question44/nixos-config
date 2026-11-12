@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Strata file manager installed — 2026-11-12
+
+At the user's request the Strata file manager (lgse/strata v1.2.1, a GTK4 Miller-column file manager made for Omarchy) is added as the flake input `strata`, pinned at the v1.2.1 commit `491e6ba` and following nixpkgs, and its package joins the workstation packages. Dolphin stays the default folder handler; Strata's optional file-chooser portal, FileManager1 D-Bus service and udiskie unlock hook are not enabled. erebor-diff against master: different (only strata 1.2.1, 53.3 MiB, plus ffmpegthumbnailer, gst-libav, gtksourceview, libraw and squashfs-tools, and store hashes in /etc). ACTIVATION_PENDING
+
 # Signal Desktop installed — 2026-11-11
 
 At the user's request `signal-desktop` (8.32.0) is added to the workstation packages next to ZapZap. erebor-diff against master: different (only signal-desktop joining the system path, plus store hashes in /etc). Activated with switch, generation 390 (two earlier sudo attempts timed out with no key touch; the Mac approval host was unreachable). Verified: `signal-desktop` on the system path and `signal.desktop` in the system applications; no failed system or user units. Not tested: linking a phone and sending a message.

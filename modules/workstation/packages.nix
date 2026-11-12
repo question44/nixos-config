@@ -238,6 +238,7 @@
         ++ [
           inputs.zen-browser.packages.${system}.default
           inputs.monstar.packages.${system}.default
+          inputs.strata.packages.${system}.default
           (callPackage ../../packages/umbriel-display-mode.nix { })
           claudeDesktop
           claude-code

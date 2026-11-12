@@ -25,6 +25,10 @@
       url = "github:hgaiser/moonshine/79554f853135cbac44502b58093a4eb0f0f5e6f1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    strata = {
+      url = "github:lgse/strata/491e6ba9735e821f9f49910ffd2582076196865c";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     monstar.url = "github:rockorager/monstar/406c48eb938a065997bf5378457d7ca24fbfcea5";
     claude-desktop-nix.url = "github:tomsch/claude-desktop-nix/b16f4856da3a0b218d3ed0722df26b452039079f";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
