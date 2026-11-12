@@ -5,7 +5,7 @@ entries directly below this header. Earlier months: [2026-10](changelog/2026-10.
 
 # Strata file manager installed — 2026-11-12
 
-At the user's request the Strata file manager (lgse/strata v1.2.1, a GTK4 Miller-column file manager made for Omarchy) is added as the flake input `strata`, pinned at the v1.2.1 commit `491e6ba` and following nixpkgs, and its package joins the workstation packages. Dolphin stays the default folder handler; Strata's optional file-chooser portal, FileManager1 D-Bus service and udiskie unlock hook are not enabled. erebor-diff against master: different (only strata 1.2.1, 53.3 MiB, plus ffmpegthumbnailer, gst-libav, gtksourceview, libraw and squashfs-tools, and store hashes in /etc). ACTIVATION_PENDING
+At the user's request the Strata file manager (lgse/strata v1.2.1, a GTK4 Miller-column file manager made for Omarchy) is added as the flake input `strata`, pinned at the v1.2.1 commit `491e6ba` and following nixpkgs, and its package joins the workstation packages. Dolphin stays the default folder handler; Strata's optional file-chooser portal, FileManager1 D-Bus service and udiskie unlock hook are not enabled. erebor-diff against master: different (only strata 1.2.1, 53.3 MiB, plus ffmpegthumbnailer, gst-libav, gtksourceview, libraw and squashfs-tools, and store hashes in /etc). Activated with switch, generation 391. Verified: `strata --version` reports 1.2.1 from the system path, `io.github.lgse.Strata.desktop` is in the system applications, and no system or user units failed. A harmless libpcre2 "no version information" warning prints at startup. Not tested: browsing in the GUI.
 
 # Signal Desktop installed — 2026-11-11
 
