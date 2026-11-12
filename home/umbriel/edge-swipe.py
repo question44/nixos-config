@@ -2,7 +2,8 @@
 
 Reads the raw multitouch stream of every touchpad next to libinput (no grab,
 so libinput still sees the same touches) and runs a command when a finger
-lands in a strip along one edge and moves inward. One trigger per touch
+lands in a strip along one edge and moves inward together with a second
+finger (two-finger swipes only; one finger never fires). One trigger per touch
 sequence: nothing more fires until every finger has lifted. The command runs
 mid-swipe; Umbriel drops the rest of a two-finger scroll once the overview
 opens or closes under it (patches/umbriel-overview-scroll-handoff.patch).
@@ -27,9 +28,12 @@ TRAVEL_MM = 12.0
 MAX_TIME_S = 0.6
 # Travel along the edge may be at most this fraction of the inward travel.
 MAX_SIDEWAYS = 0.6
-# More fingers than this is another gesture (a 3-finger drag, a 4-finger
-# swipe or pinch), never an edge swipe.
-MAX_FINGERS = 2
+# Fingers an edge swipe needs. Only one of them must start in the edge
+# strip; the other must move inward too, at least PARTNER_FRACTION of
+# TRAVEL_MM, so a thumb resting on the pad does not count. More fingers is
+# another gesture (a 3-finger drag, a 4-finger swipe or pinch).
+FINGERS = 2
+PARTNER_FRACTION = 0.5
 RESCAN_S = 3.0
 
 DEBUG = False
@@ -66,6 +70,18 @@ class Pad:
         if fx > 1 - EDGE_FRACTION:
             return "right"
         return None
+
+    def travel(self, t, edge):
+        """(inward, sideways) travel of touch t since it landed, in mm."""
+        x0, y0, _ = t["start"]
+        dx = self.mm(self.x, t["x"] - x0)
+        dy = self.mm(self.y, t["y"] - y0)
+        return {
+            "top": (dy, dx),
+            "bottom": (-dy, dx),
+            "left": (dx, dy),
+            "right": (-dx, dy),
+        }[edge]
 
     def touch(self):
         return self.touches.setdefault(self.slot, {"id": -1})
@@ -112,21 +128,23 @@ class Pad:
             edge = t.get("edge")
             if self.fired or edge is None or edge not in self.commands:
                 continue
-            if self.max_fingers > MAX_FINGERS:
+            if self.max_fingers > FINGERS:
                 continue
-            x0, y0, t0 = t["start"]
-            if now - t0 > MAX_TIME_S:
+            if now - t["start"][2] > MAX_TIME_S:
                 t["edge"] = None  # Too slow: a rest on the edge, not a swipe.
                 continue
-            dx = self.mm(self.x, t["x"] - x0)
-            dy = self.mm(self.y, t["y"] - y0)
-            inward, sideways = {
-                "top": (dy, dx),
-                "bottom": (-dy, dx),
-                "left": (dx, dy),
-                "right": (-dx, dy),
-            }[edge]
-            if inward >= TRAVEL_MM and abs(sideways) <= MAX_SIDEWAYS * inward:
+            if len(active) != FINGERS:
+                continue
+            inward, sideways = self.travel(t, edge)
+            partners = [p for p in active if p is not t]
+            if (
+                inward >= TRAVEL_MM
+                and abs(sideways) <= MAX_SIDEWAYS * inward
+                and all(
+                    "start" in p and self.travel(p, edge)[0] >= PARTNER_FRACTION * TRAVEL_MM
+                    for p in partners
+                )
+            ):
                 self.fired = True
                 log(f"{edge} edge swipe, {self.max_fingers} finger(s): {self.commands[edge]}")
                 subprocess.Popen(shlex.split(self.commands[edge]), start_new_session=True)
