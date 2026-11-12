@@ -99,19 +99,6 @@
       time.timeZone = "Europe/Warsaw";
       i18n.defaultLocale = "en_US.UTF-8";
       console.keyMap = "pl";
-      # kmscon replaces the kernel VT text console on tty2+ (greetd keeps
-      # tty1): fontconfig rendering, so Nerd Font / Powerline glyphs and
-      # truecolor work. The kernel console (console.*) still covers boot.
-      services.kmscon = {
-        enable = true;
-        config = {
-          hwaccel = true;
-          font-name = "JetBrainsMono Nerd Font Mono";
-          font-size = 14;
-          xkb-layout = "pl";
-        };
-      };
-      fonts.packages = [ pkgs.nerd-fonts.jetbrains-mono ];
 
       users.defaultUserShell = pkgs.fish;
       users.users.${user} = {

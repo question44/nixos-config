@@ -815,6 +815,13 @@ wallpaper_scheme = "m3-tonal-spot"
         output_path = "$XDG_CONFIG_HOME/strata/noctalia/light.toml"
         pre_hook = "mkdir -p \"${XDG_CONFIG_HOME:-$HOME/.config}/strata/noctalia\""
 
+        # Text-console colours (modules/kmscon.nix validates and applies them).
+        [theme.templates.user.kmscon]
+        enabled = true
+        input_path = "/home/janzon/.config/noctalia/templates/kmscon.conf"
+        output_path = "/home/janzon/.local/state/kmscon/palette.conf"
+        pre_hook = "mkdir -p /home/janzon/.local/state/kmscon"
+
 # Live "sequoia:" wallpaper (modules/sequoia-wallpaper.nix). Set it with
 # `noctalia msg wallpaper-set sequoia:`. It is still on the desktop, eases into
 # motion on the lock screen (2 s) and coasts to a stop after unlock (~5 s).
