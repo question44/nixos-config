@@ -16,8 +16,8 @@ listview, columnview, gridview,
   background: transparent;
 }
 
-/* The sidebar keeps one tint layer (about 0.96 opaque over the dark-mode
-   window, 0.75 in light) so it reads apart from the glassy columns. */
+/* The sidebar keeps one tint layer (about 0.94 opaque over the dark-mode
+   window, 0.71 in light) so it reads apart from the glassy columns. */
 .sidebar {
-  background: @strata_surface;
+  background: alpha(@strata_surface, 0.85);
 }
