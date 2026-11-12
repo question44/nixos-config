@@ -29,6 +29,20 @@
             appOpacityAlpha = opacity.dark.alpha;
             appOpacityAlphaLight = opacity.light.alpha;
           };
+      # Strata: one theme per Noctalia mode with that mode's appOpacity; the
+      # theme-opacity hook links the current one as themes/noctalia.toml.
+      xdg.configFile."noctalia/templates/strata-dark.toml".source =
+        pkgs.replaceVars ../../home/noctalia/templates/strata.toml
+          {
+            mode = "dark";
+            alpha = lib.toLower opacity.dark.alpha;
+          };
+      xdg.configFile."noctalia/templates/strata-light.toml".source =
+        pkgs.replaceVars ../../home/noctalia/templates/strata.toml
+          {
+            mode = "light";
+            alpha = lib.toLower opacity.light.alpha;
+          };
       # Keep Vencord settings writable and let Noctalia generate its CSS.
       home.activation.discordNoctaliaTheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         run ${pkgs.coreutils}/bin/mkdir -p "$HOME/.config/Vencord/themes" "$HOME/.config/Vencord/settings"

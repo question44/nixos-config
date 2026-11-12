@@ -792,8 +792,7 @@ wallpaper_scheme = "m3-tonal-spot"
         "steam",
         "vicinae",
         "fastfetch",
-        "bat",
-        "strata"
+        "bat"
     ]
 
         # Keep palette colors dynamic; template alpha comes from home/appearance.nix.
@@ -801,6 +800,20 @@ wallpaper_scheme = "m3-tonal-spot"
         enabled = true
         input_path = "/home/janzon/.config/noctalia/templates/zed.json"
         output_path = [ "$XDG_CONFIG_HOME/zed/themes/noctalia.json", "$XDG_CONFIG_HOME/gram/themes/noctalia.json" ]
+
+        # Strata, translucent: both modes rendered with their appOpacity
+        # (modules/home/apps.nix); erebor-theme-opacity links the current one.
+        [theme.templates.user.strata_dark]
+        enabled = true
+        input_path = "/home/janzon/.config/noctalia/templates/strata-dark.toml"
+        output_path = "$XDG_CONFIG_HOME/strata/noctalia/dark.toml"
+        pre_hook = "mkdir -p \"${XDG_CONFIG_HOME:-$HOME/.config}/strata/noctalia\""
+
+        [theme.templates.user.strata_light]
+        enabled = true
+        input_path = "/home/janzon/.config/noctalia/templates/strata-light.toml"
+        output_path = "$XDG_CONFIG_HOME/strata/noctalia/light.toml"
+        pre_hook = "mkdir -p \"${XDG_CONFIG_HOME:-$HOME/.config}/strata/noctalia\""
 
 # Live "sequoia:" wallpaper (modules/sequoia-wallpaper.nix). Set it with
 # `noctalia msg wallpaper-set sequoia:`. It is still on the desktop, eases into
