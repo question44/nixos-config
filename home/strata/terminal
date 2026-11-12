@@ -5,6 +5,8 @@
 # stacks a tab. A shell opened on a folder follows Strata's folder and
 # moves Strata along when it changes directory (home/strata/sync.fish).
 app_id="dev.rockorager.monstar"
+# Share of the column the terminal gets below Strata.
+terminal_extent=0.34
 
 args=(monstar --working-directory "$PWD")
 if [ "${1:-}" = "-e" ]; then
@@ -44,4 +46,7 @@ new_column="$(umbriel windows --json | jq -r --arg id "$new" '.[] | select(.id =
 # else placed it, so leave it where it is.
 if [ "$new_column" = "$((anchor_column + 1))" ]; then
   umbriel msg window-consume-left >/dev/null
+  # The terminal takes the bottom third (the user's 66/34 split); Strata
+  # keeps the rest.
+  umbriel msg window-set-secondary-extent "$terminal_extent" >/dev/null
 fi
