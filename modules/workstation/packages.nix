@@ -57,9 +57,14 @@
       };
       # Strata with the terminal-sync patch (~/src/strata-sync, branch
       # terminal-sync): it publishes the focused window's folder and takes a
-      # sync-navigate action. Strata is built from source again because of it.
+      # sync-navigate action; branch terminal-sync also carries the footer
+      # free-space patch. Strata is built from source because of them.
       strataUnwrapped = inputs.strata.packages.${system}.default.overrideAttrs (old: {
-        patches = (old.patches or [ ]) ++ [ ../../patches/strata-terminal-sync.patch ];
+        patches = (old.patches or [ ]) ++ [
+          ../../patches/strata-terminal-sync.patch
+          # The footer also shows the free space of the folder's filesystem.
+          ../../patches/strata-footer-free-space.patch
+        ];
       });
       strata = pkgs.symlinkJoin {
         name = "strata-${strataUnwrapped.version or "wrapped"}";

@@ -1,0 +1,93 @@
+From 32042a7f0ac38fd95c5ced4b4269fd7a521ddfff Mon Sep 17 00:00:00 2001
+From: janzon <jmmzon@gmail.com>
+Date: Thu, 12 Nov 2026 14:14:58 +0100
+Subject: [PATCH] Footer: show free space of the active folder's filesystem
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ src/ui/shortcut_footer/status.rs | 62 +++++++++++++++++++++++++++++++-
+ 1 file changed, 61 insertions(+), 1 deletion(-)
+
+diff --git a/src/ui/shortcut_footer/status.rs b/src/ui/shortcut_footer/status.rs
+index f1a2f8ea..1e5a599c 100644
+--- a/src/ui/shortcut_footer/status.rs
++++ b/src/ui/shortcut_footer/status.rs
+@@ -5,7 +5,7 @@ use std::{
+     rc::Rc,
+ };
+ 
+-use gtk::{gdk, glib, prelude::*};
++use gtk::{gdk, gio, glib, prelude::*};
+ 
+ use crate::ui::browser::FilterStatus;
+ 
+@@ -57,6 +57,66 @@ pub(super) fn update_item_count(
+         );
+     }
+     label.set_visible(true);
++    append_free_space(label, browser);
++}
++
++/// Free space (erebor patch): how long a folder's free-space reading is reused.
++const FREE_SPACE_TTL: std::time::Duration = std::time::Duration::from_secs(10);
++
++thread_local! {
++    static FREE_SPACE: RefCell<std::collections::HashMap<std::path::PathBuf, (u64, std::time::Instant)>> =
++        RefCell::new(std::collections::HashMap::new());
++}
++
++/// Appends "· N free" for the active folder's filesystem to the count label.
++/// The reading is cached briefly and fetched asynchronously, so a slow mount
++/// never blocks the interface; a late reading is dropped when the label has
++/// moved on to other text.
++fn append_free_space(label: &gtk::Label, browser: &crate::app::Browser) {
++    let Some(path) = browser
++        .active_location()
++        .and_then(|location| location.native_path().map(std::path::Path::to_path_buf))
++    else {
++        return;
++    };
++    let base = label.label().to_string();
++    let cached = FREE_SPACE.with_borrow(|cache| {
++        cache
++            .get(&path)
++            .filter(|(_, read)| read.elapsed() < FREE_SPACE_TTL)
++            .map(|(free, _)| *free)
++    });
++    if let Some(free) = cached {
++        label.set_label(&free_space_text(&base, free));
++        return;
++    }
++    let weak = label.downgrade();
++    gio::File::for_path(&path).query_filesystem_info_async(
++        gio::FILE_ATTRIBUTE_FILESYSTEM_FREE,
++        glib::Priority::LOW,
++        gio::Cancellable::NONE,
++        move |result| {
++            let Ok(info) = result else {
++                return;
++            };
++            if !info.has_attribute(gio::FILE_ATTRIBUTE_FILESYSTEM_FREE) {
++                return;
++            }
++            let free = info.attribute_uint64(gio::FILE_ATTRIBUTE_FILESYSTEM_FREE);
++            FREE_SPACE.with_borrow_mut(|cache| {
++                cache.insert(path, (free, std::time::Instant::now()));
++            });
++            if let Some(label) = weak.upgrade()
++                && label.label().as_str() == base
++            {
++                label.set_label(&free_space_text(&base, free));
++            }
++        },
++    );
++}
++
++fn free_space_text(base: &str, free: u64) -> String {
++    format!("{base} · {} free", glib::format_size(free))
+ }
+ 
+ fn lacks_size(entry: &crate::model::FileEntry) -> bool {
+-- 
+2.56.0
+

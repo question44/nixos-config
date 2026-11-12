@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Strata footer shows free space — 2026-11-12
+
+At the user's request Strata's footer shows the free space of the current folder's filesystem after the item count ("28 items · 120.5 GB free"). New `patches/strata-footer-free-space.patch` (second commit on `~/src/strata-sync` branch `terminal-sync`): `update_item_count` appends it from `gio` `filesystem::free`, read with `query_filesystem_info_async` (a slow mount cannot block the UI), cached per folder for 10 s, and applied only while the label still shows the text it was requested for. Native folders only. Compiled without new warnings (one existing upstream warning); Strata takes ~12 min to build (`lto = true`, `codegen-units = 1`). FREE_PENDING
+
 # Edge swipes need two fingers — 2026-11-12
 
 At the user's request the touchpad edge swipes (top → overview, right → notifications) fire only with two fingers. `home/umbriel/edge-swipe.py`: one finger must start in the edge strip and travel inward as before, and exactly one other finger must be down and move inward at least half that travel (`FINGERS = 2`, `PARTNER_FRACTION = 0.5`), so a single finger or a finger plus a resting thumb no longer fires; three or more fingers stay other gestures. Simulated before building: 1 finger no fire, 2 fingers fire, 2 with a resting partner no fire, 3 no fire. erebor-diff against master: different (only the script). Activated with switch, generation 401 (shared with the Dolphin removal above); `edge-swipe.service` restarted at 14:23 on the new script and watches both Magic Trackpad nodes. Not yet confirmed by the user on the pad.
