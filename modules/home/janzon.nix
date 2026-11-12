@@ -59,6 +59,7 @@ in
         steam-theme
         zen
         theme-opacity
+        kmscon
       ];
       home.stateVersion = "26.05";
       home.pointerCursor = {

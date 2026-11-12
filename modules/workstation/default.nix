@@ -8,6 +8,7 @@ in
   flake.modules.nixos.workstation = {
     imports = with nixos; [
       base
+      kmscon
       session
       keyring
       ssh
