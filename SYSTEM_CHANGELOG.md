@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Dolphin removed — 2026-11-12
+
+At the user's request `kdePackages.dolphin` is removed, with `kio-admin` (its "Open as Administrator" helper) and the Home Manager activations that wrote `dolphinrc`; Strata stays the default for `inode/directory`. The KIO thumbnailers and Qt image decoders stay (Gwenview, KIO file dialogs). `org.kde.dolphin` dropped from the Noctalia dock and taskbar pins in `home/noctalia/config.toml` (validated) and from the live `dock.pinned` override in `~/.local/state/noctalia/settings.toml` (`noctalia msg config-set`). Darkly's `DolphinSidebarOpacity`/`DolphinViewOpacity` keys stay: they are Darkly style settings. `~/.config/dolphinrc` is left as user data. erebor-diff against master: different (dolphin −18.4 MiB, baloo-widgets −0.7 MiB). Activated with switch, generation 401. Verified: no `dolphin` binary or desktop entry, `inode/directory` → Strata, no failed system or user units. File pickers are unaffected: the FileChooser portal is served by xdg-desktop-portal-gtk (`default=umbriel;gtk`, Umbriel's portal has no FileChooser).
+
 # Strata terminal opens at a 66/34 split — 2026-11-12
 
 At the user's request, matching the split they had set by hand (Strata 891 px over Monstar 461 px), `home/strata/terminal` now runs `umbriel msg window-set-secondary-extent 0.34` on the new Monstar right after stacking it below Strata. Found while testing: `window-modify-height-*` takes a fraction of the column, and an explicit extent on Strata stays with it (alone in its column it then stops filling it); setting only the terminal's extent avoids that. Tested before activation with the built script, Strata alone in its column: Monstar 460 px under Strata 892 px, column filled (test window closed and the user's paired terminal restacked at 0.34). Activated with switch, generation 400; no failed units. A Strata started before the switch keeps its old $TERMINAL (a store path) until it is restarted.
