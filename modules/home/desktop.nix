@@ -1,4 +1,4 @@
-# Qt/GTK theming, Dolphin, XDG directories, default applications and desktop
+# Qt/GTK theming, XDG directories, default applications and desktop
 # helper scripts (rcmd, reboot-windows). The Qt style is in the darkly aspect.
 { inputs, ... }:
 {
@@ -41,44 +41,6 @@
           package = pkgs.fluent-icon-theme;
         };
       };
-      home.activation.dolphinColorScheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-        run ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 \
-          --file "$HOME/.config/dolphinrc" \
-          --group UiSettings \
-          --key ColorScheme "*"
-      '';
-      # Enable every installed KIO thumbnailer; several are off by default.
-      home.activation.dolphinPreviewPlugins = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-        run ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 \
-          --file "$HOME/.config/dolphinrc" \
-          --group PreviewSettings \
-          --key Plugins "${
-            lib.concatStringsSep "," [
-              "appimagethumbnail"
-              "audiothumbnail"
-              "blenderthumbnail"
-              "comicbookthumbnail"
-              "cursorthumbnail"
-              "directorythumbnail"
-              "djvuthumbnail"
-              "ebookthumbnail"
-              "exrthumbnail"
-              "ffmpegthumbs"
-              "gsthumbnail"
-              "imagethumbnail"
-              "jpegthumbnail"
-              "kraorathumbnail"
-              "mobithumbnail"
-              "opendocumentthumbnail"
-              "pothumbnail"
-              "rawthumbnail"
-              "svgthumbnail"
-              "textthumbnail"
-              "windowsexethumbnail"
-              "windowsimagethumbnail"
-            ]
-          }"
-      '';
       xdg.userDirs = {
         enable = true;
         createDirectories = true;

@@ -161,7 +161,6 @@ item_spacing = 8
 launcher_position = "start"
 pinned = [
     "helium",
-    "org.kde.dolphin",
     "com.mitchellh.ghostty",
     "discord",
     "steam"
@@ -956,7 +955,7 @@ capsule_radius = "auto"
 group_by_workspace = true
 icon_scale = 2.0
 minimal = true
-pinned = [ "org.kde.dolphin", "helium", "zen" ]
+pinned = [ "helium", "zen" ]
 show_window_title = true
 workspace_label_placement = "inside"
 

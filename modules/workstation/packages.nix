@@ -175,9 +175,6 @@
           aws-sam-cli
           gnupg
           gnumake
-          kdePackages.dolphin
-          # Dolphin's admin mode (admin:/, "Open as Administrator"), approved through polkit.
-          kdePackages.kio-admin
           kdePackages.gwenview
           kdePackages.okular
           kdePackages.ark
@@ -310,7 +307,7 @@
           tree-sitter
           gdbus
           kdialog
-          # Qt image decoders for Dolphin's thumbnailer (WebP, AVIF, HEIC, JXL, ...).
+          # Qt image decoders for the KIO thumbnailers (WebP, AVIF, HEIC, JXL, ...).
           kdePackages.qtimageformats
           kdePackages.kimageformats
           kdePackages.qtsvg

@@ -1,5 +1,5 @@
 # xrdp over Tailscale with an LXQt X11 session. LXQt is Qt-based, so it reuses
-# the Qt/KDE libraries already installed for Dolphin, Okular and Gwenview.
+# the Qt/KDE libraries already installed for Okular and Gwenview.
 # Its packages stay out of the system profile (and the Wayland app menu): the
 # session script puts them on its own PATH and XDG paths.
 {
