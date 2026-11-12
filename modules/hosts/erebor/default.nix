@@ -72,6 +72,10 @@ in
             "192.168.1.97"
           ];
         };
+        phoneApproval = {
+          enable = true;
+          device = "ef29f572ee6b420a92c63e19a994e155"; # Galaxy S26 Ultra
+        };
         nanokvm = {
           enable = true;
           url = "https://kvm-37ff.tail517bdc.ts.net:8443";
