@@ -3,6 +3,10 @@
 This file holds the current month (November 2026); add new
 entries directly below this header. Earlier months: [2026-10](changelog/2026-10.md).
 
+# Edge swipes need two fingers — 2026-11-12
+
+At the user's request the touchpad edge swipes (top → overview, right → notifications) fire only with two fingers. `home/umbriel/edge-swipe.py`: one finger must start in the edge strip and travel inward as before, and exactly one other finger must be down and move inward at least half that travel (`FINGERS = 2`, `PARTNER_FRACTION = 0.5`), so a single finger or a finger plus a resting thumb no longer fires; three or more fingers stay other gestures. Simulated before building: 1 finger no fire, 2 fingers fire, 2 with a resting partner no fire, 3 no fire. erebor-diff against master: different (only the script). Activated with switch, generation 401 (shared with the Dolphin removal above); `edge-swipe.service` restarted at 14:23 on the new script and watches both Magic Trackpad nodes. Not yet confirmed by the user on the pad.
+
 # Dolphin removed — 2026-11-12
 
 At the user's request `kdePackages.dolphin` is removed, with `kio-admin` (its "Open as Administrator" helper) and the Home Manager activations that wrote `dolphinrc`; Strata stays the default for `inode/directory`. The KIO thumbnailers and Qt image decoders stay (Gwenview, KIO file dialogs). `org.kde.dolphin` dropped from the Noctalia dock and taskbar pins in `home/noctalia/config.toml` (validated) and from the live `dock.pinned` override in `~/.local/state/noctalia/settings.toml` (`noctalia msg config-set`). Darkly's `DolphinSidebarOpacity`/`DolphinViewOpacity` keys stay: they are Darkly style settings. `~/.config/dolphinrc` is left as user data. erebor-diff against master: different (dolphin −18.4 MiB, baloo-widgets −0.7 MiB). Activated with switch, generation 401. Verified: no `dolphin` binary or desktop entry, `inode/directory` → Strata, no failed system or user units. File pickers are unaffected: the FileChooser portal is served by xdg-desktop-portal-gtk (`default=umbriel;gtk`, Umbriel's portal has no FileChooser).
