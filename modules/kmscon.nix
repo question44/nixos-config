@@ -67,6 +67,7 @@ in
         name = "kmscon-palette";
         runtimeInputs = with pkgs; [
           coreutils
+          diffutils
           gawk
           jq
           systemd
@@ -140,6 +141,9 @@ in
       systemd.services."kmsconvt@" = {
         after = [ "kmscon-palette.service" ];
         wants = [ "kmscon-palette.service" ];
+        # kmscon 10.1 ignores SIGTERM on a VT that was never shown, which held
+        # each palette restart for the default 90 s before SIGKILL.
+        serviceConfig.TimeoutStopSec = "3s";
       };
     };
 
