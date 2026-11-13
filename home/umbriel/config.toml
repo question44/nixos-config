@@ -284,4 +284,4 @@ default_output = "sunshine"
 # liquid glass, linked beside this file only with my.liquidGlass.enable
 # (modules/umbriel.nix); without it windows and panels keep plain blur.
 [include.optional]
-files = ["noctalia.toml", "glass.toml"]
+files = ["glass.toml", "noctalia.toml"]
