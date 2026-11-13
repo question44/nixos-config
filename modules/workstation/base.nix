@@ -129,7 +129,8 @@
       };
 
       programs.fish.enable = true;
-      programs.steam.enable = true;
+      # Steam is x86 only.
+      programs.steam.enable = pkgs.stdenv.hostPlatform.isx86_64;
       programs.nix-ld.enable = true;
 
       security.polkit.enable = true;

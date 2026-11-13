@@ -4,12 +4,28 @@
   fetchurl,
 }:
 
+let
+  # Release tarball per system.
+  arch = {
+    x86_64-linux = {
+      name = "x86_64";
+      hash = "sha256-cOPghHF31Me2gajsGfoACS5CKmxijvnYpdtt+/RhKt0=";
+    };
+    aarch64-linux = {
+      name = "aarch64";
+      hash = "sha256-mnPCN7axKvJn6HhZH/IqAcl8qdHNgSX5/0/9bfT+qXw=";
+    };
+  };
+  platform =
+    arch.${stdenvNoCC.hostPlatform.system}
+      or (throw "trzsz: no release for ${stdenvNoCC.hostPlatform.system}");
+in
 stdenvNoCC.mkDerivation rec {
   pname = "trzsz";
   version = "1.2.0";
   src = fetchurl {
-    url = "https://github.com/trzsz/trzsz-go/releases/download/v${version}/trzsz_${version}_linux_x86_64.tar.gz";
-    hash = "sha256-cOPghHF31Me2gajsGfoACS5CKmxijvnYpdtt+/RhKt0=";
+    url = "https://github.com/trzsz/trzsz-go/releases/download/v${version}/trzsz_${version}_linux_${platform.name}.tar.gz";
+    inherit (platform) hash;
   };
 
   dontBuild = true;
@@ -24,7 +40,7 @@ stdenvNoCC.mkDerivation rec {
     description = "Upload and download files through supported terminals";
     homepage = "https://github.com/trzsz/trzsz-go";
     license = lib.licenses.mit;
-    platforms = [ "x86_64-linux" ];
+    platforms = builtins.attrNames arch;
     sourceProvenance = [ lib.sourceTypes.binaryNativeCode ];
   };
 }

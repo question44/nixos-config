@@ -13,7 +13,10 @@
     };
 
   flake.modules.homeManager.vicinae =
-    { config, ... }:
+    { config, pkgs, ... }:
+    let
+      vicinae = inputs.vicinae.packages.${pkgs.stdenv.hostPlatform.system}.default;
+    in
     {
       # Vicinae's GUI rewrites settings.json, so the Nix-managed values live in
       # an import it lists ("imports": ["./nix.json"]); settings.json still wins
@@ -22,11 +25,11 @@
       xdg.configFile."vicinae/nix.json".source =
         config.lib.file.mkOutOfStoreSymlink "${config.xdg.stateHome}/erebor-theme-opacity/vicinae.json";
       xdg.configFile."systemd/user/graphical-session.target.wants/vicinae.service".source =
-        "${inputs.vicinae.packages.x86_64-linux.default}/share/systemd/user/vicinae.service";
+        "${vicinae}/share/systemd/user/vicinae.service";
       xdg.configFile."systemd/user/vicinae.service.d/override.conf".text = ''
         [Service]
         ExecStart=
-        ExecStart=${inputs.vicinae.packages.x86_64-linux.default}/bin/vicinae server --replace
+        ExecStart=${vicinae}/bin/vicinae server --replace
       '';
     };
 }

@@ -20,6 +20,7 @@
       '';
 
       system = pkgs.stdenv.hostPlatform.system;
+      isx86 = pkgs.stdenv.hostPlatform.isx86_64;
       chomik = inputs.chomik.packages.${system}.default;
       # Strata opens its terminal through $TERMINAL: Monstar, stacked below
       # Strata in its Umbriel column (home/strata/terminal). The launcher
@@ -204,6 +205,10 @@
           ddcutil
           kdePackages.breeze
           fluent-icon-theme
+        ]
+        # Discord and the claude-desktop flake build for x86_64-linux only; the
+        # list is split around them so erebor's package order stays the same.
+        ++ lib.optionals isx86 [
           (discord.override {
             withVencord = true;
             # nixpkgs still ships Vencord 1.15.13, which hangs Discord on "Starting..."
@@ -227,6 +232,8 @@
               }
             );
           })
+        ]
+        ++ [
           ghostty
           xwayland-satellite
           wl-clipboard
@@ -293,7 +300,9 @@
           inputs.monstar.packages.${system}.default
           strata
           (callPackage ../../packages/umbriel-display-mode.nix { })
-          claudeDesktop
+        ]
+        ++ lib.optionals isx86 [ claudeDesktop ]
+        ++ [
           claude-code
           zed-editor
           neovim

@@ -242,6 +242,20 @@ let
     # something only erebor has (a secrets file, hardware) fails here, which
     # evaluating the template's options alone does not show.
     template-instantiates = check (builtins.tryEval hosts.template.config.system.build.toplevel.drvPath).success "template: system.build.toplevel does not evaluate (run nix eval .#nixosConfigurations.template.config.system.build.toplevel.drvPath)";
+
+    # The aarch64 VM on the Mac (modules/hosts/mac-vm) instantiates, and no
+    # shared aspect hard-codes an x86_64-linux package into it.
+    mac-vm-aarch64 =
+      let
+        vm = hosts.mac-vm.config;
+        packages =
+          vm.environment.systemPackages
+          ++ vm.home-manager.users.${vm.my.user.name}.home.packages
+          ++ [ vm.home-manager.users.${vm.my.user.name}.qt.style.package ];
+        foreign = lib.filter (p: (p.system or "aarch64-linux") != "aarch64-linux") packages;
+      in
+      check (builtins.tryEval vm.system.build.toplevel.drvPath).success "mac-vm: system.build.toplevel does not evaluate (run nix eval .#nixosConfigurations.mac-vm.config.system.build.toplevel.drvPath)"
+      ++ map (p: "mac-vm: ${p.name or "?"} is built for ${p.system}") foreign;
   };
 in
 {

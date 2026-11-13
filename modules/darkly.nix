@@ -10,8 +10,10 @@
       ];
     };
 
-  flake.modules.homeManager.darkly = {
-    qt.style.package = inputs.darkly.packages.x86_64-linux.darkly-qt6;
-    home.sessionVariables.QT_STYLE_OVERRIDE = "Darkly";
-  };
+  flake.modules.homeManager.darkly =
+    { pkgs, ... }:
+    {
+      qt.style.package = inputs.darkly.packages.${pkgs.stdenv.hostPlatform.system}.darkly-qt6;
+      home.sessionVariables.QT_STYLE_OVERRIDE = "Darkly";
+    };
 }

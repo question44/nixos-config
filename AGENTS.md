@@ -77,6 +77,12 @@ before acting; each holds the full rules for its area.
   behind `pkgs.stdenv.hostPlatform.isLinux`. It is evaluated by
   `nix flake check` but built and applied only on the Mac
   ([docs/mac.md](docs/mac.md)).
+- `nixosConfigurations.mac-vm` (`modules/hosts/mac-vm/`) is the shared
+  desktop as an aarch64 VMware Fusion guest on the Mac, with every optional
+  feature off ([docs/mac-vm.md](docs/mac-vm.md)). Keep x86-only packages in
+  shared aspects behind `pkgs.stdenv.hostPlatform.isx86_64` and take flake
+  input packages by `pkgs.stdenv.hostPlatform.system`, never a literal
+  `x86_64-linux`; `eval-mac-vm-aarch64` checks both.
 - Module order is breadth-first by import depth, so moving a definition into
   another aspect can reorder list options (packages, overlays, graphics
   drivers). Check with `scripts/erebor-diff` after moving code between
